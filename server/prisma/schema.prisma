@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @default(autoincrement()) @id
+  name String
+  username String @unique
+  email String @unique
+  password String
+  role Role @default(USER)
+  created_at DateTime @default(now())
+  profile Profile?
+  products Product[]
+  orders Order[]
+  reviews Review[]
+}
+
+model Profile {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [user_id],references: [id])
+  user_id Int @unique
+  avatar String
+}
+
+model Product {
+  id Int @id @default(autoincrement())
+  name String
+  price Int @default(0)
+  description String // expand ?
+  images Image[]
+  category String
+  company String
+  inventory Int
+  avg_rating Int @default(0) // ??
+  num_of_reviews Int @default(0) // ??
+  freeShipping Boolean
+  featured Boolean
+  created_at DateTime @default(now())
+  user User @relation(fields: [user_id],references: [id])
+  user_id Int @unique
+  reviews Review[]
+  orders SingleOrderItem[]
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+  name String
+  parent_id Int?
+  parent Category? @relation("subCategory",fields: [parent_id],references: [id])
+  child Category[] @relation("subCategory")
+}
+
+model Image {
+  id Int @id @default(autoincrement())
+  name String
+  source String @default("/images/example.jpg")
+  product Product @relation(fields:[product_id],references: [id])
+  product_id Int
+}
+
+model Review {
+  id Int @id @default(autoincrement())
+  title String
+  rating Int
+  comment String
+  user User @relation(fields: [user_id],references: [id])
+  user_id Int
+  product Product @relation(fields: [product_id],references: [id])
+  product_id Int
+  created_at DateTime @default(now())
+  edited_at DateTime @default(now())
+}
+
+model Order {
+  id Int @default(autoincrement()) @id
+  total Int
+  shipping_fee Int @default(0)
+  status OrderStatus @default(PENDING)
+  user User @relation(fields: [user_id],references: [id])
+  user_id Int @unique
+  orders SingleOrderItem[]
+  payments Payment?
+}
+
+model SingleOrderItem {
+  id Int @default(autoincrement()) @id
+  order Order @relation(fields: [order_id],references: [id])
+  order_id Int @unique
+  price Int
+  amount Int
+  product Product @relation(fields: [product_id],references: [id])
+  product_id Int
+}
+
+model Payment {
+  id Int @default(autoincrement()) @id
+  order Order @relation(fields: [order_id],references: [id])
+  order_id Int @unique
+  payment_time DateTime @default(now())
+}
+
+enum OrderStatus {
+  PENDING
+  FAILED
+  PAID
+  DELIVERED
+  CANCELLED
+}
+
+enum Role { 
+  USER
+  ADMIN
+}
