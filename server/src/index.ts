@@ -1,7 +1,19 @@
+import "dotenv/config";
+import express from "express";
 import { ApolloServer } from "apollo-server-express";
+import { typeDefs, resolvers } from "./schema";
 
-const server = new ApolloServer({ typeDefs, resolvers });
+async function startApolloServer() {
+	const app = express();
+	const server = new ApolloServer({ typeDefs, resolvers });
+	const port = process.env.PORT || 5000;
 
-server.listen().then(({ url }) => {
-	console.log(`server is running at ${url}...`);
-});
+	await server.start();
+	server.applyMiddleware({ app });
+
+	app.listen(port, () => {
+		console.log(`server is running at ${port}...`);
+	});
+}
+
+startApolloServer();
