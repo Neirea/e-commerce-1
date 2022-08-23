@@ -12,7 +12,7 @@ async function startApolloServer() {
 	server.applyMiddleware({ app });
 
 	app.listen(port, () => {
-		console.log(`server is running at ${port}...`);
+		console.log(`Server is running on port ${port}...`);
 	});
 }
 

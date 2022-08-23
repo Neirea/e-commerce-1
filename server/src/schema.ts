@@ -4,7 +4,6 @@ import { GraphQLScalarType, Kind } from "graphql";
 
 const naiveIsoDateRegex =
 	/(\d{4})-(\d{2})-(\d{2})T((\d{2}):(\d{2}):(\d{2}))\.(\d{3})Z/;
-
 const dateScalar = new GraphQLScalarType({
 	name: "Date",
 	description: "Date custom scalar type",
@@ -31,28 +30,80 @@ const prisma = new PrismaClient();
 export const typeDefs = gql`
 	scalar Date
 
+	enum Role {
+		USER
+		ADMIN
+	}
+
 	type User {
 		id: ID!
 		name: String!
 		username: String!
+		email: String
 		role: Role!
 		created_at: Date!
+		profile: Profile!
+	}
+	type Profile {
+		id: ID!
+		avatar: String!
+		user_id: Int!
 	}
 	type Query {
 		users: [User!]!
+		user(id: ID!): User!
 	}
 
-	enum Role {
-		USER
-		ADMIN
+	input CreateUserInput {
+		name: String!
+		username: String!
+		email: String!
+		avatar: String
+	}
+	input UpdateUserInput {
+		id: ID!
+		name: String
+		newUsername: String
+		newPassword: String
+		avatar: String
+	}
+
+	type Mutation {
+		createUser(input: CreateUserInput!): User!
+		updateUser(input: UpdateUserInput!): User!
+		deleteUser(id: ID!): User
 	}
 `;
 
 export const resolvers = {
 	Date: dateScalar,
 	Query: {
-		users() {
+		users: () => {
 			return prisma.user.findMany();
 		},
+		user: (parent: any, args: any) => {
+			return prisma.user.findMany({ where: { id: Number(args.id) } });
+		},
 	},
+	Mutation: {
+		createUser: (parent: any, args: any) => {
+			const user = args.input;
+			return prisma.user.create({ data: user }); //figure out Profile creation (1-to-1 rel)
+		},
+		updateUser: (parent: any, args: any) => {
+			const userId = args.input.id;
+			return prisma.user.update({
+				where: { id: userId },
+				data: { ...args.input }, // probably wrong #any
+			});
+		},
+		deleteUser: (parent: any, args: any) => {
+			return prisma.user.delete({ where: { id: args.id } });
+		},
+	},
+	// User: {
+	// 	profile: (parent:any,args:any)=>{
+	// 		return prisma.user.findFirst({where: id:Number(args.id)})
+	// 	}
+	// }
 };
