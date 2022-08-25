@@ -50,7 +50,7 @@ export const typeDefs = gql`
 		user_id: Int!
 	}
 	type Query {
-		users: [User!]!
+		users: UsersResult
 		user(id: ID!): User!
 	}
 
@@ -73,13 +73,24 @@ export const typeDefs = gql`
 		updateUser(input: UpdateUserInput!): User!
 		deleteUser(id: ID!): User
 	}
+
+	type UsersQueryResult {
+		users: [User!]!
+	}
+	type UsersErrorResult {
+		message: String!
+	}
+	union UsersResult = UsersQueryResult | UsersErrorResult
 `;
 
 export const resolvers = {
 	Date: dateScalar,
 	Query: {
-		users: () => {
-			return prisma.user.findMany();
+		users: (parent: any, args: any, context: any) => {
+			console.log(context);
+			const users = prisma.user.findMany();
+			if (users) return { users: users };
+			return { message: "There was an Error" };
 		},
 		user: (parent: any, args: any) => {
 			return prisma.user.findMany({ where: { id: Number(args.id) } });
@@ -101,6 +112,27 @@ export const resolvers = {
 			return prisma.user.delete({ where: { id: args.id } });
 		},
 	},
+	UsersResult: {
+		__resolveType(obj: any) {
+			if (obj.users) {
+				return obj.users;
+			}
+			return obj.message;
+		},
+	},
+	/* query ExampleQuery {
+		users{
+			...on UsersQueryResult {
+				users{
+					id
+					username
+				}
+			}
+			...on UsersErrorResult {
+				message
+			}
+		}
+	}*/
 	// User: {
 	// 	profile: (parent:any,args:any)=>{
 	// 		return prisma.user.findFirst({where: id:Number(args.id)})

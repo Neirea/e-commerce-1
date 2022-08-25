@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, gql, useLazyQuery } from "@apollo/client";
+import { useQuery, gql, useLazyQuery, useMutation } from "@apollo/client";
 
 const QUERY_ALL_USERS = gql`
 	query GetAllUsers {
@@ -14,7 +14,6 @@ const QUERY_ALL_USERS = gql`
 		}
 	}
 `;
-
 const QUERY_SINGLE_USER = gql`
 	query GetSingleUser($id: ID!) {
 		user(id: $id) {
@@ -24,12 +23,24 @@ const QUERY_SINGLE_USER = gql`
 		}
 	}
 `;
+const MUTATION_CREATE_USER = gql`
+	mutation CreateUser($input: CreateUserInput!) {
+		createUser(input: $input) {
+			name
+			id
+		}
+	}
+`;
 
 const GQLTest = () => {
+	const [username, setUsername] = useState("Neirea");
+	const [email, setEmail] = useState("neirea@gmail.com");
+	const [avatar, setAvatar] = useState("https://images.com/asdf.jpg");
 	const [searchedUserId, setSearchedUserId] = useState<Number>(1);
-	const { data, loading, error } = useQuery(QUERY_ALL_USERS);
+	const { data, loading, error, refetch } = useQuery(QUERY_ALL_USERS);
 	const [fetchUser, { data: singleUser, error: userError }] =
 		useLazyQuery(QUERY_SINGLE_USER);
+	const [createUser] = useMutation(MUTATION_CREATE_USER);
 	if (loading) {
 		return <div>Loading...</div>;
 	}
@@ -51,6 +62,14 @@ const GQLTest = () => {
 				>
 					Click me
 				</button>
+				<button
+					onClick={() => {
+						createUser({
+							variables: { input: { name, username, email, avatar } },
+						});
+						refetch();
+					}}
+				></button>
 				{singleUser && <h1>HELLO</h1>}
 			</>
 		);

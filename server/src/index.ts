@@ -5,7 +5,13 @@ import { typeDefs, resolvers } from "./schema";
 
 async function startApolloServer() {
 	const app = express();
-	const server = new ApolloServer({ typeDefs, resolvers });
+	const server = new ApolloServer({
+		typeDefs,
+		resolvers,
+		context: () => {
+			return { name: "Neirea" };
+		},
+	});
 	const port = process.env.PORT || 5000;
 
 	await server.start();
