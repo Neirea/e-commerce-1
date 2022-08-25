@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { gql } from "apollo-server-express";
 import { GraphQLScalarType, Kind } from "graphql";
 
@@ -28,7 +28,7 @@ const prisma = new PrismaClient();
 
 /* Date type */
 export const typeDefs = gql`
-	scalar Date
+	scalar DateTime
 
 	enum Role {
 		USER
@@ -41,24 +41,21 @@ export const typeDefs = gql`
 		username: String!
 		email: String
 		role: Role!
-		created_at: Date!
-		profile: Profile!
-	}
-	type Profile {
-		id: ID!
+		created_at: DateTime!
 		avatar: String!
-		user_id: Int!
 	}
 	type Query {
 		users: UsersResult
 		user(id: ID!): User!
 	}
 
+	# Mutations
 	input CreateUserInput {
 		name: String!
 		username: String!
 		email: String!
 		avatar: String
+		password: String
 	}
 	input UpdateUserInput {
 		id: ID!
@@ -73,9 +70,9 @@ export const typeDefs = gql`
 		updateUser(input: UpdateUserInput!): User!
 		deleteUser(id: ID!): User
 	}
-
+	# Users Query Types
 	type UsersQueryResult {
-		users: [User!]!
+		users: [User!]
 	}
 	type UsersErrorResult {
 		message: String!
@@ -84,10 +81,9 @@ export const typeDefs = gql`
 `;
 
 export const resolvers = {
-	Date: dateScalar,
+	DateTime: dateScalar,
 	Query: {
 		users: (parent: any, args: any, context: any) => {
-			console.log(context);
 			const users = prisma.user.findMany();
 			if (users) return { users: users };
 			return { message: "There was an Error" };
@@ -99,7 +95,8 @@ export const resolvers = {
 	Mutation: {
 		createUser: (parent: any, args: any) => {
 			const user = args.input;
-			return prisma.user.create({ data: user }); //figure out Profile creation (1-to-1 rel)
+
+			return prisma.user.create({ data: user });
 		},
 		updateUser: (parent: any, args: any) => {
 			const userId = args.input.id;
@@ -115,9 +112,12 @@ export const resolvers = {
 	UsersResult: {
 		__resolveType(obj: any) {
 			if (obj.users) {
-				return obj.users;
+				return "UsersQueryResult";
 			}
-			return obj.message;
+			if (obj.message) {
+				return "UsersErrorResult";
+			}
+			return null; //some gql error
 		},
 	},
 	/* query ExampleQuery {

@@ -15,17 +15,10 @@ model User {
   password String
   role Role @default(USER)
   created_at DateTime @default(now())
-  profile Profile?
+  avatar String @default("https://lh3.googleusercontent.com/a-/AFdZucp97qLPG96CDx5SRgR2Mff2Ju608wdvUGSghz4o5g=s96-c")
   products Product[]
   orders Order[]
   reviews Review[]
-}
-
-model Profile {
-  id Int @id @default(autoincrement())
-  user User @relation(fields: [user_id],references: [id])
-  user_id Int @unique
-  avatar String
 }
 
 model Product {
