@@ -1,6 +1,17 @@
 import { ChangeEvent, useState } from "react";
 import { useQuery, gql, useLazyQuery, useMutation } from "@apollo/client";
 
+interface User {
+	id: number;
+	username: String;
+}
+
+interface UsersSuccess {
+	users: User[];
+}
+
+type UsersResult = { users: UsersSuccess[] };
+
 const QUERY_ALL_USERS = gql`
 	query GetAllUsers {
 		users {
@@ -45,7 +56,9 @@ const GQLTest = () => {
 	});
 
 	const [searchedUserId, setSearchedUserId] = useState<Number>(1);
-	const { data, loading, error, refetch } = useQuery(QUERY_ALL_USERS);
+	const { data, loading, error, refetch } = useQuery<{
+		users: UsersResult;
+	}>(QUERY_ALL_USERS);
 	const [fetchUser, { data: singleUser, error: userError }] =
 		useLazyQuery(QUERY_SINGLE_USER);
 	const [createUser, { error: createUserError }] =
@@ -126,7 +139,7 @@ const GQLTest = () => {
 					<button type="submit">Create User</button>
 				</form>
 				<div>{createUserError && <p>{createUserError.message}</p>}</div>
-				{data &&
+				{data.users &&
 					data.users.users.map((user: any, idx: number) => {
 						return <p key={idx}>{user.username}</p>;
 					})}

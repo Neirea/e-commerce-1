@@ -1,16 +1,18 @@
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { Routes, Route } from "react-router-dom";
 import GQLTEST from "./GQLTest";
+import Home from "./pages/Home";
+import Header from "./components/Header";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
-	const client = new ApolloClient({
-		cache: new InMemoryCache(),
-		uri: "http://localhost:3001/graphql",
-	});
-
 	return (
-		<ApolloProvider client={client}>
-			<GQLTEST></GQLTEST>
-		</ApolloProvider>
+		<>
+			{/* <GQLTEST></GQLTEST> */}
+			<Header />
+			<Routes>
+				<Route path="/" element={<Home />} />
+			</Routes>
+		</>
 	);
 }
 
