@@ -12,7 +12,6 @@ const Header = () => {
 				</Navbar.Brand>
 				<SearchBar />
 				<Nav>
-					<Nav.Link href="#dmode">DMode</Nav.Link>
 					<Nav.Link href="#user">User</Nav.Link>
 					<Nav.Link href="#cart">
 						<BiCart size={"1.5rem"} />

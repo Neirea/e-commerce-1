@@ -1,11 +1,26 @@
-import { Container, Row, Col, ListGroup, ListGroupItem } from "react-bootstrap";
+import {
+	Container,
+	Row,
+	Col,
+	ListGroup,
+	ListGroupItem,
+	Carousel,
+} from "react-bootstrap";
+import Footer from "../components/Footer";
 import MenuCard from "../components/MenuCard";
 
 const Home = () => {
 	return (
 		<>
 			<Container as="main">
-				<Container className="d-flex justify-content-center mt-5 gap-3">
+				<Container className="d-flex flex-column justify-content-center align-items-center  mt-5 mb-5 gap-3">
+					<img
+						src="https://www.robin-noorda.com/uploads/1/6/8/3/16830688/3347022_orig.jpg"
+						alt="First img"
+						width="700px"
+						height="300px"
+						className="mb-5"
+					/>
 					<Row className="gap-3">
 						<Col>
 							<MenuCard />
@@ -29,8 +44,8 @@ const Home = () => {
 				</Container>
 
 				<Container>
-					<h1 className="text-center mt-5">Featured</h1>
-					<Container className="d-flex justify-content-center mt-5 gap-3">
+					<h2 className="text-center mt-5">Featured</h2>
+					<Container className="d-flex justify-content-center mt-3 gap-3">
 						<Row className="gap-3">
 							<Col>
 								<MenuCard />
@@ -54,8 +69,8 @@ const Home = () => {
 					</Container>
 				</Container>
 				<Container>
-					<h1 className="text-center mt-5">Recommended</h1>
-					<Container className="d-flex justify-content-center mt-5 gap-3">
+					<h2 className="text-center mt-5">Recommended</h2>
+					<Container className="d-flex justify-content-center mt-3 gap-3">
 						<Row className="gap-3">
 							<Col>
 								<MenuCard />
@@ -79,49 +94,7 @@ const Home = () => {
 					</Container>
 				</Container>
 			</Container>
-			{/* <Container
-				as="footer"
-				className="bg-dark text-light"
-				style={{ width: "100%" }}
-			>
-				Hello
-			</Container> */}
-			<footer className="bg-dark text-light w-100 mt-5 mb-0">
-				<Container className="p-5">
-					<Row className="d-flex justify-content-center">
-						<Col>
-							<h5>Title 4</h5>
-
-							<div>Link 1</div>
-							<div>Link 1</div>
-							<div>Link 1</div>
-						</Col>
-						<Col>
-							<h5>Title 4</h5>
-
-							<div>Link 1</div>
-							<div>Link 1</div>
-							<div>Link 1</div>
-						</Col>
-						<Col>
-							<h5>Title 4</h5>
-
-							<div>Link 1</div>
-							<div>Link 1</div>
-							<div>Link 1</div>
-							<div>Link 1</div>
-							<div>Link 1</div>
-						</Col>
-						<Col>
-							<h5>Title 4</h5>
-
-							<div>Link 1</div>
-							<div>Link 1</div>
-							<div>Link 1</div>
-						</Col>
-					</Row>
-				</Container>
-			</footer>
+			<Footer />
 		</>
 	);
 };
