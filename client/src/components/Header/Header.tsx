@@ -7,7 +7,9 @@ const Header = () => {
 	return (
 		<Navbar bg="dark" variant="dark">
 			<Container className="d-flex">
-				<Navbar.Brand href="/">E-Commerce</Navbar.Brand>
+				<Navbar.Brand href="/" className="d-none d-lg-block">
+					E-Commerce
+				</Navbar.Brand>
 				<SearchBar />
 				<Nav>
 					<Nav.Link href="#dmode">DMode</Nav.Link>
