@@ -1,12 +1,4 @@
-import {
-	Container,
-	Row,
-	Col,
-	ListGroup,
-	ListGroupItem,
-	Carousel,
-} from "react-bootstrap";
-import Footer from "../components/Footer";
+import { Container, Row, Col } from "react-bootstrap";
 import MenuCard from "../components/MenuCard";
 
 const Home = () => {
@@ -94,7 +86,6 @@ const Home = () => {
 					</Container>
 				</Container>
 			</Container>
-			<Footer />
 		</>
 	);
 };

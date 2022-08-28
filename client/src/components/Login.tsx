@@ -1,7 +1,6 @@
-import React from "react";
 import { FaFacebook } from "@react-icons/all-files/fa/FaFacebook";
 import { FaGoogle } from "@react-icons/all-files/fa/FaGoogle";
-import { Button, Container, Modal } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 
 const Login = ({
 	handleClose,

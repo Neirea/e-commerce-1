@@ -1,8 +1,18 @@
-import React from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { InputGroup, FormControl, Button, Form } from "react-bootstrap";
 
 const SearchBar = () => {
-	const search = () => {};
+	const [searchText, setSearchText] = useState("");
+	const navigate = useNavigate();
+
+	const handleSearchText = (e: ChangeEvent<HTMLInputElement>) => {
+		setSearchText(e.target.value);
+	};
+	const search = (e: FormEvent) => {
+		e.preventDefault();
+		navigate(`/search?value=${searchText}`);
+	};
 	return (
 		<Form onSubmit={search} style={{ width: "40rem" }}>
 			<InputGroup className="d-flex">
@@ -20,10 +30,11 @@ const SearchBar = () => {
 				<FormControl
 					className="flex-grow-1"
 					placeholder="Search..."
+					onChange={handleSearchText}
 					aria-label="Search"
 					aria-describedby="btn-search"
 				/>
-				<Button variant="btn btn-success" id="btn-search" type="submit">
+				<Button variant="success" id="btn-search" type="submit">
 					Search
 				</Button>
 			</InputGroup>

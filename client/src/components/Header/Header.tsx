@@ -4,11 +4,18 @@ import { BsPersonFill } from "@react-icons/all-files/bs/BsPersonFill";
 import { Container, Nav, Navbar, Button } from "react-bootstrap";
 import SearchBar from "./SearchBar";
 import Login from "../Login";
+import Cart from "../Cart";
 
 const Header = () => {
 	const [showLogin, setShowLogin] = useState(false);
-	const handleCloseLogin = () => setShowLogin(false);
+	const [showCart, setShowCart] = useState(false);
+	// Login Modal
 	const handleShowLogin = () => setShowLogin(true);
+	const handleCloseLogin = () => setShowLogin(false);
+
+	// Cart Modal
+	const handleShowCart = () => setShowCart(true);
+	const handleCloseCart = () => setShowCart(false);
 
 	return (
 		<Navbar bg="dark" variant="dark">
@@ -18,15 +25,24 @@ const Header = () => {
 				</Navbar.Brand>
 				<SearchBar />
 				<Nav>
-					<Button variant="link" onClick={handleShowLogin}>
+					<Button
+						variant="link"
+						className="link-secondary"
+						onClick={handleShowLogin}
+					>
 						<BsPersonFill size={"1.5rem"} />
 					</Button>
 					<Login handleClose={handleCloseLogin} show={showLogin} />
-					<Nav.Link href="#cart">
+					{/* make this link look like button aboove */}
+					<Button
+						variant="link"
+						className="link-secondary"
+						onClick={handleShowCart}
+					>
 						<BiCart size={"1.5rem"} />
-					</Nav.Link>
+					</Button>
+					<Cart handleClose={handleCloseCart} show={showCart} />
 				</Nav>
-				{/* </Navbar.Collapse> */}
 			</Container>
 		</Navbar>
 	);
