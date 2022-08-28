@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import GQLTEST from "./GQLTest";
 import Home from "./pages/Home";
+import Login from "./components/Login";
 import Header from "./components/Header/Header";
 import "bootstrap/dist/css/bootstrap.min.css";
 

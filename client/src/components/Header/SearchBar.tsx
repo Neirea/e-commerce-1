@@ -7,7 +7,7 @@ const SearchBar = () => {
 		<Form onSubmit={search} style={{ width: "40rem" }}>
 			<InputGroup className="d-flex">
 				<Form.Select
-					className="d-block bg-light w-auto"
+					className="d-none d-md-block bg-light w-auto"
 					style={{ flex: "0 0 auto" }}
 					aria-label="select product category"
 				>
