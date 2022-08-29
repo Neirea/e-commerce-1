@@ -1,10 +1,9 @@
-import "dotenv/config";
-import express from "express";
 import { ApolloServer } from "apollo-server-express";
-import { typeDefs, resolvers } from "./schema";
+import "dotenv/config";
+import app from "./app";
+import { resolvers, typeDefs } from "./schema";
 
-async function startApolloServer() {
-	const app = express();
+(async () => {
 	const server = new ApolloServer({
 		typeDefs,
 		resolvers,
@@ -12,6 +11,7 @@ async function startApolloServer() {
 			return { name: "Neirea" };
 		},
 	});
+	// resolvers:[...,...,...]
 	const port = process.env.PORT || 5000;
 
 	await server.start();
@@ -20,6 +20,4 @@ async function startApolloServer() {
 	app.listen(port, () => {
 		console.log(`Server is running on port ${port}...`);
 	});
-}
-
-startApolloServer();
+})();

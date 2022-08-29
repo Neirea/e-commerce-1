@@ -12,8 +12,8 @@ model User {
   name String
   username String @unique
   email String @unique
-  password String
-  role Role @default(USER)
+  platform Platform
+  role Role[] @default([USER])
   created_at DateTime @default(now())
   avatar String @default("https://lh3.googleusercontent.com/a-/AFdZucp97qLPG96CDx5SRgR2Mff2Ju608wdvUGSghz4o5g=s96-c")
   products Product[]
@@ -104,6 +104,11 @@ enum OrderStatus {
   PAID
   DELIVERED
   CANCELLED
+}
+
+enum Platform {
+  google
+  facebook
 }
 
 enum Role { 

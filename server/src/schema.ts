@@ -24,7 +24,7 @@ const dateScalar = new GraphQLScalarType({
 	},
 });
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({ log: ["query"] });
 
 /* Date type */
 export const typeDefs = gql`
@@ -84,7 +84,9 @@ export const resolvers = {
 	DateTime: dateScalar,
 	Query: {
 		users: (parent: any, args: any, context: any) => {
-			const users = prisma.user.findMany();
+			// const users = prisma.user.findMany();
+			const users = prisma.$queryRaw`SELECT * FROM "public"."User";`;
+
 			if (users) return { users: users };
 			return { message: "There was an Error" };
 		},
@@ -97,6 +99,7 @@ export const resolvers = {
 			const user = args.input;
 
 			return prisma.user.create({ data: user });
+			// return prisma.$queryRaw`INSERT INTO "public"."User" (Name,Username,Email,Avatar,Password) VALUES ${...user}`;
 		},
 		updateUser: (parent: any, args: any) => {
 			const userId = args.input.id;
