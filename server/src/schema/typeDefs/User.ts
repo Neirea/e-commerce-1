@@ -40,7 +40,6 @@ const userTypeDefs = gql`
 		password: String
 	}
 	input UpdateUserInput {
-		id: ID!
 		name: String
 		newUsername: String
 		newPassword: String

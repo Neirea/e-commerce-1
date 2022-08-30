@@ -5,15 +5,25 @@ import type {
 	VerifyCallback,
 } from "passport-google-oauth20";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import {
+	Strategy as FacebookStrategy,
+	Profile as FacebookProfile,
+} from "passport-facebook";
 import { app } from "./index";
 import CustomError from "./errors";
 import { PrismaClient, Role, Platform } from "@prisma/client";
+//delete this later -> any
+import type { IUser } from "./typings/model-types";
 
 const prisma = new PrismaClient({ log: ["query"] });
 const clientUrl =
 	process.env.NODE_ENV !== "production"
 		? "http://localhost:3000"
 		: "https://ecommerce-neirea.railway.app";
+
+export const randomUserName = () => {
+	return "User" + (Math.floor(Math.random() * 9000) + 1000).toString();
+};
 
 export const failedLogin = (req: Request, res: Response) => {
 	res.status(401).redirect(`${clientUrl}/login?error=login_failed`);
@@ -32,7 +42,7 @@ export const logout = (req: Request, res: Response) => {
 	res.status(200).json({ msg: "Log out" });
 };
 
-export const googleCallback = (req: Request, res: Response) => {
+export const loginCallback = (req: Request, res: Response) => {
 	const redirect = app.get("redirect");
 	app.set("redirect", undefined);
 
@@ -48,35 +58,39 @@ export const googleCallback = (req: Request, res: Response) => {
 	res.redirect(`${clientUrl}/${redirect}`);
 };
 
-export const randomUserName = () => {
-	return "User" + (Math.floor(Math.random() * 9000) + 1000).toString();
-};
-
 /* login actions */
-export async function loginGoogle(
+const loginGoogle = async (
 	req: Request,
 	accessToken: string | undefined,
 	refreshToken: string | undefined,
 	profile: GoogleProfile,
 	done: VerifyCallback
-) {
-	console.log("email: ", profile._json.email);
-
+) => {
 	let user = await prisma.user.findFirst({
 		where: { email: profile._json.email },
 	});
 	const { name, displayName, _json } = profile;
 	if (user) {
-		//update profile info
-		return;
+		//update profile if different
+		if (
+			(_json.picture && user.avatar !== _json.picture) ||
+			(name && user.platform !== name.givenName) ||
+			(displayName && user.name !== displayName)
+		) {
+			user = await prisma.user.update({
+				where: { id: user.id },
+				data: {
+					avatar: _json.picture,
+					name: name?.givenName,
+					username: displayName,
+				},
+			});
+		}
 	} else {
 		const isFirstAccount = (await prisma.user.count()) === 0;
 
 		const userData = {
-			name:
-				name?.givenName || name?.familyName
-					? name?.givenName + name?.familyName
-					: "Unnamed",
+			name: name?.givenName || randomUserName(),
 			username: displayName,
 			platform: Platform.GOOGLE,
 			role: isFirstAccount ? Role.ADMIN : Role.USER,
@@ -86,43 +100,54 @@ export async function loginGoogle(
 		user = await prisma.user.create({ data: userData });
 	}
 
-	// let user = await User.findOne({
-	// 	platform_id: profile.id,
-	// 	platform_type: platformEnum.google,
-	// });
-	// const { id, name, displayName, _json } = profile;
+	done(null, { user, accessToken });
+};
 
+const loginFacebook = async (
+	accessToken: string | undefined,
+	refreshToken: string | undefined,
+	profile: FacebookProfile,
+	done: VerifyCallback
+) => {
+	let user = (await prisma.user.findFirst({
+		where: { email: profile._json.email },
+	})) as IUser;
+
+	console.log(profile);
+
+	// const { name, displayName, _json } = profile;
 	// if (user) {
 	// 	//update profile if different
-	// 	let changed = false;
-	// 	if (_json.picture && user.avatar_url !== _json.picture) {
-	// 		user.avatar_url = _json.picture;
-	// 		changed = true;
+	// 	if (
+	// 		(_json.picture && user.avatar !== _json.picture) ||
+	// 		(name && user.platform !== name.givenName) ||
+	// 		(displayName && user.name !== displayName)
+	// 	) {
+	// 		user = await prisma.user.update({
+	// 			where: { id: user.id },
+	// 			data: {
+	// 				avatar: _json.picture,
+	// 				name: name?.givenName,
+	// 				username: displayName,
+	// 			},
+	// 		});
 	// 	}
-	// 	if (name && user.platform_name !== name.givenName) {
-	// 		user.platform_name = name.givenName;
-	// 		changed = true;
-	// 	}
-	// 	if (displayName && user.name !== displayName) {
-	// 		user.name = displayName;
-	// 		changed = true;
-	// 	}
-	// 	changed && user.save();
 	// } else {
-	// 	const isFirstAccount = (await User.countDocuments({})) === 0;
-	// 	user = await User.create({
-	// 		platform_id: id,
-	// 		platform_name: name?.givenName || randomUserName(),
-	// 		platform_type: platformEnum.google,
-	// 		name: displayName || randomUserName(),
-	// 		roles: isFirstAccount ? Object.values(userRoles) : [userRoles.user],
-	// 		avatar_url: _json.picture,
-	// 	});
+	// 	const isFirstAccount = (await prisma.user.count()) === 0;
+
+	// 	const userData = {
+	// 		name: name?.givenName || randomUserName(),
+	// 		username: displayName,
+	// 		platform: Platform.GOOGLE,
+	// 		role: isFirstAccount ? Role.ADMIN : Role.USER,
+	// 		email: _json.email!,
+	// 		avatar: _json.picture,
+	// 	};
+	// 	user = await prisma.user.create({ data: userData });
 	// }
-	// user = user.toObject();
-	// done(null, { user, accessToken });
+
 	done(null, { user, accessToken });
-}
+};
 
 //google
 passport.use(
@@ -130,9 +155,19 @@ passport.use(
 		{
 			clientID: process.env.GOOGLE_CLIENT_ID!,
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-			callbackURL: "/oauth/google/callback",
+			callbackURL: "/auth/google/callback",
 			passReqToCallback: true,
 		},
 		loginGoogle
+	)
+);
+passport.use(
+	new FacebookStrategy(
+		{
+			clientID: process.env.FACEBOOK_CLIENT_ID!,
+			clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
+			callbackURL: "/auth/facebook/callback",
+		},
+		loginFacebook
 	)
 );

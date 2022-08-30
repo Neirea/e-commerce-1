@@ -12,17 +12,16 @@ import Redis from "ioredis";
 import passport from "passport";
 //user imports
 import notFound from "./middleware/not-found";
-import { failedLogin, googleCallback, logout } from "./passport";
-import userTypeDefs from "./schema/typeDefs/User";
-import userResolvers from "./schema/resolvers/User";
+import { failedLogin, loginCallback, logout } from "./passport";
 import { ApolloServer } from "apollo-server-express";
+import { typeDefs, resolvers } from "./schema";
 
 export const app = express();
 
 const startServer = async () => {
 	const server = new ApolloServer({
-		typeDefs: [userTypeDefs],
-		resolvers: userResolvers,
+		typeDefs,
+		resolvers,
 		context: () => {
 			return { name: "Neirea" };
 		},
@@ -78,6 +77,7 @@ const startServer = async () => {
 	//auth routes
 	app.delete("/auth/logout", logout);
 	app.get("/auth/login/failed", failedLogin);
+	//google
 	app.get("/auth/login/google", (req, res, next) => {
 		app.set("redirect", req.query.path);
 		passport.authenticate("google", {
@@ -85,14 +85,29 @@ const startServer = async () => {
 			scope: ["profile", "email"],
 		})(req, res, next);
 	});
-
 	app.get(
-		"/oauth/google",
+		"/auth/google/callback",
 		passport.authenticate("google", {
 			session: false,
 			failureRedirect: "/auth/login/failed",
 		}),
-		googleCallback
+		loginCallback
+	);
+	//facebook
+	app.get("/auth/login/facebook", (req, res, next) => {
+		app.set("redirect", req.query.path);
+		passport.authenticate("facebook", {
+			session: false,
+			scope: ["profile", "email"],
+		})(req, res, next);
+	});
+	app.get(
+		"/auth/facebook/callback",
+		passport.authenticate("facebook", {
+			session: false,
+			failureRedirect: "/auth/login/failed",
+		}),
+		loginCallback
 	);
 
 	// not found middleware

@@ -52,7 +52,6 @@ const GQLTest = () => {
 		username: "Neirea",
 		email: "neirea@gmail.com",
 		avatar: "https://images.com/asdf.jpg",
-		password: "",
 	});
 
 	const [searchedUserId, setSearchedUserId] = useState<Number>(1);
@@ -101,7 +100,6 @@ const GQLTest = () => {
 									username: values.username,
 									email: values.email,
 									avatar: values.avatar,
-									password: values.password,
 								},
 							},
 						});

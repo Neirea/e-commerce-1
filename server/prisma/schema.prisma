@@ -16,28 +16,28 @@ model User {
   role Role @default(USER)
   created_at DateTime @default(now())
   avatar String @default("https://lh3.googleusercontent.com/a-/AFdZucp97qLPG96CDx5SRgR2Mff2Ju608wdvUGSghz4o5g=s96-c")
-  products Product[]
   orders Order[]
   reviews Review[]
   payments Payment[]
 }
+// add payment info for users accounts -> any
 
 model Product {
   id Int @id @default(autoincrement())
   name String
   price Int @default(0)
   description Json
-  images Image[]
-  category String
   company String
   inventory Int
   avg_rating Int @default(0) // ??
   num_of_reviews Int @default(0) // ??
   freeShipping Boolean
-  featured Boolean
+  discount Int
   created_at DateTime @default(now())
-  user User @relation(fields: [user_id],references: [id])
-  user_id Int @unique
+  updated_at DateTime @default(now())
+  images Image[]
+  category Category @relation(fields: [category_id],references: [id])
+  category_id Int
   reviews Review[]
   orders SingleOrderItem[]
 }
@@ -48,11 +48,11 @@ model Category {
   parent_id Int?
   parent Category? @relation("subCategory",fields: [parent_id],references: [id])
   child Category[] @relation("subCategory")
+  products Product[]
 }
 
 model Image {
   id Int @id @default(autoincrement())
-  name String
   source String @default("/images/example.jpg")
   product Product @relation(fields:[product_id],references: [id])
   product_id Int
