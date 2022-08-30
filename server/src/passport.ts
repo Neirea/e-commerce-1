@@ -5,10 +5,11 @@ import type {
 	VerifyCallback,
 } from "passport-google-oauth20";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import app from "./app";
+import { app } from "./index";
 import CustomError from "./errors";
-import { platformEnum, userRoles } from "./typings/model-types";
+import { PrismaClient, Role, Platform } from "@prisma/client";
 
+const prisma = new PrismaClient({ log: ["query"] });
 const clientUrl =
 	process.env.NODE_ENV !== "production"
 		? "http://localhost:3000"
@@ -59,40 +60,67 @@ export async function loginGoogle(
 	profile: GoogleProfile,
 	done: VerifyCallback
 ) {
-	let user = await User.findOne({
-		platform_id: profile.id,
-		platform_type: platformEnum.google,
-	});
-	const { id, name, displayName, _json } = profile;
+	console.log("email: ", profile._json.email);
 
+	let user = await prisma.user.findFirst({
+		where: { email: profile._json.email },
+	});
+	const { name, displayName, _json } = profile;
 	if (user) {
-		//update profile if different
-		let changed = false;
-		if (_json.picture && user.avatar_url !== _json.picture) {
-			user.avatar_url = _json.picture;
-			changed = true;
-		}
-		if (name && user.platform_name !== name.givenName) {
-			user.platform_name = name.givenName;
-			changed = true;
-		}
-		if (displayName && user.name !== displayName) {
-			user.name = displayName;
-			changed = true;
-		}
-		changed && user.save();
+		//update profile info
+		return;
 	} else {
-		const isFirstAccount = (await User.countDocuments({})) === 0;
-		user = await User.create({
-			platform_id: id,
-			platform_name: name?.givenName || randomUserName(),
-			platform_type: platformEnum.google,
-			name: displayName || randomUserName(),
-			roles: isFirstAccount ? Object.values(userRoles) : [userRoles.user],
-			avatar_url: _json.picture,
-		});
+		const isFirstAccount = (await prisma.user.count()) === 0;
+
+		const userData = {
+			name:
+				name?.givenName || name?.familyName
+					? name?.givenName + name?.familyName
+					: "Unnamed",
+			username: displayName,
+			platform: Platform.GOOGLE,
+			role: isFirstAccount ? Role.ADMIN : Role.USER,
+			email: _json.email!,
+			avatar: _json.picture,
+		};
+		user = await prisma.user.create({ data: userData });
 	}
-	user = user.toObject();
+
+	// let user = await User.findOne({
+	// 	platform_id: profile.id,
+	// 	platform_type: platformEnum.google,
+	// });
+	// const { id, name, displayName, _json } = profile;
+
+	// if (user) {
+	// 	//update profile if different
+	// 	let changed = false;
+	// 	if (_json.picture && user.avatar_url !== _json.picture) {
+	// 		user.avatar_url = _json.picture;
+	// 		changed = true;
+	// 	}
+	// 	if (name && user.platform_name !== name.givenName) {
+	// 		user.platform_name = name.givenName;
+	// 		changed = true;
+	// 	}
+	// 	if (displayName && user.name !== displayName) {
+	// 		user.name = displayName;
+	// 		changed = true;
+	// 	}
+	// 	changed && user.save();
+	// } else {
+	// 	const isFirstAccount = (await User.countDocuments({})) === 0;
+	// 	user = await User.create({
+	// 		platform_id: id,
+	// 		platform_name: name?.givenName || randomUserName(),
+	// 		platform_type: platformEnum.google,
+	// 		name: displayName || randomUserName(),
+	// 		roles: isFirstAccount ? Object.values(userRoles) : [userRoles.user],
+	// 		avatar_url: _json.picture,
+	// 	});
+	// }
+	// user = user.toObject();
+	// done(null, { user, accessToken });
 	done(null, { user, accessToken });
 }
 

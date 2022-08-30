@@ -1,20 +1,12 @@
-export enum platformEnum {
-	github = "facebook",
-	google = "google",
-}
-
-export enum userRoles {
-	admin = "admin",
-	user = "user",
-}
+import type { Role, Platform } from "@prisma/client";
 
 export interface IUser {
 	id: number;
 	name: string;
 	username: string;
 	email: string;
-	platform: platformEnum;
-	role: userRoles[];
+	platform: Platform;
+	role: Role;
 	avatar: string;
-	created_at: string;
+	created_at: Date;
 }

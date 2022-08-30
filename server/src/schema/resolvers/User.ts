@@ -1,10 +1,11 @@
-import { Prisma, PrismaClient } from "@prisma/client";
-import { gql } from "apollo-server-express";
 import { GraphQLScalarType, Kind } from "graphql";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient({ log: ["query"] });
 
 const naiveIsoDateRegex =
 	/(\d{4})-(\d{2})-(\d{2})T((\d{2}):(\d{2}):(\d{2}))\.(\d{3})Z/;
-const dateScalar = new GraphQLScalarType({
+export const dateScalar = new GraphQLScalarType({
 	name: "Date",
 	description: "Date custom scalar type",
 	serialize(value: any) {
@@ -24,68 +25,12 @@ const dateScalar = new GraphQLScalarType({
 	},
 });
 
-const prisma = new PrismaClient({ log: ["query"] });
-
-/* Date type */
-export const typeDefs = gql`
-	scalar DateTime
-
-	enum Role {
-		USER
-		ADMIN
-	}
-
-	type User {
-		id: ID!
-		name: String!
-		username: String!
-		email: String
-		role: Role!
-		created_at: DateTime!
-		avatar: String!
-	}
-	type Query {
-		users: UsersResult
-		user(id: ID!): User!
-	}
-
-	# Mutations
-	input CreateUserInput {
-		name: String!
-		username: String!
-		email: String!
-		avatar: String
-		password: String
-	}
-	input UpdateUserInput {
-		id: ID!
-		name: String
-		newUsername: String
-		newPassword: String
-		avatar: String
-	}
-
-	type Mutation {
-		createUser(input: CreateUserInput!): User!
-		updateUser(input: UpdateUserInput!): User!
-		deleteUser(id: ID!): User
-	}
-	# Users Query Types
-	type UsersQueryResult {
-		users: [User!]
-	}
-	type UsersErrorResult {
-		message: String!
-	}
-	union UsersResult = UsersQueryResult | UsersErrorResult
-`;
-
-export const resolvers = {
+const userResolvers = {
 	DateTime: dateScalar,
 	Query: {
 		users: (parent: any, args: any, context: any) => {
 			// const users = prisma.user.findMany();
-			const users = prisma.$queryRaw`SELECT * FROM "public"."User";`;
+			const users = prisma.$queryRaw`SELECT * FROM public."User";`;
 
 			if (users) return { users: users };
 			return { message: "There was an Error" };
@@ -142,3 +87,5 @@ export const resolvers = {
 	// 	}
 	// }
 };
+
+export default userResolvers;

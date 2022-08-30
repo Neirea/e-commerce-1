@@ -11,21 +11,22 @@ model User {
   id Int @default(autoincrement()) @id
   name String
   username String @unique
-  email String @unique
+  email String
   platform Platform
-  role Role[] @default([USER])
+  role Role @default(USER)
   created_at DateTime @default(now())
   avatar String @default("https://lh3.googleusercontent.com/a-/AFdZucp97qLPG96CDx5SRgR2Mff2Ju608wdvUGSghz4o5g=s96-c")
   products Product[]
   orders Order[]
   reviews Review[]
+  payments Payment[]
 }
 
 model Product {
   id Int @id @default(autoincrement())
   name String
   price Int @default(0)
-  description String // expand ?
+  description Json
   images Image[]
   category String
   company String
@@ -95,6 +96,8 @@ model Payment {
   id Int @default(autoincrement()) @id
   order Order @relation(fields: [order_id],references: [id])
   order_id Int @unique
+  user User @relation(fields:[user_id],references: [id])
+  user_id Int
   payment_time DateTime @default(now())
 }
 
@@ -107,8 +110,8 @@ enum OrderStatus {
 }
 
 enum Platform {
-  google
-  facebook
+  GOOGLE
+  FACEBOOK
 }
 
 enum Role { 
