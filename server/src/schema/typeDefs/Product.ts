@@ -30,7 +30,7 @@ const productTypes = gql`
 	input ImageSrc {
 		source: String!
 	}
-	input CreateProductInput {
+	interface ProductMutationType {
 		name: String!
 		price: Int!
 		description: JSON!
@@ -43,18 +43,10 @@ const productTypes = gql`
 		created_at: DateTime!
 		updated_at: DateTime!
 	}
-	input UpdateProductInput {
-		name: String!
-		price: Int!
-		description: JSON!
-		images: [ImageSrc]!
-		category_id: ID!
-		company: String!
-		inventory: Int!
-		freeShipping: Boolean!
-		discount: Int!
-		created_at: DateTime!
-		updated_at: DateTime!
+	input CreateProductInput implements ProductMutationType {
+
+	}
+	input UpdateProductInput implements ProductMutationType {
 	}
 
 	extend type Mutation {
