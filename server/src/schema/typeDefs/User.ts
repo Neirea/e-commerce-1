@@ -39,16 +39,9 @@ const userTypeDefs = gql`
 		avatar: String
 		password: String
 	}
-	input UpdateUserInput {
-		name: String
-		newUsername: String
-		newPassword: String
-		avatar: String
-	}
 
 	type Mutation {
 		createUser(input: CreateUserInput!): User!
-		updateUser(input: UpdateUserInput!): User!
 		deleteUser(id: ID!): User
 	}
 `;
