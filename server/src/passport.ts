@@ -1,19 +1,17 @@
+import { Platform, PrismaClient, Role } from "@prisma/client";
 import type { Request, Response } from "express";
 import passport from "passport";
+import {
+	Profile as FacebookProfile,
+	Strategy as FacebookStrategy,
+} from "passport-facebook";
 import type {
 	Profile as GoogleProfile,
 	VerifyCallback,
 } from "passport-google-oauth20";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import {
-	Strategy as FacebookStrategy,
-	Profile as FacebookProfile,
-} from "passport-facebook";
-import { app } from "./index";
 import CustomError from "./errors";
-import { PrismaClient, Role, Platform } from "@prisma/client";
-//delete this later -> any
-import type { IUser } from "./typings/model-types";
+import { app } from "./index";
 
 const prisma = new PrismaClient({ log: ["query"] });
 const clientUrl =
@@ -27,7 +25,7 @@ export const failedLogin = (req: Request, res: Response) => {
 
 export const logout = (req: Request, res: Response) => {
 	if (req.session) {
-		//deletes from session from mongoDB too
+		//deletes from session from Redis too
 		req.session.destroy((err) => {
 			if (err) {
 				res.status(400).send("Unable to log out");
@@ -116,7 +114,6 @@ const loginFacebook = async (
 	done(null, { user, accessToken });
 };
 
-//google
 passport.use(
 	new GoogleStrategy(
 		{
@@ -134,7 +131,7 @@ passport.use(
 			clientID: process.env.FACEBOOK_CLIENT_ID!,
 			clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
 			callbackURL: "/auth/facebook/callback",
-			profileFields: ["emails", "name", "displayName", "photos"],
+			profileFields: ["emails", "name", "photos"],
 		},
 		loginFacebook
 	)
