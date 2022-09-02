@@ -98,7 +98,7 @@ const startServer = async () => {
 		app.set("redirect", req.query.path);
 		passport.authenticate("facebook", {
 			session: false,
-			scope: ["profile", "email"],
+			scope: ["email"],
 		})(req, res, next);
 	});
 	app.get(

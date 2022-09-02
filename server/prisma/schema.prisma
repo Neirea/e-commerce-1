@@ -9,13 +9,14 @@ datasource db {
 
 model User {
   id Int @default(autoincrement()) @id
-  name String
-  username String @unique
+  given_name String
+  family_name String
   email String
+  platform_id String @unique
   platform Platform
   role Role @default(USER)
   created_at DateTime @default(now())
-  avatar String @default("https://lh3.googleusercontent.com/a-/AFdZucp97qLPG96CDx5SRgR2Mff2Ju608wdvUGSghz4o5g=s96-c")
+  avatar String
   orders Order[]
   reviews Review[]
   payments Payment[]

@@ -15,16 +15,22 @@ const reviewTypes = gql`
 		reviews: [Review!]
 	}
 
-    interface ReviewInputType {
-        title: String
+	interface ReviewInputType {
+		title: String
 		rating: Int!
 		comment: String
-    }
+	}
 
-	input CreateReviewInput implements ReviewInputType {
+	input CreateReviewInput {
+		title: String
+		rating: Int!
+		comment: String
 		product_id: ID!
 	}
-	input UpdateReviewInput implements ReviewInputType {
+	input UpdateReviewInput {
+		title: String
+		rating: Int!
+		comment: String
 	}
 
 	extend type Mutation {

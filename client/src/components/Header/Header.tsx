@@ -27,7 +27,7 @@ const Header = () => {
 				<Nav>
 					<Button
 						variant="link"
-						className="link-secondary"
+						className="link-secondary shadow-none"
 						onClick={handleShowLogin}
 					>
 						<BsPersonFill size={"1.5rem"} />
@@ -36,7 +36,7 @@ const Header = () => {
 					{/* make this link look like button aboove */}
 					<Button
 						variant="link"
-						className="link-secondary"
+						className="link-secondary shadow-none"
 						onClick={handleShowCart}
 					>
 						<BiCart size={"1.5rem"} />

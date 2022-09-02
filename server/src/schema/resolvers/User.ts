@@ -46,13 +46,6 @@ const userResolvers = {
 			return prisma.user.create({ data: user });
 			// return prisma.$queryRaw`INSERT INTO "public"."User" (Name,Username,Email,Avatar,Password) VALUES ${...user}`;
 		},
-		updateUser: (parent: any, args: any) => {
-			const userId = args.input.id;
-			return prisma.user.update({
-				where: { id: userId },
-				data: { ...args.input }, // probably wrong #any
-			});
-		},
 		deleteUser: (parent: any, args: any) => {
 			return prisma.user.delete({ where: { id: args.id } });
 		},

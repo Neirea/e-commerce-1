@@ -21,10 +21,6 @@ const clientUrl =
 		? "http://localhost:3000"
 		: "https://ecommerce-neirea.railway.app";
 
-export const randomUserName = () => {
-	return "User" + (Math.floor(Math.random() * 9000) + 1000).toString();
-};
-
 export const failedLogin = (req: Request, res: Response) => {
 	res.status(401).redirect(`${clientUrl}/login?error=login_failed`);
 };
@@ -66,36 +62,23 @@ const loginGoogle = async (
 	profile: GoogleProfile,
 	done: VerifyCallback
 ) => {
+	const { id, name, _json } = profile;
+
 	let user = await prisma.user.findFirst({
-		where: { email: profile._json.email },
+		where: { platform_id: id },
 	});
-	const { name, displayName, _json } = profile;
-	if (user) {
+	if (!user) {
 		//update profile if different
-		if (
-			(_json.picture && user.avatar !== _json.picture) ||
-			(name && user.platform !== name.givenName) ||
-			(displayName && user.name !== displayName)
-		) {
-			user = await prisma.user.update({
-				where: { id: user.id },
-				data: {
-					avatar: _json.picture,
-					name: name?.givenName,
-					username: displayName,
-				},
-			});
-		}
-	} else {
 		const isFirstAccount = (await prisma.user.count()) === 0;
 
 		const userData = {
-			name: name?.givenName || randomUserName(),
-			username: displayName,
+			given_name: name?.givenName || "",
+			family_name: name?.familyName || "",
+			platform_id: id,
 			platform: Platform.GOOGLE,
 			role: isFirstAccount ? Role.ADMIN : Role.USER,
 			email: _json.email!,
-			avatar: _json.picture,
+			avatar: _json.picture || "",
 		};
 		user = await prisma.user.create({ data: userData });
 	}
@@ -109,42 +92,26 @@ const loginFacebook = async (
 	profile: FacebookProfile,
 	done: VerifyCallback
 ) => {
-	let user = (await prisma.user.findFirst({
-		where: { email: profile._json.email },
-	})) as IUser;
+	const { id, name, photos, emails } = profile;
 
-	console.log(profile);
+	let user = await prisma.user.findFirst({
+		where: { platform_id: id },
+	});
 
-	// const { name, displayName, _json } = profile;
-	// if (user) {
-	// 	//update profile if different
-	// 	if (
-	// 		(_json.picture && user.avatar !== _json.picture) ||
-	// 		(name && user.platform !== name.givenName) ||
-	// 		(displayName && user.name !== displayName)
-	// 	) {
-	// 		user = await prisma.user.update({
-	// 			where: { id: user.id },
-	// 			data: {
-	// 				avatar: _json.picture,
-	// 				name: name?.givenName,
-	// 				username: displayName,
-	// 			},
-	// 		});
-	// 	}
-	// } else {
-	// 	const isFirstAccount = (await prisma.user.count()) === 0;
+	if (!user) {
+		const isFirstAccount = (await prisma.user.count()) === 0;
 
-	// 	const userData = {
-	// 		name: name?.givenName || randomUserName(),
-	// 		username: displayName,
-	// 		platform: Platform.GOOGLE,
-	// 		role: isFirstAccount ? Role.ADMIN : Role.USER,
-	// 		email: _json.email!,
-	// 		avatar: _json.picture,
-	// 	};
-	// 	user = await prisma.user.create({ data: userData });
-	// }
+		const userData = {
+			given_name: name?.givenName || "",
+			family_name: name?.familyName || "",
+			platform: Platform.FACEBOOK,
+			platform_id: id,
+			role: isFirstAccount ? Role.ADMIN : Role.USER,
+			email: emails ? emails[0].value : "",
+			avatar: photos ? photos[0].value : "",
+		};
+		user = await prisma.user.create({ data: userData });
+	}
 
 	done(null, { user, accessToken });
 };
@@ -167,6 +134,7 @@ passport.use(
 			clientID: process.env.FACEBOOK_CLIENT_ID!,
 			clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
 			callbackURL: "/auth/facebook/callback",
+			profileFields: ["emails", "name", "displayName", "photos"],
 		},
 		loginFacebook
 	)
