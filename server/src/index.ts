@@ -18,36 +18,11 @@ import { typeDefs, resolvers } from "./schema";
 
 export const app = express();
 
-const startServer = async () => {
-	const server = new ApolloServer({
-		typeDefs,
-		resolvers,
-		context: () => {
-			return { name: "Neirea" };
-		},
-	});
-
-	await server.start();
-	server.applyMiddleware({ app });
-
+(async () => {
 	app.set("trust proxy", 1);
 	app.use(helmet());
-	app.use(
-		cors({
-			origin:
-				process.env.NODE_ENV !== "production"
-					? "http://localhost:3000"
-					: "https://www.neirea.com",
-			credentials: true,
-		})
-	);
-	app.use(express.json());
 	app.use(buildCheckFunction(["body", "query", "params"])());
-	// dev middleware
-	if (process.env.NODE_ENV !== "production") {
-		const morgan = require("morgan");
-		app.use(morgan("tiny"));
-	}
+	app.use(express.json());
 
 	//session store and middleware
 	const RedisStore = connectRedis(session);
@@ -59,6 +34,7 @@ const startServer = async () => {
 
 	app.use(
 		session({
+			name: "sid",
 			store: new RedisStore({ client: redisClient }),
 			saveUninitialized: false,
 			secret: process.env.SESSION_SECRET!,
@@ -71,8 +47,35 @@ const startServer = async () => {
 		})
 	);
 
+	const corsOptions = {
+		origin: ["http://localhost:3000", "https://studio.apollographql.com"],
+		credentials: true,
+	};
+	app.use(
+		cors({
+			origin: corsOptions.origin,
+			credentials: true,
+		})
+	);
+	const server = new ApolloServer({
+		typeDefs,
+		resolvers,
+		context: ({ req }) => {
+			return { req };
+		},
+	});
+
+	await server.start();
+	server.applyMiddleware({ app, cors: corsOptions });
+
 	//init passport
 	app.use(passport.initialize());
+
+	app.get("/showMe", (req, res) => {
+		console.log("user=", req.session.user);
+
+		res.json(req.session.user);
+	});
 
 	//auth routes
 	app.delete("/auth/logout", logout);
@@ -119,6 +122,4 @@ const startServer = async () => {
 	app.listen(port, () => {
 		console.log(`Server is running on port ${port}...`);
 	});
-};
-
-startServer();
+})();

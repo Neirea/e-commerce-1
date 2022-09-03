@@ -5,8 +5,11 @@ import { Container, Nav, Navbar, Button } from "react-bootstrap";
 import SearchBar from "./SearchBar";
 import Login from "../Login";
 import Cart from "../Cart";
+import { useAppContext } from "../../context/AppContext";
 
 const Header = () => {
+	const { user } = useAppContext();
+
 	const [showLogin, setShowLogin] = useState(false);
 	const [showCart, setShowCart] = useState(false);
 	// Login Modal
@@ -25,6 +28,7 @@ const Header = () => {
 				</Navbar.Brand>
 				<SearchBar />
 				<Nav>
+					{user && <p>{user.given_name}</p>}
 					<Button
 						variant="link"
 						className="link-secondary shadow-none"

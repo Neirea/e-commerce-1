@@ -6,12 +6,18 @@ const userTypeDefs = gql`
 		USER
 		ADMIN
 	}
+	enum Platform {
+		GOOGLE
+		FACEBOOK
+	}
 
 	type User {
 		id: ID!
-		name: String!
-		username: String!
+		given_name: String!
+		family_name: String!
 		email: String
+		platform_id: String!
+		platform: Platform!
 		role: Role!
 		created_at: DateTime!
 		avatar: String!
@@ -19,7 +25,8 @@ const userTypeDefs = gql`
 
 	type Query {
 		users: UsersResult
-		user(id: ID!): User!
+		user(id: ID!): User
+		showMe: User
 	}
 
 	# Users Query Types

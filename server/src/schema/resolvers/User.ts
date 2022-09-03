@@ -28,7 +28,7 @@ export const dateScalar = new GraphQLScalarType({
 const userResolvers = {
 	DateTime: dateScalar,
 	Query: {
-		users: (parent: any, args: any, context: any) => {
+		users: (parent: any, args: any) => {
 			// const users = prisma.user.findMany();
 			const users = prisma.$queryRaw`SELECT * FROM public."User";`;
 
@@ -37,6 +37,9 @@ const userResolvers = {
 		},
 		user: (parent: any, args: any) => {
 			return prisma.user.findMany({ where: { id: Number(args.id) } });
+		},
+		showMe: (parent: any, args: any, { req }: { req: any }) => {
+			return req.session.user;
 		},
 	},
 	Mutation: {
