@@ -60,8 +60,8 @@ export const app = express();
 	const server = new ApolloServer({
 		typeDefs,
 		resolvers,
-		context: ({ req }) => {
-			return { req };
+		context: ({ req, res }) => {
+			return { req, res };
 		},
 	});
 

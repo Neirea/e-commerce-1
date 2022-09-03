@@ -36,6 +36,11 @@ export const QUERY_SHOW_ME = gql`
 		}
 	}
 `;
+export const MUTATION_LOGOUT = gql`
+	mutation Logout {
+		logout
+	}
+`;
 
 export const MUTATION_CREATE_USER = gql`
 	mutation CreateUser($input: CreateUserInput!) {

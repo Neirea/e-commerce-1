@@ -50,6 +50,7 @@ const userTypeDefs = gql`
 	type Mutation {
 		createUser(input: CreateUserInput!): User!
 		deleteUser(id: ID!): User
+		logout: Boolean!
 	}
 `;
 

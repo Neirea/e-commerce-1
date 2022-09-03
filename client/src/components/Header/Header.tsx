@@ -1,11 +1,11 @@
-import { useState } from "react";
 import { BiCart } from "@react-icons/all-files/bi/BiCart";
-import { BsPersonFill } from "@react-icons/all-files/bs/BsPersonFill";
-import { Container, Nav, Navbar, Button } from "react-bootstrap";
-import SearchBar from "./SearchBar";
-import Login from "../Login";
-import Cart from "../Cart";
+import { useState } from "react";
+import { Button, Container, Nav, Navbar } from "react-bootstrap";
 import { useAppContext } from "../../context/AppContext";
+import Cart from "../Cart";
+import Login from "../Login";
+import SearchBar from "./SearchBar";
+import UserMenu from "./UserMenu";
 
 const Header = () => {
 	const { user } = useAppContext();
@@ -20,6 +20,9 @@ const Header = () => {
 	const handleShowCart = () => setShowCart(true);
 	const handleCloseCart = () => setShowCart(false);
 
+	// Open User Menu
+	const handleOpenUserMenu = () => {};
+
 	return (
 		<Navbar bg="dark" variant="dark">
 			<Container className="d-flex">
@@ -29,13 +32,17 @@ const Header = () => {
 				<SearchBar />
 				<Nav>
 					{user && <p>{user.given_name}</p>}
-					<Button
-						variant="link"
-						className="link-secondary shadow-none"
-						onClick={handleShowLogin}
-					>
-						<BsPersonFill size={"1.5rem"} />
-					</Button>
+					{user ? (
+						<UserMenu user={user} />
+					) : (
+						<Button
+							variant="link"
+							className="link-secondary shadow-none"
+							onClick={user ? handleOpenUserMenu : handleShowLogin}
+						>
+							Login
+						</Button>
+					)}
 					<Login handleClose={handleCloseLogin} show={showLogin} />
 					{/* make this link look like button aboove */}
 					<Button

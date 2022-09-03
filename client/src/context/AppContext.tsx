@@ -6,7 +6,12 @@ export const AppContext = createContext({} as any);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
 	//set user type? *any
-	const { data, loading: isLoading, error } = useQuery(QUERY_SHOW_ME);
+	const {
+		data,
+		loading: isLoading,
+		error,
+		refetch: refetchUser,
+	} = useQuery(QUERY_SHOW_ME);
 	const user = data?.showMe;
 
 	// if (user) {
@@ -23,7 +28,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 	// }, []);
 
 	return (
-		<AppContext.Provider value={{ user, isLoading }}>
+		<AppContext.Provider value={{ user, isLoading, refetchUser }}>
 			{children}
 		</AppContext.Provider>
 	);

@@ -52,6 +52,18 @@ const userResolvers = {
 		deleteUser: (parent: any, args: any) => {
 			return prisma.user.delete({ where: { id: args.id } });
 		},
+		logout: (parent: any, args: any, { req, res }: { req: any; res: any }) => {
+			if (req.session) {
+				//deletes from session from Redis too
+				req.session.destroy((err: any) => {
+					if (err) {
+						return false;
+					}
+				});
+			}
+			res.clearCookie("sid");
+			return true;
+		},
 	},
 	UsersResult: {
 		__resolveType(obj: any) {
