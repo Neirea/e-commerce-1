@@ -16,7 +16,7 @@ const UserMenu = ({ user }: { user: any }) => {
 				<Navbar.Collapse id="user-navmenu">
 					<Nav>
 						<NavDropdown
-							id="nav-dropdown-dark-example"
+							id="nav-dropdown-dark"
 							title={user.given_name}
 							menuVariant="dark"
 						>

@@ -16,6 +16,7 @@ const userTypeDefs = gql`
 		given_name: String!
 		family_name: String!
 		email: String
+		address: String
 		platform_id: String!
 		platform: Platform!
 		role: Role!
@@ -38,17 +39,18 @@ const userTypeDefs = gql`
 	}
 	union UsersResult = UsersQueryResult | UsersErrorResult
 
-	# Mutations
-	input CreateUserInput {
-		name: String!
-		username: String!
-		email: String!
+	input UpdateUserInput {
+		id: ID!
+		given_name: String
+		family_name: String
+		address: String
+		email: String
 		avatar: String
-		password: String
+		role: Role!
 	}
 
 	type Mutation {
-		createUser(input: CreateUserInput!): User!
+		updateUser(input: UpdateUserInput!): User!
 		deleteUser(id: ID!): User
 		logout: Boolean!
 	}

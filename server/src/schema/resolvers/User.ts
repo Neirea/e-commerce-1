@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient({ log: ["query"] });
 
+//custom DateTime scalar
 const naiveIsoDateRegex =
 	/(\d{4})-(\d{2})-(\d{2})T((\d{2}):(\d{2}):(\d{2}))\.(\d{3})Z/;
 export const dateScalar = new GraphQLScalarType({
@@ -43,10 +44,10 @@ const userResolvers = {
 		},
 	},
 	Mutation: {
-		createUser: (parent: any, args: any) => {
+		updateUser: (parent: any, args: any) => {
 			const user = args.input;
 
-			return prisma.user.create({ data: user });
+			return prisma.user.update({ where: { id: user.id }, data: user });
 			// return prisma.$queryRaw`INSERT INTO "public"."User" (Name,Username,Email,Avatar,Password) VALUES ${...user}`;
 		},
 		deleteUser: (parent: any, args: any) => {
