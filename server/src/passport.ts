@@ -75,6 +75,7 @@ const loginGoogle = async (
 			platform_id: id,
 			platform: Platform.GOOGLE,
 			role: isFirstAccount ? Role.ADMIN : Role.USER,
+			address: "",
 			email: _json.email!,
 			avatar: _json.picture || "",
 		};
@@ -105,6 +106,7 @@ const loginFacebook = async (
 			platform: Platform.FACEBOOK,
 			platform_id: id,
 			role: isFirstAccount ? Role.ADMIN : Role.USER,
+			address: "",
 			email: emails ? emails[0].value : "",
 			avatar: photos ? photos[0].value : "",
 		};

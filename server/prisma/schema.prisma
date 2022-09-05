@@ -15,7 +15,7 @@ model User {
   platform_id String @unique
   platform Platform
   address String
-  role Role @default(USER)
+  role Role[]
   created_at DateTime @default(now())
   avatar String
   orders Order[]
@@ -31,13 +31,13 @@ model Product {
   description Json
   company String
   inventory Int
+  shipping_cost Int @default(0)
+  discount Int @default(0)
   avg_rating Int @default(0) // ??
   num_of_reviews Int @default(0) // ??
-  freeShipping Boolean
-  discount Int
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
-  images Image[]
+  images String[]
   category Category @relation(fields: [category_id],references: [id])
   category_id Int
   reviews Review[]
@@ -51,13 +51,6 @@ model Category {
   parent Category? @relation("subCategory",fields: [parent_id],references: [id])
   child Category[] @relation("subCategory")
   products Product[]
-}
-
-model Image {
-  id Int @id @default(autoincrement())
-  source String @default("/images/example.jpg")
-  product Product @relation(fields:[product_id],references: [id])
-  product_id Int
 }
 
 model Review {
@@ -119,4 +112,5 @@ enum Platform {
 enum Role { 
   USER
   ADMIN
+  EDITOR
 }

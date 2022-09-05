@@ -45,10 +45,9 @@ const userResolvers = {
 	},
 	Mutation: {
 		updateUser: (parent: any, args: any) => {
+			//update with data from front-end(either admin page or client's profile page)
 			const user = args.input;
-
 			return prisma.user.update({ where: { id: user.id }, data: user });
-			// return prisma.$queryRaw`INSERT INTO "public"."User" (Name,Username,Email,Avatar,Password) VALUES ${...user}`;
 		},
 		deleteUser: (parent: any, args: any) => {
 			return prisma.user.delete({ where: { id: args.id } });

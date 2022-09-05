@@ -5,6 +5,7 @@ const userTypeDefs = gql`
 	enum Role {
 		USER
 		ADMIN
+		EDITOR
 	}
 	enum Platform {
 		GOOGLE
