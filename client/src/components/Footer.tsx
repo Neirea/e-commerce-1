@@ -13,9 +13,6 @@ const Footer = () => {
 						<div>Contact</div>
 						<div>Returns</div>
 					</Col>
-					<Col xs="6" className="text-center">
-						<h5>Sign up for newsletter</h5>
-					</Col>
 					<Col className="text-center">
 						<h5>Social media</h5>
 
@@ -26,10 +23,13 @@ const Footer = () => {
 						</div>
 					</Col>
 					<Col className="text-center">
-						<h5>About us</h5>
-						<div>Link 1</div>
-						<div>Link 1</div>
-						<div>Link 1</div>
+						<h5>About Digital Stop</h5>
+						<p className="text-secondary small">
+							"Digital Stop" is a demo website to demonstrate a custom ecommerce
+							flow. Listed products are not real and we do not collect any
+							payment information. You are advised to not use your real personal
+							or payment information.
+						</p>
 					</Col>
 				</Row>
 			</Container>

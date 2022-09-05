@@ -15,7 +15,7 @@ const SearchBar = () => {
 	};
 	return (
 		<Form onSubmit={search} style={{ width: "40rem" }}>
-			<InputGroup className="d-flex">
+			<InputGroup className="d-flex small">
 				<Form.Select
 					className="d-none d-md-block bg-light w-auto"
 					style={{ flex: "0 0 auto" }}

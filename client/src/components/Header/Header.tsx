@@ -27,7 +27,7 @@ const Header = () => {
 		<Navbar bg="dark" variant="dark">
 			<Container className="d-flex">
 				<Navbar.Brand href="/" className="d-none d-lg-block">
-					E-Commerce
+					Digital Stop
 				</Navbar.Brand>
 				<SearchBar />
 				<Nav>
@@ -35,23 +35,15 @@ const Header = () => {
 					{user ? (
 						<UserMenu user={user} />
 					) : (
-						<Button
-							variant="link"
-							className="link-secondary shadow-none"
-							onClick={user ? handleOpenUserMenu : handleShowLogin}
-						>
+						<Nav.Link onClick={user ? handleOpenUserMenu : handleShowLogin}>
 							Login
-						</Button>
+						</Nav.Link>
 					)}
 					<Login handleClose={handleCloseLogin} show={showLogin} />
 					{/* make this link look like button aboove */}
-					<Button
-						variant="link"
-						className="link-secondary shadow-none"
-						onClick={handleShowCart}
-					>
+					<Nav.Link onClick={handleShowCart}>
 						<BiCart size={"1.5rem"} />
-					</Button>
+					</Nav.Link>
 					<Cart handleClose={handleCloseCart} show={showCart} />
 				</Nav>
 			</Container>
