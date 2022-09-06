@@ -20,7 +20,7 @@ const Cart = ({
 }) => {
 	const [amount, setAmount] = useState(0);
 	const handleAmount = (e: ChangeEvent<HTMLInputElement>) => {
-		setAmount(Number(e.target.value));
+		setAmount(+e.target.value);
 	};
 	return (
 		<Modal

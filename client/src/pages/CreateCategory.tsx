@@ -27,7 +27,7 @@ const CreateCategory = () => {
 	const selectRef = useRef<HTMLSelectElement>(null);
 
 	const handleSelect = (e: ChangeEvent<HTMLSelectElement>) => {
-		const value = Number(e.currentTarget.value);
+		const value = +e.currentTarget.value;
 		const parent = value || undefined;
 		setParent(parent);
 	};
@@ -83,7 +83,7 @@ const CreateCategory = () => {
 	if (queryLoading || !data) {
 		return (
 			<Container as="main">
-				<h3>Loading...</h3>
+				<h3 className="text-center">Loading...</h3>
 			</Container>
 		);
 	}

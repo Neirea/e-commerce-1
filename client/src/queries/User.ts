@@ -1,25 +1,24 @@
 import { gql } from "@apollo/client";
 
-export const QUERY_ALL_USERS = gql`
-	query GetAllUsers {
-		users {
-			... on UsersQueryResult {
-				users {
-					id
-					username
-				}
-			}
-			... on UsersErrorResult {
-				message
-			}
-		}
-	}
-`;
+// export const QUERY_ALL_USERS = gql`
+// 	query GetAllUsers {
+// 		users {
+// 			... on UsersQueryResult {
+// 				users {
+// 					id
+// 					given
+// 				}
+// 			}
+// 			... on UsersErrorResult {
+// 				message
+// 			}
+// 		}
+// 	}
+// `;
 export const QUERY_SINGLE_USER = gql`
 	query GetSingleUser($id: ID!) {
 		user(id: $id) {
 			id
-			username
 			role
 		}
 	}
