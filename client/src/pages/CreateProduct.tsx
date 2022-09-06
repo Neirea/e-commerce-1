@@ -56,7 +56,7 @@ const CreateProduct = () => {
 				</Form.Group>
 				<Form.Group className="mb-3">
 					<Form.Label>Category</Form.Label>
-					<Form.Select aria-label="Default select example">
+					<Form.Select aria-label="Select Product Category">
 						<option>Category 1</option>
 						<option value="1">Category 2</option>
 						<option value="2">Category 3</option>

@@ -41,13 +41,3 @@ export const MUTATION_LOGOUT = gql`
 		logout
 	}
 `;
-
-export const MUTATION_CREATE_USER = gql`
-	mutation CreateUser($input: CreateUserInput!) {
-		createUser(input: $input) {
-			id
-			name
-			username
-		}
-	}
-`;

@@ -6,9 +6,9 @@ import Footer from "./components/Footer";
 import Header from "./components/Header/Header";
 import SearchPage from "./pages/SearchPage";
 import CreateProduct from "./pages/CreateProduct";
-import UpdateProduct from "./pages/UpdateProduct";
 import Unauthorized from "./pages/Unauthorized";
 import Error from "./pages/Error";
+import CreateCategory from "./pages/CreateCategory";
 
 function App() {
 	return (
@@ -18,8 +18,8 @@ function App() {
 			<Routes>
 				<Route path="/" element={<Home />} />
 				<Route path="/search" element={<SearchPage />} />
-				<Route path="/create-product" element={<CreateProduct />} />
-				<Route path="/update-product" element={<UpdateProduct />} />
+				<Route path="/add-product" element={<CreateProduct />} />
+				<Route path="/add-category" element={<CreateCategory />} />
 				<Route path="/unauthorized" element={<Unauthorized />} />
 				<Route path="*" element={<Error />} />
 			</Routes>
