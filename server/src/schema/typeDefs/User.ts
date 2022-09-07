@@ -13,7 +13,7 @@ const userTypeDefs = gql`
 	}
 
 	type User {
-		id: ID!
+		id: Int!
 		given_name: String!
 		family_name: String!
 		email: String
@@ -26,22 +26,14 @@ const userTypeDefs = gql`
 	}
 
 	type Query {
-		users: UsersResult
-		user(id: ID!): User
+		users: [User!]
+		user(id: Int!): User
 		showMe: User
 	}
 
 	# Users Query Types
-	type UsersQueryResult {
-		users: [User!]
-	}
-	type UsersErrorResult {
-		message: String!
-	}
-	union UsersResult = UsersQueryResult | UsersErrorResult
-
 	input UpdateUserInput {
-		id: ID!
+		id: Int!
 		given_name: String
 		family_name: String
 		address: String
@@ -52,7 +44,7 @@ const userTypeDefs = gql`
 
 	type Mutation {
 		updateUser(input: UpdateUserInput!): User!
-		deleteUser(id: ID!): User
+		deleteUser(id: Int!): User
 		logout: Boolean!
 	}
 `;

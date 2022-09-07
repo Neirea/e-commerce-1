@@ -2,13 +2,13 @@ import { gql } from "apollo-server-express";
 
 const reviewTypes = gql`
 	type Review {
-		id: ID!
+		id: Int!
 		title: String
 		rating: Int!
 		comment: String
 		created_at: DateTime!
 		updated_at: DateTime!
-		product_id: ID!
+		product_id: Int!
 	}
 
 	extend type Query {
@@ -25,7 +25,7 @@ const reviewTypes = gql`
 		title: String
 		rating: Int!
 		comment: String
-		product_id: ID!
+		product_id: Int!
 	}
 	input UpdateReviewInput {
 		title: String
@@ -36,7 +36,7 @@ const reviewTypes = gql`
 	extend type Mutation {
 		createReview(input: CreateReviewInput!): Review!
 		updateReview(input: UpdateReviewInput!): Review!
-		deleteReview(id: ID!): Review
+		deleteReview(id: Int!): Review
 	}
 `;
 

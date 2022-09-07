@@ -31,10 +31,7 @@ const userResolvers = {
 	Query: {
 		users: (parent: any, args: any) => {
 			// const users = prisma.user.findMany();
-			const users = prisma.$queryRaw`SELECT * FROM public."User";`;
-
-			if (users) return { users: users };
-			return { message: "There was an Error" };
+			return prisma.$queryRaw`SELECT * FROM public."User";`;
 		},
 		user: (parent: any, args: any) => {
 			return prisma.user.findMany({ where: { id: +args.id } });
@@ -65,35 +62,6 @@ const userResolvers = {
 			return true;
 		},
 	},
-	UsersResult: {
-		__resolveType(obj: any) {
-			if (obj.users) {
-				return "UsersQueryResult";
-			}
-			if (obj.message) {
-				return "UsersErrorResult";
-			}
-			return null; //some gql error
-		},
-	},
-	/* query ExampleQuery {
-		users{
-			...on UsersQueryResult {
-				users{
-					id
-					username
-				}
-			}
-			...on UsersErrorResult {
-				message
-			}
-		}
-	}*/
-	// User: {
-	// 	profile: (parent:any,args:any)=>{
-	// 		return prisma.user.findFirst({where: id:Number(args.id)})
-	// 	}
-	// }
 };
 
 export default userResolvers;

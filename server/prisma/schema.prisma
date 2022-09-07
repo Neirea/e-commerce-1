@@ -45,9 +45,8 @@ model Product {
 model Company{
   id Int @id @default(autoincrement())
   name String
-  category_id Int
-  category Category @relation(fields:[category_id],references: [id])
   products Product[]
+  categories Category[]
 }
 
 model Category {
@@ -58,6 +57,7 @@ model Category {
   child Category[] @relation("subCategory")
   companies Company[]
 }
+
 
 model Review {
   id Int @id @default(autoincrement())

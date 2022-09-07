@@ -2,7 +2,7 @@ import { gql } from "apollo-server-express";
 
 const categoryTypes = gql`
 	type Category {
-		id: ID!
+		id: Int!
 		name: String!
 		parent_id: Int
 	}
@@ -16,7 +16,7 @@ const categoryTypes = gql`
 		parent_id: Int
 	}
 	input UpdateCategoryInput {
-		id: ID!
+		id: Int!
 		name: String!
 		parent_id: Int
 	}
@@ -24,7 +24,7 @@ const categoryTypes = gql`
 	extend type Mutation {
 		createCategory(input: CreateCategoryInput!): Category!
 		updateCategory(input: UpdateCategoryInput!): Category!
-		deleteCategory(id: ID!): Boolean
+		deleteCategory(id: Int!): Boolean
 	}
 `;
 

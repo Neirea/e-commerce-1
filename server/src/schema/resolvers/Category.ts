@@ -1,6 +1,4 @@
-import { GraphQLScalarType, Kind } from "graphql";
-import { PrismaClient, Category } from "@prisma/client";
-import GraphQLJSON from "graphql-type-json";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient({ log: ["query"] });
 

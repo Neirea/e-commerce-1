@@ -3,11 +3,11 @@ import { gql } from "apollo-server-express";
 const OrderTypes = gql`
 	# create scalar or enum for status
 	type Order {
-		id: ID!
+		id: Int!
 		total: Int
 		shipping_fee: Int
 		status: String
-		user_id: ID!
+		user_id: Int!
 	}
 
 	extend type Query {
@@ -23,7 +23,7 @@ const OrderTypes = gql`
 	input CreateOrderInput {
 		total: Int
 		shipping_fee: Int
-		user_id: ID!
+		user_id: Int!
 	}
 	input UpdateOrderInput {
 		status: String
@@ -32,7 +32,7 @@ const OrderTypes = gql`
 	extend type Mutation {
 		createOrder(input: CreateOrderInput!): Order!
 		updateOrder(input: UpdateOrderInput!): Order!
-		deleteOrder(id: ID!): Order
+		deleteOrder(id: Int!): Order
 	}
 `;
 

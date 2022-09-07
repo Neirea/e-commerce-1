@@ -18,9 +18,15 @@ export type Scalars = {
 
 export type Category = {
   __typename?: 'Category';
-  id: Scalars['ID'];
+  id: Scalars['Int'];
   name: Scalars['String'];
   parent_id?: Maybe<Scalars['Int']>;
+};
+
+export type Company = {
+  __typename?: 'Company';
+  id: Scalars['Int'];
+  name: Scalars['String'];
 };
 
 export type CreateCategoryInput = {
@@ -28,9 +34,14 @@ export type CreateCategoryInput = {
   parent_id?: InputMaybe<Scalars['Int']>;
 };
 
+export type CreateCompanyInput = {
+  category_id: Scalars['Int'];
+  name: Scalars['String'];
+};
+
 export type CreateProductInput = {
-  category_id: Scalars['ID'];
   company: Scalars['String'];
+  company_id: Scalars['Int'];
   description: Scalars['JSON'];
   discount: Scalars['Int'];
   images: Array<InputMaybe<Scalars['String']>>;
@@ -43,12 +54,15 @@ export type CreateProductInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   createCategory: Category;
+  createCompany: Company;
   createProduct: Product;
   deleteCategory?: Maybe<Scalars['Boolean']>;
+  deleteCompany?: Maybe<Scalars['Boolean']>;
   deleteProduct?: Maybe<Product>;
   deleteUser?: Maybe<User>;
   logout: Scalars['Boolean'];
   updateCategory: Category;
+  updateCompany: Company;
   updateProduct: Product;
   updateUser: User;
 };
@@ -59,28 +73,43 @@ export type MutationCreateCategoryArgs = {
 };
 
 
+export type MutationCreateCompanyArgs = {
+  input: CreateCompanyInput;
+};
+
+
 export type MutationCreateProductArgs = {
   input: CreateProductInput;
 };
 
 
 export type MutationDeleteCategoryArgs = {
-  id: Scalars['ID'];
+  id: Scalars['Int'];
+};
+
+
+export type MutationDeleteCompanyArgs = {
+  id: Scalars['Int'];
 };
 
 
 export type MutationDeleteProductArgs = {
-  id: Scalars['ID'];
+  id: Scalars['Int'];
 };
 
 
 export type MutationDeleteUserArgs = {
-  id: Scalars['ID'];
+  id: Scalars['Int'];
 };
 
 
 export type MutationUpdateCategoryArgs = {
   input: UpdateCategoryInput;
+};
+
+
+export type MutationUpdateCompanyArgs = {
+  input: UpdateCompanyInput;
 };
 
 
@@ -101,12 +130,11 @@ export enum Platform {
 export type Product = {
   __typename?: 'Product';
   avg_rating: Scalars['Float'];
-  category_id: Scalars['ID'];
-  company: Scalars['String'];
+  company_id: Scalars['Int'];
   created_at: Scalars['Date'];
   description: Scalars['JSON'];
   discount: Scalars['Int'];
-  id: Scalars['ID'];
+  id: Scalars['Int'];
   images: Array<Maybe<Scalars['String']>>;
   inventory: Scalars['Int'];
   name: Scalars['String'];
@@ -119,6 +147,7 @@ export type Product = {
 export type Query = {
   __typename?: 'Query';
   categories?: Maybe<Array<Category>>;
+  companies?: Maybe<Array<Company>>;
   products?: Maybe<Array<Maybe<Product>>>;
   showMe?: Maybe<User>;
   user?: Maybe<User>;
@@ -127,7 +156,7 @@ export type Query = {
 
 
 export type QueryUserArgs = {
-  id: Scalars['ID'];
+  id: Scalars['Int'];
 };
 
 export enum Role {
@@ -137,14 +166,19 @@ export enum Role {
 }
 
 export type UpdateCategoryInput = {
-  id: Scalars['ID'];
+  id: Scalars['Int'];
   name: Scalars['String'];
   parent_id?: InputMaybe<Scalars['Int']>;
 };
 
+export type UpdateCompanyInput = {
+  id: Scalars['Int'];
+  name: Scalars['String'];
+};
+
 export type UpdateProductInput = {
-  category_id: Scalars['ID'];
   company: Scalars['String'];
+  company_id: Scalars['Int'];
   description: Scalars['JSON'];
   discount: Scalars['Int'];
   images: Array<InputMaybe<Scalars['String']>>;
@@ -160,7 +194,7 @@ export type UpdateUserInput = {
   email?: InputMaybe<Scalars['String']>;
   family_name?: InputMaybe<Scalars['String']>;
   given_name?: InputMaybe<Scalars['String']>;
-  id: Scalars['ID'];
+  id: Scalars['Int'];
   role: Role;
 };
 
@@ -172,7 +206,7 @@ export type User = {
   email?: Maybe<Scalars['String']>;
   family_name: Scalars['String'];
   given_name: Scalars['String'];
-  id: Scalars['ID'];
+  id: Scalars['Int'];
   platform: Platform;
   platform_id: Scalars['String'];
   role: Role;
@@ -261,11 +295,12 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   Category: ResolverTypeWrapper<Category>;
+  Company: ResolverTypeWrapper<Company>;
   CreateCategoryInput: CreateCategoryInput;
+  CreateCompanyInput: CreateCompanyInput;
   CreateProductInput: CreateProductInput;
   Date: ResolverTypeWrapper<Scalars['Date']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
-  ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -275,6 +310,7 @@ export type ResolversTypes = {
   Role: Role;
   String: ResolverTypeWrapper<Scalars['String']>;
   UpdateCategoryInput: UpdateCategoryInput;
+  UpdateCompanyInput: UpdateCompanyInput;
   UpdateProductInput: UpdateProductInput;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
@@ -287,11 +323,12 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean'];
   Category: Category;
+  Company: Company;
   CreateCategoryInput: CreateCategoryInput;
+  CreateCompanyInput: CreateCompanyInput;
   CreateProductInput: CreateProductInput;
   Date: Scalars['Date'];
   Float: Scalars['Float'];
-  ID: Scalars['ID'];
   Int: Scalars['Int'];
   JSON: Scalars['JSON'];
   Mutation: {};
@@ -299,6 +336,7 @@ export type ResolversParentTypes = {
   Query: {};
   String: Scalars['String'];
   UpdateCategoryInput: UpdateCategoryInput;
+  UpdateCompanyInput: UpdateCompanyInput;
   UpdateProductInput: UpdateProductInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
@@ -308,9 +346,15 @@ export type ResolversParentTypes = {
 };
 
 export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   parent_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CompanyResolvers<ContextType = any, ParentType extends ResolversParentTypes['Company'] = ResolversParentTypes['Company']> = {
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -324,24 +368,26 @@ export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationCreateCategoryArgs, 'input'>>;
+  createCompany?: Resolver<ResolversTypes['Company'], ParentType, ContextType, RequireFields<MutationCreateCompanyArgs, 'input'>>;
   createProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationCreateProductArgs, 'input'>>;
   deleteCategory?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeleteCategoryArgs, 'id'>>;
+  deleteCompany?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeleteCompanyArgs, 'id'>>;
   deleteProduct?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<MutationDeleteProductArgs, 'id'>>;
   deleteUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   updateCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationUpdateCategoryArgs, 'input'>>;
+  updateCompany?: Resolver<ResolversTypes['Company'], ParentType, ContextType, RequireFields<MutationUpdateCompanyArgs, 'input'>>;
   updateProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationUpdateProductArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
 };
 
 export type ProductResolvers<ContextType = any, ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']> = {
   avg_rating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  category_id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  company?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  company_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   discount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   images?: Resolver<Array<Maybe<ResolversTypes['String']>>, ParentType, ContextType>;
   inventory?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -354,6 +400,7 @@ export type ProductResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   categories?: Resolver<Maybe<Array<ResolversTypes['Category']>>, ParentType, ContextType>;
+  companies?: Resolver<Maybe<Array<ResolversTypes['Company']>>, ParentType, ContextType>;
   products?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType>;
   showMe?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
@@ -367,7 +414,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   family_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   given_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   platform?: Resolver<ResolversTypes['Platform'], ParentType, ContextType>;
   platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['Role'], ParentType, ContextType>;
@@ -390,6 +437,7 @@ export type UsersResultResolvers<ContextType = any, ParentType extends Resolvers
 
 export type Resolvers<ContextType = any> = {
   Category?: CategoryResolvers<ContextType>;
+  Company?: CompanyResolvers<ContextType>;
   Date?: GraphQLScalarType;
   JSON?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;

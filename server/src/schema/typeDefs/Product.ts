@@ -4,18 +4,17 @@ const productTypes = gql`
 	scalar JSON
 
 	type Product {
-		id: ID!
+		id: Int!
 		name: String!
 		price: Float!
 		description: JSON!
-		company: String!
+		company_id: Int!
 		inventory: Int!
 		shipping_cost: Float!
 		discount: Int!
 		avg_rating: Float!
 		num_of_reviews: Int!
 		images: [String]!
-		category_id: ID!
 		created_at: DateTime!
 		updated_at: DateTime!
 	}
@@ -33,7 +32,7 @@ const productTypes = gql`
 		shipping_cost: Float!
 		discount: Int!
 		images: [String]!
-		category_id: ID!
+		company_id: Int!
 	}
 	input UpdateProductInput {
 		name: String!
@@ -44,13 +43,13 @@ const productTypes = gql`
 		shipping_cost: Float!
 		discount: Int!
 		images: [String]!
-		category_id: ID!
+		company_id: Int!
 	}
 
 	extend type Mutation {
 		createProduct(input: CreateProductInput!): Product!
 		updateProduct(input: UpdateProductInput!): Product!
-		deleteProduct(id: ID!): Product
+		deleteProduct(id: Int!): Product
 	}
 `;
 
