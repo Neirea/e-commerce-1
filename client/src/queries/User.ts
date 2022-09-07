@@ -16,7 +16,7 @@ import { gql } from "@apollo/client";
 // 	}
 // `;
 export const QUERY_SINGLE_USER = gql`
-	query GetSingleUser($id: ID!) {
+	query GetSingleUser($id: Int!) {
 		user(id: $id) {
 			id
 			role

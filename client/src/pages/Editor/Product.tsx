@@ -1,5 +1,5 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
-import { Container, Form, Button } from "react-bootstrap";
+import { Container, Form, Button, Row, Col } from "react-bootstrap";
 
 const CreateProduct = () => {
 	const [loading, setLoading] = useState(false);
@@ -16,9 +16,9 @@ const CreateProduct = () => {
 		setLoading(false);
 	};
 	return (
-		<Container as="main">
+		<>
 			<h2 className="text-center mt-4">Create new Product</h2>
-			<Form className="m-auto col-sm-5" onSubmit={handleSubmit}>
+			<Form className="m-auto col-sm-10" onSubmit={handleSubmit}>
 				<Form.Group className="mt-3 mb-3">
 					<Form.Label>Name</Form.Label>
 					<Form.Control type="text" placeholder="Product name" />
@@ -75,7 +75,7 @@ const CreateProduct = () => {
 					<Button type="submit">{loading ? "Wait..." : "Submit"}</Button>
 				</div>
 			</Form>
-		</Container>
+		</>
 	);
 };
 

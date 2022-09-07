@@ -19,9 +19,15 @@ export type Scalars = {
 
 export type Category = {
   __typename?: 'Category';
-  id: Scalars['ID'];
+  id: Scalars['Int'];
   name: Scalars['String'];
   parent_id?: Maybe<Scalars['Int']>;
+};
+
+export type Company = {
+  __typename?: 'Company';
+  id: Scalars['Int'];
+  name: Scalars['String'];
 };
 
 export type CreateCategoryInput = {
@@ -29,9 +35,14 @@ export type CreateCategoryInput = {
   parent_id?: InputMaybe<Scalars['Int']>;
 };
 
+export type CreateCompanyInput = {
+  category_id: Scalars['Int'];
+  name: Scalars['String'];
+};
+
 export type CreateProductInput = {
-  category_id: Scalars['ID'];
   company: Scalars['String'];
+  company_id: Scalars['Int'];
   description: Scalars['JSON'];
   discount: Scalars['Int'];
   images: Array<InputMaybe<Scalars['String']>>;
@@ -44,12 +55,15 @@ export type CreateProductInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   createCategory: Category;
+  createCompany: Company;
   createProduct: Product;
   deleteCategory?: Maybe<Scalars['Boolean']>;
+  deleteCompany?: Maybe<Scalars['Boolean']>;
   deleteProduct?: Maybe<Product>;
   deleteUser?: Maybe<User>;
   logout: Scalars['Boolean'];
   updateCategory: Category;
+  updateCompany: Company;
   updateProduct: Product;
   updateUser: User;
 };
@@ -60,28 +74,43 @@ export type MutationCreateCategoryArgs = {
 };
 
 
+export type MutationCreateCompanyArgs = {
+  input: CreateCompanyInput;
+};
+
+
 export type MutationCreateProductArgs = {
   input: CreateProductInput;
 };
 
 
 export type MutationDeleteCategoryArgs = {
-  id: Scalars['ID'];
+  id: Scalars['Int'];
+};
+
+
+export type MutationDeleteCompanyArgs = {
+  id: Scalars['Int'];
 };
 
 
 export type MutationDeleteProductArgs = {
-  id: Scalars['ID'];
+  id: Scalars['Int'];
 };
 
 
 export type MutationDeleteUserArgs = {
-  id: Scalars['ID'];
+  id: Scalars['Int'];
 };
 
 
 export type MutationUpdateCategoryArgs = {
   input: UpdateCategoryInput;
+};
+
+
+export type MutationUpdateCompanyArgs = {
+  input: UpdateCompanyInput;
 };
 
 
@@ -102,12 +131,11 @@ export enum Platform {
 export type Product = {
   __typename?: 'Product';
   avg_rating: Scalars['Float'];
-  category_id: Scalars['ID'];
-  company: Scalars['String'];
+  company_id: Scalars['Int'];
   created_at: Scalars['Date'];
   description: Scalars['JSON'];
   discount: Scalars['Int'];
-  id: Scalars['ID'];
+  id: Scalars['Int'];
   images: Array<Maybe<Scalars['String']>>;
   inventory: Scalars['Int'];
   name: Scalars['String'];
@@ -120,15 +148,16 @@ export type Product = {
 export type Query = {
   __typename?: 'Query';
   categories?: Maybe<Array<Category>>;
+  companies?: Maybe<Array<Company>>;
   products?: Maybe<Array<Maybe<Product>>>;
   showMe?: Maybe<User>;
   user?: Maybe<User>;
-  users?: Maybe<UsersResult>;
+  users?: Maybe<Array<User>>;
 };
 
 
 export type QueryUserArgs = {
-  id: Scalars['ID'];
+  id: Scalars['Int'];
 };
 
 export enum Role {
@@ -138,14 +167,19 @@ export enum Role {
 }
 
 export type UpdateCategoryInput = {
-  id: Scalars['ID'];
+  id: Scalars['Int'];
   name: Scalars['String'];
   parent_id?: InputMaybe<Scalars['Int']>;
 };
 
+export type UpdateCompanyInput = {
+  id: Scalars['Int'];
+  name: Scalars['String'];
+};
+
 export type UpdateProductInput = {
-  category_id: Scalars['ID'];
   company: Scalars['String'];
+  company_id: Scalars['Int'];
   description: Scalars['JSON'];
   discount: Scalars['Int'];
   images: Array<InputMaybe<Scalars['String']>>;
@@ -161,7 +195,7 @@ export type UpdateUserInput = {
   email?: InputMaybe<Scalars['String']>;
   family_name?: InputMaybe<Scalars['String']>;
   given_name?: InputMaybe<Scalars['String']>;
-  id: Scalars['ID'];
+  id: Scalars['Int'];
   role: Role;
 };
 
@@ -173,28 +207,16 @@ export type User = {
   email?: Maybe<Scalars['String']>;
   family_name: Scalars['String'];
   given_name: Scalars['String'];
-  id: Scalars['ID'];
+  id: Scalars['Int'];
   platform: Platform;
   platform_id: Scalars['String'];
   role: Role;
 };
 
-export type UsersErrorResult = {
-  __typename?: 'UsersErrorResult';
-  message: Scalars['String'];
-};
-
-export type UsersQueryResult = {
-  __typename?: 'UsersQueryResult';
-  users?: Maybe<Array<User>>;
-};
-
-export type UsersResult = UsersErrorResult | UsersQueryResult;
-
 export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllCategoriesQuery = { __typename?: 'Query', categories?: Array<{ __typename?: 'Category', id: string, name: string, parent_id?: number | null }> | null };
+export type GetAllCategoriesQuery = { __typename?: 'Query', categories?: Array<{ __typename?: 'Category', id: number, name: string, parent_id?: number | null }> | null };
 
 export type CreateCategoryMutationVariables = Exact<{
   input: CreateCategoryInput;
@@ -204,28 +226,47 @@ export type CreateCategoryMutationVariables = Exact<{
 export type CreateCategoryMutation = { __typename?: 'Mutation', createCategory: { __typename?: 'Category', name: string, parent_id?: number | null } };
 
 export type DeleteCategoryMutationVariables = Exact<{
-  id: Scalars['ID'];
+  id: Scalars['Int'];
 }>;
 
 
 export type DeleteCategoryMutation = { __typename?: 'Mutation', deleteCategory?: boolean | null };
 
-export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetAllCompaniesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllProductsQuery = { __typename?: 'Query', products?: Array<{ __typename?: 'Product', id: string, name: string, price: number, description: any, company: string, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, images: Array<string | null> } | null> | null };
+export type GetAllCompaniesQuery = { __typename?: 'Query', companies?: Array<{ __typename?: 'Company', id: number, name: string }> | null };
 
-export type GetSingleUserQueryVariables = Exact<{
-  id: Scalars['ID'];
+export type CreateCompanyMutationVariables = Exact<{
+  input: CreateCompanyInput;
 }>;
 
 
-export type GetSingleUserQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: string, role: Role } | null };
+export type CreateCompanyMutation = { __typename?: 'Mutation', createCompany: { __typename?: 'Company', name: string } };
+
+export type DeleteCompanyMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type DeleteCompanyMutation = { __typename?: 'Mutation', deleteCompany?: boolean | null };
+
+export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllProductsQuery = { __typename?: 'Query', products?: Array<{ __typename?: 'Product', id: number, name: string, price: number, description: any, company_id: number, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, images: Array<string | null> } | null> | null };
+
+export type GetSingleUserQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type GetSingleUserQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: number, role: Role } | null };
 
 export type ShowCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ShowCurrentUserQuery = { __typename?: 'Query', showMe?: { __typename?: 'User', id: string, given_name: string, family_name: string, role: Role, avatar: string } | null };
+export type ShowCurrentUserQuery = { __typename?: 'Query', showMe?: { __typename?: 'User', id: number, given_name: string, family_name: string, role: Role, avatar: string } | null };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -304,7 +345,7 @@ export type CreateCategoryMutationHookResult = ReturnType<typeof useCreateCatego
 export type CreateCategoryMutationResult = Apollo.MutationResult<CreateCategoryMutation>;
 export type CreateCategoryMutationOptions = Apollo.BaseMutationOptions<CreateCategoryMutation, CreateCategoryMutationVariables>;
 export const DeleteCategoryDocument = gql`
-    mutation DeleteCategory($id: ID!) {
+    mutation DeleteCategory($id: Int!) {
   deleteCategory(id: $id)
 }
     `;
@@ -334,6 +375,105 @@ export function useDeleteCategoryMutation(baseOptions?: Apollo.MutationHookOptio
 export type DeleteCategoryMutationHookResult = ReturnType<typeof useDeleteCategoryMutation>;
 export type DeleteCategoryMutationResult = Apollo.MutationResult<DeleteCategoryMutation>;
 export type DeleteCategoryMutationOptions = Apollo.BaseMutationOptions<DeleteCategoryMutation, DeleteCategoryMutationVariables>;
+export const GetAllCompaniesDocument = gql`
+    query GetAllCompanies {
+  companies {
+    id
+    name
+  }
+}
+    `;
+
+/**
+ * __useGetAllCompaniesQuery__
+ *
+ * To run a query within a React component, call `useGetAllCompaniesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllCompaniesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllCompaniesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllCompaniesQuery(baseOptions?: Apollo.QueryHookOptions<GetAllCompaniesQuery, GetAllCompaniesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllCompaniesQuery, GetAllCompaniesQueryVariables>(GetAllCompaniesDocument, options);
+      }
+export function useGetAllCompaniesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllCompaniesQuery, GetAllCompaniesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllCompaniesQuery, GetAllCompaniesQueryVariables>(GetAllCompaniesDocument, options);
+        }
+export type GetAllCompaniesQueryHookResult = ReturnType<typeof useGetAllCompaniesQuery>;
+export type GetAllCompaniesLazyQueryHookResult = ReturnType<typeof useGetAllCompaniesLazyQuery>;
+export type GetAllCompaniesQueryResult = Apollo.QueryResult<GetAllCompaniesQuery, GetAllCompaniesQueryVariables>;
+export const CreateCompanyDocument = gql`
+    mutation CreateCompany($input: CreateCompanyInput!) {
+  createCompany(input: $input) {
+    name
+  }
+}
+    `;
+export type CreateCompanyMutationFn = Apollo.MutationFunction<CreateCompanyMutation, CreateCompanyMutationVariables>;
+
+/**
+ * __useCreateCompanyMutation__
+ *
+ * To run a mutation, you first call `useCreateCompanyMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateCompanyMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createCompanyMutation, { data, loading, error }] = useCreateCompanyMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateCompanyMutation(baseOptions?: Apollo.MutationHookOptions<CreateCompanyMutation, CreateCompanyMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateCompanyMutation, CreateCompanyMutationVariables>(CreateCompanyDocument, options);
+      }
+export type CreateCompanyMutationHookResult = ReturnType<typeof useCreateCompanyMutation>;
+export type CreateCompanyMutationResult = Apollo.MutationResult<CreateCompanyMutation>;
+export type CreateCompanyMutationOptions = Apollo.BaseMutationOptions<CreateCompanyMutation, CreateCompanyMutationVariables>;
+export const DeleteCompanyDocument = gql`
+    mutation DeleteCompany($id: Int!) {
+  deleteCompany(id: $id)
+}
+    `;
+export type DeleteCompanyMutationFn = Apollo.MutationFunction<DeleteCompanyMutation, DeleteCompanyMutationVariables>;
+
+/**
+ * __useDeleteCompanyMutation__
+ *
+ * To run a mutation, you first call `useDeleteCompanyMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteCompanyMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteCompanyMutation, { data, loading, error }] = useDeleteCompanyMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteCompanyMutation(baseOptions?: Apollo.MutationHookOptions<DeleteCompanyMutation, DeleteCompanyMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteCompanyMutation, DeleteCompanyMutationVariables>(DeleteCompanyDocument, options);
+      }
+export type DeleteCompanyMutationHookResult = ReturnType<typeof useDeleteCompanyMutation>;
+export type DeleteCompanyMutationResult = Apollo.MutationResult<DeleteCompanyMutation>;
+export type DeleteCompanyMutationOptions = Apollo.BaseMutationOptions<DeleteCompanyMutation, DeleteCompanyMutationVariables>;
 export const GetAllProductsDocument = gql`
     query GetAllProducts {
   products {
@@ -341,7 +481,7 @@ export const GetAllProductsDocument = gql`
     name
     price
     description
-    company
+    company_id
     inventory
     shipping_cost
     discount
@@ -379,7 +519,7 @@ export type GetAllProductsQueryHookResult = ReturnType<typeof useGetAllProductsQ
 export type GetAllProductsLazyQueryHookResult = ReturnType<typeof useGetAllProductsLazyQuery>;
 export type GetAllProductsQueryResult = Apollo.QueryResult<GetAllProductsQuery, GetAllProductsQueryVariables>;
 export const GetSingleUserDocument = gql`
-    query GetSingleUser($id: ID!) {
+    query GetSingleUser($id: Int!) {
   user(id: $id) {
     id
     role

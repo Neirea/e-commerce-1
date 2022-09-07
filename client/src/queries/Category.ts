@@ -20,7 +20,7 @@ export const MUTATION_CREATE_CATEGORY = gql`
 `;
 
 export const MUTATION_DELETE_CATEGORY = gql`
-	mutation DeleteCategory($id: ID!) {
+	mutation DeleteCategory($id: Int!) {
 		deleteCategory(id: $id)
 	}
 `;

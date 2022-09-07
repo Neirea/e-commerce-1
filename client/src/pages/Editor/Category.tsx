@@ -11,9 +11,9 @@ import {
 	QUERY_ALL_CATEGORIES,
 	MUTATION_CREATE_CATEGORY,
 	MUTATION_DELETE_CATEGORY,
-} from "../queries/Category";
+} from "../../queries/Category";
 
-const CreateCategory = () => {
+const Category = () => {
 	const [loading, setLoading] = useState(false);
 	const [parent, setParent] = useState<number | undefined>();
 	const [name, setName] = useState<string>("");
@@ -36,6 +36,8 @@ const CreateCategory = () => {
 	};
 
 	const handleDelete = async (e: MouseEvent<HTMLButtonElement>) => {
+		setLoading(true);
+
 		try {
 			deleteCategory({
 				variables: {
@@ -47,6 +49,7 @@ const CreateCategory = () => {
 		} catch (error) {
 			console.log(error);
 		}
+		setLoading(false);
 	};
 
 	const handleSubmit = async (e: FormEvent) => {
@@ -89,9 +92,9 @@ const CreateCategory = () => {
 	}
 
 	return (
-		<Container as="main">
+		<>
 			<h2 className="text-center mt-4">Create new Category</h2>
-			<Form className="m-auto col-sm-5" onSubmit={handleSubmit}>
+			<Form className="m-auto col-sm-10" onSubmit={handleSubmit}>
 				<Form.Group className="mt-3 mb-3">
 					<Form.Label>Name</Form.Label>
 					<Form.Control
@@ -101,8 +104,7 @@ const CreateCategory = () => {
 						value={name}
 					/>
 				</Form.Group>
-				<Form.Group className="mb-3">
-					<Form.Label>Parent Category</Form.Label>
+				<Form.Group className="mb-3 d-flex gap-2">
 					<Form.Select
 						aria-label="Select Parent Category"
 						onChange={handleSelect}
@@ -118,14 +120,18 @@ const CreateCategory = () => {
 								</option>
 							))}
 					</Form.Select>
-					<Button onClick={handleDelete}>Delete Category</Button>
+					<Button onClick={handleDelete} disabled={loading}>
+						{loading ? "Wait..." : "Delete"}
+					</Button>
 				</Form.Group>
 				<div className="d-flex justify-content-center">
-					<Button type="submit">{loading ? "Wait..." : "Submit"}</Button>
+					<Button type="submit" disabled={loading}>
+						{loading ? "Wait..." : "Submit"}
+					</Button>
 				</div>
 			</Form>
-		</Container>
+		</>
 	);
 };
 
-export default CreateCategory;
+export default Category;
