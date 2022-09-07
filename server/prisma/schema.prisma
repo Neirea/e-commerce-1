@@ -20,28 +20,34 @@ model User {
   avatar String
   orders Order[]
   reviews Review[]
-  payments Payment[]
 }
 // add payment info for users accounts -> any
 
 model Product {
   id Int @id @default(autoincrement())
   name String
-  price Int @default(0)
+  price Float @default(0)
   description Json
-  company String
   inventory Int
-  shipping_cost Int @default(0)
+  company_id Int
+  shipping_cost Float @default(0)
   discount Int @default(0)
-  avg_rating Int @default(0) // ??
-  num_of_reviews Int @default(0) // ??
+  avg_rating Float @default(0)    // aggregate fields
+  num_of_reviews Int @default(0)  // updated on Review placement
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
-  images String[]
-  category Category @relation(fields: [category_id],references: [id])
-  category_id Int
+  images String[] @default([])
+  company Company @relation(fields: [company_id],references: [id])
   reviews Review[]
   orders SingleOrderItem[]
+}
+
+model Company{
+  id Int @id @default(autoincrement())
+  name String
+  category_id Int
+  category Category @relation(fields:[category_id],references: [id])
+  products Product[]
 }
 
 model Category {
@@ -50,7 +56,7 @@ model Category {
   parent_id Int?
   parent Category? @relation("subCategory",fields: [parent_id],references: [id])
   child Category[] @relation("subCategory")
-  products Product[]
+  companies Company[]
 }
 
 model Review {
@@ -68,32 +74,20 @@ model Review {
 
 model Order {
   id Int @default(autoincrement()) @id
-  total Int
-  shipping_fee Int @default(0)
   status OrderStatus @default(PENDING)
   user User @relation(fields: [user_id],references: [id])
   user_id Int @unique
   orders SingleOrderItem[]
-  payments Payment?
+  payment_time DateTime?
 }
 
 model SingleOrderItem {
   id Int @default(autoincrement()) @id
   order Order @relation(fields: [order_id],references: [id])
   order_id Int @unique
-  price Int
   amount Int
   product Product @relation(fields: [product_id],references: [id])
   product_id Int
-}
-
-model Payment {
-  id Int @default(autoincrement()) @id
-  order Order @relation(fields: [order_id],references: [id])
-  order_id Int @unique
-  user User @relation(fields:[user_id],references: [id])
-  user_id Int
-  payment_time DateTime @default(now())
 }
 
 enum OrderStatus {

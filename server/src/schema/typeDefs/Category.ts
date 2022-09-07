@@ -16,6 +16,7 @@ const categoryTypes = gql`
 		parent_id: Int
 	}
 	input UpdateCategoryInput {
+		id: ID!
 		name: String!
 		parent_id: Int
 	}
@@ -23,7 +24,7 @@ const categoryTypes = gql`
 	extend type Mutation {
 		createCategory(input: CreateCategoryInput!): Category!
 		updateCategory(input: UpdateCategoryInput!): Category!
-		deleteCategory(id: ID!): Category
+		deleteCategory(id: ID!): Boolean
 	}
 `;
 

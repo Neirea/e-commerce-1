@@ -1,8 +1,9 @@
 import "express-session";
+import { User as IUser } from "@prisma/client";
 
 declare module "express-session" {
 	interface SessionData {
-		user: import("../model-types").IUser;
+		user: IUser;
 		accessToken: string | undefined;
 	}
 }

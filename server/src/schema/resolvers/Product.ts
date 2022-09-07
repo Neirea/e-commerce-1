@@ -8,8 +8,8 @@ const productResolvers = {
 	JSON: GraphQLJSON,
 	Query: {
 		products: (parent: any, args: any, context: any) => {
-			const products = prisma.$queryRaw`SELECT * FROM public."Product";`;
-			console.log("products=", products);
+			const products = prisma.product.findMany({ include: { category: true } });
+			// const products = prisma.$queryRaw`SELECT * FROM public."Product";`;
 
 			return products;
 			//add error handling
@@ -20,8 +20,9 @@ const productResolvers = {
 	Mutation: {
 		createProduct: (parent: any, args: any) => {
 			const product = args.input;
+			// upload images to cloudinary
 
-			return prisma.product.create({ data: product });
+			return prisma.product.create({ data: { ...product } });
 		},
 		updateProduct: (parent: any, args: any) => {
 			const product_id = args.input.id;

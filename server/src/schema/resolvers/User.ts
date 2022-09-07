@@ -37,7 +37,7 @@ const userResolvers = {
 			return { message: "There was an Error" };
 		},
 		user: (parent: any, args: any) => {
-			return prisma.user.findMany({ where: { id: Number(args.id) } });
+			return prisma.user.findMany({ where: { id: +args.id } });
 		},
 		showMe: (parent: any, args: any, { req }: { req: any }) => {
 			return req.session.user;

@@ -1,14 +1,13 @@
 import { GraphQLScalarType, Kind } from "graphql";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Category } from "@prisma/client";
 import GraphQLJSON from "graphql-type-json";
 
 const prisma = new PrismaClient({ log: ["query"] });
 
 const categoryResolvers = {
 	Query: {
-		categories: (parent: any, args: any) => {
+		categories: () => {
 			const categories = prisma.$queryRaw`SELECT * FROM public."Category";`;
-			console.log("products=", categories);
 
 			return categories;
 			//add error handling
@@ -17,20 +16,26 @@ const categoryResolvers = {
 		},
 	},
 	Mutation: {
-		createCategories: (parent: any, args: any) => {
+		createCategory: (parent: any, args: any) => {
 			const category = args.input;
-
 			return prisma.category.create({ data: category });
 		},
 		updateCategory: (parent: any, args: any) => {
-			const category_id = args.input.id;
+			const { id: category_id, parent_id, name } = args.input;
 			return prisma.category.update({
 				where: { id: category_id },
-				data: { ...args.input }, // probably wrong #any
+				data: { parent_id, name },
 			});
 		},
 		deleteCategory: (parent: any, args: any) => {
-			return prisma.category.delete({ where: { id: args.id } });
+			const { id } = args;
+			console.log("ID=", id);
+
+			prisma.category
+				.delete({ where: { id: +id } })
+				.catch((err) => console.log(err));
+
+			return true;
 		},
 	},
 };
