@@ -40,6 +40,7 @@ export type CreateCompanyInput = {
 };
 
 export type CreateProductInput = {
+  category_id: Scalars['Int'];
   company: Scalars['String'];
   company_id: Scalars['Int'];
   description: Scalars['JSON'];
@@ -130,6 +131,7 @@ export enum Platform {
 export type Product = {
   __typename?: 'Product';
   avg_rating: Scalars['Float'];
+  category_id: Scalars['Int'];
   company_id: Scalars['Int'];
   created_at: Scalars['Date'];
   description: Scalars['JSON'];
@@ -177,6 +179,7 @@ export type UpdateCompanyInput = {
 };
 
 export type UpdateProductInput = {
+  category_id: Scalars['Int'];
   company: Scalars['String'];
   company_id: Scalars['Int'];
   description: Scalars['JSON'];
@@ -365,6 +368,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type ProductResolvers<ContextType = any, ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']> = {
   avg_rating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  category_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   company_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;

@@ -8,13 +8,8 @@ const productResolvers = {
 	JSON: GraphQLJSON,
 	Query: {
 		products: (parent: any, args: any, context: any) => {
-			const products = prisma.product.findMany({ include: { company: true } });
-			// const products = prisma.$queryRaw`SELECT * FROM public."Product";`;
-
-			return products;
-			//add error handling
-			if (products) return { products: products };
-			return { message: "There was an Error" };
+			return prisma.product.findMany({ include: { company: true } });
+			// return prisma.$queryRaw`SELECT * FROM public."Product";`;
 		},
 	},
 	Mutation: {

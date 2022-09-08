@@ -30,6 +30,7 @@ model Product {
   description Json
   inventory Int
   company_id Int
+  category_id Int
   shipping_cost Float @default(0)
   discount Int @default(0)
   avg_rating Float @default(0)    // aggregate fields

@@ -9,6 +9,7 @@ const productTypes = gql`
 		price: Float!
 		description: JSON!
 		company_id: Int!
+		category_id: Int!
 		inventory: Int!
 		shipping_cost: Float!
 		discount: Int!
@@ -33,6 +34,7 @@ const productTypes = gql`
 		discount: Int!
 		images: [String]!
 		company_id: Int!
+		category_id: Int!
 	}
 	input UpdateProductInput {
 		name: String!
@@ -44,6 +46,7 @@ const productTypes = gql`
 		discount: Int!
 		images: [String]!
 		company_id: Int!
+		category_id: Int!
 	}
 
 	extend type Mutation {
