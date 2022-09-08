@@ -12,7 +12,6 @@ const companyTypes = gql`
 
 	input CreateCompanyInput {
 		name: String!
-		category_id: Int!
 	}
 	input UpdateCompanyInput {
 		id: Int!

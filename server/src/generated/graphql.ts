@@ -35,7 +35,6 @@ export type CreateCategoryInput = {
 };
 
 export type CreateCompanyInput = {
-  category_id: Scalars['Int'];
   name: Scalars['String'];
 };
 

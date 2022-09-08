@@ -14,12 +14,7 @@ const companyResolvers = {
 	},
 	Mutation: {
 		createCompany: (parent: any, { input }: { input: CreateCompanyInput }) => {
-			return prisma.category.update({
-				where: { id: input.category_id },
-				data: {
-					companies: { create: { name: input.name } },
-				},
-			});
+			return prisma.company.create({ data: input });
 		},
 		updateCompany: (parent: any, { input }: { input: UpdateCompanyInput }) => {
 			const { id, name } = input;
@@ -28,10 +23,10 @@ const companyResolvers = {
 				data: { name },
 			});
 		},
-		deleteCompany: (parent: any, { id }: { id: number }) => {
-			prisma.company.delete({ where: { id: id } });
-
-			return true;
+		deleteCompany: async (parent: any, { id }: { id: number }) => {
+			const data = await prisma.company.delete({ where: { id: id } });
+			if (data) return true;
+			return false;
 		},
 	},
 };
