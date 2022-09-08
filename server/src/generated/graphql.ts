@@ -151,7 +151,7 @@ export type Query = {
   products?: Maybe<Array<Maybe<Product>>>;
   showMe?: Maybe<User>;
   user?: Maybe<User>;
-  users?: Maybe<UsersResult>;
+  users?: Maybe<Array<User>>;
 };
 
 
@@ -189,13 +189,13 @@ export type UpdateProductInput = {
 };
 
 export type UpdateUserInput = {
-  address?: InputMaybe<Scalars['String']>;
-  avatar?: InputMaybe<Scalars['String']>;
-  email?: InputMaybe<Scalars['String']>;
-  family_name?: InputMaybe<Scalars['String']>;
-  given_name?: InputMaybe<Scalars['String']>;
+  address: Scalars['String'];
+  avatar: Scalars['String'];
+  email: Scalars['String'];
+  family_name: Scalars['String'];
+  given_name: Scalars['String'];
   id: Scalars['Int'];
-  role: Role;
+  role: Array<Role>;
 };
 
 export type User = {
@@ -209,20 +209,8 @@ export type User = {
   id: Scalars['Int'];
   platform: Platform;
   platform_id: Scalars['String'];
-  role: Role;
+  role: Array<Role>;
 };
-
-export type UsersErrorResult = {
-  __typename?: 'UsersErrorResult';
-  message: Scalars['String'];
-};
-
-export type UsersQueryResult = {
-  __typename?: 'UsersQueryResult';
-  users?: Maybe<Array<User>>;
-};
-
-export type UsersResult = UsersErrorResult | UsersQueryResult;
 
 
 
@@ -314,9 +302,6 @@ export type ResolversTypes = {
   UpdateProductInput: UpdateProductInput;
   UpdateUserInput: UpdateUserInput;
   User: ResolverTypeWrapper<User>;
-  UsersErrorResult: ResolverTypeWrapper<UsersErrorResult>;
-  UsersQueryResult: ResolverTypeWrapper<UsersQueryResult>;
-  UsersResult: ResolversTypes['UsersErrorResult'] | ResolversTypes['UsersQueryResult'];
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -340,9 +325,6 @@ export type ResolversParentTypes = {
   UpdateProductInput: UpdateProductInput;
   UpdateUserInput: UpdateUserInput;
   User: User;
-  UsersErrorResult: UsersErrorResult;
-  UsersQueryResult: UsersQueryResult;
-  UsersResult: ResolversParentTypes['UsersErrorResult'] | ResolversParentTypes['UsersQueryResult'];
 };
 
 export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
@@ -404,7 +386,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   products?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType>;
   showMe?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
-  users?: Resolver<Maybe<ResolversTypes['UsersResult']>, ParentType, ContextType>;
+  users?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
@@ -417,22 +399,8 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   platform?: Resolver<ResolversTypes['Platform'], ParentType, ContextType>;
   platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  role?: Resolver<ResolversTypes['Role'], ParentType, ContextType>;
+  role?: Resolver<Array<ResolversTypes['Role']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type UsersErrorResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['UsersErrorResult'] = ResolversParentTypes['UsersErrorResult']> = {
-  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type UsersQueryResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['UsersQueryResult'] = ResolversParentTypes['UsersQueryResult']> = {
-  users?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type UsersResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['UsersResult'] = ResolversParentTypes['UsersResult']> = {
-  __resolveType: TypeResolveFn<'UsersErrorResult' | 'UsersQueryResult', ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = any> = {
@@ -444,8 +412,5 @@ export type Resolvers<ContextType = any> = {
   Product?: ProductResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
-  UsersErrorResult?: UsersErrorResultResolvers<ContextType>;
-  UsersQueryResult?: UsersQueryResultResolvers<ContextType>;
-  UsersResult?: UsersResultResolvers<ContextType>;
 };
 

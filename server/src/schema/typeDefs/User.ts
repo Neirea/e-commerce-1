@@ -20,7 +20,7 @@ const userTypeDefs = gql`
 		address: String
 		platform_id: String!
 		platform: Platform!
-		role: Role!
+		role: [Role!]!
 		created_at: DateTime!
 		avatar: String!
 	}
@@ -34,12 +34,12 @@ const userTypeDefs = gql`
 	# Users Query Types
 	input UpdateUserInput {
 		id: Int!
-		given_name: String
-		family_name: String
-		address: String
-		email: String
-		avatar: String
-		role: Role!
+		given_name: String!
+		family_name: String!
+		address: String!
+		email: String!
+		avatar: String!
+		role: [Role!]!
 	}
 
 	type Mutation {

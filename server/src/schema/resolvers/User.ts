@@ -1,5 +1,10 @@
 import { GraphQLScalarType, Kind } from "graphql";
 import { PrismaClient } from "@prisma/client";
+import { Request, Response } from "express";
+import {
+	MutationDeleteUserArgs,
+	UpdateUserInput,
+} from "../../generated/graphql";
 
 const prisma = new PrismaClient({ log: ["query"] });
 
@@ -29,27 +34,33 @@ export const dateScalar = new GraphQLScalarType({
 const userResolvers = {
 	DateTime: dateScalar,
 	Query: {
-		users: (parent: any, args: any) => {
-			// const users = prisma.user.findMany();
-			return prisma.$queryRaw`SELECT * FROM public."User";`;
+		users: () => {
+			return prisma.user.findMany();
+			// return prisma.$queryRaw`SELECT * FROM public."User";`;
 		},
-		user: (parent: any, args: any) => {
-			return prisma.user.findMany({ where: { id: +args.id } });
+		user: (parent: any, { id }: { id: number }) => {
+			return prisma.user.findMany({ where: { id: id } });
 		},
-		showMe: (parent: any, args: any, { req }: { req: any }) => {
+		showMe: (parent: any, args: undefined, { req }: { req: Request }) => {
 			return req.session.user;
 		},
 	},
 	Mutation: {
-		updateUser: (parent: any, args: any) => {
+		updateUser: (parent: any, { input }: { input: UpdateUserInput }) => {
 			//update with data from front-end(either admin page or client's profile page)
-			const user = args.input;
-			return prisma.user.update({ where: { id: user.id }, data: user });
+			return prisma.user.update({
+				where: { id: input.id },
+				data: input,
+			});
 		},
-		deleteUser: (parent: any, args: any) => {
+		deleteUser: (parent: any, args: MutationDeleteUserArgs) => {
 			return prisma.user.delete({ where: { id: args.id } });
 		},
-		logout: (parent: any, args: any, { req, res }: { req: any; res: any }) => {
+		logout: (
+			parent: any,
+			args: undefined,
+			{ req, res }: { req: Request; res: Response }
+		) => {
 			if (req.session) {
 				//deletes from session from Redis too
 				req.session.destroy((err: any) => {
