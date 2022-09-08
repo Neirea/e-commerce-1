@@ -12,6 +12,7 @@ export const QUERY_ALL_COMPANIES = gql`
 export const MUTATION_CREATE_COMPANY = gql`
 	mutation CreateCompany($input: CreateCompanyInput!) {
 		createCompany(input: $input) {
+			id
 			name
 		}
 	}

@@ -13,8 +13,8 @@ export const QUERY_ALL_CATEGORIES = gql`
 export const MUTATION_CREATE_CATEGORY = gql`
 	mutation CreateCategory($input: CreateCategoryInput!) {
 		createCategory(input: $input) {
+			id
 			name
-			parent_id
 		}
 	}
 `;

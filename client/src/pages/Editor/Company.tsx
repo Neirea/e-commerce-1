@@ -1,22 +1,16 @@
 import { useMutation, useQuery } from "@apollo/client";
-import React, {
-	ChangeEvent,
-	FormEvent,
-	useState,
-	useRef,
-	MouseEvent,
-} from "react";
-import { Container, Form, Button } from "react-bootstrap";
+import { ChangeEvent, FormEvent, useState, useRef, useEffect } from "react";
+import { Form, Button } from "react-bootstrap";
 import { GetAllCompaniesQuery } from "../../generated/graphql";
 import {
-	QUERY_ALL_COMPANIES,
 	MUTATION_CREATE_COMPANY,
 	MUTATION_DELETE_COMPANY,
+	QUERY_ALL_COMPANIES,
 } from "../../queries/Company";
 
 const Company = () => {
-	const [loading, setLoading] = useState(false);
-	const [parent, setParent] = useState<number | undefined>();
+	const [loading, setLoading] = useState(true);
+	const [companyId, setCompanyId] = useState<number | undefined>();
 	const [name, setName] = useState<string>("");
 	const {
 		data,
@@ -28,21 +22,21 @@ const Company = () => {
 	const selectRef = useRef<HTMLSelectElement>(null);
 
 	const handleSelect = (e: ChangeEvent<HTMLSelectElement>) => {
-		const value = +e.currentTarget.value;
-		const parent = value || undefined;
-		setParent(parent);
+		setCompanyId(+e.currentTarget.value);
 	};
 	const handleName = (e: ChangeEvent<HTMLInputElement>) => {
 		setName(e.target.value);
 	};
 
-	const handleDelete = async (e: MouseEvent<HTMLButtonElement>) => {
+	const handleDelete = async (e: FormEvent) => {
+		e.preventDefault();
 		setLoading(true);
-
 		try {
-			deleteCompany({
+			//error handle message?
+			if (!companyId) return;
+			await deleteCompany({
 				variables: {
-					id: parent,
+					id: companyId,
 				},
 			});
 			if (selectRef.current) selectRef.current.selectedIndex = 0;
@@ -58,24 +52,13 @@ const Company = () => {
 		setLoading(true);
 		try {
 			// mutation to create Product
-			if (parent) {
-				createCompany({
-					variables: {
-						input: {
-							name: name,
-							category_id: parent,
-						},
+			await createCompany({
+				variables: {
+					input: {
+						name: name,
 					},
-				});
-			} else {
-				createCompany({
-					variables: {
-						input: {
-							name: name,
-						},
-					},
-				});
-			}
+				},
+			});
 			await refetch();
 		} catch (error) {
 			console.log(error);
@@ -84,20 +67,17 @@ const Company = () => {
 		setLoading(false);
 	};
 
-	if (queryLoading || !data) {
-		return (
-			<Container as="main">
-				<h3 className="text-center">Loading...</h3>
-			</Container>
-		);
-	}
+	useEffect(() => {
+		if (!queryLoading && data) {
+			setLoading(false);
+		}
+	}, [queryLoading, data]);
 
 	return (
 		<>
-			<h2 className="text-center mt-4">Create new Company</h2>
+			<h3 className="text-center mt-5">Create Company</h3>
 			<Form className="m-auto col-sm-10" onSubmit={handleSubmit}>
 				<Form.Group className="mt-3 mb-3">
-					<Form.Label>Name</Form.Label>
 					<Form.Control
 						type="text"
 						placeholder="Company name"
@@ -105,31 +85,34 @@ const Company = () => {
 						value={name}
 					/>
 				</Form.Group>
-				<Form.Group className="mb-3 d-flex gap-2">
-					<Form.Select
-						aria-label="Select Parent Company"
-						onChange={handleSelect}
-						ref={selectRef}
-					>
-						<option key={0} value={0}>
-							{"Choose Parent"}
-						</option>
-						{data.companies &&
-							data.companies.map((elem: any, idx: number) => (
-								<option key={idx} value={elem.id}>
-									{elem.name}
-								</option>
-							))}
-					</Form.Select>
-					<Button onClick={handleDelete} disabled={loading}>
-						{loading ? "Wait..." : "Delete"}
-					</Button>
-				</Form.Group>
 				<div className="d-flex justify-content-center">
 					<Button type="submit" disabled={loading}>
 						{loading ? "Wait..." : "Submit"}
 					</Button>
 				</div>
+			</Form>
+			<h3 className="text-center mt-5">Delete Company</h3>
+			<Form className="m-auto col-sm-10" onSubmit={handleDelete}>
+				<Form.Group className="mt-3 d-flex gap-2">
+					<Form.Select
+						aria-label="Select Company"
+						onChange={handleSelect}
+						ref={selectRef}
+					>
+						<option key={0} value={0}>
+							{"Choose company to delete"}
+						</option>
+						{data &&
+							data.companies?.map((elem: any, idx: number) => (
+								<option key={idx} value={elem.id}>
+									{elem.name}
+								</option>
+							))}
+					</Form.Select>
+					<Button type="submit" disabled={loading}>
+						{loading ? "Wait..." : "Delete"}
+					</Button>
+				</Form.Group>
 			</Form>
 		</>
 	);

@@ -30,10 +30,9 @@ const Header = () => {
 					Digital Stop
 				</Navbar.Brand>
 				<SearchBar />
-				<Nav>
-					{user && <p>{user.given_name}</p>}
+				<Nav className="d-flex align-items-center">
 					{user ? (
-						<UserMenu user={user} />
+						<UserMenu />
 					) : (
 						<Nav.Link onClick={user ? handleOpenUserMenu : handleShowLogin}>
 							Login

@@ -36,12 +36,11 @@ export type CreateCategoryInput = {
 };
 
 export type CreateCompanyInput = {
-  category_id: Scalars['Int'];
   name: Scalars['String'];
 };
 
 export type CreateProductInput = {
-  company: Scalars['String'];
+  category_id: Scalars['Int'];
   company_id: Scalars['Int'];
   description: Scalars['JSON'];
   discount: Scalars['Int'];
@@ -131,6 +130,7 @@ export enum Platform {
 export type Product = {
   __typename?: 'Product';
   avg_rating: Scalars['Float'];
+  category_id: Scalars['Int'];
   company_id: Scalars['Int'];
   created_at: Scalars['Date'];
   description: Scalars['JSON'];
@@ -178,6 +178,7 @@ export type UpdateCompanyInput = {
 };
 
 export type UpdateProductInput = {
+  category_id: Scalars['Int'];
   company: Scalars['String'];
   company_id: Scalars['Int'];
   description: Scalars['JSON'];
@@ -190,13 +191,13 @@ export type UpdateProductInput = {
 };
 
 export type UpdateUserInput = {
-  address?: InputMaybe<Scalars['String']>;
-  avatar?: InputMaybe<Scalars['String']>;
-  email?: InputMaybe<Scalars['String']>;
-  family_name?: InputMaybe<Scalars['String']>;
-  given_name?: InputMaybe<Scalars['String']>;
+  address: Scalars['String'];
+  avatar: Scalars['String'];
+  email: Scalars['String'];
+  family_name: Scalars['String'];
+  given_name: Scalars['String'];
   id: Scalars['Int'];
-  role: Role;
+  role: Array<Role>;
 };
 
 export type User = {
@@ -210,7 +211,7 @@ export type User = {
   id: Scalars['Int'];
   platform: Platform;
   platform_id: Scalars['String'];
-  role: Role;
+  role: Array<Role>;
 };
 
 export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
@@ -223,7 +224,7 @@ export type CreateCategoryMutationVariables = Exact<{
 }>;
 
 
-export type CreateCategoryMutation = { __typename?: 'Mutation', createCategory: { __typename?: 'Category', name: string, parent_id?: number | null } };
+export type CreateCategoryMutation = { __typename?: 'Mutation', createCategory: { __typename?: 'Category', id: number, name: string } };
 
 export type DeleteCategoryMutationVariables = Exact<{
   id: Scalars['Int'];
@@ -242,7 +243,7 @@ export type CreateCompanyMutationVariables = Exact<{
 }>;
 
 
-export type CreateCompanyMutation = { __typename?: 'Mutation', createCompany: { __typename?: 'Company', name: string } };
+export type CreateCompanyMutation = { __typename?: 'Mutation', createCompany: { __typename?: 'Company', id: number, name: string } };
 
 export type DeleteCompanyMutationVariables = Exact<{
   id: Scalars['Int'];
@@ -256,17 +257,24 @@ export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAllProductsQuery = { __typename?: 'Query', products?: Array<{ __typename?: 'Product', id: number, name: string, price: number, description: any, company_id: number, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, images: Array<string | null> } | null> | null };
 
+export type CreateProductMutationVariables = Exact<{
+  input: CreateProductInput;
+}>;
+
+
+export type CreateProductMutation = { __typename?: 'Mutation', createProduct: { __typename?: 'Product', id: number, name: string } };
+
 export type GetSingleUserQueryVariables = Exact<{
   id: Scalars['Int'];
 }>;
 
 
-export type GetSingleUserQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: number, role: Role } | null };
+export type GetSingleUserQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: number, role: Array<Role> } | null };
 
 export type ShowCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ShowCurrentUserQuery = { __typename?: 'Query', showMe?: { __typename?: 'User', id: number, given_name: string, family_name: string, role: Role, avatar: string } | null };
+export type ShowCurrentUserQuery = { __typename?: 'Query', showMe?: { __typename?: 'User', id: number, given_name: string, family_name: string, role: Array<Role>, avatar: string } | null };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -313,8 +321,8 @@ export type GetAllCategoriesQueryResult = Apollo.QueryResult<GetAllCategoriesQue
 export const CreateCategoryDocument = gql`
     mutation CreateCategory($input: CreateCategoryInput!) {
   createCategory(input: $input) {
+    id
     name
-    parent_id
   }
 }
     `;
@@ -413,6 +421,7 @@ export type GetAllCompaniesQueryResult = Apollo.QueryResult<GetAllCompaniesQuery
 export const CreateCompanyDocument = gql`
     mutation CreateCompany($input: CreateCompanyInput!) {
   createCompany(input: $input) {
+    id
     name
   }
 }
@@ -518,6 +527,40 @@ export function useGetAllProductsLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetAllProductsQueryHookResult = ReturnType<typeof useGetAllProductsQuery>;
 export type GetAllProductsLazyQueryHookResult = ReturnType<typeof useGetAllProductsLazyQuery>;
 export type GetAllProductsQueryResult = Apollo.QueryResult<GetAllProductsQuery, GetAllProductsQueryVariables>;
+export const CreateProductDocument = gql`
+    mutation CreateProduct($input: CreateProductInput!) {
+  createProduct(input: $input) {
+    id
+    name
+  }
+}
+    `;
+export type CreateProductMutationFn = Apollo.MutationFunction<CreateProductMutation, CreateProductMutationVariables>;
+
+/**
+ * __useCreateProductMutation__
+ *
+ * To run a mutation, you first call `useCreateProductMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateProductMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createProductMutation, { data, loading, error }] = useCreateProductMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateProductMutation(baseOptions?: Apollo.MutationHookOptions<CreateProductMutation, CreateProductMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateProductMutation, CreateProductMutationVariables>(CreateProductDocument, options);
+      }
+export type CreateProductMutationHookResult = ReturnType<typeof useCreateProductMutation>;
+export type CreateProductMutationResult = Apollo.MutationResult<CreateProductMutation>;
+export type CreateProductMutationOptions = Apollo.BaseMutationOptions<CreateProductMutation, CreateProductMutationVariables>;
 export const GetSingleUserDocument = gql`
     query GetSingleUser($id: Int!) {
   user(id: $id) {

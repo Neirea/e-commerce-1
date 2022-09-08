@@ -17,3 +17,12 @@ export const QUERY_ALL_PRODUCT = gql`
 		}
 	}
 `;
+
+export const MUTATION_CREATE_PRODUCT = gql`
+	mutation CreateProduct($input: CreateProductInput!) {
+		createProduct(input: $input) {
+			id
+			name
+		}
+	}
+`;

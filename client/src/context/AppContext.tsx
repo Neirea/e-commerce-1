@@ -1,34 +1,31 @@
-import { useQuery } from "@apollo/client";
-import { createContext, ReactNode, useContext, useEffect } from "react";
+import { useQuery, ApolloQueryResult } from "@apollo/client";
+import { createContext, ReactNode, useContext } from "react";
+import { ShowCurrentUserQuery } from "../generated/graphql";
 import { QUERY_SHOW_ME } from "../queries/User";
 
-export const AppContext = createContext({} as any);
+interface IAppContext {
+	user: ShowCurrentUserQuery["showMe"];
+	isLoading: boolean;
+	refetchUser: () => Promise<ApolloQueryResult<ShowCurrentUserQuery>>;
+}
+
+export const AppContext = createContext({} as IAppContext);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
 	//set user type? *any
 	const {
 		data,
 		loading: isLoading,
-		error,
 		refetch: refetchUser,
-	} = useQuery(QUERY_SHOW_ME);
-	const user = data?.showMe;
+		error,
+	} = useQuery<ShowCurrentUserQuery>(QUERY_SHOW_ME);
 
-	// if (user) {
-	// 	console.log("User=", user);
-	// }
-
-	// useEffect(() => {
-	// 	const getUser = async () => {
-	// 		const testUser = await fetch("http://localhost:5000/showMe", {
-	// 			credentials: "include",
-	// 		}).then((res) => console.log(res.json()));
-	// 	};
-	// 	getUser();
-	// }, []);
+	if (error) {
+		console.log(error);
+	}
 
 	return (
-		<AppContext.Provider value={{ user, isLoading, refetchUser }}>
+		<AppContext.Provider value={{ user: data?.showMe, isLoading, refetchUser }}>
 			{children}
 		</AppContext.Provider>
 	);

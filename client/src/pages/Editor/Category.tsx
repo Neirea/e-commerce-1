@@ -1,12 +1,14 @@
 import { useMutation, useQuery } from "@apollo/client";
-import React, {
+import {
 	ChangeEvent,
 	FormEvent,
 	useState,
 	useRef,
 	MouseEvent,
+	useEffect,
 } from "react";
-import { Container, Form, Button } from "react-bootstrap";
+import { Form, Button } from "react-bootstrap";
+import { GetAllCategoriesQuery } from "../../generated/graphql";
 import {
 	QUERY_ALL_CATEGORIES,
 	MUTATION_CREATE_CATEGORY,
@@ -14,22 +16,21 @@ import {
 } from "../../queries/Category";
 
 const Category = () => {
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const [parent, setParent] = useState<number | undefined>();
 	const [name, setName] = useState<string>("");
 	const {
 		data,
 		loading: queryLoading,
 		refetch,
-	} = useQuery(QUERY_ALL_CATEGORIES);
+	} = useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
 	const [createCategory] = useMutation(MUTATION_CREATE_CATEGORY);
 	const [deleteCategory] = useMutation(MUTATION_DELETE_CATEGORY);
 	const selectRef = useRef<HTMLSelectElement>(null);
 
 	const handleSelect = (e: ChangeEvent<HTMLSelectElement>) => {
-		const value = +e.currentTarget.value;
-		const parent = value || undefined;
-		setParent(parent);
+		const value = +e.currentTarget.value || undefined;
+		setParent(value);
 	};
 	const handleName = (e: ChangeEvent<HTMLInputElement>) => {
 		setName(e.target.value);
@@ -39,6 +40,8 @@ const Category = () => {
 		setLoading(true);
 
 		try {
+			//error handle message?
+			if (!parent) return;
 			deleteCategory({
 				variables: {
 					id: parent,
@@ -57,24 +60,14 @@ const Category = () => {
 		setLoading(true);
 		try {
 			// mutation to create Product
-			if (parent) {
-				createCategory({
-					variables: {
-						input: {
-							name: name,
-							parent_id: parent,
-						},
+			await createCategory({
+				variables: {
+					input: {
+						name: name,
+						parent_id: parent,
 					},
-				});
-			} else {
-				createCategory({
-					variables: {
-						input: {
-							name: name,
-						},
-					},
-				});
-			}
+				},
+			});
 			await refetch();
 		} catch (error) {
 			console.log(error);
@@ -83,20 +76,17 @@ const Category = () => {
 		setLoading(false);
 	};
 
-	if (queryLoading || !data) {
-		return (
-			<Container as="main">
-				<h3 className="text-center">Loading...</h3>
-			</Container>
-		);
-	}
+	useEffect(() => {
+		if (!queryLoading && data) {
+			setLoading(false);
+		}
+	}, [queryLoading, data]);
 
 	return (
 		<>
 			<h2 className="text-center mt-4">Create new Category</h2>
 			<Form className="m-auto col-sm-10" onSubmit={handleSubmit}>
 				<Form.Group className="mt-3 mb-3">
-					<Form.Label>Name</Form.Label>
 					<Form.Control
 						type="text"
 						placeholder="Category name"
@@ -114,7 +104,7 @@ const Category = () => {
 							{"Choose Parent"}
 						</option>
 						{data &&
-							data.categories.map((elem: any, idx: number) => (
+							data.categories?.map((elem: any, idx: number) => (
 								<option key={idx} value={elem.id}>
 									{elem.name}
 								</option>
