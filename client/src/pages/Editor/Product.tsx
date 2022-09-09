@@ -6,12 +6,23 @@ import {
 	CreateProductMutationVariables,
 	GetAllCategoriesQuery,
 	GetAllCompaniesQuery,
+	GetAllProductsQuery,
 } from "../../generated/graphql";
 import { QUERY_ALL_CATEGORIES } from "../../queries/Category";
 import { QUERY_ALL_COMPANIES } from "../../queries/Company";
-import { MUTATION_CREATE_PRODUCT } from "../../queries/Product";
+import {
+	MUTATION_CREATE_PRODUCT,
+	QUERY_ALL_PRODUCT,
+} from "../../queries/Product";
+
+interface ImageResult {
+	img_id: string;
+	img_src: string;
+}
 
 const CreateProduct = () => {
+	const { data: productData, loading: productLoading } =
+		useQuery<GetAllProductsQuery>(QUERY_ALL_PRODUCT);
 	const { data: companyData, loading: companyLoading } =
 		useQuery<GetAllCompaniesQuery>(QUERY_ALL_COMPANIES);
 	const { data: categoryData, loading: categoryLoading } =
@@ -20,9 +31,10 @@ const CreateProduct = () => {
 		CreateProductMutation,
 		CreateProductMutationVariables
 	>(MUTATION_CREATE_PRODUCT);
+
+	const [productId, setProductId] = useState<number>(0);
 	const [loading, setLoading] = useState(false);
 	const [selectedImages, setSelectedImages] = useState<File[]>([]);
-	const [previewImages, setPreviewImages] = useState<string[]>([]);
 	const [values, setValues] = useState({
 		name: "",
 		description: "",
@@ -33,23 +45,10 @@ const CreateProduct = () => {
 		shipping_cost: 0,
 		discount: 0,
 	});
-	if (createProductError) console.log(createProductError);
 
-	useEffect(() => {
-		if (!selectedImages.length) {
-			setPreviewImages([]);
-			return;
-		}
-		const objUrls: string[] = [];
-		selectedImages.map((image) => {
-			objUrls.push(URL.createObjectURL(image));
-		});
-		setPreviewImages(objUrls);
-
-		return () => {
-			objUrls.map((url) => URL.revokeObjectURL(url));
-		};
-	}, [selectedImages, setPreviewImages]);
+	const handleProductUpsert = (e: ChangeEvent<HTMLSelectElement>) => {
+		setProductId(+e.target.value);
+	};
 
 	const handleFiles = (e: ChangeEvent<HTMLInputElement>) => {
 		if (!e.target.files || !e.target.files.length) {
@@ -71,31 +70,61 @@ const CreateProduct = () => {
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
 		setLoading(true);
-		console.log("values=", values);
 
 		try {
+			const formData = new FormData();
+			selectedImages.forEach((image) => {
+				formData.append("images", image);
+			});
+			const imageResult = await fetch(
+				`${import.meta.env.VITE_SERVER_URL}/editor/upload-images`,
+				{
+					method: "POST",
+					body: formData,
+				}
+			)
+				.then((res) => res.json())
+				.then((res: { images: ImageResult[] }) => res);
+			console.log("imageResult=", imageResult);
+
 			const newProduct = {
 				...values,
 				description: JSON.parse(values.description),
-				images: previewImages,
+				img_id: imageResult.images.map((i) => i.img_id),
+				img_src: imageResult.images.map((i) => i.img_src),
 			};
-			console.log(newProduct);
-			console.log(typeof newProduct.company_id);
-
-			await createProduct({ variables: { input: newProduct } });
-
 			// mutation to create Product
-		} catch (error) {}
-
-		setLoading(false);
+			await createProduct({ variables: { input: newProduct } });
+		} catch (error) {
+		} finally {
+			setLoading(false);
+			//open modal of success/error any*
+		}
 	};
 
 	return (
 		<>
-			<h2 className="text-center mt-4">Create new Product</h2>
+			<h2 className="text-center mt-4">Product</h2>
 			<Form className="m-auto col-sm-10" onSubmit={handleSubmit}>
 				<Form.Group className="mt-3 mb-3">
-					<Form.Label>Name</Form.Label>
+					<Form.Label>Create or Choose Product to update</Form.Label>
+					<Form.Select
+						aria-label="Create or Choose Product to update"
+						onChange={handleProductUpsert}
+					>
+						<option key={0} value={0}>
+							{"Create new Product"}
+						</option>
+						{productData &&
+							productData.products?.map((elem: any) => (
+								<option key={`product_upsert-${elem.id}`} value={elem.id}>
+									{elem.name}
+								</option>
+							))}
+					</Form.Select>
+				</Form.Group>
+
+				<Form.Group className="mt-3 mb-3">
 					<Form.Control
 						type="text"
 						name="name"
@@ -155,23 +184,22 @@ const CreateProduct = () => {
 						value={values.discount}
 					/>
 				</Form.Group>
-				<Form.Group className="mt-3 mb-3 d-flex gap-2">
-					<Form.Select
-						aria-label="Select Company"
-						name="company_id"
-						onChange={handleChange}
-					>
-						<option key={0} value={0}>
-							{"Choose company"}
-						</option>
-						{companyData &&
-							companyData.companies?.map((elem: any, idx: number) => (
-								<option key={idx} value={elem.id}>
-									{elem.name}
-								</option>
-							))}
-					</Form.Select>
-				</Form.Group>
+				<Form.Select
+					aria-label="Select Company"
+					className="mt-3 mb-3 d-flex gap-2"
+					name="company_id"
+					onChange={handleChange}
+				>
+					<option key={0} value={0}>
+						{"Choose company"}
+					</option>
+					{companyData &&
+						companyData.companies?.map((elem) => (
+							<option key={`company-${elem.id}`} value={elem.id}>
+								{elem.name}
+							</option>
+						))}
+				</Form.Select>
 				<Form.Group className="mt-3 mb-3 d-flex gap-2">
 					<Form.Select
 						aria-label="Select Category"
@@ -182,8 +210,8 @@ const CreateProduct = () => {
 							{"Choose category"}
 						</option>
 						{categoryData &&
-							categoryData.categories?.map((elem: any, idx: number) => (
-								<option key={idx} value={elem.id}>
+							categoryData.categories?.map((elem) => (
+								<option key={`pcategory-${elem.id}`} value={elem.id}>
 									{elem.name}
 								</option>
 							))}

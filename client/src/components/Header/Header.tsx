@@ -27,7 +27,7 @@ const Header = () => {
 		<Navbar bg="dark" variant="dark">
 			<Container className="d-flex">
 				<Navbar.Brand href="/" className="d-none d-lg-block">
-					Digital Stop
+					Tech Stop
 				</Navbar.Brand>
 				<SearchBar />
 				<Nav className="d-flex align-items-center">

@@ -19,6 +19,15 @@ export const MUTATION_CREATE_CATEGORY = gql`
 	}
 `;
 
+export const MUTATION_UPDATE_CATEGORY = gql`
+	mutation UpdateCategory($input: UpdateCategoryInput!) {
+		updateCategory(input: $input) {
+			id
+			name
+		}
+	}
+`;
+
 export const MUTATION_DELETE_CATEGORY = gql`
 	mutation DeleteCategory($id: Int!) {
 		deleteCategory(id: $id)

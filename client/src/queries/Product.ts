@@ -13,7 +13,9 @@ export const QUERY_ALL_PRODUCT = gql`
 			discount
 			avg_rating
 			num_of_reviews
-			images
+			images {
+				img_src
+			}
 		}
 	}
 `;
@@ -24,5 +26,20 @@ export const MUTATION_CREATE_PRODUCT = gql`
 			id
 			name
 		}
+	}
+`;
+
+export const MUTATION_UPDATE_PRODUCT = gql`
+	mutation UpdateProduct($input: UpdateProductInput!) {
+		updateProduct(input: $input) {
+			id
+			name
+		}
+	}
+`;
+
+export const MUTATION_DELETE_PRODUCT = gql`
+	mutation DeleteProduct($id: Int!) {
+		deleteProduct(id: $id)
 	}
 `;

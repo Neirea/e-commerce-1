@@ -17,6 +17,14 @@ export const MUTATION_CREATE_COMPANY = gql`
 		}
 	}
 `;
+export const MUTATION_UPDATE_COMPANY = gql`
+	mutation UpdateCompany($input: UpdateCompanyInput!) {
+		updateCompany(input: $input) {
+			id
+			name
+		}
+	}
+`;
 
 export const MUTATION_DELETE_COMPANY = gql`
 	mutation DeleteCompany($id: Int!) {
