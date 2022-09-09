@@ -69,6 +69,7 @@ const Company = () => {
 		});
 		await refetch();
 		if (selectRef.current) selectRef.current.selectedIndex = 0;
+		setName("");
 		setCompanyId(0);
 		setLoading(false);
 	};
@@ -98,6 +99,7 @@ const Company = () => {
 
 		await refetch();
 		if (selectRef.current) selectRef.current.selectedIndex = 0;
+		setName("");
 		setCompanyId(0);
 		setLoading(false);
 	};

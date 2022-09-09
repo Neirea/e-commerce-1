@@ -91,6 +91,7 @@ const Category = () => {
 		if (selectParentRef.current) selectParentRef.current.selectedIndex = 0;
 		if (selectCategoryRef.current) selectCategoryRef.current.selectedIndex = 0;
 		await refetch();
+		setName("");
 		setParentId(0);
 		setCategoryId(0);
 		setLoading(false);
@@ -106,7 +107,7 @@ const Category = () => {
 					input: {
 						id: categoryId,
 						name: name,
-						parent_id: parentId,
+						parent_id: parentId || null,
 					},
 				},
 			});
@@ -123,6 +124,7 @@ const Category = () => {
 		await refetch();
 		if (selectParentRef.current) selectParentRef.current.selectedIndex = 0;
 		selectCategoryRef.current.selectedIndex = 0;
+		setName("");
 		setCategoryId(0);
 		setParentId(0);
 		setLoading(false);
