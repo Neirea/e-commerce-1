@@ -1,27 +1,37 @@
 //global config
-import "express-async-errors";
 import "dotenv/config";
+import "express-async-errors";
 //packages
+import { v2 as cloudinary } from "cloudinary";
 import connectRedis from "connect-redis";
 import cors from "cors";
+import fileUpload, { UploadedFile } from "express-fileupload";
 import express from "express";
+import fs from "fs";
 import session from "express-session";
 import { buildCheckFunction } from "express-validator";
 import helmet from "helmet";
 import Redis from "ioredis";
 import passport from "passport";
 //user imports
+import { ApolloServer } from "apollo-server-express";
 import notFound from "./middleware/not-found";
 import { failedLogin, loginCallback, logout } from "./passport";
-import { ApolloServer } from "apollo-server-express";
-import { typeDefs, resolvers } from "./schema";
+import { resolvers, typeDefs } from "./schema";
+import { StatusCodes } from "http-status-codes";
 
 export const app = express();
 
 (async () => {
+	cloudinary.config({
+		cloud_name: process.env.CLDNRY_NAME,
+		api_key: process.env.CLDNRY_API_KEY,
+		api_secret: process.env.CLDNRY_API_SECRET,
+	});
 	app.set("trust proxy", 1);
 	app.use(helmet());
 	app.use(buildCheckFunction(["body", "query", "params"])());
+	app.use(fileUpload({ useTempFiles: true }));
 	app.use(express.json());
 
 	//session store and middleware
@@ -122,6 +132,44 @@ export const app = express();
 		}),
 		loginCallback
 	);
+	app.post("/editor/upload-images", async (req, res) => {
+		const imageFiles = req.files?.images as UploadedFile[];
+		if (!imageFiles || !imageFiles.length) {
+			console.log("failed");
+
+			res.json({ images: [] });
+		}
+		interface UploadedImage {
+			img_id: string;
+			img_src: string;
+		}
+		const resultImages: UploadedImage[] = [];
+
+		for (let i = 0; i < imageFiles.length; i++) {
+			const result = await cloudinary.uploader.upload(
+				imageFiles[i].tempFilePath,
+				{
+					transformation: [
+						{
+							width: 640,
+							height: 640,
+							crop: "fill",
+						},
+						{
+							fetch_format: "jpg",
+						},
+					],
+					folder: "ecommerce-1",
+				}
+			);
+			resultImages.push({
+				img_id: result.public_id,
+				img_src: result.secure_url,
+			});
+			fs.unlinkSync(imageFiles[i].tempFilePath);
+		}
+		res.status(StatusCodes.OK).json({ images: resultImages });
+	});
 
 	// not found middleware
 	app.use(notFound);

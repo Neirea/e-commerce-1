@@ -8,7 +8,7 @@ const categoryTypes = gql`
 	}
 
 	extend type Query {
-		categories: [Category!]
+		categories: [Category!]!
 	}
 
 	input CreateCategoryInput {

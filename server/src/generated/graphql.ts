@@ -40,15 +40,21 @@ export type CreateCompanyInput = {
 
 export type CreateProductInput = {
   category_id: Scalars['Int'];
-  company: Scalars['String'];
   company_id: Scalars['Int'];
   description: Scalars['JSON'];
   discount: Scalars['Int'];
-  images: Array<InputMaybe<Scalars['String']>>;
+  img_id: Array<Scalars['String']>;
+  img_src: Array<Scalars['String']>;
   inventory: Scalars['Int'];
   name: Scalars['String'];
   price: Scalars['Float'];
   shipping_cost: Scalars['Float'];
+};
+
+export type Image = {
+  __typename?: 'Image';
+  img_id: Scalars['String'];
+  img_src: Scalars['String'];
 };
 
 export type Mutation = {
@@ -136,7 +142,7 @@ export type Product = {
   description: Scalars['JSON'];
   discount: Scalars['Int'];
   id: Scalars['Int'];
-  images: Array<Maybe<Scalars['String']>>;
+  images: Array<Image>;
   inventory: Scalars['Int'];
   name: Scalars['String'];
   num_of_reviews: Scalars['Int'];
@@ -147,9 +153,9 @@ export type Product = {
 
 export type Query = {
   __typename?: 'Query';
-  categories?: Maybe<Array<Category>>;
+  categories: Array<Category>;
   companies?: Maybe<Array<Company>>;
-  products?: Maybe<Array<Maybe<Product>>>;
+  products?: Maybe<Array<Product>>;
   showMe?: Maybe<User>;
   user?: Maybe<User>;
   users?: Maybe<Array<User>>;
@@ -183,7 +189,8 @@ export type UpdateProductInput = {
   company_id: Scalars['Int'];
   description: Scalars['JSON'];
   discount: Scalars['Int'];
-  images: Array<InputMaybe<Scalars['String']>>;
+  img_id: Array<Scalars['String']>;
+  img_src: Array<Scalars['String']>;
   inventory: Scalars['Int'];
   name: Scalars['String'];
   price: Scalars['Float'];
@@ -291,6 +298,7 @@ export type ResolversTypes = {
   CreateProductInput: CreateProductInput;
   Date: ResolverTypeWrapper<Scalars['Date']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
+  Image: ResolverTypeWrapper<Image>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   JSON: ResolverTypeWrapper<Scalars['JSON']>;
   Mutation: ResolverTypeWrapper<{}>;
@@ -316,6 +324,7 @@ export type ResolversParentTypes = {
   CreateProductInput: CreateProductInput;
   Date: Scalars['Date'];
   Float: Scalars['Float'];
+  Image: Image;
   Int: Scalars['Int'];
   JSON: Scalars['JSON'];
   Mutation: {};
@@ -346,6 +355,12 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Date';
 }
 
+export type ImageResolvers<ContextType = any, ParentType extends ResolversParentTypes['Image'] = ResolversParentTypes['Image']> = {
+  img_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  img_src?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
   name: 'JSON';
 }
@@ -373,7 +388,7 @@ export type ProductResolvers<ContextType = any, ParentType extends ResolversPare
   description?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   discount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  images?: Resolver<Array<Maybe<ResolversTypes['String']>>, ParentType, ContextType>;
+  images?: Resolver<Array<ResolversTypes['Image']>, ParentType, ContextType>;
   inventory?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   num_of_reviews?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -384,9 +399,9 @@ export type ProductResolvers<ContextType = any, ParentType extends ResolversPare
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  categories?: Resolver<Maybe<Array<ResolversTypes['Category']>>, ParentType, ContextType>;
+  categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType>;
   companies?: Resolver<Maybe<Array<ResolversTypes['Company']>>, ParentType, ContextType>;
-  products?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType>;
+  products?: Resolver<Maybe<Array<ResolversTypes['Product']>>, ParentType, ContextType>;
   showMe?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   users?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
@@ -410,6 +425,7 @@ export type Resolvers<ContextType = any> = {
   Category?: CategoryResolvers<ContextType>;
   Company?: CompanyResolvers<ContextType>;
   Date?: GraphQLScalarType;
+  Image?: ImageResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
   Product?: ProductResolvers<ContextType>;

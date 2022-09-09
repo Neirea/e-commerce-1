@@ -3,6 +3,11 @@ import { gql } from "apollo-server-express";
 const productTypes = gql`
 	scalar JSON
 
+	type Image {
+		img_id: String!
+		img_src: String!
+	}
+
 	type Product {
 		id: Int!
 		name: String!
@@ -15,12 +20,12 @@ const productTypes = gql`
 		discount: Int!
 		avg_rating: Float!
 		num_of_reviews: Int!
-		images: [String]!
+		images: [Image!]!
 		created_at: DateTime!
 		updated_at: DateTime!
 	}
 	extend type Query {
-		products: [Product]
+		products: [Product!]
 	}
 
 	# Mutations
@@ -28,11 +33,11 @@ const productTypes = gql`
 		name: String!
 		price: Float!
 		description: JSON!
-		company: String!
 		inventory: Int!
 		shipping_cost: Float!
 		discount: Int!
-		images: [String]!
+		img_id: [String!]!
+		img_src: [String!]!
 		company_id: Int!
 		category_id: Int!
 	}
@@ -44,7 +49,8 @@ const productTypes = gql`
 		inventory: Int!
 		shipping_cost: Float!
 		discount: Int!
-		images: [String]!
+		img_id: [String!]!
+		img_src: [String!]!
 		company_id: Int!
 		category_id: Int!
 	}
