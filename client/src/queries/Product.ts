@@ -8,6 +8,7 @@ export const QUERY_ALL_PRODUCT = gql`
 			price
 			description
 			company_id
+			category_id
 			inventory
 			shipping_cost
 			discount

@@ -1,17 +1,23 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { ChangeEvent, FormEvent, useState, useEffect } from "react";
+import { ChangeEvent, MouseEvent, FormEvent, useState, useRef } from "react";
 import { Form, Button } from "react-bootstrap";
 import {
 	CreateProductMutation,
 	CreateProductMutationVariables,
+	DeleteProductMutation,
+	DeleteProductMutationVariables,
 	GetAllCategoriesQuery,
 	GetAllCompaniesQuery,
 	GetAllProductsQuery,
+	UpdateProductMutation,
+	UpdateProductMutationVariables,
 } from "../../generated/graphql";
 import { QUERY_ALL_CATEGORIES } from "../../queries/Category";
 import { QUERY_ALL_COMPANIES } from "../../queries/Company";
 import {
 	MUTATION_CREATE_PRODUCT,
+	MUTATION_DELETE_PRODUCT,
+	MUTATION_UPDATE_PRODUCT,
 	QUERY_ALL_PRODUCT,
 } from "../../queries/Product";
 
@@ -20,9 +26,23 @@ interface ImageResult {
 	img_src: string;
 }
 
+const defaultValues = {
+	name: "",
+	description: "",
+	price: 0,
+	inventory: 0,
+	company_id: 0,
+	category_id: 0,
+	shipping_cost: 0,
+	discount: 0,
+};
+
 const CreateProduct = () => {
-	const { data: productData, loading: productLoading } =
-		useQuery<GetAllProductsQuery>(QUERY_ALL_PRODUCT);
+	const {
+		data: productData,
+		loading: productLoading,
+		refetch,
+	} = useQuery<GetAllProductsQuery>(QUERY_ALL_PRODUCT);
 	const { data: companyData, loading: companyLoading } =
 		useQuery<GetAllCompaniesQuery>(QUERY_ALL_COMPANIES);
 	const { data: categoryData, loading: categoryLoading } =
@@ -31,23 +51,61 @@ const CreateProduct = () => {
 		CreateProductMutation,
 		CreateProductMutationVariables
 	>(MUTATION_CREATE_PRODUCT);
+	const [updateProduct, { error: updateProductError }] = useMutation<
+		UpdateProductMutation,
+		UpdateProductMutationVariables
+	>(MUTATION_UPDATE_PRODUCT);
+	const [deleteProduct, { error: deleteProductError }] = useMutation<
+		DeleteProductMutation,
+		DeleteProductMutationVariables
+	>(MUTATION_DELETE_PRODUCT);
 
 	const [productId, setProductId] = useState<number>(0);
 	const [loading, setLoading] = useState(false);
 	const [selectedImages, setSelectedImages] = useState<File[]>([]);
-	const [values, setValues] = useState({
-		name: "",
-		description: "",
-		price: 0,
-		inventory: 0,
-		company_id: 0,
-		category_id: 0,
-		shipping_cost: 0,
-		discount: 0,
-	});
+	const [values, setValues] = useState(defaultValues);
+	const selectProductRef = useRef<HTMLSelectElement>(null);
+	const selectCategoryRef = useRef<HTMLSelectElement>(null);
+	const selectCompanyRef = useRef<HTMLSelectElement>(null);
 
-	const handleProductUpsert = (e: ChangeEvent<HTMLSelectElement>) => {
-		setProductId(+e.target.value);
+	const handleProductSelect = (e: ChangeEvent<HTMLSelectElement>) => {
+		const idx = +e.target.value;
+
+		setProductId(idx);
+		if (idx === 0) {
+			setValues(defaultValues);
+			if (selectCategoryRef.current)
+				selectCategoryRef.current.selectedIndex = 0;
+			if (selectCompanyRef.current) selectCompanyRef.current.selectedIndex = 0;
+			return;
+		}
+		if (productData?.products) {
+			const product = productData.products.find((item) => item.id === idx)!;
+
+			setValues({
+				name: product.name,
+				description: JSON.stringify(product.description),
+				price: product.price,
+				inventory: product.inventory,
+				company_id: product.company_id,
+				category_id: product.category_id,
+				shipping_cost: product.shipping_cost,
+				discount: product.discount,
+			});
+			console.log("product company id=", product.company_id);
+			console.log("product category id=", product.category_id);
+
+			if (selectCompanyRef.current) {
+				selectCompanyRef.current.selectedIndex = [
+					...selectCompanyRef.current.options,
+				].findIndex((option) => +option.value === product.company_id);
+			}
+			if (selectCategoryRef.current) {
+				selectCategoryRef.current.selectedIndex = [
+					...selectCategoryRef.current.options,
+				].findIndex((option) => +option.value === product.category_id);
+			}
+		}
 	};
 
 	const handleFiles = (e: ChangeEvent<HTMLInputElement>) => {
@@ -71,8 +129,15 @@ const CreateProduct = () => {
 		e.preventDefault();
 		setLoading(true);
 
-		try {
+		const newProduct = {
+			...values,
+			description: JSON.parse(values.description),
+			img_id: [] as string[],
+			img_src: [] as string[],
+		};
+		if (selectedImages.length) {
 			const formData = new FormData();
+
 			selectedImages.forEach((image) => {
 				formData.append("images", image);
 			});
@@ -85,21 +150,41 @@ const CreateProduct = () => {
 			)
 				.then((res) => res.json())
 				.then((res: { images: ImageResult[] }) => res);
-			console.log("imageResult=", imageResult);
-
-			const newProduct = {
-				...values,
-				description: JSON.parse(values.description),
-				img_id: imageResult.images.map((i) => i.img_id),
-				img_src: imageResult.images.map((i) => i.img_src),
-			};
-			// mutation to create Product
-			await createProduct({ variables: { input: newProduct } });
-		} catch (error) {
-		} finally {
-			setLoading(false);
-			//open modal of success/error any*
+			newProduct.img_id = imageResult.images.map((i) => i.img_id);
+			newProduct.img_src = imageResult.images.map((i) => i.img_src);
 		}
+
+		if (productId) {
+			await updateProduct({
+				variables: { input: { ...newProduct, id: productId } },
+			});
+		} else {
+			await createProduct({ variables: { input: newProduct } });
+		}
+		setLoading(false);
+		//open modal of success/error any*
+	};
+
+	const handleDelete = async () => {
+		setLoading(true);
+
+		if (!productId) {
+			//error handle message?
+			setLoading(false);
+			return;
+		}
+		await deleteProduct({
+			variables: {
+				id: productId,
+			},
+		});
+		if (selectProductRef.current) selectProductRef.current.selectedIndex = 0;
+		if (selectCompanyRef.current) selectCompanyRef.current.selectedIndex = 0;
+		if (selectCategoryRef.current) selectCategoryRef.current.selectedIndex = 0;
+		await refetch();
+		setValues(defaultValues);
+		setProductId(0);
+		setLoading(false);
 	};
 
 	return (
@@ -107,21 +192,27 @@ const CreateProduct = () => {
 			<h2 className="text-center mt-4">Product</h2>
 			<Form className="m-auto col-sm-10" onSubmit={handleSubmit}>
 				<Form.Group className="mt-3 mb-3">
-					<Form.Label>Create or Choose Product to update</Form.Label>
-					<Form.Select
-						aria-label="Create or Choose Product to update"
-						onChange={handleProductUpsert}
-					>
-						<option key={0} value={0}>
-							{"Create new Product"}
-						</option>
-						{productData &&
-							productData.products?.map((elem: any) => (
-								<option key={`product_upsert-${elem.id}`} value={elem.id}>
-									{elem.name}
-								</option>
-							))}
-					</Form.Select>
+					<Form.Label>Choose product to create, update or delete</Form.Label>
+					<div className="d-flex gap-2">
+						<Form.Select
+							aria-label="Create or Choose Product to update"
+							onChange={handleProductSelect}
+							ref={selectProductRef}
+						>
+							<option key={"product_upsert-0"} value={0}>
+								{"Create new Product"}
+							</option>
+							{productData &&
+								productData.products?.map((elem) => (
+									<option key={`product_upsert-${elem.id}`} value={elem.id}>
+										{elem.name}
+									</option>
+								))}
+						</Form.Select>
+						<Button disabled={loading} onClick={handleDelete}>
+							{loading ? "Wait..." : "Delete"}
+						</Button>
+					</div>
 				</Form.Group>
 
 				<Form.Group className="mt-3 mb-3">
@@ -189,6 +280,7 @@ const CreateProduct = () => {
 					className="mt-3 mb-3 d-flex gap-2"
 					name="company_id"
 					onChange={handleChange}
+					ref={selectCompanyRef}
 				>
 					<option key={0} value={0}>
 						{"Choose company"}
@@ -205,6 +297,7 @@ const CreateProduct = () => {
 						aria-label="Select Category"
 						name="category_id"
 						onChange={handleChange}
+						ref={selectCategoryRef}
 					>
 						<option key={0} value={0}>
 							{"Choose category"}

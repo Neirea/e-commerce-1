@@ -1,12 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client";
-import {
-	ChangeEvent,
-	FormEvent,
-	useState,
-	useRef,
-	MouseEvent,
-	useEffect,
-} from "react";
+import { ChangeEvent, FormEvent, useState, useRef, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
 import type {
 	CreateCategoryMutation,
@@ -66,10 +59,13 @@ const Category = () => {
 			const category = data.categories.find((item) => item.id === idx)!;
 			setName(category.name);
 			if (selectParentRef.current) {
-				const parentOptionIndex = data.categories.findIndex(
-					(item) => item.parent_id === category.parent_id
-				)!;
-				selectParentRef.current.selectedIndex = parentOptionIndex || 0;
+				if (category.parent_id == null) {
+					selectParentRef.current.selectedIndex = 0;
+					return;
+				}
+				selectParentRef.current.selectedIndex = [
+					...selectParentRef.current.options,
+				].findIndex((option) => +option.value === category.parent_id);
 			}
 		}
 	};
@@ -78,12 +74,15 @@ const Category = () => {
 		setName(e.target.value);
 	};
 
-	const handleDelete = async (e: MouseEvent<HTMLButtonElement>) => {
+	const handleDelete = async () => {
 		setLoading(true);
 
-		//error handle message?
-		if (!parentId) return;
-		deleteCategory({
+		if (!categoryId) {
+			//error handle message?
+			setLoading(false);
+			return;
+		}
+		await deleteCategory({
 			variables: {
 				id: categoryId,
 			},

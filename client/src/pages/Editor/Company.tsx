@@ -56,12 +56,14 @@ const Company = () => {
 		setName(e.target.value);
 	};
 
-	const handleDelete = async (e: FormEvent) => {
-		e.preventDefault();
+	const handleDelete = async () => {
 		setLoading(true);
 
-		//error handle message?
-		if (!companyId || !selectRef.current) return;
+		if (!companyId || !selectRef.current) {
+			//error handle message?
+			setLoading(false);
+			return;
+		}
 		await deleteCompany({
 			variables: {
 				id: companyId,
