@@ -64,7 +64,7 @@ export type Mutation = {
   createProduct: Product;
   deleteCategory?: Maybe<Scalars['Boolean']>;
   deleteCompany?: Maybe<Scalars['Boolean']>;
-  deleteProduct?: Maybe<Product>;
+  deleteProduct?: Maybe<Scalars['Boolean']>;
   deleteUser?: Maybe<User>;
   logout: Scalars['Boolean'];
   updateCategory: Category;
@@ -189,6 +189,7 @@ export type UpdateProductInput = {
   company_id: Scalars['Int'];
   description: Scalars['JSON'];
   discount: Scalars['Int'];
+  id: Scalars['Int'];
   img_id: Array<Scalars['String']>;
   img_src: Array<Scalars['String']>;
   inventory: Scalars['Int'];
@@ -371,7 +372,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationCreateProductArgs, 'input'>>;
   deleteCategory?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeleteCategoryArgs, 'id'>>;
   deleteCompany?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeleteCompanyArgs, 'id'>>;
-  deleteProduct?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<MutationDeleteProductArgs, 'id'>>;
+  deleteProduct?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeleteProductArgs, 'id'>>;
   deleteUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   updateCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationUpdateCategoryArgs, 'input'>>;

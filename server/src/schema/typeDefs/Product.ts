@@ -42,6 +42,7 @@ const productTypes = gql`
 		category_id: Int!
 	}
 	input UpdateProductInput {
+		id: Int!
 		name: String!
 		price: Float!
 		description: JSON!
@@ -58,7 +59,7 @@ const productTypes = gql`
 	extend type Mutation {
 		createProduct(input: CreateProductInput!): Product!
 		updateProduct(input: UpdateProductInput!): Product!
-		deleteProduct(id: Int!): Product
+		deleteProduct(id: Int!): Boolean
 	}
 `;
 

@@ -1,10 +1,17 @@
-import type { Request } from "express";
 import { PrismaClient } from "@prisma/client";
 import GraphQLJSON from "graphql-type-json";
-import { CreateProductInput } from "../../generated/graphql";
+import {
+	CreateProductInput,
+	UpdateProductInput,
+} from "../../generated/graphql";
 import { v2 as cloudinary } from "cloudinary";
 
 const prisma = new PrismaClient({ log: ["query"] });
+
+interface ImageJSON {
+	img_id: string;
+	img_src: string;
+}
 
 const productResolvers = {
 	JSON: GraphQLJSON,
@@ -17,8 +24,7 @@ const productResolvers = {
 	Mutation: {
 		createProduct: async (
 			parent: any,
-			{ input }: { input: CreateProductInput },
-			{ req }: { req: Request }
+			{ input }: { input: CreateProductInput }
 		) => {
 			// 0.5. check for user role (same in company,category) - middleware
 			const {
@@ -50,9 +56,9 @@ const productResolvers = {
 
 			//create connection between company and category
 			await prisma.category.update({
-				where: { id: input.category_id },
+				where: { id: category_id },
 				data: {
-					companies: { connect: { id: input.company_id } },
+					companies: { connect: { id: company_id } },
 				},
 			});
 
@@ -60,15 +66,58 @@ const productResolvers = {
 				input.img_id.forEach((id) => cloudinary.uploader.destroy(id!));
 			});
 		},
-		updateProduct: (parent: any, args: any) => {
-			const product_id = args.input.id;
-			return prisma.product.update({
-				where: { id: product_id },
-				data: { ...args.input }, // probably wrong #any
-			});
+		updateProduct: (parent: any, { input }: { input: UpdateProductInput }) => {
+			const {
+				id,
+				category_id,
+				company_id,
+				description,
+				price,
+				name,
+				inventory,
+				shipping_cost,
+				discount,
+			} = input;
+
+			const arrOfImgs =
+				input.img_id.length > 0
+					? input.img_id.map((item, i) => {
+							return { img_id: item, img_src: input.img_src[i] };
+					  })
+					: undefined;
+
+			const updatedProduct = {
+				category_id,
+				company_id,
+				description,
+				price,
+				name,
+				inventory,
+				shipping_cost,
+				discount,
+				images: arrOfImgs,
+			};
+
+			return prisma.product
+				.update({
+					where: { id: id },
+					data: updatedProduct, // probably wrong #any
+				})
+				.catch(() => {
+					input.img_id.forEach((id) => cloudinary.uploader.destroy(id!));
+				});
 		},
-		deleteProduct: (parent: any, args: any) => {
-			return prisma.product.delete({ where: { id: args.id } });
+		deleteProduct: async (parent: any, { id }: { id: number }) => {
+			const data = await prisma.product.delete({ where: { id: id } });
+
+			if (data) {
+				data.images.forEach((item) =>
+					// cloudinary.uploader.destroy(item?.img_id!)
+					console.log(true)
+				);
+				return true;
+			}
+			return false;
 		},
 	},
 };
