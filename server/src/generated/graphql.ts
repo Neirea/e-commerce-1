@@ -154,7 +154,7 @@ export type Product = {
 export type Query = {
   __typename?: 'Query';
   categories: Array<Category>;
-  companies?: Maybe<Array<Company>>;
+  companies: Array<Company>;
   products?: Maybe<Array<Product>>;
   showMe?: Maybe<User>;
   user?: Maybe<User>;
@@ -185,7 +185,6 @@ export type UpdateCompanyInput = {
 
 export type UpdateProductInput = {
   category_id: Scalars['Int'];
-  company: Scalars['String'];
   company_id: Scalars['Int'];
   description: Scalars['JSON'];
   discount: Scalars['Int'];
@@ -401,7 +400,7 @@ export type ProductResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType>;
-  companies?: Resolver<Maybe<Array<ResolversTypes['Company']>>, ParentType, ContextType>;
+  companies?: Resolver<Array<ResolversTypes['Company']>, ParentType, ContextType>;
   products?: Resolver<Maybe<Array<ResolversTypes['Product']>>, ParentType, ContextType>;
   showMe?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;

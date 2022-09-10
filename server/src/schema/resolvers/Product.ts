@@ -8,11 +8,6 @@ import { v2 as cloudinary } from "cloudinary";
 
 const prisma = new PrismaClient({ log: ["query"] });
 
-interface ImageJSON {
-	img_id: string;
-	img_src: string;
-}
-
 const productResolvers = {
 	JSON: GraphQLJSON,
 	Query: {
@@ -111,10 +106,9 @@ const productResolvers = {
 			const data = await prisma.product.delete({ where: { id: id } });
 
 			if (data) {
-				data.images.forEach((item) =>
-					// cloudinary.uploader.destroy(item?.img_id!)
-					console.log(true)
-				);
+				(data.images as any[]).forEach((item) => {
+					cloudinary.uploader.destroy(item.img_id!);
+				});
 				return true;
 			}
 			return false;

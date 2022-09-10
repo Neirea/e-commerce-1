@@ -7,7 +7,7 @@ const companyTypes = gql`
 	}
 
 	extend type Query {
-		companies: [Company!]
+		companies: [Company!]!
 	}
 
 	input CreateCompanyInput {

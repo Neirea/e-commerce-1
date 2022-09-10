@@ -46,7 +46,6 @@ const productTypes = gql`
 		name: String!
 		price: Float!
 		description: JSON!
-		company: String!
 		inventory: Int!
 		shipping_cost: Float!
 		discount: Int!
