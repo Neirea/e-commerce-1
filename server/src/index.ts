@@ -19,6 +19,7 @@ import notFound from "./middleware/not-found";
 import { failedLogin, loginCallback, logout } from "./passport";
 import { resolvers, typeDefs } from "./schema";
 import { StatusCodes } from "http-status-codes";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 
 export const app = express();
 
@@ -74,13 +75,11 @@ export const app = express();
 			return { req, res };
 		},
 		formatError: (err) => {
-			// Don't give the specific errors to the client.
-			if (err.message.startsWith("Database Error: ")) {
+			console.log("Log error message:", err.message);
+			// Don't show DB Errors to user
+			if (err.originalError instanceof PrismaClientKnownRequestError) {
 				return new Error("Internal server error");
 			}
-
-			// Otherwise return the original error. The error can also
-			// be manipulated in other ways, as long as it's returned.
 			return err;
 		},
 	});
@@ -135,8 +134,6 @@ export const app = express();
 	app.post("/editor/upload-images", async (req, res) => {
 		const imageFiles = req.files?.images as UploadedFile[];
 		if (!imageFiles || !imageFiles.length) {
-			console.log("failed");
-
 			res.json({ images: [] });
 		}
 		interface UploadedImage {

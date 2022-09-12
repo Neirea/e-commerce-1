@@ -1,10 +1,11 @@
 import { GraphQLScalarType, Kind } from "graphql";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 import { Request, Response } from "express";
 import {
 	MutationDeleteUserArgs,
 	UpdateUserInput,
 } from "../../generated/graphql";
+import { AuthenticationError } from "apollo-server-express";
 
 const prisma = new PrismaClient({ log: ["query"] });
 
@@ -34,26 +35,61 @@ export const dateScalar = new GraphQLScalarType({
 const userResolvers = {
 	DateTime: dateScalar,
 	Query: {
-		users: () => {
+		users: (parent: any, args: undefined, { req }: { req: Request }) => {
+			if (!req.session.user?.role.includes(Role.ADMIN)) {
+				throw new AuthenticationError(
+					"You don't have permissions for this action"
+				);
+			}
 			return prisma.user.findMany();
 			// return prisma.$queryRaw`SELECT * FROM public."User";`;
 		},
-		user: (parent: any, { id }: { id: number }) => {
-			return prisma.user.findMany({ where: { id: id } });
+		user: (parent: any, { id }: { id: number }, { req }: { req: Request }) => {
+			if (!req.session.user?.role.includes(Role.ADMIN)) {
+				throw new AuthenticationError(
+					"You don't have permissions for this action"
+				);
+			}
+			return prisma.user.findUnique({ where: { id: id } });
 		},
 		showMe: (parent: any, args: undefined, { req }: { req: Request }) => {
+			if (!req.session.user) {
+				throw new AuthenticationError(
+					"Your session is expired. Please log in to continue."
+				);
+			}
 			return req.session.user;
 		},
 	},
 	Mutation: {
-		updateUser: (parent: any, { input }: { input: UpdateUserInput }) => {
-			//update with data from front-end(either admin page or client's profile page)
+		updateUser: (
+			parent: any,
+			{ input }: { input: UpdateUserInput },
+			{ req }: { req: Request }
+		) => {
+			if (
+				req.user?.user.id !== input.id ||
+				!req.session.user?.role.includes(Role.ADMIN)
+			) {
+				throw new AuthenticationError(
+					"You don't have permissions for this action"
+				);
+			}
 			return prisma.user.update({
 				where: { id: input.id },
 				data: input,
 			});
 		},
-		deleteUser: (parent: any, args: MutationDeleteUserArgs) => {
+		deleteUser: (
+			parent: any,
+			args: MutationDeleteUserArgs,
+			{ req }: { req: Request }
+		) => {
+			if (!req.session.user?.role.includes(Role.ADMIN)) {
+				throw new AuthenticationError(
+					"You don't have permissions for this action"
+				);
+			}
 			return prisma.user.delete({ where: { id: args.id } });
 		},
 		logout: (

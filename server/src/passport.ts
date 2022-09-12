@@ -1,4 +1,5 @@
 import { Platform, PrismaClient, Role } from "@prisma/client";
+import AuthenticationError from "./errors/authentication";
 import type { Request, Response } from "express";
 import passport from "passport";
 import {
@@ -10,7 +11,6 @@ import type {
 	VerifyCallback,
 } from "passport-google-oauth20";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import CustomError from "./errors";
 import { app } from "./index";
 
 const prisma = new PrismaClient({ log: ["query"] });
@@ -41,7 +41,7 @@ export const loginCallback = (req: Request, res: Response) => {
 	app.set("redirect", undefined);
 
 	if (!req.user) {
-		throw new CustomError.BadRequestError("Authentication error. User error!");
+		throw new AuthenticationError("Authentication error. Something went wrong");
 	}
 	if (req.session) {
 		req.session.user = req.user.user;
@@ -74,7 +74,7 @@ const loginGoogle = async (
 			family_name: name?.familyName || "",
 			platform_id: id,
 			platform: Platform.GOOGLE,
-			role: isFirstAccount ? Role.ADMIN : Role.USER,
+			role: isFirstAccount ? Object.values(Role) : [Role.USER],
 			address: "",
 			email: _json.email!,
 			avatar: _json.picture || "",
