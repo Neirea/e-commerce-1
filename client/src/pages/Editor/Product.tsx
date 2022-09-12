@@ -266,6 +266,7 @@ const CreateProduct = () => {
 						placeholder="Float number in USD"
 						onChange={handleChange}
 						value={values.price}
+						min={0}
 					/>
 				</Form.Group>
 				<Form.Group className="mb-3">
@@ -290,6 +291,7 @@ const CreateProduct = () => {
 						placeholder="Amount of available goods"
 						onChange={handleChange}
 						value={values.inventory}
+						min={0}
 					/>
 				</Form.Group>
 				<Form.Group className="mb-3">
@@ -300,6 +302,7 @@ const CreateProduct = () => {
 						placeholder="Float number in USD"
 						onChange={handleChange}
 						value={values.shipping_cost}
+						min={0}
 					/>
 				</Form.Group>
 				<Form.Group className="mb-3">
@@ -310,6 +313,8 @@ const CreateProduct = () => {
 						placeholder="% number of base price discount"
 						onChange={handleChange}
 						value={values.discount}
+						min={0}
+						max={100}
 					/>
 				</Form.Group>
 				{companyError && <Alert variant="danger">{companyError.message}</Alert>}
