@@ -54,9 +54,10 @@ const userResolvers = {
 		},
 		showMe: (parent: any, args: undefined, { req }: { req: Request }) => {
 			if (!req.session.user) {
-				throw new AuthenticationError(
-					"Your session is expired. Please log in to continue."
-				);
+				// throw new AuthenticationError(
+				// 	"Your session is expired. Please log in to continue."
+				// );
+				return undefined;
 			}
 			return req.session.user;
 		},

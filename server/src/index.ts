@@ -6,7 +6,7 @@ import { v2 as cloudinary } from "cloudinary";
 import connectRedis from "connect-redis";
 import cors from "cors";
 import fileUpload, { UploadedFile } from "express-fileupload";
-import express from "express";
+import express, { Request } from "express";
 import fs from "fs";
 import session from "express-session";
 import { buildCheckFunction } from "express-validator";
@@ -16,7 +16,7 @@ import passport from "passport";
 //user imports
 import { ApolloServer } from "apollo-server-express";
 import notFound from "./middleware/not-found";
-import { failedLogin, loginCallback, logout } from "./passport";
+import { failedLogin, loginCallback } from "./passport";
 import { resolvers, typeDefs } from "./schema";
 import { StatusCodes } from "http-status-codes";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
@@ -76,11 +76,32 @@ export const app = express();
 		},
 		formatError: (err) => {
 			console.log("Log error message:", err.message);
+
 			// Don't show DB Errors to user
 			if (err.originalError instanceof PrismaClientKnownRequestError) {
 				return new Error("Internal server error");
 			}
 			return err;
+		},
+		formatResponse(response, requestContext) {
+			const { errors, operationName, context } = requestContext;
+			if (errors?.length) {
+				//delete tmp file
+				if (
+					operationName === "CreateProduct" ||
+					operationName === "UpdateProduct"
+				) {
+					interface contextType {
+						req: Request;
+					}
+					const image = (context as contextType).req.files?.image as
+						| UploadedFile
+						| undefined;
+					if (image) fs.unlinkSync(image.tempFilePath);
+				}
+			}
+
+			return response;
 		},
 	});
 
@@ -91,13 +112,10 @@ export const app = express();
 	app.use(passport.initialize());
 
 	app.get("/showMe", (req, res) => {
-		console.log("user=", req.session.user);
-
 		res.json(req.session.user);
 	});
 
 	//auth routes
-	app.delete("/auth/logout", logout);
 	app.get("/auth/login/failed", failedLogin);
 	//google
 	app.get("/auth/login/google", (req, res, next) => {
@@ -170,7 +188,6 @@ export const app = express();
 
 	// not found middleware
 	app.use(notFound);
-	// error handling middleware
 
 	const port = process.env.PORT || 5000;
 

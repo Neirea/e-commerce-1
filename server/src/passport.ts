@@ -23,19 +23,6 @@ export const failedLogin = (req: Request, res: Response) => {
 	res.status(401).redirect(`${clientUrl}/login?error=login_failed`);
 };
 
-export const logout = (req: Request, res: Response) => {
-	if (req.session) {
-		//deletes from session from Redis too
-		req.session.destroy((err) => {
-			if (err) {
-				res.status(400).send("Unable to log out");
-			}
-		});
-	}
-	res.clearCookie("sid");
-	res.status(200).json({ msg: "Log out" });
-};
-
 export const loginCallback = (req: Request, res: Response) => {
 	const redirect = app.get("redirect");
 	app.set("redirect", undefined);
