@@ -3,11 +3,13 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../context/AppContext";
 import { Role } from "../../generated/graphql";
 import { MUTATION_LOGOUT } from "../../queries/User";
 
 const UserMenu = () => {
+	const navigate = useNavigate();
 	const { user, refetchUser } = useAppContext();
 	const [handleLogout] = useMutation(MUTATION_LOGOUT);
 
@@ -25,16 +27,24 @@ const UserMenu = () => {
 							title={user?.given_name}
 							menuVariant="dark"
 						>
-							<NavDropdown.Item href="/profile">My Profile</NavDropdown.Item>
-							<NavDropdown.Item href="/orders">My Orders</NavDropdown.Item>
+							<NavDropdown.Item as={Link} to="/profile">
+								My Profile
+							</NavDropdown.Item>
+							<NavDropdown.Item as={Link} to="/orders">
+								My Orders
+							</NavDropdown.Item>
 							{isShowEditor && (
-								<NavDropdown.Item href="/editor">Editor</NavDropdown.Item>
+								<NavDropdown.Item as={Link} to="/editor">
+									Editor
+								</NavDropdown.Item>
 							)}
 							<NavDropdown.Divider />
 							<NavDropdown.Item
 								onClick={async () => {
 									await handleLogout();
 									await refetchUser();
+									//refresh page
+									navigate(0);
 								}}
 							>
 								Logout

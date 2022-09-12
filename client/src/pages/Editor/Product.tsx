@@ -125,8 +125,6 @@ const CreateProduct = () => {
 				shipping_cost: product.shipping_cost,
 				discount: product.discount,
 			});
-			console.log("product company id=", product.company_id);
-			console.log("product category id=", product.category_id);
 
 			if (selectCompanyRef.current) {
 				selectCompanyRef.current.selectedIndex = [
