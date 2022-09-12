@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { ChangeEvent, FormEvent, useState, useRef, useEffect } from "react";
-import { Form, Button } from "react-bootstrap";
+import { ChangeEvent, FormEvent, useState, useRef } from "react";
+import { Form, Button, Alert } from "react-bootstrap";
 import type {
 	CreateCategoryMutation,
 	CreateCategoryMutationVariables,
@@ -19,32 +19,52 @@ import {
 
 const Category = () => {
 	const [categoryId, setCategoryId] = useState<number>(0);
-	const [loading, setLoading] = useState(true);
 	const [parentId, setParentId] = useState<number | undefined>();
 	const [name, setName] = useState<string>("");
 	const {
 		data,
-		loading: queryLoading,
+		loading: categoryLoading,
+		error: categoryError,
 		refetch,
 	} = useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
-	const [createCategory] = useMutation<
-		CreateCategoryMutation,
-		CreateCategoryMutationVariables
-	>(MUTATION_CREATE_CATEGORY);
-	const [updateCategory] = useMutation<
-		UpdateCategoryMutation,
-		UpdateCategoryMutationVariables
-	>(MUTATION_UPDATE_CATEGORY);
-	const [deleteCategory] = useMutation<
-		DeleteCategoryMutation,
-		DeleteCategoryMutationVariables
-	>(MUTATION_DELETE_CATEGORY);
+	const [
+		createCategory,
+		{ loading: createCategoryLoading, error: createCategoryError },
+	] = useMutation<CreateCategoryMutation, CreateCategoryMutationVariables>(
+		MUTATION_CREATE_CATEGORY
+	);
+	const [
+		updateCategory,
+		{ loading: updateCategoryLoading, error: updateCategoryError },
+	] = useMutation<UpdateCategoryMutation, UpdateCategoryMutationVariables>(
+		MUTATION_UPDATE_CATEGORY
+	);
+	const [
+		deleteCategory,
+		{ loading: deleteCategoryLoading, error: deleteCategoryError },
+	] = useMutation<DeleteCategoryMutation, DeleteCategoryMutationVariables>(
+		MUTATION_DELETE_CATEGORY
+	);
 	const selectParentRef = useRef<HTMLSelectElement>(null);
 	const selectCategoryRef = useRef<HTMLSelectElement>(null);
+
+	const loading =
+		categoryLoading ||
+		createCategoryLoading ||
+		updateCategoryLoading ||
+		deleteCategoryLoading ||
+		!data;
+
+	const mutationError =
+		createCategoryError || updateCategoryError || deleteCategoryError;
 
 	const handleParentSelect = (e: ChangeEvent<HTMLSelectElement>) => {
 		const value = +e.currentTarget.value || undefined;
 		setParentId(value);
+	};
+
+	const handleName = (e: ChangeEvent<HTMLInputElement>) => {
+		setName(e.target.value);
 	};
 
 	const handleCategorySelect = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -70,18 +90,7 @@ const Category = () => {
 		}
 	};
 
-	const handleName = (e: ChangeEvent<HTMLInputElement>) => {
-		setName(e.target.value);
-	};
-
 	const handleDelete = async () => {
-		setLoading(true);
-
-		if (!categoryId) {
-			//error handle message?
-			setLoading(false);
-			return;
-		}
 		await deleteCategory({
 			variables: {
 				id: categoryId,
@@ -93,12 +102,10 @@ const Category = () => {
 		setName("");
 		setParentId(0);
 		setCategoryId(0);
-		setLoading(false);
 	};
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
-		setLoading(true);
 		if (!selectCategoryRef.current) return;
 		if (categoryId) {
 			await updateCategory({
@@ -126,14 +133,7 @@ const Category = () => {
 		setName("");
 		setCategoryId(0);
 		setParentId(0);
-		setLoading(false);
 	};
-
-	useEffect(() => {
-		if (!queryLoading && data) {
-			setLoading(false);
-		}
-	}, [queryLoading, data]);
 
 	return (
 		<>
@@ -141,6 +141,9 @@ const Category = () => {
 			<Form className="m-auto col-sm-10" onSubmit={handleSubmit}>
 				<Form.Group className="mt-3 mb-3">
 					<Form.Label>Choose category to create, update or delete</Form.Label>
+					{categoryError && (
+						<Alert variant="danger">{categoryError.message}</Alert>
+					)}
 					<div className="d-flex gap-2">
 						<Form.Select
 							aria-label="Create category to create, update or delete"
@@ -157,7 +160,7 @@ const Category = () => {
 									</option>
 								))}
 						</Form.Select>
-						<Button onClick={handleDelete} disabled={loading}>
+						<Button onClick={handleDelete} disabled={loading || !categoryId}>
 							{loading ? "Wait..." : "Delete"}
 						</Button>{" "}
 					</div>
@@ -168,6 +171,8 @@ const Category = () => {
 						placeholder="Category name"
 						onChange={handleName}
 						value={name}
+						minLength={3}
+						required
 					/>
 				</Form.Group>
 				<Form.Group className="mb-3">
@@ -187,6 +192,9 @@ const Category = () => {
 							))}
 					</Form.Select>
 				</Form.Group>
+				{mutationError && (
+					<Alert variant="danger">{mutationError.message}</Alert>
+				)}
 				<div className="d-flex justify-content-center">
 					<Button type="submit" disabled={loading}>
 						{loading ? "Wait..." : "Submit"}

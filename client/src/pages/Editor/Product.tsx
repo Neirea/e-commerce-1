@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { ChangeEvent, MouseEvent, FormEvent, useState, useRef } from "react";
-import { Form, Button } from "react-bootstrap";
+import { ChangeEvent, FormEvent, useState, useRef, useMemo } from "react";
+import { Form, Button, Alert } from "react-bootstrap";
 import {
 	CreateProductMutation,
 	CreateProductMutationVariables,
@@ -20,6 +20,7 @@ import {
 	MUTATION_UPDATE_PRODUCT,
 	QUERY_ALL_PRODUCT,
 } from "../../queries/Product";
+import isJSON from "../../utils/isJSON";
 
 interface ImageResult {
 	img_id: string;
@@ -41,32 +42,64 @@ const CreateProduct = () => {
 	const {
 		data: productData,
 		loading: productLoading,
+		error: productError,
 		refetch,
 	} = useQuery<GetAllProductsQuery>(QUERY_ALL_PRODUCT);
-	const { data: companyData, loading: companyLoading } =
-		useQuery<GetAllCompaniesQuery>(QUERY_ALL_COMPANIES);
-	const { data: categoryData, loading: categoryLoading } =
-		useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
-	const [createProduct, { error: createProductError }] = useMutation<
-		CreateProductMutation,
-		CreateProductMutationVariables
-	>(MUTATION_CREATE_PRODUCT);
-	const [updateProduct, { error: updateProductError }] = useMutation<
-		UpdateProductMutation,
-		UpdateProductMutationVariables
-	>(MUTATION_UPDATE_PRODUCT);
-	const [deleteProduct, { error: deleteProductError }] = useMutation<
-		DeleteProductMutation,
-		DeleteProductMutationVariables
-	>(MUTATION_DELETE_PRODUCT);
+	const {
+		data: companyData,
+		loading: companyLoading,
+		error: companyError,
+	} = useQuery<GetAllCompaniesQuery>(QUERY_ALL_COMPANIES);
+	const {
+		data: categoryData,
+		loading: categoryLoading,
+		error: categoryError,
+	} = useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
+	const [
+		createProduct,
+		{ loading: createProductLoading, error: createProductError },
+	] = useMutation<CreateProductMutation, CreateProductMutationVariables>(
+		MUTATION_CREATE_PRODUCT
+	);
+	const [
+		updateProduct,
+		{ loading: updateProductLoading, error: updateProductError },
+	] = useMutation<UpdateProductMutation, UpdateProductMutationVariables>(
+		MUTATION_UPDATE_PRODUCT
+	);
+	const [
+		deleteProduct,
+		{ loading: deleteProductLoading, error: deleteProductError },
+	] = useMutation<DeleteProductMutation, DeleteProductMutationVariables>(
+		MUTATION_DELETE_PRODUCT
+	);
 
 	const [productId, setProductId] = useState<number>(0);
-	const [loading, setLoading] = useState(false);
 	const [selectedImages, setSelectedImages] = useState<File[]>([]);
 	const [values, setValues] = useState(defaultValues);
+	const [jsonError, setJsonError] = useState(false);
 	const selectProductRef = useRef<HTMLSelectElement>(null);
 	const selectCategoryRef = useRef<HTMLSelectElement>(null);
 	const selectCompanyRef = useRef<HTMLSelectElement>(null);
+
+	const loading =
+		companyLoading ||
+		categoryLoading ||
+		productLoading ||
+		createProductLoading ||
+		updateProductLoading ||
+		deleteProductLoading ||
+		!productData ||
+		!companyData ||
+		!categoryData;
+
+	const dataError = productError || deleteProductError;
+	const upsertError = createProductError || updateProductError;
+
+	const isJson = useMemo(
+		() => isJSON(values.description),
+		[values.description]
+	);
 
 	const handleProductSelect = (e: ChangeEvent<HTMLSelectElement>) => {
 		const idx = +e.target.value;
@@ -127,7 +160,10 @@ const CreateProduct = () => {
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
-		setLoading(true);
+		if (!isJson) {
+			setJsonError(true);
+			return;
+		}
 
 		const newProduct = {
 			...values,
@@ -161,18 +197,14 @@ const CreateProduct = () => {
 		} else {
 			await createProduct({ variables: { input: newProduct } });
 		}
-		setLoading(false);
+		await refetch();
+		setJsonError(false);
+		setValues(defaultValues);
+		setProductId(0);
 		//open modal of success/error any*
 	};
 
 	const handleDelete = async () => {
-		setLoading(true);
-
-		if (!productId) {
-			//error handle message?
-			setLoading(false);
-			return;
-		}
 		await deleteProduct({
 			variables: {
 				id: productId,
@@ -184,7 +216,6 @@ const CreateProduct = () => {
 		await refetch();
 		setValues(defaultValues);
 		setProductId(0);
-		setLoading(false);
 	};
 
 	return (
@@ -193,6 +224,7 @@ const CreateProduct = () => {
 			<Form className="m-auto col-sm-10" onSubmit={handleSubmit}>
 				<Form.Group className="mt-3 mb-3">
 					<Form.Label>Choose product to create, update or delete</Form.Label>
+					{dataError && <Alert variant="danger">{dataError.message}</Alert>}
 					<div className="d-flex gap-2">
 						<Form.Select
 							aria-label="Create or Choose Product to update"
@@ -209,7 +241,7 @@ const CreateProduct = () => {
 									</option>
 								))}
 						</Form.Select>
-						<Button disabled={loading} onClick={handleDelete}>
+						<Button disabled={loading || !productId} onClick={handleDelete}>
 							{loading ? "Wait..." : "Delete"}
 						</Button>
 					</div>
@@ -222,6 +254,8 @@ const CreateProduct = () => {
 						placeholder="Product name"
 						onChange={handleChange}
 						value={values.name}
+						minLength={3}
+						required
 					/>
 				</Form.Group>
 				<Form.Group className="mb-3">
@@ -236,13 +270,16 @@ const CreateProduct = () => {
 				</Form.Group>
 				<Form.Group className="mb-3">
 					<Form.Label>Description</Form.Label>
+					{jsonError && <Alert variant="danger">Invalid Json</Alert>}
 					<Form.Control
 						as="textarea"
 						rows={7}
 						name="description"
+						isValid={isJson}
 						onChange={handleChange}
 						value={values.description}
 						placeholder={`JSON of product description:\n{\n\tname:"Iphone 11",\n\tprice: 1000,\n\t ...\n}`}
+						required
 					/>
 				</Form.Group>
 				<Form.Group className="mb-3">
@@ -275,6 +312,7 @@ const CreateProduct = () => {
 						value={values.discount}
 					/>
 				</Form.Group>
+				{companyError && <Alert variant="danger">{companyError.message}</Alert>}
 				<Form.Select
 					aria-label="Select Company"
 					className="mt-3 mb-3 d-flex gap-2"
@@ -293,6 +331,9 @@ const CreateProduct = () => {
 						))}
 				</Form.Select>
 				<Form.Group className="mt-3 mb-3 d-flex gap-2">
+					{categoryError && (
+						<Alert variant="danger">{categoryError.message}</Alert>
+					)}
 					<Form.Select
 						aria-label="Select Category"
 						name="category_id"
@@ -319,8 +360,11 @@ const CreateProduct = () => {
 						onChange={handleFiles}
 					/>
 				</Form.Group>
+				{upsertError && <Alert variant="danger">{upsertError.message}</Alert>}
 				<div className="d-flex justify-content-center">
-					<Button type="submit">{loading ? "Wait..." : "Submit"}</Button>
+					<Button type="submit" disabled={loading}>
+						{loading ? "Wait..." : "Submit"}
+					</Button>
 				</div>
 			</Form>
 		</>

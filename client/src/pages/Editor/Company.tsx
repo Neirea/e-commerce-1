@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { ChangeEvent, FormEvent, useState, useRef, useEffect } from "react";
-import { Form, Button } from "react-bootstrap";
+import { ChangeEvent, FormEvent, useState, useRef } from "react";
+import { Form, Button, Alert } from "react-bootstrap";
 import {
 	CreateCompanyMutation,
 	CreateCompanyMutationVariables,
@@ -18,27 +18,42 @@ import {
 } from "../../queries/Company";
 
 const Company = () => {
-	const [loading, setLoading] = useState(true);
 	const [companyId, setCompanyId] = useState<number | undefined>();
 	const [name, setName] = useState<string>("");
 	const {
 		data,
-		loading: queryLoading,
+		loading: companyLoading,
+		error: companyError,
 		refetch,
 	} = useQuery<GetAllCompaniesQuery>(QUERY_ALL_COMPANIES);
-	const [createCompany] = useMutation<
-		CreateCompanyMutation,
-		CreateCompanyMutationVariables
-	>(MUTATION_CREATE_COMPANY);
-	const [updateCompany] = useMutation<
-		UpdateCompanyMutation,
-		UpdateCompanyMutationVariables
-	>(MUTATION_UPDATE_COMPANY);
-	const [deleteCompany] = useMutation<
-		DeleteCompanyMutation,
-		DeleteCompanyMutationVariables
-	>(MUTATION_DELETE_COMPANY);
+	const [
+		createCompany,
+		{ error: createCompanyError, loading: createCompanyLoading },
+	] = useMutation<CreateCompanyMutation, CreateCompanyMutationVariables>(
+		MUTATION_CREATE_COMPANY
+	);
+	const [
+		updateCompany,
+		{ error: updateCompanyError, loading: updateCompanyLoading },
+	] = useMutation<UpdateCompanyMutation, UpdateCompanyMutationVariables>(
+		MUTATION_UPDATE_COMPANY
+	);
+	const [
+		deleteCompany,
+		{ error: deleteCompanyError, loading: deleteCompanyLoading },
+	] = useMutation<DeleteCompanyMutation, DeleteCompanyMutationVariables>(
+		MUTATION_DELETE_COMPANY
+	);
 	const selectRef = useRef<HTMLSelectElement>(null);
+	const loading =
+		companyLoading ||
+		createCompanyLoading ||
+		updateCompanyLoading ||
+		deleteCompanyLoading ||
+		!data;
+
+	const mutationError =
+		createCompanyError || updateCompanyError || deleteCompanyError;
 
 	const handleSelect = (e: ChangeEvent<HTMLSelectElement>) => {
 		const idx = +e.target.value;
@@ -57,11 +72,8 @@ const Company = () => {
 	};
 
 	const handleDelete = async () => {
-		setLoading(true);
-
 		if (!companyId || !selectRef.current) {
 			//error handle message?
-			setLoading(false);
 			return;
 		}
 		await deleteCompany({
@@ -73,12 +85,10 @@ const Company = () => {
 		if (selectRef.current) selectRef.current.selectedIndex = 0;
 		setName("");
 		setCompanyId(0);
-		setLoading(false);
 	};
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
-		setLoading(true);
 		if (companyId) {
 			//update
 			await updateCompany({
@@ -103,14 +113,7 @@ const Company = () => {
 		if (selectRef.current) selectRef.current.selectedIndex = 0;
 		setName("");
 		setCompanyId(0);
-		setLoading(false);
 	};
-
-	useEffect(() => {
-		if (!queryLoading && data) {
-			setLoading(false);
-		}
-	}, [queryLoading, data]);
 
 	return (
 		<>
@@ -118,6 +121,9 @@ const Company = () => {
 			<Form className="m-auto col-sm-10" onSubmit={handleSubmit}>
 				<Form.Group className="mt-3">
 					<Form.Label>Choose company to create, update or delete</Form.Label>
+					{companyError && (
+						<Alert variant="danger">{companyError.message}</Alert>
+					)}
 					<div className="d-flex gap-2">
 						<Form.Select
 							aria-label="Choose company to create, update or delete"
@@ -134,7 +140,7 @@ const Company = () => {
 									</option>
 								))}
 						</Form.Select>
-						<Button disabled={loading} onClick={handleDelete}>
+						<Button disabled={loading || !companyId} onClick={handleDelete}>
 							{loading ? "Wait..." : "Delete"}
 						</Button>
 					</div>
@@ -145,8 +151,13 @@ const Company = () => {
 						placeholder="Company name"
 						onChange={handleName}
 						value={name}
+						minLength={3}
+						required
 					/>
 				</Form.Group>
+				{mutationError && (
+					<Alert variant="danger">{mutationError.message}</Alert>
+				)}
 				<div className="d-flex justify-content-center">
 					<Button type="submit" disabled={loading}>
 						{loading ? "Wait..." : "Submit"}
