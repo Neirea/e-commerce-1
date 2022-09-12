@@ -74,6 +74,26 @@ export const app = express();
 		context: ({ req, res }) => {
 			return { req, res };
 		},
+		plugins: [
+			{
+				async requestDidStart(initialRequestContext) {
+					return {
+						async didEncounterErrors({ errors }) {
+							const { operationName, context } = initialRequestContext;
+							if (
+								operationName === "CreateProduct" ||
+								operationName === "UpdateProduct"
+							) {
+								const image = context.req.files?.image as
+									| UploadedFile
+									| undefined;
+								if (image) fs.unlinkSync(image.tempFilePath);
+							}
+						},
+					};
+				},
+			},
+		],
 		formatError: (err) => {
 			console.log("Log error message:", err.message);
 
@@ -82,26 +102,6 @@ export const app = express();
 				return new Error("Internal server error");
 			}
 			return err;
-		},
-		formatResponse(response, requestContext) {
-			const { errors, operationName, context } = requestContext;
-			if (errors?.length) {
-				//delete tmp file
-				if (
-					operationName === "CreateProduct" ||
-					operationName === "UpdateProduct"
-				) {
-					interface contextType {
-						req: Request;
-					}
-					const image = (context as contextType).req.files?.image as
-						| UploadedFile
-						| undefined;
-					if (image) fs.unlinkSync(image.tempFilePath);
-				}
-			}
-
-			return response;
 		},
 	});
 
