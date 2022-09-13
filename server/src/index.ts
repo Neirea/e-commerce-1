@@ -84,6 +84,9 @@ export const app = express();
 								operationName === "CreateProduct" ||
 								operationName === "UpdateProduct"
 							) {
+								context.input.img_id.forEach((id: string) =>
+									cloudinary.uploader.destroy(id)
+								);
 								const image = context.req.files?.image as
 									| UploadedFile
 									| undefined;

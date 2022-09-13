@@ -58,11 +58,7 @@ const productResolvers = {
 				images: arrOfImgs,
 			};
 
-			const product = await prisma.product
-				.create({ data: newProduct })
-				.catch(() => {
-					input.img_id.forEach((id) => cloudinary.uploader.destroy(id!));
-				});
+			const product = await prisma.product.create({ data: newProduct });
 
 			//create connection between company and category
 			await prisma.category.update({
@@ -115,14 +111,10 @@ const productResolvers = {
 				images: arrOfImgs,
 			};
 
-			const product = await prisma.product
-				.update({
-					where: { id: id },
-					data: updatedProduct, // probably wrong #any
-				})
-				.catch(() => {
-					input.img_id.forEach((id) => cloudinary.uploader.destroy(id!));
-				});
+			const product = await prisma.product.update({
+				where: { id: id },
+				data: updatedProduct, // probably wrong #any
+			});
 			await prisma.category.update({
 				where: { id: category_id },
 				data: {
