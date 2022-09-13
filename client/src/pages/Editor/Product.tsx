@@ -21,11 +21,7 @@ import {
 	QUERY_ALL_PRODUCT,
 } from "../../queries/Product";
 import isJSON from "../../utils/isJSON";
-
-interface ImageResult {
-	img_id: string;
-	img_src: string;
-}
+import { ImageResult } from "../../commonTypes";
 
 const defaultValues = {
 	name: "",
@@ -183,7 +179,7 @@ const CreateProduct = () => {
 				}
 			)
 				.then((res) => res.json())
-				.then((res: { images: ImageResult[] }) => res);
+				.then((res: ImageResult) => res);
 			newProduct.img_id = imageResult.images.map((i) => i.img_id);
 			newProduct.img_src = imageResult.images.map((i) => i.img_src);
 		}
@@ -199,6 +195,7 @@ const CreateProduct = () => {
 		setJsonError(false);
 		setValues(defaultValues);
 		setProductId(0);
+		setSelectedImages([]);
 		//open modal of success/error any*
 	};
 

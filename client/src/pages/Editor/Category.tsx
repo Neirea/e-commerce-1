@@ -16,10 +16,12 @@ import {
 	MUTATION_UPDATE_CATEGORY,
 	MUTATION_DELETE_CATEGORY,
 } from "../../queries/Category";
+import { ImageResult } from "../../commonTypes";
 
 const Category = () => {
 	const [categoryId, setCategoryId] = useState<number>(0);
 	const [parentId, setParentId] = useState<number | undefined>();
+	const [selectedImage, setSelectedImage] = useState<File | undefined>();
 	const [name, setName] = useState<string>("");
 	const {
 		data,
@@ -90,6 +92,14 @@ const Category = () => {
 		}
 	};
 
+	const handleUpload = (e: ChangeEvent<HTMLInputElement>) => {
+		if (!e.target.files || !e.target.files.length) {
+			setSelectedImage(undefined);
+			return;
+		}
+		setSelectedImage(e.target.files[0]);
+	};
+
 	const handleDelete = async () => {
 		await deleteCategory({
 			variables: {
@@ -106,7 +116,27 @@ const Category = () => {
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
-		if (!selectCategoryRef.current) return;
+
+		let img_src;
+		let img_id;
+
+		if (selectedImage) {
+			const formData = new FormData();
+			formData.append("images", selectedImage);
+
+			const imageResult = await fetch(
+				`${import.meta.env.VITE_SERVER_URL}/editor/upload-images`,
+				{
+					method: "POST",
+					body: formData,
+				}
+			)
+				.then((res) => res.json())
+				.then((res: ImageResult) => res);
+			img_id = imageResult.images[0].img_id;
+			img_src = imageResult.images[0].img_src;
+		}
+
 		if (categoryId) {
 			await updateCategory({
 				variables: {
@@ -114,6 +144,12 @@ const Category = () => {
 						id: categoryId,
 						name: name,
 						parent_id: parentId || null,
+						image: img_id
+							? {
+									img_id,
+									img_src,
+							  }
+							: undefined,
 					},
 				},
 			});
@@ -123,16 +159,23 @@ const Category = () => {
 					input: {
 						name: name,
 						parent_id: parentId,
+						image: img_id
+							? {
+									img_id,
+									img_src,
+							  }
+							: undefined,
 					},
 				},
 			});
 		}
 		await refetch();
 		if (selectParentRef.current) selectParentRef.current.selectedIndex = 0;
-		selectCategoryRef.current.selectedIndex = 0;
+		if (selectCategoryRef.current) selectCategoryRef.current.selectedIndex = 0;
 		setName("");
 		setCategoryId(0);
 		setParentId(0);
+		setSelectedImage(undefined);
 	};
 
 	return (
@@ -191,6 +234,10 @@ const Category = () => {
 								</option>
 							))}
 					</Form.Select>
+				</Form.Group>
+				<Form.Group className="mb-3">
+					<Form.Label>Image</Form.Label>
+					<Form.Control type="file" accept="image/*" onChange={handleUpload} />
 				</Form.Group>
 				{mutationError && (
 					<Alert variant="danger">{mutationError.message}</Alert>
