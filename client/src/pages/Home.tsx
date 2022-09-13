@@ -2,9 +2,13 @@ import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import MenuCard from "../components/MenuCard";
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/client";
+import { QUERY_ALL_CATEGORIES } from "../queries/Category";
+import { GetAllCategoriesQuery } from "../generated/graphql";
 
 const Home = () => {
-	// const {data,loading,error} = useQuery()
+	const { data, loading, error } =
+		useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
+
 	return (
 		<>
 			<Container as="main">
@@ -19,7 +23,6 @@ const Home = () => {
 								className="mb-5"
 							/>
 						</Col>
-
 						<Col className="bg-success col-5 p-5 d-flex flex-column justify-content-center">
 							<h1 className="text-light fw-bold text-center fs-1">
 								About Tech Shop
@@ -35,26 +38,31 @@ const Home = () => {
 							</Link>
 						</Col>
 					</Row>
-
+					<h2 className="text-center mt-3">Categories</h2>
 					<Row className="gap-3">
-						<Col>
-							<MenuCard />
-						</Col>
-						<Col>
-							<MenuCard />
-						</Col>
-						<Col>
-							<MenuCard />
-						</Col>
-						<Col>
-							<MenuCard />
-						</Col>
-						<Col>
-							<MenuCard />
-						</Col>
-						<Col>
-							<MenuCard />
-						</Col>
+						{data &&
+							data.categories.map((category) => {
+								if (category.image) {
+									return (
+										<Col>
+											<Card.Body className="text-center d-flex flex-column">
+												<Card.Link
+													as={Link}
+													to={`/search?category=${category.name}`}
+													className="custom-link"
+												>
+													<Card.Img
+														variant="bottom"
+														src={category.image.img_src}
+														style={{ width: "15rem" }}
+													/>
+													<div>{category.name}</div>
+												</Card.Link>
+											</Card.Body>
+										</Col>
+									);
+								}
+							})}
 					</Row>
 				</Container>
 

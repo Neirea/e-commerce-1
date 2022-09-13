@@ -6,3 +6,12 @@
 main {
 	flex: 1;
 }
+
+.custom-link {
+	color: black;
+	text-decoration: none;
+}
+.custom-link:hover {
+	color: black;
+	text-decoration: underline;
+}

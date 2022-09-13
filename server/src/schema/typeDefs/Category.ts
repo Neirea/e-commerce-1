@@ -4,7 +4,7 @@ const categoryTypes = gql`
 	type Category {
 		id: Int!
 		name: String!
-		image: String
+		image: JSON
 		parent_id: Int
 	}
 

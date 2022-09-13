@@ -12,12 +12,7 @@ const prisma = new PrismaClient({ log: ["query"] });
 
 const categoryResolvers = {
 	Query: {
-		categories: (parent: any, args: unknown, { req }: { req: Request }) => {
-			if (!req.session.user?.role.includes(Role.ADMIN)) {
-				throw new AuthenticationError(
-					"You don't have permissions for this action"
-				);
-			}
+		categories: () => {
 			return prisma.category.findMany();
 			//return prisma.$queryRaw`SELECT * FROM public."Category";`;
 		},
@@ -48,14 +43,17 @@ const categoryResolvers = {
 			}
 			const { id: category_id, parent_id, name, image } = input;
 
+			console.log("image=", image);
+
 			const oldCategory = await prisma.category.findUnique({
 				where: { id: category_id },
 			});
+
 			const category = await prisma.category.update({
 				where: { id: category_id },
 				data: { parent_id, name, image },
 			});
-			if (oldCategory?.image) {
+			if (oldCategory?.image && image) {
 				cloudinary.uploader.destroy((oldCategory?.image as any).img_id);
 			}
 			return category;

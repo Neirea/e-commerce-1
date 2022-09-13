@@ -20,7 +20,7 @@ export type Scalars = {
 export type Category = {
   __typename?: 'Category';
   id: Scalars['Int'];
-  image?: Maybe<Scalars['String']>;
+  image?: Maybe<Scalars['JSON']>;
   name: Scalars['String'];
   parent_id?: Maybe<Scalars['Int']>;
 };
@@ -228,7 +228,7 @@ export type User = {
 export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: number, name: string, parent_id?: number | null }> };
+export type GetAllCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: number, name: string, image?: any | null, parent_id?: number | null }> };
 
 export type CreateCategoryMutationVariables = Exact<{
   input: CreateCategoryInput;
@@ -326,6 +326,7 @@ export const GetAllCategoriesDocument = gql`
   categories {
     id
     name
+    image
     parent_id
   }
 }
