@@ -19,6 +19,7 @@ export type Scalars = {
 export type Category = {
   __typename?: 'Category';
   id: Scalars['Int'];
+  image?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   parent_id?: Maybe<Scalars['Int']>;
 };
@@ -30,6 +31,7 @@ export type Company = {
 };
 
 export type CreateCategoryInput = {
+  image?: InputMaybe<Scalars['JSON']>;
   name: Scalars['String'];
   parent_id?: InputMaybe<Scalars['Int']>;
 };
@@ -174,6 +176,7 @@ export enum Role {
 
 export type UpdateCategoryInput = {
   id: Scalars['Int'];
+  image?: InputMaybe<Scalars['JSON']>;
   name: Scalars['String'];
   parent_id?: InputMaybe<Scalars['Int']>;
 };
@@ -340,6 +343,7 @@ export type ResolversParentTypes = {
 
 export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   parent_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

@@ -53,6 +53,7 @@ model Company{
 model Category {
   id Int @id @default(autoincrement())
   name String
+  image Json?
   parent_id Int?
   parent Category? @relation("subCategory",fields: [parent_id],references: [id])
   child Category[] @relation("subCategory")

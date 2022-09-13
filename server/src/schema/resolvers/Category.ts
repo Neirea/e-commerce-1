@@ -4,7 +4,9 @@ import {
 	CreateCategoryInput,
 	UpdateCategoryInput,
 } from "../../generated/graphql";
+import { v2 as cloudinary } from "cloudinary";
 import { AuthenticationError, UserInputError } from "apollo-server-express";
+import { JSONObject } from "@apollo/sandbox/src/helpers/types";
 
 const prisma = new PrismaClient({ log: ["query"] });
 
@@ -34,7 +36,7 @@ const categoryResolvers = {
 			if (input.name.length < 3) throw new UserInputError("Name is too short");
 			return prisma.category.create({ data: input });
 		},
-		updateCategory: (
+		updateCategory: async (
 			parent: any,
 			{ input }: { input: UpdateCategoryInput },
 			{ req }: { req: Request }
@@ -44,11 +46,19 @@ const categoryResolvers = {
 					"You don't have permissions for this action"
 				);
 			}
-			const { id: category_id, parent_id, name } = input;
-			return prisma.category.update({
+			const { id: category_id, parent_id, name, image } = input;
+
+			const oldCategory = await prisma.category.findUnique({
 				where: { id: category_id },
-				data: { parent_id, name },
 			});
+			const category = await prisma.category.update({
+				where: { id: category_id },
+				data: { parent_id, name, image },
+			});
+			if (oldCategory?.image) {
+				cloudinary.uploader.destroy((oldCategory?.image as any).img_id);
+			}
+			return category;
 		},
 		deleteCategory: async (
 			parent: any,
@@ -60,12 +70,8 @@ const categoryResolvers = {
 					"You don't have permissions for this action"
 				);
 			}
-			const data = await prisma.category
-				.delete({ where: { id: +id } })
-				.catch((err) => console.log(err));
-
-			if (data) return true;
-			return false;
+			await prisma.category.delete({ where: { id: +id } });
+			return true;
 		},
 	},
 };

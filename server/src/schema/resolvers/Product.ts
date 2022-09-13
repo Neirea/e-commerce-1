@@ -111,6 +111,9 @@ const productResolvers = {
 				images: arrOfImgs,
 			};
 
+			const oldProduct = await prisma.product.findUnique({
+				where: { id: id },
+			});
 			const product = await prisma.product.update({
 				where: { id: id },
 				data: updatedProduct, // probably wrong #any
@@ -121,6 +124,12 @@ const productResolvers = {
 					companies: { connect: { id: company_id } },
 				},
 			});
+			//delete old images
+			if (oldProduct?.images.length) {
+				(oldProduct?.images as any[]).forEach((img) =>
+					cloudinary.uploader.destroy(img.img_id)
+				);
+			}
 			return product;
 		},
 		deleteProduct: async (
@@ -137,7 +146,7 @@ const productResolvers = {
 
 			if (data) {
 				(data.images as any[]).forEach((item) => {
-					cloudinary.uploader.destroy(item.img_id!);
+					cloudinary.uploader.destroy(item.img_id);
 				});
 				return true;
 			}

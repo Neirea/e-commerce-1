@@ -114,80 +114,8 @@ export const app = express();
 	//init passport
 	app.use(passport.initialize());
 
-	app.get("/showMe", (req, res) => {
-		res.json(req.session.user);
-	});
-
-	//auth routes
-	app.get("/auth/login/failed", failedLogin);
-	//google
-	app.get("/auth/login/google", (req, res, next) => {
-		app.set("redirect", req.query.path);
-		passport.authenticate("google", {
-			session: false,
-			scope: ["profile", "email"],
-		})(req, res, next);
-	});
-	app.get(
-		"/auth/google/callback",
-		passport.authenticate("google", {
-			session: false,
-			failureRedirect: "/auth/login/failed",
-		}),
-		loginCallback
-	);
-	//facebook
-	app.get("/auth/login/facebook", (req, res, next) => {
-		app.set("redirect", req.query.path);
-		passport.authenticate("facebook", {
-			session: false,
-			scope: ["email"],
-		})(req, res, next);
-	});
-	app.get(
-		"/auth/facebook/callback",
-		passport.authenticate("facebook", {
-			session: false,
-			failureRedirect: "/auth/login/failed",
-		}),
-		loginCallback
-	);
-	app.post("/editor/upload-images", async (req, res) => {
-		const imageFiles = req.files?.images as UploadedFile[];
-		if (!imageFiles || !imageFiles.length) {
-			res.json({ images: [] });
-		}
-		interface UploadedImage {
-			img_id: string;
-			img_src: string;
-		}
-		const resultImages: UploadedImage[] = [];
-
-		for (let i = 0; i < imageFiles.length; i++) {
-			const result = await cloudinary.uploader.upload(
-				imageFiles[i].tempFilePath,
-				{
-					transformation: [
-						{
-							width: 640,
-							height: 640,
-							crop: "fill",
-						},
-						{
-							fetch_format: "jpg",
-						},
-					],
-					folder: "ecommerce-1",
-				}
-			);
-			resultImages.push({
-				img_id: result.public_id,
-				img_src: result.secure_url,
-			});
-			fs.unlinkSync(imageFiles[i].tempFilePath);
-		}
-		res.status(StatusCodes.OK).json({ images: resultImages });
-	});
+	//REST API Routes
+	require("./restAPI");
 
 	// not found middleware
 	app.use(notFound);

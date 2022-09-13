@@ -59,9 +59,8 @@ const companyResolvers = {
 					"You don't have permissions for this action"
 				);
 			}
-			const data = await prisma.company.delete({ where: { id: id } });
-			if (data) return true;
-			return false;
+			await prisma.company.delete({ where: { id: id } });
+			return true;
 		},
 	},
 };
