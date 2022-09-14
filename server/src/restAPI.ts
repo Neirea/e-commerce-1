@@ -65,9 +65,7 @@ app.post("/editor/upload-images", async (req, res) => {
 						{
 							width: 640,
 							height: 640,
-							crop: "fill",
-						},
-						{
+							crop: "lfill",
 							fetch_format: "jpg",
 						},
 					],
@@ -94,7 +92,8 @@ app.post("/editor/upload-images", async (req, res) => {
 				{
 					width: 640,
 					height: 640,
-					crop: "fill",
+					crop: "lfill",
+					fetch_format: "jpg",
 				},
 				{
 					fetch_format: "jpg",

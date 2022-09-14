@@ -82,7 +82,9 @@ export const app = express();
 							const { operationName, context } = initialRequestContext;
 							if (
 								operationName === "CreateProduct" ||
-								operationName === "UpdateProduct"
+								operationName === "UpdateProduct" ||
+								operationName === "CreateCategory" ||
+								operationName === "UpdateCategory"
 							) {
 								context.input.img_id.forEach((id: string) =>
 									cloudinary.uploader.destroy(id)
