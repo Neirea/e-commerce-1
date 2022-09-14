@@ -17,8 +17,10 @@ import {
 	MUTATION_DELETE_CATEGORY,
 } from "../../queries/Category";
 import { ImageResult } from "../../commonTypes";
+import { serverUrl } from "../../utils/server";
 
 const Category = () => {
+	const [uploadLoading, setUploadLoading] = useState(false);
 	const [categoryId, setCategoryId] = useState<number>(0);
 	const [parentId, setParentId] = useState<number | undefined>();
 	const [selectedImage, setSelectedImage] = useState<File | undefined>();
@@ -51,6 +53,7 @@ const Category = () => {
 	const selectCategoryRef = useRef<HTMLSelectElement>(null);
 
 	const loading =
+		uploadLoading ||
 		categoryLoading ||
 		createCategoryLoading ||
 		updateCategoryLoading ||
@@ -121,20 +124,19 @@ const Category = () => {
 		let img_id;
 
 		if (selectedImage) {
+			setUploadLoading(true);
 			const formData = new FormData();
 			formData.append("images", selectedImage);
 
-			const imageResult = await fetch(
-				`${import.meta.env.VITE_SERVER_URL}/editor/upload-images`,
-				{
-					method: "POST",
-					body: formData,
-				}
-			)
+			const imageResult = await fetch(`${serverUrl}/editor/upload-images`, {
+				method: "POST",
+				body: formData,
+			})
 				.then((res) => res.json())
 				.then((res: ImageResult) => res);
 			img_id = imageResult.images[0].img_id;
 			img_src = imageResult.images[0].img_src;
+			setUploadLoading(false);
 		}
 
 		if (categoryId) {

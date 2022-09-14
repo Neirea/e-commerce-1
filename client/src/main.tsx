@@ -4,10 +4,11 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import { AppProvider } from "./context/AppContext";
+import { serverUrl } from "./utils/server";
 
 const client = new ApolloClient({
 	cache: new InMemoryCache(),
-	uri: `${import.meta.env.VITE_SERVER_URL}/graphql`,
+	uri: `${serverUrl}/graphql`,
 	credentials: "include",
 });
 

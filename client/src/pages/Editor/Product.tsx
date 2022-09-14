@@ -22,6 +22,7 @@ import {
 } from "../../queries/Product";
 import isJSON from "../../utils/isJSON";
 import { ImageResult } from "../../commonTypes";
+import { serverUrl } from "../../utils/server";
 
 const defaultValues = {
 	name: "",
@@ -74,11 +75,13 @@ const CreateProduct = () => {
 	const [selectedImages, setSelectedImages] = useState<File[]>([]);
 	const [values, setValues] = useState(defaultValues);
 	const [jsonError, setJsonError] = useState(false);
+	const [uploadLoading, setUploadLoading] = useState(false);
 	const selectProductRef = useRef<HTMLSelectElement>(null);
 	const selectCategoryRef = useRef<HTMLSelectElement>(null);
 	const selectCompanyRef = useRef<HTMLSelectElement>(null);
 
 	const loading =
+		uploadLoading ||
 		companyLoading ||
 		categoryLoading ||
 		productLoading ||
@@ -166,22 +169,21 @@ const CreateProduct = () => {
 			img_src: [] as string[],
 		};
 		if (selectedImages.length) {
+			setUploadLoading(true);
 			const formData = new FormData();
 
 			selectedImages.forEach((image) => {
 				formData.append("images", image);
 			});
-			const imageResult = await fetch(
-				`${import.meta.env.VITE_SERVER_URL}/editor/upload-images`,
-				{
-					method: "POST",
-					body: formData,
-				}
-			)
+			const imageResult = await fetch(`${serverUrl}/editor/upload-images`, {
+				method: "POST",
+				body: formData,
+			})
 				.then((res) => res.json())
 				.then((res: ImageResult) => res);
 			newProduct.img_id = imageResult.images.map((i) => i.img_id);
 			newProduct.img_src = imageResult.images.map((i) => i.img_src);
+			setUploadLoading(false);
 		}
 
 		if (productId) {

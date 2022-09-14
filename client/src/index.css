@@ -7,6 +7,9 @@ main {
 	flex: 1;
 }
 
+.img-fit-cover {
+	object-fit: cover;
+}
 .custom-link {
 	color: black;
 	text-decoration: none;

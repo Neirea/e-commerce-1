@@ -1,13 +1,26 @@
-import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Alert } from "react-bootstrap";
 import MenuCard from "../components/MenuCard";
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { QUERY_ALL_CATEGORIES } from "../queries/Category";
-import { GetAllCategoriesQuery } from "../generated/graphql";
+import {
+	GetAllCategoriesQuery,
+	GetAllProductsQuery,
+} from "../generated/graphql";
+import { QUERY_ALL_PRODUCT } from "../queries/Product";
 
 const Home = () => {
-	const { data, loading, error } =
-		useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
+	const {
+		data: categoryData,
+		loading: categoryLoading,
+		error: categoryError,
+	} = useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
+
+	const {
+		data: productData,
+		loading: productLoading,
+		error: productError,
+	} = useQuery<GetAllProductsQuery>(QUERY_ALL_PRODUCT);
 
 	return (
 		<>
@@ -20,7 +33,7 @@ const Home = () => {
 								alt="First img"
 								width="100%"
 								height="100%"
-								className="mb-5"
+								className="img-fit-cover"
 							/>
 						</Col>
 						<Col className="bg-success col-5 p-5 d-flex flex-column justify-content-center">
@@ -40,8 +53,15 @@ const Home = () => {
 					</Row>
 					<h2 className="text-center mt-3">Categories</h2>
 					<Row className="gap-3">
-						{data &&
-							data.categories.map((category) => {
+						{categoryError ? (
+							<Alert variant="danger">
+								Error: data was not fetched from the server
+							</Alert>
+						) : categoryLoading ? (
+							<div>Loading...</div>
+						) : (
+							categoryData &&
+							categoryData.categories.map((category) => {
 								if (category.image) {
 									return (
 										<Col>
@@ -51,8 +71,8 @@ const Home = () => {
 													to={`/search?category=${category.name}`}
 													className="custom-link"
 												>
-													<Card.Img
-														variant="bottom"
+													<img
+														className="mb-2"
 														src={category.image.img_src}
 														style={{ width: "15rem" }}
 													/>
@@ -62,7 +82,8 @@ const Home = () => {
 										</Col>
 									);
 								}
-							})}
+							})
+						)}
 					</Row>
 				</Container>
 
@@ -70,24 +91,40 @@ const Home = () => {
 					<h2 className="text-center mt-5">Featured</h2>
 					<Container className="d-flex justify-content-center mt-3 gap-3">
 						<Row className="gap-3">
-							<Col>
-								<MenuCard />
-							</Col>
-							<Col>
-								<MenuCard />
-							</Col>
-							<Col>
-								<MenuCard />
-							</Col>
-							<Col>
-								<MenuCard />
-							</Col>
-							<Col>
-								<MenuCard />
-							</Col>
-							<Col>
-								<MenuCard />
-							</Col>
+							{productError ? (
+								<Alert variant="danger">
+									Error: data was not fetched from the server
+								</Alert>
+							) : productLoading ? (
+								// any: add loading animation with container height
+								<div>Loading...</div>
+							) : (
+								productData &&
+								productData.products?.map((product) => {
+									if (product.images.length) {
+										return (
+											<Col>
+												<Card.Body className="text-center d-flex flex-column">
+													<Card.Link
+														as={Link}
+														className="custom-link"
+														to={`/product/${product.name}`}
+													>
+														<img
+															src={product.images[0].img_src}
+															className="mb-2"
+															style={{
+																height: "15rem",
+															}}
+														/>
+														<div>{product.name}</div>
+													</Card.Link>
+												</Card.Body>
+											</Col>
+										);
+									}
+								})
+							)}
 						</Row>
 					</Container>
 				</Container>

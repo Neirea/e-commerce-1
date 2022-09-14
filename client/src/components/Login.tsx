@@ -1,6 +1,7 @@
 import { FaFacebook } from "@react-icons/all-files/fa/FaFacebook";
 import { FaGoogle } from "@react-icons/all-files/fa/FaGoogle";
 import { Button, Modal } from "react-bootstrap";
+import { serverUrl } from "../utils/server";
 
 const Login = ({
 	handleClose,
@@ -14,16 +15,10 @@ const Login = ({
 			? window.location.pathname.slice(1) + window.location.search
 			: "";
 	const handleLoginGoogle = async () => {
-		window.open(
-			`${import.meta.env.VITE_SERVER_URL}/auth/login/google?path=${fromUrl}`,
-			"_self"
-		);
+		window.open(`${serverUrl}/auth/login/google?path=${fromUrl}`, "_self");
 	};
 	const handleLoginFacebook = async () => {
-		window.open(
-			`${import.meta.env.VITE_SERVER_URL}/auth/login/facebook?path=${fromUrl}`,
-			"_self"
-		);
+		window.open(`${serverUrl}/auth/login/facebook?path=${fromUrl}`, "_self");
 	};
 
 	return (
