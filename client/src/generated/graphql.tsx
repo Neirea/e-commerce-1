@@ -72,7 +72,6 @@ export type Mutation = {
   deleteCategory: Scalars['Boolean'];
   deleteCompany: Scalars['Boolean'];
   deleteProduct: Scalars['Boolean'];
-  deleteUser: Scalars['Boolean'];
   logout: Scalars['Boolean'];
   updateCategory: Scalars['Boolean'];
   updateCompany: Scalars['Boolean'];
@@ -107,11 +106,6 @@ export type MutationDeleteCompanyArgs = {
 
 
 export type MutationDeleteProductArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type MutationDeleteUserArgs = {
   id: Scalars['Int'];
 };
 
@@ -207,13 +201,12 @@ export type UpdateProductInput = {
 };
 
 export type UpdateUserInput = {
-  address: Scalars['String'];
-  avatar: Scalars['String'];
-  email: Scalars['String'];
+  address?: InputMaybe<Scalars['String']>;
+  email?: InputMaybe<Scalars['String']>;
   family_name: Scalars['String'];
   given_name: Scalars['String'];
   id: Scalars['Int'];
-  role: Array<Role>;
+  phone?: InputMaybe<Scalars['String']>;
 };
 
 export type User = {
@@ -225,6 +218,7 @@ export type User = {
   family_name: Scalars['String'];
   given_name: Scalars['String'];
   id: Scalars['Int'];
+  phone?: Maybe<Scalars['String']>;
   platform: Platform;
   platform_id: Scalars['String'];
   role: Array<Role>;
@@ -313,17 +307,17 @@ export type DeleteProductMutationVariables = Exact<{
 
 export type DeleteProductMutation = { __typename?: 'Mutation', deleteProduct: boolean };
 
-export type GetSingleUserQueryVariables = Exact<{
-  id: Scalars['Int'];
-}>;
-
-
-export type GetSingleUserQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: number, role: Array<Role> } | null };
-
 export type ShowCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ShowCurrentUserQuery = { __typename?: 'Query', showMe?: { __typename?: 'User', id: number, given_name: string, family_name: string, role: Array<Role>, avatar: string } | null };
+export type ShowCurrentUserQuery = { __typename?: 'Query', showMe?: { __typename?: 'User', id: number, given_name: string, family_name: string, email?: string | null, address?: string | null, phone?: string | null, avatar: string, role: Array<Role> } | null };
+
+export type UpdateUserMutationVariables = Exact<{
+  input: UpdateUserInput;
+}>;
+
+
+export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: boolean };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -793,50 +787,17 @@ export function useDeleteProductMutation(baseOptions?: Apollo.MutationHookOption
 export type DeleteProductMutationHookResult = ReturnType<typeof useDeleteProductMutation>;
 export type DeleteProductMutationResult = Apollo.MutationResult<DeleteProductMutation>;
 export type DeleteProductMutationOptions = Apollo.BaseMutationOptions<DeleteProductMutation, DeleteProductMutationVariables>;
-export const GetSingleUserDocument = gql`
-    query GetSingleUser($id: Int!) {
-  user(id: $id) {
-    id
-    role
-  }
-}
-    `;
-
-/**
- * __useGetSingleUserQuery__
- *
- * To run a query within a React component, call `useGetSingleUserQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetSingleUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetSingleUserQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetSingleUserQuery(baseOptions: Apollo.QueryHookOptions<GetSingleUserQuery, GetSingleUserQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetSingleUserQuery, GetSingleUserQueryVariables>(GetSingleUserDocument, options);
-      }
-export function useGetSingleUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSingleUserQuery, GetSingleUserQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetSingleUserQuery, GetSingleUserQueryVariables>(GetSingleUserDocument, options);
-        }
-export type GetSingleUserQueryHookResult = ReturnType<typeof useGetSingleUserQuery>;
-export type GetSingleUserLazyQueryHookResult = ReturnType<typeof useGetSingleUserLazyQuery>;
-export type GetSingleUserQueryResult = Apollo.QueryResult<GetSingleUserQuery, GetSingleUserQueryVariables>;
 export const ShowCurrentUserDocument = gql`
     query ShowCurrentUser {
   showMe {
     id
     given_name
     family_name
-    role
+    email
+    address
+    phone
     avatar
+    role
   }
 }
     `;
@@ -867,6 +828,37 @@ export function useShowCurrentUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export type ShowCurrentUserQueryHookResult = ReturnType<typeof useShowCurrentUserQuery>;
 export type ShowCurrentUserLazyQueryHookResult = ReturnType<typeof useShowCurrentUserLazyQuery>;
 export type ShowCurrentUserQueryResult = Apollo.QueryResult<ShowCurrentUserQuery, ShowCurrentUserQueryVariables>;
+export const UpdateUserDocument = gql`
+    mutation UpdateUser($input: UpdateUserInput!) {
+  updateUser(input: $input)
+}
+    `;
+export type UpdateUserMutationFn = Apollo.MutationFunction<UpdateUserMutation, UpdateUserMutationVariables>;
+
+/**
+ * __useUpdateUserMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserMutation, { data, loading, error }] = useUpdateUserMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<UpdateUserMutation, UpdateUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument, options);
+      }
+export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
+export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
+export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
 export const LogoutDocument = gql`
     mutation Logout {
   logout

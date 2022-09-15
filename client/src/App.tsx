@@ -11,13 +11,13 @@ import { useAppContext } from "./context/AppContext";
 import { Container } from "react-bootstrap";
 import RequireAuth from "./components/RequireAuth";
 import { Role } from "./generated/graphql";
+import UserProfile from "./pages/UserProfile";
 
 function App() {
-	const { isLoading } = useAppContext();
+	const { user, isLoading } = useAppContext();
 
 	return (
 		<>
-			{/* <GQLTEST></GQLTEST> */}
 			<Header />
 			{isLoading ? (
 				<Container as="main" className="mt-5 text-center">
@@ -32,6 +32,16 @@ function App() {
 						element={<RequireAuth allowedRoles={[Role.Admin, Role.Editor]} />}
 					>
 						<Route path="/editor" element={<Editor />} />
+					</Route>
+					{/* user routes */}
+					<Route
+						element={
+							<RequireAuth
+								allowedRoles={[Role.Admin, Role.Editor, Role.User]}
+							/>
+						}
+					>
+						<Route path="/profile" element={<UserProfile user={user} />} />
 					</Route>
 
 					<Route path="/unauthorized" element={<Unauthorized />} />
