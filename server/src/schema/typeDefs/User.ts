@@ -18,6 +18,7 @@ const userTypeDefs = gql`
 		family_name: String!
 		email: String
 		address: String
+		phone: String
 		platform_id: String!
 		platform: Platform!
 		role: [Role!]!
@@ -36,15 +37,13 @@ const userTypeDefs = gql`
 		id: Int!
 		given_name: String!
 		family_name: String!
-		address: String!
-		email: String!
-		avatar: String!
-		role: [Role!]!
+		address: String
+		phone: String
+		email: String
 	}
 
 	type Mutation {
 		updateUser(input: UpdateUserInput!): Boolean!
-		deleteUser(id: Int!): Boolean!
 		logout: Boolean!
 	}
 `;

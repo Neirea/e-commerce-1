@@ -11,10 +11,11 @@ model User {
   id Int @default(autoincrement()) @id
   given_name String
   family_name String
-  email String
+  email String?
   platform_id String @unique
   platform Platform
-  address String
+  address String?
+  phone String?
   role Role[]
   created_at DateTime @default(now())
   avatar String

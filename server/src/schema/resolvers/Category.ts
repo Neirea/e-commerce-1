@@ -13,7 +13,7 @@ const categoryResolvers = {
 	Query: {
 		categories: () => {
 			return prisma.category.findMany({
-				include: { companies: true },
+				include: { companies: true, parent: true },
 				orderBy: { name: "asc" },
 			});
 			//return prisma.$queryRaw`SELECT * FROM public."Category";`;

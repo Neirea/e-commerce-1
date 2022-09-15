@@ -71,7 +71,6 @@ export type Mutation = {
   deleteCategory: Scalars['Boolean'];
   deleteCompany: Scalars['Boolean'];
   deleteProduct: Scalars['Boolean'];
-  deleteUser: Scalars['Boolean'];
   logout: Scalars['Boolean'];
   updateCategory: Scalars['Boolean'];
   updateCompany: Scalars['Boolean'];
@@ -106,11 +105,6 @@ export type MutationDeleteCompanyArgs = {
 
 
 export type MutationDeleteProductArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type MutationDeleteUserArgs = {
   id: Scalars['Int'];
 };
 
@@ -206,13 +200,12 @@ export type UpdateProductInput = {
 };
 
 export type UpdateUserInput = {
-  address: Scalars['String'];
-  avatar: Scalars['String'];
-  email: Scalars['String'];
+  address?: InputMaybe<Scalars['String']>;
+  email?: InputMaybe<Scalars['String']>;
   family_name: Scalars['String'];
   given_name: Scalars['String'];
   id: Scalars['Int'];
-  role: Array<Role>;
+  phone?: InputMaybe<Scalars['String']>;
 };
 
 export type User = {
@@ -224,6 +217,7 @@ export type User = {
   family_name: Scalars['String'];
   given_name: Scalars['String'];
   id: Scalars['Int'];
+  phone?: Maybe<Scalars['String']>;
   platform: Platform;
   platform_id: Scalars['String'];
   role: Array<Role>;
@@ -384,7 +378,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteCategory?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteCategoryArgs, 'id'>>;
   deleteCompany?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteCompanyArgs, 'id'>>;
   deleteProduct?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProductArgs, 'id'>>;
-  deleteUser?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   updateCategory?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUpdateCategoryArgs, 'input'>>;
   updateCompany?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUpdateCompanyArgs, 'input'>>;
@@ -427,6 +420,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   family_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   given_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   platform?: Resolver<ResolversTypes['Platform'], ParentType, ContextType>;
   platform_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   role?: Resolver<Array<ResolversTypes['Role']>, ParentType, ContextType>;

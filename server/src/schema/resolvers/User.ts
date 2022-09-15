@@ -1,10 +1,7 @@
 import { GraphQLScalarType, Kind } from "graphql";
 import { PrismaClient, Role } from "@prisma/client";
 import { Request, Response } from "express";
-import {
-	MutationDeleteUserArgs,
-	UpdateUserInput,
-} from "../../generated/graphql";
+import { UpdateUserInput } from "../../generated/graphql";
 import { AuthenticationError } from "apollo-server-express";
 
 const prisma = new PrismaClient({ log: ["query"] });
@@ -54,9 +51,6 @@ const userResolvers = {
 		},
 		showMe: (parent: any, args: undefined, { req }: { req: Request }) => {
 			if (!req.session.user) {
-				// throw new AuthenticationError(
-				// 	"Your session is expired. Please log in to continue."
-				// );
 				return undefined;
 			}
 			return req.session.user;
@@ -68,32 +62,17 @@ const userResolvers = {
 			{ input }: { input: UpdateUserInput },
 			{ req }: { req: Request }
 		) => {
-			if (
-				req.user?.user.id !== input.id ||
-				!req.session.user?.role.includes(Role.ADMIN)
-			) {
-				throw new AuthenticationError(
-					"You don't have permissions for this action"
-				);
-			}
-			await prisma.user.update({
+			const { given_name, family_name, email, address, phone } = input;
+
+			const user = await prisma.user.update({
 				where: { id: input.id },
-				data: input,
+				data: { given_name, family_name, email, address, phone },
 			});
-			return true;
-		},
-		deleteUser: async (
-			parent: any,
-			args: MutationDeleteUserArgs,
-			{ req }: { req: Request }
-		) => {
-			if (!req.session.user?.role.includes(Role.ADMIN)) {
-				throw new AuthenticationError(
-					"You don't have permissions for this action"
-				);
+			if (user) {
+				req.session.user = user;
+				return true;
 			}
-			await prisma.user.delete({ where: { id: args.id } });
-			return true;
+			return false;
 		},
 		logout: (
 			parent: any,
