@@ -19,20 +19,24 @@ export type Scalars = {
 
 export type Category = {
   __typename?: 'Category';
+  companies?: Maybe<Array<Company>>;
   id: Scalars['Int'];
-  image?: Maybe<Scalars['JSON']>;
+  img_id?: Maybe<Scalars['String']>;
+  img_src?: Maybe<Scalars['String']>;
   name: Scalars['String'];
-  parent_id?: Maybe<Scalars['Int']>;
+  parent?: Maybe<Category>;
 };
 
 export type Company = {
   __typename?: 'Company';
+  categories?: Maybe<Array<Category>>;
   id: Scalars['Int'];
   name: Scalars['String'];
 };
 
 export type CreateCategoryInput = {
-  image?: InputMaybe<Scalars['JSON']>;
+  img_id?: InputMaybe<Scalars['String']>;
+  img_src?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   parent_id?: InputMaybe<Scalars['Int']>;
 };
@@ -62,18 +66,18 @@ export type Image = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createCategory: Category;
-  createCompany: Company;
-  createProduct: Product;
-  deleteCategory?: Maybe<Scalars['Boolean']>;
-  deleteCompany?: Maybe<Scalars['Boolean']>;
-  deleteProduct?: Maybe<Scalars['Boolean']>;
-  deleteUser?: Maybe<User>;
+  createCategory: Scalars['Boolean'];
+  createCompany: Scalars['Boolean'];
+  createProduct: Scalars['Boolean'];
+  deleteCategory: Scalars['Boolean'];
+  deleteCompany: Scalars['Boolean'];
+  deleteProduct: Scalars['Boolean'];
+  deleteUser: Scalars['Boolean'];
   logout: Scalars['Boolean'];
-  updateCategory: Category;
-  updateCompany: Company;
-  updateProduct: Product;
-  updateUser: User;
+  updateCategory: Scalars['Boolean'];
+  updateCompany: Scalars['Boolean'];
+  updateProduct: Scalars['Boolean'];
+  updateUser: Scalars['Boolean'];
 };
 
 
@@ -139,13 +143,13 @@ export enum Platform {
 export type Product = {
   __typename?: 'Product';
   avg_rating: Scalars['Float'];
-  category_id: Scalars['Int'];
-  company_id: Scalars['Int'];
+  category: Category;
+  company: Company;
   created_at: Scalars['Date'];
   description: Scalars['JSON'];
   discount: Scalars['Int'];
   id: Scalars['Int'];
-  images: Array<Image>;
+  images?: Maybe<Array<Image>>;
   inventory: Scalars['Int'];
   name: Scalars['String'];
   num_of_reviews: Scalars['Int'];
@@ -158,7 +162,7 @@ export type Query = {
   __typename?: 'Query';
   categories: Array<Category>;
   companies: Array<Company>;
-  products?: Maybe<Array<Product>>;
+  products: Array<Product>;
   showMe?: Maybe<User>;
   user?: Maybe<User>;
   users?: Maybe<Array<User>>;
@@ -177,7 +181,8 @@ export enum Role {
 
 export type UpdateCategoryInput = {
   id: Scalars['Int'];
-  image?: InputMaybe<Scalars['JSON']>;
+  img_id?: InputMaybe<Scalars['String']>;
+  img_src?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   parent_id?: InputMaybe<Scalars['Int']>;
 };
@@ -228,28 +233,28 @@ export type User = {
 export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: number, name: string, image?: any | null, parent_id?: number | null }> };
+export type GetAllCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: number, name: string, img_id?: string | null, img_src?: string | null, parent?: { __typename?: 'Category', id: number } | null }> };
 
 export type CreateCategoryMutationVariables = Exact<{
   input: CreateCategoryInput;
 }>;
 
 
-export type CreateCategoryMutation = { __typename?: 'Mutation', createCategory: { __typename?: 'Category', id: number, name: string } };
+export type CreateCategoryMutation = { __typename?: 'Mutation', createCategory: boolean };
 
 export type UpdateCategoryMutationVariables = Exact<{
   input: UpdateCategoryInput;
 }>;
 
 
-export type UpdateCategoryMutation = { __typename?: 'Mutation', updateCategory: { __typename?: 'Category', id: number, name: string } };
+export type UpdateCategoryMutation = { __typename?: 'Mutation', updateCategory: boolean };
 
 export type DeleteCategoryMutationVariables = Exact<{
   id: Scalars['Int'];
 }>;
 
 
-export type DeleteCategoryMutation = { __typename?: 'Mutation', deleteCategory?: boolean | null };
+export type DeleteCategoryMutation = { __typename?: 'Mutation', deleteCategory: boolean };
 
 export type GetAllCompaniesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -261,47 +266,52 @@ export type CreateCompanyMutationVariables = Exact<{
 }>;
 
 
-export type CreateCompanyMutation = { __typename?: 'Mutation', createCompany: { __typename?: 'Company', id: number, name: string } };
+export type CreateCompanyMutation = { __typename?: 'Mutation', createCompany: boolean };
 
 export type UpdateCompanyMutationVariables = Exact<{
   input: UpdateCompanyInput;
 }>;
 
 
-export type UpdateCompanyMutation = { __typename?: 'Mutation', updateCompany: { __typename?: 'Company', id: number, name: string } };
+export type UpdateCompanyMutation = { __typename?: 'Mutation', updateCompany: boolean };
 
 export type DeleteCompanyMutationVariables = Exact<{
   id: Scalars['Int'];
 }>;
 
 
-export type DeleteCompanyMutation = { __typename?: 'Mutation', deleteCompany?: boolean | null };
+export type DeleteCompanyMutation = { __typename?: 'Mutation', deleteCompany: boolean };
 
 export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllProductsQuery = { __typename?: 'Query', products?: Array<{ __typename?: 'Product', id: number, name: string, price: number, description: any, company_id: number, category_id: number, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, images: Array<{ __typename?: 'Image', img_src: string }> }> | null };
+export type GetAllProductsQuery = { __typename?: 'Query', products: Array<{ __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string }, images?: Array<{ __typename?: 'Image', img_id: string, img_src: string }> | null }> };
+
+export type GetAllFeaturedProductsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllFeaturedProductsQuery = { __typename?: 'Query', products: Array<{ __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string }, images?: Array<{ __typename?: 'Image', img_id: string, img_src: string }> | null }> };
 
 export type CreateProductMutationVariables = Exact<{
   input: CreateProductInput;
 }>;
 
 
-export type CreateProductMutation = { __typename?: 'Mutation', createProduct: { __typename?: 'Product', id: number, name: string } };
+export type CreateProductMutation = { __typename?: 'Mutation', createProduct: boolean };
 
 export type UpdateProductMutationVariables = Exact<{
   input: UpdateProductInput;
 }>;
 
 
-export type UpdateProductMutation = { __typename?: 'Mutation', updateProduct: { __typename?: 'Product', id: number, name: string } };
+export type UpdateProductMutation = { __typename?: 'Mutation', updateProduct: boolean };
 
 export type DeleteProductMutationVariables = Exact<{
   id: Scalars['Int'];
 }>;
 
 
-export type DeleteProductMutation = { __typename?: 'Mutation', deleteProduct?: boolean | null };
+export type DeleteProductMutation = { __typename?: 'Mutation', deleteProduct: boolean };
 
 export type GetSingleUserQueryVariables = Exact<{
   id: Scalars['Int'];
@@ -326,8 +336,11 @@ export const GetAllCategoriesDocument = gql`
   categories {
     id
     name
-    image
-    parent_id
+    img_id
+    img_src
+    parent {
+      id
+    }
   }
 }
     `;
@@ -360,10 +373,7 @@ export type GetAllCategoriesLazyQueryHookResult = ReturnType<typeof useGetAllCat
 export type GetAllCategoriesQueryResult = Apollo.QueryResult<GetAllCategoriesQuery, GetAllCategoriesQueryVariables>;
 export const CreateCategoryDocument = gql`
     mutation CreateCategory($input: CreateCategoryInput!) {
-  createCategory(input: $input) {
-    id
-    name
-  }
+  createCategory(input: $input)
 }
     `;
 export type CreateCategoryMutationFn = Apollo.MutationFunction<CreateCategoryMutation, CreateCategoryMutationVariables>;
@@ -394,10 +404,7 @@ export type CreateCategoryMutationResult = Apollo.MutationResult<CreateCategoryM
 export type CreateCategoryMutationOptions = Apollo.BaseMutationOptions<CreateCategoryMutation, CreateCategoryMutationVariables>;
 export const UpdateCategoryDocument = gql`
     mutation UpdateCategory($input: UpdateCategoryInput!) {
-  updateCategory(input: $input) {
-    id
-    name
-  }
+  updateCategory(input: $input)
 }
     `;
 export type UpdateCategoryMutationFn = Apollo.MutationFunction<UpdateCategoryMutation, UpdateCategoryMutationVariables>;
@@ -494,10 +501,7 @@ export type GetAllCompaniesLazyQueryHookResult = ReturnType<typeof useGetAllComp
 export type GetAllCompaniesQueryResult = Apollo.QueryResult<GetAllCompaniesQuery, GetAllCompaniesQueryVariables>;
 export const CreateCompanyDocument = gql`
     mutation CreateCompany($input: CreateCompanyInput!) {
-  createCompany(input: $input) {
-    id
-    name
-  }
+  createCompany(input: $input)
 }
     `;
 export type CreateCompanyMutationFn = Apollo.MutationFunction<CreateCompanyMutation, CreateCompanyMutationVariables>;
@@ -528,10 +532,7 @@ export type CreateCompanyMutationResult = Apollo.MutationResult<CreateCompanyMut
 export type CreateCompanyMutationOptions = Apollo.BaseMutationOptions<CreateCompanyMutation, CreateCompanyMutationVariables>;
 export const UpdateCompanyDocument = gql`
     mutation UpdateCompany($input: UpdateCompanyInput!) {
-  updateCompany(input: $input) {
-    id
-    name
-  }
+  updateCompany(input: $input)
 }
     `;
 export type UpdateCompanyMutationFn = Apollo.MutationFunction<UpdateCompanyMutation, UpdateCompanyMutationVariables>;
@@ -598,14 +599,21 @@ export const GetAllProductsDocument = gql`
     name
     price
     description
-    company_id
-    category_id
+    company {
+      id
+      name
+    }
+    category {
+      id
+      name
+    }
     inventory
     shipping_cost
     discount
     avg_rating
     num_of_reviews
     images {
+      img_id
       img_src
     }
   }
@@ -638,12 +646,63 @@ export function useGetAllProductsLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetAllProductsQueryHookResult = ReturnType<typeof useGetAllProductsQuery>;
 export type GetAllProductsLazyQueryHookResult = ReturnType<typeof useGetAllProductsLazyQuery>;
 export type GetAllProductsQueryResult = Apollo.QueryResult<GetAllProductsQuery, GetAllProductsQueryVariables>;
-export const CreateProductDocument = gql`
-    mutation CreateProduct($input: CreateProductInput!) {
-  createProduct(input: $input) {
+export const GetAllFeaturedProductsDocument = gql`
+    query GetAllFeaturedProducts {
+  products {
     id
     name
+    price
+    description
+    company {
+      id
+      name
+    }
+    category {
+      id
+      name
+    }
+    inventory
+    shipping_cost
+    discount
+    avg_rating
+    num_of_reviews
+    images {
+      img_id
+      img_src
+    }
   }
+}
+    `;
+
+/**
+ * __useGetAllFeaturedProductsQuery__
+ *
+ * To run a query within a React component, call `useGetAllFeaturedProductsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllFeaturedProductsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllFeaturedProductsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllFeaturedProductsQuery(baseOptions?: Apollo.QueryHookOptions<GetAllFeaturedProductsQuery, GetAllFeaturedProductsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllFeaturedProductsQuery, GetAllFeaturedProductsQueryVariables>(GetAllFeaturedProductsDocument, options);
+      }
+export function useGetAllFeaturedProductsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllFeaturedProductsQuery, GetAllFeaturedProductsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllFeaturedProductsQuery, GetAllFeaturedProductsQueryVariables>(GetAllFeaturedProductsDocument, options);
+        }
+export type GetAllFeaturedProductsQueryHookResult = ReturnType<typeof useGetAllFeaturedProductsQuery>;
+export type GetAllFeaturedProductsLazyQueryHookResult = ReturnType<typeof useGetAllFeaturedProductsLazyQuery>;
+export type GetAllFeaturedProductsQueryResult = Apollo.QueryResult<GetAllFeaturedProductsQuery, GetAllFeaturedProductsQueryVariables>;
+export const CreateProductDocument = gql`
+    mutation CreateProduct($input: CreateProductInput!) {
+  createProduct(input: $input)
 }
     `;
 export type CreateProductMutationFn = Apollo.MutationFunction<CreateProductMutation, CreateProductMutationVariables>;
@@ -674,10 +733,7 @@ export type CreateProductMutationResult = Apollo.MutationResult<CreateProductMut
 export type CreateProductMutationOptions = Apollo.BaseMutationOptions<CreateProductMutation, CreateProductMutationVariables>;
 export const UpdateProductDocument = gql`
     mutation UpdateProduct($input: UpdateProductInput!) {
-  updateProduct(input: $input) {
-    id
-    name
-  }
+  updateProduct(input: $input)
 }
     `;
 export type UpdateProductMutationFn = Apollo.MutationFunction<UpdateProductMutation, UpdateProductMutationVariables>;

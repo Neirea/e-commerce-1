@@ -5,27 +5,24 @@ export const QUERY_ALL_CATEGORIES = gql`
 		categories {
 			id
 			name
-			image
-			parent_id
+			img_id
+			img_src
+			parent {
+				id
+			}
 		}
 	}
 `;
 
 export const MUTATION_CREATE_CATEGORY = gql`
 	mutation CreateCategory($input: CreateCategoryInput!) {
-		createCategory(input: $input) {
-			id
-			name
-		}
+		createCategory(input: $input)
 	}
 `;
 
 export const MUTATION_UPDATE_CATEGORY = gql`
 	mutation UpdateCategory($input: UpdateCategoryInput!) {
-		updateCategory(input: $input) {
-			id
-			name
-		}
+		updateCategory(input: $input)
 	}
 `;
 

@@ -22,7 +22,7 @@ import { serverUrl } from "../../utils/server";
 const Category = () => {
 	const [uploadLoading, setUploadLoading] = useState(false);
 	const [categoryId, setCategoryId] = useState<number>(0);
-	const [parentId, setParentId] = useState<number | undefined>();
+	const [parentId, setParentId] = useState<number>(0);
 	const [selectedImage, setSelectedImage] = useState<File | undefined>();
 	const [name, setName] = useState<string>("");
 	const {
@@ -51,6 +51,7 @@ const Category = () => {
 	);
 	const selectParentRef = useRef<HTMLSelectElement>(null);
 	const selectCategoryRef = useRef<HTMLSelectElement>(null);
+	const filesRef = useRef<HTMLInputElement>(null);
 
 	const loading =
 		uploadLoading ||
@@ -63,9 +64,14 @@ const Category = () => {
 	const mutationError =
 		createCategoryError || updateCategoryError || deleteCategoryError;
 
+	const resetForm = () => {
+		if (selectParentRef.current) selectParentRef.current.selectedIndex = 0;
+		if (selectCategoryRef.current) selectCategoryRef.current.selectedIndex = 0;
+		if (filesRef.current) filesRef.current.value = "";
+	};
+
 	const handleParentSelect = (e: ChangeEvent<HTMLSelectElement>) => {
-		const value = +e.currentTarget.value || undefined;
-		setParentId(value);
+		setParentId(+e.target.value);
 	};
 
 	const handleName = (e: ChangeEvent<HTMLInputElement>) => {
@@ -75,6 +81,7 @@ const Category = () => {
 	const handleCategorySelect = (e: ChangeEvent<HTMLSelectElement>) => {
 		const idx = +e.target.value;
 		setCategoryId(idx);
+
 		if (idx === 0) {
 			setName("");
 			if (selectParentRef.current) selectParentRef.current.selectedIndex = 0;
@@ -84,13 +91,13 @@ const Category = () => {
 			const category = data.categories.find((item) => item.id === idx)!;
 			setName(category.name);
 			if (selectParentRef.current) {
-				if (category.parent_id == null) {
+				if (category.parent == null) {
 					selectParentRef.current.selectedIndex = 0;
 					return;
 				}
 				selectParentRef.current.selectedIndex = [
 					...selectParentRef.current.options,
-				].findIndex((option) => +option.value === category.parent_id);
+				].findIndex((option) => +option.value === category.parent?.id);
 			}
 		}
 	};
@@ -104,13 +111,13 @@ const Category = () => {
 	};
 
 	const handleDelete = async () => {
+		if (!categoryId) return;
 		await deleteCategory({
 			variables: {
 				id: categoryId,
 			},
 		});
-		if (selectParentRef.current) selectParentRef.current.selectedIndex = 0;
-		if (selectCategoryRef.current) selectCategoryRef.current.selectedIndex = 0;
+		resetForm();
 		await refetch();
 		setName("");
 		setParentId(0);
@@ -145,13 +152,9 @@ const Category = () => {
 					input: {
 						id: categoryId,
 						name: name,
-						parent_id: parentId || null,
-						image: img_id
-							? {
-									img_id,
-									img_src,
-							  }
-							: undefined,
+						parent_id: parentId,
+						img_id,
+						img_src,
 					},
 				},
 			});
@@ -161,19 +164,14 @@ const Category = () => {
 					input: {
 						name: name,
 						parent_id: parentId,
-						image: img_id
-							? {
-									img_id,
-									img_src,
-							  }
-							: undefined,
+						img_id,
+						img_src,
 					},
 				},
 			});
 		}
+		resetForm();
 		await refetch();
-		if (selectParentRef.current) selectParentRef.current.selectedIndex = 0;
-		if (selectCategoryRef.current) selectCategoryRef.current.selectedIndex = 0;
 		setName("");
 		setCategoryId(0);
 		setParentId(0);
@@ -238,8 +236,15 @@ const Category = () => {
 					</Form.Select>
 				</Form.Group>
 				<Form.Group className="mb-3">
-					<Form.Label>Image</Form.Label>
-					<Form.Control type="file" accept="image/*" onChange={handleUpload} />
+					<Form.Label>
+						Image (for updating: doesn't update if no image selected)
+					</Form.Label>
+					<Form.Control
+						type="file"
+						accept="image/*"
+						ref={filesRef}
+						onChange={handleUpload}
+					/>
 				</Form.Group>
 				{mutationError && (
 					<Alert variant="danger">{mutationError.message}</Alert>

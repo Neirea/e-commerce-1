@@ -31,11 +31,11 @@ const defaultValues = {
 	inventory: 0,
 	company_id: 0,
 	category_id: 0,
-	shipping_cost: 0,
+	shipping_cost: 15,
 	discount: 0,
 };
 
-const CreateProduct = () => {
+const Product = () => {
 	const {
 		data: productData,
 		loading: productLoading,
@@ -74,11 +74,12 @@ const CreateProduct = () => {
 	const [productId, setProductId] = useState<number>(0);
 	const [selectedImages, setSelectedImages] = useState<File[]>([]);
 	const [values, setValues] = useState(defaultValues);
-	const [jsonError, setJsonError] = useState(false);
+	const [inputError, setInputError] = useState(0);
 	const [uploadLoading, setUploadLoading] = useState(false);
 	const selectProductRef = useRef<HTMLSelectElement>(null);
 	const selectCategoryRef = useRef<HTMLSelectElement>(null);
 	const selectCompanyRef = useRef<HTMLSelectElement>(null);
+	const filesRef = useRef<HTMLInputElement>(null);
 
 	const loading =
 		uploadLoading ||
@@ -100,6 +101,13 @@ const CreateProduct = () => {
 		[values.description]
 	);
 
+	const resetForm = () => {
+		if (selectProductRef.current) selectProductRef.current.selectedIndex = 0;
+		if (selectCompanyRef.current) selectCompanyRef.current.selectedIndex = 0;
+		if (selectCategoryRef.current) selectCategoryRef.current.selectedIndex = 0;
+		if (filesRef.current) filesRef.current.value = "";
+	};
+
 	const handleProductSelect = (e: ChangeEvent<HTMLSelectElement>) => {
 		const idx = +e.target.value;
 
@@ -119,8 +127,8 @@ const CreateProduct = () => {
 				description: JSON.stringify(product.description),
 				price: product.price,
 				inventory: product.inventory,
-				company_id: product.company_id,
-				category_id: product.category_id,
+				company_id: product.company.id,
+				category_id: product.category.id,
 				shipping_cost: product.shipping_cost,
 				discount: product.discount,
 			});
@@ -128,12 +136,12 @@ const CreateProduct = () => {
 			if (selectCompanyRef.current) {
 				selectCompanyRef.current.selectedIndex = [
 					...selectCompanyRef.current.options,
-				].findIndex((option) => +option.value === product.company_id);
+				].findIndex((option) => +option.value === product.company.id);
 			}
 			if (selectCategoryRef.current) {
 				selectCategoryRef.current.selectedIndex = [
 					...selectCategoryRef.current.options,
-				].findIndex((option) => +option.value === product.category_id);
+				].findIndex((option) => +option.value === product.category.id);
 			}
 		}
 	};
@@ -158,12 +166,24 @@ const CreateProduct = () => {
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
 		if (!isJson) {
-			setJsonError(true);
+			setInputError(1);
+			return;
+		}
+
+		if (!values.company_id) {
+			setInputError(2);
+			return;
+		}
+
+		if (!values.category_id) {
+			setInputError(3);
 			return;
 		}
 
 		const newProduct = {
 			...values,
+			category_id: values.category_id,
+			company_id: values.company_id,
 			description: JSON.parse(values.description),
 			img_id: [] as string[],
 			img_src: [] as string[],
@@ -193,23 +213,22 @@ const CreateProduct = () => {
 		} else {
 			await createProduct({ variables: { input: newProduct } });
 		}
+		resetForm();
 		await refetch();
-		setJsonError(false);
+		setInputError(0);
 		setValues(defaultValues);
 		setProductId(0);
 		setSelectedImages([]);
-		//open modal of success/error any*
 	};
 
 	const handleDelete = async () => {
+		if (!productId) return;
 		await deleteProduct({
 			variables: {
 				id: productId,
 			},
 		});
-		if (selectProductRef.current) selectProductRef.current.selectedIndex = 0;
-		if (selectCompanyRef.current) selectCompanyRef.current.selectedIndex = 0;
-		if (selectCategoryRef.current) selectCategoryRef.current.selectedIndex = 0;
+		resetForm();
 		await refetch();
 		setValues(defaultValues);
 		setProductId(0);
@@ -268,7 +287,7 @@ const CreateProduct = () => {
 				</Form.Group>
 				<Form.Group className="mb-3">
 					<Form.Label>Description</Form.Label>
-					{jsonError && <Alert variant="danger">Invalid Json</Alert>}
+					{inputError === 1 && <Alert variant="danger">Invalid Json</Alert>}
 					<Form.Control
 						as="textarea"
 						rows={7}
@@ -315,9 +334,10 @@ const CreateProduct = () => {
 					/>
 				</Form.Group>
 				{companyError && <Alert variant="danger">{companyError.message}</Alert>}
+				{inputError === 2 && <Alert variant="danger">Choose company</Alert>}
 				<Form.Select
 					aria-label="Select Company"
-					className="mt-3 mb-3 d-flex gap-2"
+					className="mt-3 mb-3"
 					name="company_id"
 					onChange={handleChange}
 					ref={selectCompanyRef}
@@ -332,10 +352,11 @@ const CreateProduct = () => {
 							</option>
 						))}
 				</Form.Select>
-				<Form.Group className="mt-3 mb-3 d-flex gap-2">
+				<Form.Group className="mt-3 mb-3">
 					{categoryError && (
 						<Alert variant="danger">{categoryError.message}</Alert>
 					)}
+					{inputError === 3 && <Alert variant="danger">Choose category</Alert>}
 					<Form.Select
 						aria-label="Select Category"
 						name="category_id"
@@ -354,11 +375,14 @@ const CreateProduct = () => {
 					</Form.Select>
 				</Form.Group>
 				<Form.Group className="mb-3">
-					<Form.Label>Images</Form.Label>
+					<Form.Label>
+						Images (for updating: doesn't update if no images selected)
+					</Form.Label>
 					<Form.Control
 						type="file"
 						accept="image/*"
 						multiple
+						ref={filesRef}
 						onChange={handleFiles}
 					/>
 				</Form.Group>
@@ -373,4 +397,4 @@ const CreateProduct = () => {
 	);
 };
 
-export default CreateProduct;
+export default Product;

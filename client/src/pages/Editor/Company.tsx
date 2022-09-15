@@ -18,7 +18,7 @@ import {
 } from "../../queries/Company";
 
 const Company = () => {
-	const [companyId, setCompanyId] = useState<number | undefined>();
+	const [companyId, setCompanyId] = useState<number>(0);
 	const [name, setName] = useState<string>("");
 	const {
 		data,
@@ -72,10 +72,7 @@ const Company = () => {
 	};
 
 	const handleDelete = async () => {
-		if (!companyId || !selectRef.current) {
-			//error handle message?
-			return;
-		}
+		if (!companyId) return;
 		await deleteCompany({
 			variables: {
 				id: companyId,

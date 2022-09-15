@@ -11,18 +11,12 @@ export const QUERY_ALL_COMPANIES = gql`
 
 export const MUTATION_CREATE_COMPANY = gql`
 	mutation CreateCompany($input: CreateCompanyInput!) {
-		createCompany(input: $input) {
-			id
-			name
-		}
+		createCompany(input: $input)
 	}
 `;
 export const MUTATION_UPDATE_COMPANY = gql`
 	mutation UpdateCompany($input: UpdateCompanyInput!) {
-		updateCompany(input: $input) {
-			id
-			name
-		}
+		updateCompany(input: $input)
 	}
 `;
 

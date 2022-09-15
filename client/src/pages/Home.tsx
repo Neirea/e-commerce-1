@@ -62,9 +62,9 @@ const Home = () => {
 						) : (
 							categoryData &&
 							categoryData.categories.map((category) => {
-								if (category.image) {
+								if (category.img_src) {
 									return (
-										<Col>
+										<Col key={`cat-${category.id}`}>
 											<Card.Body className="text-center d-flex flex-column">
 												<Card.Link
 													as={Link}
@@ -73,7 +73,7 @@ const Home = () => {
 												>
 													<img
 														className="mb-2"
-														src={category.image.img_src}
+														src={category.img_src}
 														style={{ width: "15rem" }}
 													/>
 													<div>{category.name}</div>
@@ -101,9 +101,9 @@ const Home = () => {
 							) : (
 								productData &&
 								productData.products?.map((product) => {
-									if (product.images.length) {
+									if (product.images?.length) {
 										return (
-											<Col>
+											<Col key={`prod-${product.id}`}>
 												<Card.Body className="text-center d-flex flex-column">
 													<Card.Link
 														as={Link}
