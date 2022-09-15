@@ -4,8 +4,8 @@ const productTypes = gql`
 	scalar JSON
 
 	type Image {
-		id: String!
-		src: String!
+		img_id: String!
+		img_src: String!
 	}
 
 	type Product {
@@ -22,10 +22,10 @@ const productTypes = gql`
 		num_of_reviews: Int!
 		created_at: DateTime!
 		updated_at: DateTime!
-		images: [Image!]!
+		images: [Image!]
 	}
 	extend type Query {
-		products: [Product!]
+		products: [Product!]!
 	}
 
 	# Mutations
@@ -56,9 +56,9 @@ const productTypes = gql`
 	}
 
 	extend type Mutation {
-		createProduct(input: CreateProductInput!): Product!
-		updateProduct(input: UpdateProductInput!): Product!
-		deleteProduct(id: Int!): Boolean
+		createProduct(input: CreateProductInput!): Boolean!
+		updateProduct(input: UpdateProductInput!): Boolean!
+		deleteProduct(id: Int!): Boolean!
 	}
 `;
 

@@ -16,7 +16,7 @@ const companyResolvers = {
 		},
 	},
 	Mutation: {
-		createCompany: (
+		createCompany: async (
 			parent: any,
 			{ input }: { input: CreateCompanyInput },
 			{ req }: { req: Request }
@@ -27,9 +27,10 @@ const companyResolvers = {
 				);
 			}
 			if (input.name.length < 3) throw new UserInputError("Name is too short");
-			return prisma.company.create({ data: input });
+			await prisma.company.create({ data: input });
+			return true;
 		},
-		updateCompany: (
+		updateCompany: async (
 			parent: any,
 			{ input }: { input: UpdateCompanyInput },
 			{ req }: { req: Request }
@@ -40,10 +41,11 @@ const companyResolvers = {
 				);
 			}
 			const { id, name } = input;
-			return prisma.company.update({
+			await prisma.company.update({
 				where: { id: id },
 				data: { name },
 			});
+			return true;
 		},
 		deleteCompany: async (
 			parent: any,

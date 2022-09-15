@@ -20,9 +20,9 @@ const companyTypes = gql`
 	}
 
 	extend type Mutation {
-		createCompany(input: CreateCompanyInput!): Company!
-		updateCompany(input: UpdateCompanyInput!): Company!
-		deleteCompany(id: Int!): Boolean
+		createCompany(input: CreateCompanyInput!): Boolean!
+		updateCompany(input: UpdateCompanyInput!): Boolean!
+		deleteCompany(id: Int!): Boolean!
 	}
 `;
 

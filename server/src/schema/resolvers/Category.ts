@@ -6,19 +6,21 @@ import {
 } from "../../generated/graphql";
 import { v2 as cloudinary } from "cloudinary";
 import { AuthenticationError, UserInputError } from "apollo-server-express";
-import { JSONObject } from "@apollo/sandbox/src/helpers/types";
 
 const prisma = new PrismaClient({ log: ["query"] });
 
 const categoryResolvers = {
 	Query: {
 		categories: () => {
-			return prisma.category.findMany({ include: { companies: true } });
+			return prisma.category.findMany({
+				include: { companies: true },
+				orderBy: { name: "asc" },
+			});
 			//return prisma.$queryRaw`SELECT * FROM public."Category";`;
 		},
 	},
 	Mutation: {
-		createCategory: (
+		createCategory: async (
 			parent: any,
 			{ input }: { input: CreateCategoryInput },
 			{ req }: { req: Request }
@@ -29,7 +31,8 @@ const categoryResolvers = {
 				);
 			}
 			if (input.name.length < 3) throw new UserInputError("Name is too short");
-			return prisma.category.create({ data: input });
+			await prisma.category.create({ data: input });
+			return true;
 		},
 		updateCategory: async (
 			parent: any,
@@ -47,14 +50,15 @@ const categoryResolvers = {
 				where: { id: category_id },
 			});
 
-			const category = await prisma.category.update({
+			await prisma.category.update({
 				where: { id: category_id },
 				data: { parent_id, name, img_id, img_src },
+				include: { companies: true },
 			});
 			if (oldCategory?.img_id && img_id) {
-				cloudinary.uploader.destroy(oldCategory?.img_id);
+				await cloudinary.uploader.destroy(oldCategory?.img_id);
 			}
-			return category;
+			return true;
 		},
 		deleteCategory: async (
 			parent: any,
@@ -66,8 +70,12 @@ const categoryResolvers = {
 					"You don't have permissions for this action"
 				);
 			}
-			await prisma.category.delete({ where: { id: +id } });
-			return true;
+			const data = await prisma.category.delete({ where: { id: id } });
+			if (data.img_id) {
+				await cloudinary.uploader.destroy(data.img_id);
+				return true;
+			}
+			return false;
 		},
 	},
 };

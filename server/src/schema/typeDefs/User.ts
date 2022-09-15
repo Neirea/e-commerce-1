@@ -43,8 +43,8 @@ const userTypeDefs = gql`
 	}
 
 	type Mutation {
-		updateUser(input: UpdateUserInput!): User!
-		deleteUser(id: Int!): User
+		updateUser(input: UpdateUserInput!): Boolean!
+		deleteUser(id: Int!): Boolean!
 		logout: Boolean!
 	}
 `;

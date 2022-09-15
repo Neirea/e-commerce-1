@@ -15,9 +15,9 @@ const productResolvers = {
 	Query: {
 		products: () => {
 			return prisma.product.findMany({
-				include: { company: true, images: true },
+				include: { company: true, category: true, images: true },
+				orderBy: { name: "asc" },
 			});
-			// return prisma.product.findMany({ include: { company: true } });
 			// return prisma.$queryRaw`SELECT * FROM public."Product";`;
 		},
 	},
@@ -56,13 +56,14 @@ const productResolvers = {
 			};
 
 			//create product and its images
-			const product = await prisma.product.create({
+			const productImages = input.img_id.map((img, i) => {
+				return { img_id: img, img_src: input.img_src[i] };
+			});
+			await prisma.product.create({
 				data: {
 					...newProduct,
 					images: {
-						create: input.img_id.map((img, i) => {
-							return { id: img, src: input.img_src[i] };
-						}),
+						create: productImages,
 					},
 				},
 			});
@@ -73,7 +74,7 @@ const productResolvers = {
 					companies: { connect: { id: company_id } },
 				},
 			});
-			return product;
+			return true;
 		},
 		updateProduct: async (
 			parent: any,
@@ -115,16 +116,19 @@ const productResolvers = {
 				});
 				//delete old ones
 				await prisma.productImage.deleteMany({ where: { product_id: id } });
-				oldImages.forEach((img) => cloudinary.uploader.destroy(img.id));
+				oldImages.forEach(
+					async (img) => await cloudinary.uploader.destroy(img.img_id)
+				);
 			}
-			const product = await prisma.product.update({
+			const productImages = input.img_id.map((img, i) => {
+				return { img_id: img, img_src: input.img_src[i] };
+			});
+			await prisma.product.update({
 				where: { id: id },
 				data: {
 					...updatedProduct,
 					images: {
-						create: input.img_id.map((img, i) => {
-							return { id: img, src: input.img_src[i] };
-						}),
+						create: productImages,
 					},
 				},
 			});
@@ -136,7 +140,7 @@ const productResolvers = {
 				},
 			});
 
-			return product;
+			return true;
 		},
 		deleteProduct: async (
 			parent: any,
@@ -154,8 +158,8 @@ const productResolvers = {
 			});
 
 			if (data) {
-				data.images.forEach((item) => {
-					cloudinary.uploader.destroy(item.id);
+				data.images.forEach(async (img) => {
+					await cloudinary.uploader.destroy(img.img_id);
 				});
 				return true;
 			}

@@ -45,8 +45,8 @@ model Product {
 }
 
 model ProductImage{
-  id String @id
-  src String
+  img_id String @id
+  img_src String
   product_id Int
   product Product @relation(fields: [product_id],references: [id])
 }

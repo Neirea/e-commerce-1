@@ -77,14 +77,15 @@ export const app = express();
 				async requestDidStart(initialRequestContext) {
 					return {
 						async didEncounterErrors({ errors }) {
-							const input = initialRequestContext.request.variables?.input;
-							if (input.img_id) {
-								if (Array.isArray(input.img_id)) {
-									input.img_id.forEach((id: string) => {
-										cloudinary.uploader.destroy(id);
+							const vars = initialRequestContext.request.variables;
+
+							if (vars?.input?.img_id) {
+								if (Array.isArray(vars.input.img_id)) {
+									vars.input.img_id.forEach(async (id: string) => {
+										await cloudinary.uploader.destroy(id);
 									});
 								} else {
-									cloudinary.uploader.destroy(input.img_id);
+									await cloudinary.uploader.destroy(vars.input.img_id);
 								}
 							}
 						},

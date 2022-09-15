@@ -63,7 +63,7 @@ const userResolvers = {
 		},
 	},
 	Mutation: {
-		updateUser: (
+		updateUser: async (
 			parent: any,
 			{ input }: { input: UpdateUserInput },
 			{ req }: { req: Request }
@@ -76,12 +76,13 @@ const userResolvers = {
 					"You don't have permissions for this action"
 				);
 			}
-			return prisma.user.update({
+			await prisma.user.update({
 				where: { id: input.id },
 				data: input,
 			});
+			return true;
 		},
-		deleteUser: (
+		deleteUser: async (
 			parent: any,
 			args: MutationDeleteUserArgs,
 			{ req }: { req: Request }
@@ -91,7 +92,8 @@ const userResolvers = {
 					"You don't have permissions for this action"
 				);
 			}
-			return prisma.user.delete({ where: { id: args.id } });
+			await prisma.user.delete({ where: { id: args.id } });
+			return true;
 		},
 		logout: (
 			parent: any,

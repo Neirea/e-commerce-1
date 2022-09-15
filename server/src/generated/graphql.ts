@@ -59,24 +59,24 @@ export type CreateProductInput = {
 
 export type Image = {
   __typename?: 'Image';
-  id: Scalars['String'];
-  src: Scalars['String'];
+  img_id: Scalars['String'];
+  img_src: Scalars['String'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createCategory: Category;
-  createCompany: Company;
-  createProduct: Product;
-  deleteCategory?: Maybe<Scalars['Boolean']>;
-  deleteCompany?: Maybe<Scalars['Boolean']>;
-  deleteProduct?: Maybe<Scalars['Boolean']>;
-  deleteUser?: Maybe<User>;
+  createCategory: Scalars['Boolean'];
+  createCompany: Scalars['Boolean'];
+  createProduct: Scalars['Boolean'];
+  deleteCategory: Scalars['Boolean'];
+  deleteCompany: Scalars['Boolean'];
+  deleteProduct: Scalars['Boolean'];
+  deleteUser: Scalars['Boolean'];
   logout: Scalars['Boolean'];
-  updateCategory: Category;
-  updateCompany: Company;
-  updateProduct: Product;
-  updateUser: User;
+  updateCategory: Scalars['Boolean'];
+  updateCompany: Scalars['Boolean'];
+  updateProduct: Scalars['Boolean'];
+  updateUser: Scalars['Boolean'];
 };
 
 
@@ -148,7 +148,7 @@ export type Product = {
   description: Scalars['JSON'];
   discount: Scalars['Int'];
   id: Scalars['Int'];
-  images: Array<Image>;
+  images?: Maybe<Array<Image>>;
   inventory: Scalars['Int'];
   name: Scalars['String'];
   num_of_reviews: Scalars['Int'];
@@ -161,7 +161,7 @@ export type Query = {
   __typename?: 'Query';
   categories: Array<Category>;
   companies: Array<Company>;
-  products?: Maybe<Array<Product>>;
+  products: Array<Product>;
   showMe?: Maybe<User>;
   user?: Maybe<User>;
   users?: Maybe<Array<User>>;
@@ -368,8 +368,8 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 }
 
 export type ImageResolvers<ContextType = any, ParentType extends ResolversParentTypes['Image'] = ResolversParentTypes['Image']> = {
-  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  src?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  img_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  img_src?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -378,18 +378,18 @@ export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 }
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  createCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationCreateCategoryArgs, 'input'>>;
-  createCompany?: Resolver<ResolversTypes['Company'], ParentType, ContextType, RequireFields<MutationCreateCompanyArgs, 'input'>>;
-  createProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationCreateProductArgs, 'input'>>;
-  deleteCategory?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeleteCategoryArgs, 'id'>>;
-  deleteCompany?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeleteCompanyArgs, 'id'>>;
-  deleteProduct?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType, RequireFields<MutationDeleteProductArgs, 'id'>>;
-  deleteUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
+  createCategory?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationCreateCategoryArgs, 'input'>>;
+  createCompany?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationCreateCompanyArgs, 'input'>>;
+  createProduct?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationCreateProductArgs, 'input'>>;
+  deleteCategory?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteCategoryArgs, 'id'>>;
+  deleteCompany?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteCompanyArgs, 'id'>>;
+  deleteProduct?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProductArgs, 'id'>>;
+  deleteUser?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteUserArgs, 'id'>>;
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  updateCategory?: Resolver<ResolversTypes['Category'], ParentType, ContextType, RequireFields<MutationUpdateCategoryArgs, 'input'>>;
-  updateCompany?: Resolver<ResolversTypes['Company'], ParentType, ContextType, RequireFields<MutationUpdateCompanyArgs, 'input'>>;
-  updateProduct?: Resolver<ResolversTypes['Product'], ParentType, ContextType, RequireFields<MutationUpdateProductArgs, 'input'>>;
-  updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
+  updateCategory?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUpdateCategoryArgs, 'input'>>;
+  updateCompany?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUpdateCompanyArgs, 'input'>>;
+  updateProduct?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUpdateProductArgs, 'input'>>;
+  updateUser?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'input'>>;
 };
 
 export type ProductResolvers<ContextType = any, ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']> = {
@@ -400,7 +400,7 @@ export type ProductResolvers<ContextType = any, ParentType extends ResolversPare
   description?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   discount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  images?: Resolver<Array<ResolversTypes['Image']>, ParentType, ContextType>;
+  images?: Resolver<Maybe<Array<ResolversTypes['Image']>>, ParentType, ContextType>;
   inventory?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   num_of_reviews?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -413,7 +413,7 @@ export type ProductResolvers<ContextType = any, ParentType extends ResolversPare
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType>;
   companies?: Resolver<Array<ResolversTypes['Company']>, ParentType, ContextType>;
-  products?: Resolver<Maybe<Array<ResolversTypes['Product']>>, ParentType, ContextType>;
+  products?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
   showMe?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   users?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;

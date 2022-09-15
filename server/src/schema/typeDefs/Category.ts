@@ -29,9 +29,9 @@ const categoryTypes = gql`
 	}
 
 	extend type Mutation {
-		createCategory(input: CreateCategoryInput!): Category!
-		updateCategory(input: UpdateCategoryInput!): Category!
-		deleteCategory(id: Int!): Boolean
+		createCategory(input: CreateCategoryInput!): Boolean!
+		updateCategory(input: UpdateCategoryInput!): Boolean!
+		deleteCategory(id: Int!): Boolean!
 	}
 `;
 
