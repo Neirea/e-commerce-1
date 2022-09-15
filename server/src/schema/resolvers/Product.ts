@@ -20,6 +20,12 @@ const productResolvers = {
 			});
 			// return prisma.$queryRaw`SELECT * FROM public."Product";`;
 		},
+		product: (parent: any, { id }: { id: number }) => {
+			return prisma.product.findUnique({
+				where: { id: id },
+				include: { company: true, category: true, images: true },
+			});
+		},
 	},
 	Mutation: {
 		createProduct: async (

@@ -26,6 +26,7 @@ const productTypes = gql`
 	}
 	extend type Query {
 		products: [Product!]!
+		product(id: Int!): Product
 	}
 
 	# Mutations
