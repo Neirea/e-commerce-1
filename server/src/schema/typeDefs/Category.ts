@@ -4,8 +4,10 @@ const categoryTypes = gql`
 	type Category {
 		id: Int!
 		name: String!
-		image: JSON
-		parent_id: Int
+		img_id: String
+		img_src: String
+		parent: Category
+		companies: [Company!]
 	}
 
 	extend type Query {
@@ -13,14 +15,16 @@ const categoryTypes = gql`
 	}
 
 	input CreateCategoryInput {
-		image: JSON
+		img_id: String
+		img_src: String
 		name: String!
 		parent_id: Int
 	}
 	input UpdateCategoryInput {
 		id: Int!
 		name: String!
-		image: JSON
+		img_id: String
+		img_src: String
 		parent_id: Int
 	}
 

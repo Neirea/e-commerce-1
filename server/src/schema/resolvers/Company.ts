@@ -11,12 +11,8 @@ const prisma = new PrismaClient({ log: ["query"] });
 const companyResolvers = {
 	Query: {
 		companies: (parent: any, args: unknown, { req }: { req: Request }) => {
-			if (!req.session.user?.role.includes(Role.ADMIN)) {
-				throw new AuthenticationError(
-					"You don't have permissions for this action"
-				);
-			}
-			return prisma.$queryRaw`SELECT * FROM public."Company";`;
+			return prisma.company.findMany({ include: { categories: true } });
+			// return prisma.$queryRaw`SELECT * FROM public."Company";`;
 		},
 	},
 	Mutation: {

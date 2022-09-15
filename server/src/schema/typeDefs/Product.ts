@@ -4,8 +4,8 @@ const productTypes = gql`
 	scalar JSON
 
 	type Image {
-		img_id: String!
-		img_src: String!
+		id: String!
+		src: String!
 	}
 
 	type Product {
@@ -13,16 +13,16 @@ const productTypes = gql`
 		name: String!
 		price: Float!
 		description: JSON!
-		company_id: Int!
-		category_id: Int!
+		company: Company!
+		category: Category!
 		inventory: Int!
 		shipping_cost: Float!
 		discount: Int!
 		avg_rating: Float!
 		num_of_reviews: Int!
-		images: [Image!]!
 		created_at: DateTime!
 		updated_at: DateTime!
+		images: [Image!]!
 	}
 	extend type Query {
 		products: [Product!]

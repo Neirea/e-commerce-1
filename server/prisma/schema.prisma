@@ -37,10 +37,18 @@ model Product {
   num_of_reviews Int @default(0)  // updated on Review placement
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
-  images Json[] @default([])
   company Company @relation(fields: [company_id],references: [id])
+  category Category @relation(fields: [category_id],references: [id])
   reviews Review[]
   orders SingleOrderItem[]
+  images ProductImage[]
+}
+
+model ProductImage{
+  id String @id
+  src String
+  product_id Int
+  product Product @relation(fields: [product_id],references: [id])
 }
 
 model Company{
@@ -53,11 +61,13 @@ model Company{
 model Category {
   id Int @id @default(autoincrement())
   name String
-  image Json?
+  img_id String?
+  img_src String?
   parent_id Int?
   parent Category? @relation("subCategory",fields: [parent_id],references: [id])
   child Category[] @relation("subCategory")
   companies Company[]
+  products Product[]
 }
 
 

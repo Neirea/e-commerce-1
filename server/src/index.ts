@@ -16,9 +16,7 @@ import passport from "passport";
 //user imports
 import { ApolloServer } from "apollo-server-express";
 import notFound from "./middleware/not-found";
-import { failedLogin, loginCallback } from "./passport";
 import { resolvers, typeDefs } from "./schema";
-import { StatusCodes } from "http-status-codes";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 
 export const app = express();
@@ -79,20 +77,15 @@ export const app = express();
 				async requestDidStart(initialRequestContext) {
 					return {
 						async didEncounterErrors({ errors }) {
-							const { operationName, context } = initialRequestContext;
-							if (
-								operationName === "CreateProduct" ||
-								operationName === "UpdateProduct" ||
-								operationName === "CreateCategory" ||
-								operationName === "UpdateCategory"
-							) {
-								context.input.img_id.forEach((id: string) =>
-									cloudinary.uploader.destroy(id)
-								);
-								const image = context.req.files?.image as
-									| UploadedFile
-									| undefined;
-								if (image) fs.unlinkSync(image.tempFilePath);
+							const input = initialRequestContext.request.variables?.input;
+							if (input.img_id) {
+								if (Array.isArray(input.img_id)) {
+									input.img_id.forEach((id: string) => {
+										cloudinary.uploader.destroy(id);
+									});
+								} else {
+									cloudinary.uploader.destroy(input.img_id);
+								}
 							}
 						},
 					};
@@ -100,7 +93,7 @@ export const app = express();
 			},
 		],
 		formatError: (err) => {
-			console.log("Log error message:", err.message);
+			console.log("Log error:", err);
 
 			// Don't show DB Errors to user
 			if (err.originalError instanceof PrismaClientKnownRequestError) {

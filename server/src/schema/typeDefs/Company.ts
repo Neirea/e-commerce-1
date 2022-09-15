@@ -4,6 +4,7 @@ const companyTypes = gql`
 	type Company {
 		id: Int!
 		name: String!
+		categories: [Category!]
 	}
 
 	extend type Query {

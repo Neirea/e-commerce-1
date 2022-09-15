@@ -18,20 +18,24 @@ export type Scalars = {
 
 export type Category = {
   __typename?: 'Category';
+  companies?: Maybe<Array<Company>>;
   id: Scalars['Int'];
-  image?: Maybe<Scalars['JSON']>;
+  img_id?: Maybe<Scalars['String']>;
+  img_src?: Maybe<Scalars['String']>;
   name: Scalars['String'];
-  parent_id?: Maybe<Scalars['Int']>;
+  parent?: Maybe<Category>;
 };
 
 export type Company = {
   __typename?: 'Company';
+  categories?: Maybe<Array<Category>>;
   id: Scalars['Int'];
   name: Scalars['String'];
 };
 
 export type CreateCategoryInput = {
-  image?: InputMaybe<Scalars['JSON']>;
+  img_id?: InputMaybe<Scalars['String']>;
+  img_src?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   parent_id?: InputMaybe<Scalars['Int']>;
 };
@@ -55,8 +59,8 @@ export type CreateProductInput = {
 
 export type Image = {
   __typename?: 'Image';
-  img_id: Scalars['String'];
-  img_src: Scalars['String'];
+  id: Scalars['String'];
+  src: Scalars['String'];
 };
 
 export type Mutation = {
@@ -138,8 +142,8 @@ export enum Platform {
 export type Product = {
   __typename?: 'Product';
   avg_rating: Scalars['Float'];
-  category_id: Scalars['Int'];
-  company_id: Scalars['Int'];
+  category: Category;
+  company: Company;
   created_at: Scalars['Date'];
   description: Scalars['JSON'];
   discount: Scalars['Int'];
@@ -176,7 +180,8 @@ export enum Role {
 
 export type UpdateCategoryInput = {
   id: Scalars['Int'];
-  image?: InputMaybe<Scalars['JSON']>;
+  img_id?: InputMaybe<Scalars['String']>;
+  img_src?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   parent_id?: InputMaybe<Scalars['Int']>;
 };
@@ -342,14 +347,17 @@ export type ResolversParentTypes = {
 };
 
 export type CategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Category'] = ResolversParentTypes['Category']> = {
+  companies?: Resolver<Maybe<Array<ResolversTypes['Company']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  image?: Resolver<Maybe<ResolversTypes['JSON']>, ParentType, ContextType>;
+  img_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  img_src?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  parent_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  parent?: Resolver<Maybe<ResolversTypes['Category']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type CompanyResolvers<ContextType = any, ParentType extends ResolversParentTypes['Company'] = ResolversParentTypes['Company']> = {
+  categories?: Resolver<Maybe<Array<ResolversTypes['Category']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -360,8 +368,8 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 }
 
 export type ImageResolvers<ContextType = any, ParentType extends ResolversParentTypes['Image'] = ResolversParentTypes['Image']> = {
-  img_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  img_src?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  src?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -386,8 +394,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type ProductResolvers<ContextType = any, ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']> = {
   avg_rating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  category_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  company_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  category?: Resolver<ResolversTypes['Category'], ParentType, ContextType>;
+  company?: Resolver<ResolversTypes['Company'], ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   discount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Category" ALTER COLUMN "img_id" DROP NOT NULL,
+ALTER COLUMN "img_src" DROP NOT NULL;

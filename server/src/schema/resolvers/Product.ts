@@ -14,7 +14,9 @@ const productResolvers = {
 	JSON: GraphQLJSON,
 	Query: {
 		products: () => {
-			return prisma.product.findMany();
+			return prisma.product.findMany({
+				include: { company: true, images: true },
+			});
 			// return prisma.product.findMany({ include: { company: true } });
 			// return prisma.$queryRaw`SELECT * FROM public."Product";`;
 		},
@@ -42,10 +44,6 @@ const productResolvers = {
 			} = input;
 			if (name.length < 3) throw new UserInputError("Name is too short");
 
-			const arrOfImgs = input.img_id.map((item, i) => {
-				return { img_id: item, img_src: input.img_src[i] };
-			});
-
 			const newProduct = {
 				category_id,
 				company_id,
@@ -55,11 +53,19 @@ const productResolvers = {
 				inventory,
 				shipping_cost,
 				discount,
-				images: arrOfImgs,
 			};
 
-			const product = await prisma.product.create({ data: newProduct });
-
+			//create product and its images
+			const product = await prisma.product.create({
+				data: {
+					...newProduct,
+					images: {
+						create: input.img_id.map((img, i) => {
+							return { id: img, src: input.img_src[i] };
+						}),
+					},
+				},
+			});
 			//create connection between company and category
 			await prisma.category.update({
 				where: { id: category_id },
@@ -92,13 +98,6 @@ const productResolvers = {
 			} = input;
 			if (name.length < 3) throw new UserInputError("Name is too short");
 
-			const arrOfImgs =
-				input.img_id.length > 0
-					? input.img_id.map((item, i) => {
-							return { img_id: item, img_src: input.img_src[i] };
-					  })
-					: undefined;
-
 			const updatedProduct = {
 				category_id,
 				company_id,
@@ -108,28 +107,35 @@ const productResolvers = {
 				inventory,
 				shipping_cost,
 				discount,
-				images: arrOfImgs,
 			};
-
-			const oldProduct = await prisma.product.findUnique({
-				where: { id: id },
-			});
+			//delete old images
+			if (input.img_id.length) {
+				const oldImages = await prisma.productImage.findMany({
+					where: { product_id: id },
+				});
+				//delete old ones
+				await prisma.productImage.deleteMany({ where: { product_id: id } });
+				oldImages.forEach((img) => cloudinary.uploader.destroy(img.id));
+			}
 			const product = await prisma.product.update({
 				where: { id: id },
-				data: updatedProduct, // probably wrong #any
+				data: {
+					...updatedProduct,
+					images: {
+						create: input.img_id.map((img, i) => {
+							return { id: img, src: input.img_src[i] };
+						}),
+					},
+				},
 			});
+			//update relationbetween company and category
 			await prisma.category.update({
 				where: { id: category_id },
 				data: {
 					companies: { connect: { id: company_id } },
 				},
 			});
-			//delete old images
-			if (oldProduct?.images.length) {
-				(oldProduct?.images as any[]).forEach((img) =>
-					cloudinary.uploader.destroy(img.img_id)
-				);
-			}
+
 			return product;
 		},
 		deleteProduct: async (
@@ -142,11 +148,14 @@ const productResolvers = {
 					"You don't have permissions for this action"
 				);
 			}
-			const data = await prisma.product.delete({ where: { id: id } });
+			const data = await prisma.product.delete({
+				where: { id: id },
+				include: { images: true },
+			});
 
 			if (data) {
-				(data.images as any[]).forEach((item) => {
-					cloudinary.uploader.destroy(item.img_id);
+				data.images.forEach((item) => {
+					cloudinary.uploader.destroy(item.id);
 				});
 				return true;
 			}
