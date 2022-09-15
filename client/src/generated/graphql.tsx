@@ -156,10 +156,16 @@ export type Query = {
   __typename?: 'Query';
   categories: Array<Category>;
   companies: Array<Company>;
+  product?: Maybe<Product>;
   products: Array<Product>;
   showMe?: Maybe<User>;
   user?: Maybe<User>;
   users?: Maybe<Array<User>>;
+};
+
+
+export type QueryProductArgs = {
+  id: Scalars['Int'];
 };
 
 
@@ -285,6 +291,13 @@ export type GetAllFeaturedProductsQueryVariables = Exact<{ [key: string]: never;
 
 
 export type GetAllFeaturedProductsQuery = { __typename?: 'Query', products: Array<{ __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string }, images?: Array<{ __typename?: 'Image', img_id: string, img_src: string }> | null }> };
+
+export type GetSingleProductQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type GetSingleProductQuery = { __typename?: 'Query', product?: { __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string }, images?: Array<{ __typename?: 'Image', img_id: string, img_src: string }> | null } | null };
 
 export type CreateProductMutationVariables = Exact<{
   input: CreateProductInput;
@@ -694,6 +707,61 @@ export function useGetAllFeaturedProductsLazyQuery(baseOptions?: Apollo.LazyQuer
 export type GetAllFeaturedProductsQueryHookResult = ReturnType<typeof useGetAllFeaturedProductsQuery>;
 export type GetAllFeaturedProductsLazyQueryHookResult = ReturnType<typeof useGetAllFeaturedProductsLazyQuery>;
 export type GetAllFeaturedProductsQueryResult = Apollo.QueryResult<GetAllFeaturedProductsQuery, GetAllFeaturedProductsQueryVariables>;
+export const GetSingleProductDocument = gql`
+    query GetSingleProduct($id: Int!) {
+  product(id: $id) {
+    id
+    name
+    price
+    description
+    company {
+      id
+      name
+    }
+    category {
+      id
+      name
+    }
+    inventory
+    shipping_cost
+    discount
+    avg_rating
+    num_of_reviews
+    images {
+      img_id
+      img_src
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetSingleProductQuery__
+ *
+ * To run a query within a React component, call `useGetSingleProductQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSingleProductQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSingleProductQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetSingleProductQuery(baseOptions: Apollo.QueryHookOptions<GetSingleProductQuery, GetSingleProductQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSingleProductQuery, GetSingleProductQueryVariables>(GetSingleProductDocument, options);
+      }
+export function useGetSingleProductLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSingleProductQuery, GetSingleProductQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSingleProductQuery, GetSingleProductQueryVariables>(GetSingleProductDocument, options);
+        }
+export type GetSingleProductQueryHookResult = ReturnType<typeof useGetSingleProductQuery>;
+export type GetSingleProductLazyQueryHookResult = ReturnType<typeof useGetSingleProductLazyQuery>;
+export type GetSingleProductQueryResult = Apollo.QueryResult<GetSingleProductQuery, GetSingleProductQueryVariables>;
 export const CreateProductDocument = gql`
     mutation CreateProduct($input: CreateProductInput!) {
   createProduct(input: $input)

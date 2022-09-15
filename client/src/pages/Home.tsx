@@ -108,7 +108,7 @@ const Home = () => {
 													<Card.Link
 														as={Link}
 														className="custom-link"
-														to={`/product/${product.name}`}
+														to={`/product/${product.id}`}
 													>
 														<img
 															src={product.images[0].img_src}

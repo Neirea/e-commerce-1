@@ -9,6 +9,7 @@ import {
 import { MUTATION_UPDATE_USER } from "../queries/User";
 
 const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
+	const [success, setSuccess] = useState(false);
 	const [updateUser, { loading, error }] = useMutation<
 		UpdateUserMutation,
 		UpdateUserMutationVariables
@@ -25,6 +26,7 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
 
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setValues({ ...values, [e.target.name]: e.target.value });
+		setSuccess(false);
 	};
 
 	const handleSubmit = async (e: FormEvent) => {
@@ -38,9 +40,10 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
 				},
 			},
 		});
+		setSuccess(true);
 	};
 	return (
-		<Container className="d-flex flex-column align-items-center">
+		<Container as="main" className="d-flex flex-column align-items-center">
 			<h2 className="mt-4">Profile</h2>
 			<p className="text-muted">
 				Enter your information to automatically set information required for
@@ -102,6 +105,7 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
 					/>
 				</Form.Group>
 				{error && <Alert variant="danger">{error.message}</Alert>}
+				{success && <Alert variant="success">Successfully updated</Alert>}
 				<div className="d-flex justify-content-center">
 					<Button type="submit" disabled={loading}>
 						{loading ? "Wait..." : "Submit"}

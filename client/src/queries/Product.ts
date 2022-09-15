@@ -56,6 +56,34 @@ export const QUERY_FEATURED_PRODUCTS = gql`
 	}
 `;
 
+export const GET_SINGLE_PRODUCT = gql`
+	query GetSingleProduct($id: Int!) {
+		product(id: $id) {
+			id
+			name
+			price
+			description
+			company {
+				id
+				name
+			}
+			category {
+				id
+				name
+			}
+			inventory
+			shipping_cost
+			discount
+			avg_rating
+			num_of_reviews
+			images {
+				img_id
+				img_src
+			}
+		}
+	}
+`;
+
 export const MUTATION_CREATE_PRODUCT = gql`
 	mutation CreateProduct($input: CreateProductInput!) {
 		createProduct(input: $input)

@@ -12,6 +12,7 @@ import { Container } from "react-bootstrap";
 import RequireAuth from "./components/RequireAuth";
 import { Role } from "./generated/graphql";
 import UserProfile from "./pages/UserProfile";
+import Product from "./pages/Product";
 
 function App() {
 	const { user, isLoading } = useAppContext();
@@ -33,6 +34,7 @@ function App() {
 					>
 						<Route path="/editor" element={<Editor />} />
 					</Route>
+					<Route path="/product/:id" element={<Product />} />
 					{/* user routes */}
 					<Route
 						element={
