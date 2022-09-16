@@ -82,6 +82,13 @@ export const GET_SINGLE_PRODUCT = gql`
 				img_id
 				img_src
 			}
+			variants {
+				id
+				name
+				images {
+					img_src
+				}
+			}
 		}
 	}
 `;

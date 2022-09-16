@@ -10,6 +10,7 @@ import {
 	Card,
 } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
+import Loading from "../components/Loading";
 import {
 	GetAllProductsQuery,
 	GetSingleProductQuery,
@@ -54,133 +55,157 @@ const Product = () => {
 		);
 	}
 
-	if (!data || !data.product || loading || !productData || productLoading) {
-		return <main></main>;
-	}
-
 	return (
 		<Container as="main">
 			<Row className="mt-5 mb-5">
-				<Col className="d-flex flex-column align-items-center">
-					{data.product.images?.length && (
-						<img
-							style={{ height: "25rem" }}
-							src={data.product.images[selectedImage].img_src}
-							alt="Main product image"
-						/>
-					)}
-					{/* show all images here */}
-					<div className="d-flex mt-3 gap-3">
-						{data.product.images?.map((img, idx) => {
-							return (
-								<div
-									className={
-										selectedImage === idx
-											? "text-center border border-dark"
-											: "text-center"
-									}
-									key={img.img_id}
-									style={{ height: "7rem", width: "7rem" }}
-								>
-									<img
-										src={img.img_src}
-										alt="alt.image"
-										style={{ height: "100%" }}
-										onClick={() => setSelectedImage(idx)}
-									/>
-								</div>
-							);
-						})}
-					</div>
-				</Col>
-				<Col>
+				{!data?.product || loading ? (
+					<div style={{ height: "36.5rem" }} />
+				) : (
 					<>
-						<h2 className="mb-3">{data.product.name}</h2>
-						{Object.entries(data.product.description).map(([key, value]) => {
-							return (
-								<div className="lh-lg" key={key}>
-									<b>{`${key}: `}</b>
-									<span>{`${value}`}</span>
-								</div>
-							);
-						})}
-						<Form onSubmit={handleSubmit}>
-							<Row className="d-flex justify-content-between align-items-center gap-3 pt-3 mb-4">
-								<Col>
-									<Form.Control
-										className="w-25"
-										type="number"
-										value={amount}
-										min={1}
-										max={data.product.inventory}
-										onChange={handleAmount}
-									/>
-								</Col>
-								<Col className="fs-3">
-									<div className="d-flex gap-3">
-										<div>
-											{data.product.discount && (
-												<s className="text-muted fs-5">{`${
-													amount * data.product.price
-												} $`}</s>
-											)}
+						<Col className="d-flex flex-column align-items-center">
+							{data.product.images?.length && (
+								<img
+									style={{ height: "25rem" }}
+									src={data.product.images[selectedImage].img_src}
+									alt="Main product image"
+								/>
+							)}
+							{/* show all images here */}
+							<div className="d-flex mt-3 gap-3">
+								{data.product.images?.map((img, idx) => {
+									return (
+										<div
+											className={
+												selectedImage === idx
+													? "text-center border border-dark"
+													: "text-center"
+											}
+											key={img.img_id}
+											style={{ height: "7rem", width: "7rem" }}
+										>
+											<img
+												src={img.img_src}
+												alt="alt.image"
+												style={{ height: "100%" }}
+												onClick={() => setSelectedImage(idx)}
+											/>
 										</div>
-										<div>
-											<b>
-												{`${Math.floor(
-													((100 - data.product.discount) / 100) *
-														amount *
-														data.product.price
-												)} $`}
-											</b>
-										</div>
-									</div>
-								</Col>
-							</Row>
-							<Button type="submit" variant="success" className="w-25">
-								Add to Cart
-							</Button>
-						</Form>
-					</>
-				</Col>
-			</Row>
-			<Row>
-				<Col>
-					<h2 className="mb-4 text-center">Related Products:</h2>
-					{/* fix to show as grid any (to do same in Home) */}
-
-					{productError ? (
-						<Alert variant="danger">Failed to fetch products</Alert>
-					) : (
-						<div className="d-flex justify-content-center align-items-center gap-3 flex-wrap">
-							{productData &&
-								productData.products?.map((product) => {
-									if (product.images?.length) {
-										return (
-											<Col key={`prod-${product.id}`}>
-												<Card.Body className="text-center d-flex flex-column">
-													<Card.Link
-														as={Link}
-														className="custom-link"
-														to={`/product/${product.id}`}
-													>
-														<img
-															src={product.images[0].img_src}
-															className="mb-2"
-															style={{
-																height: "15rem",
-															}}
-														/>
-														<div>{product.name}</div>
-													</Card.Link>
-												</Card.Body>
-											</Col>
-										);
-									}
+									);
 								})}
-						</div>
-					)}
-				</Col>
+							</div>
+						</Col>
+						<Col>
+							<h2 className="mb-3">{data.product.name}</h2>
+							{Object.entries(data.product.description).map(([key, value]) => {
+								return (
+									<div className="lh-lg" key={key}>
+										<b>{`${key}: `}</b>
+										<span>{`${value}`}</span>
+									</div>
+								);
+							})}
+							<h4 className="mt-2">Other variants:</h4>
+							{data.product.variants.map((v) => {
+								return (
+									<div
+										key={`v-${v.id}`}
+										style={{ height: "7rem", width: "7rem" }}
+									>
+										<Link className="text-center" to={`/product/${v.id}`}>
+											<img
+												src={v.images[0].img_src}
+												style={{ height: "100%" }}
+												title={v.name}
+											/>
+										</Link>
+									</div>
+								);
+							})}
+							<Form onSubmit={handleSubmit}>
+								<Row className="d-flex justify-content-between align-items-center gap-3 pt-3 mb-4">
+									<Col>
+										<Form.Control
+											className="w-25"
+											type="number"
+											value={amount}
+											min={1}
+											max={data.product.inventory}
+											onChange={handleAmount}
+										/>
+									</Col>
+									<Col className="fs-3">
+										<div className="d-flex gap-3">
+											<div>
+												{data.product.discount && (
+													<s className="text-muted fs-5">{`${
+														amount * data.product.price
+													} $`}</s>
+												)}
+											</div>
+											<div>
+												<b>
+													{`${Math.floor(
+														((100 - data.product.discount) / 100) *
+															amount *
+															data.product.price
+													)} $`}
+												</b>
+											</div>
+										</div>
+									</Col>
+								</Row>
+								<Button type="submit" variant="success" className="w-25">
+									Add to Cart
+								</Button>
+							</Form>
+						</Col>
+					</>
+				)}
+			</Row>
+
+			<Row>
+				{!productData || productLoading ? (
+					<div style={{ height: "18.5rem" }}>
+						<Loading />
+					</div>
+				) : (
+					<Col>
+						<h2 className="mb-4 text-center">Related Products:</h2>
+						{/* fix to show as grid any (to do same in Home) */}
+
+						{productError ? (
+							<Alert variant="danger">Failed to fetch products</Alert>
+						) : (
+							<div className="d-flex justify-content-center align-items-center gap-3 flex-wrap">
+								{productData &&
+									productData.products?.map((product) => {
+										if (product.images?.length) {
+											return (
+												<Col key={`prod-${product.id}`}>
+													<Card.Body className="text-center d-flex flex-column">
+														<Card.Link
+															as={Link}
+															className="custom-link"
+															to={`/product/${product.id}`}
+														>
+															<img
+																src={product.images[0].img_src}
+																className="mb-2"
+																style={{
+																	height: "15rem",
+																}}
+															/>
+															<div>{product.name}</div>
+														</Card.Link>
+													</Card.Body>
+												</Col>
+											);
+										}
+									})}
+							</div>
+						)}
+					</Col>
+				)}
 			</Row>
 		</Container>
 	);

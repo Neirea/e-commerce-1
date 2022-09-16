@@ -8,6 +8,7 @@ import {
 	GetAllProductsQuery,
 } from "../generated/graphql";
 import { QUERY_ALL_PRODUCT } from "../queries/Product";
+import Loading from "../components/Loading";
 
 const Home = () => {
 	const {
@@ -57,10 +58,7 @@ const Home = () => {
 							<Alert variant="danger">
 								Error: data was not fetched from the server
 							</Alert>
-						) : categoryLoading ? (
-							<div>Loading...</div>
-						) : (
-							categoryData &&
+						) : categoryData && !categoryLoading ? (
 							categoryData.categories.map((category) => {
 								if (category.img_src) {
 									return (
@@ -83,10 +81,13 @@ const Home = () => {
 									);
 								}
 							})
+						) : (
+							<div style={{ height: "18.5rem" }}>
+								<Loading />
+							</div>
 						)}
 					</Row>
 				</Container>
-
 				<Container>
 					<h2 className="text-center mt-5">Featured</h2>
 					<Container className="d-flex justify-content-center mt-3 gap-3">
@@ -95,11 +96,7 @@ const Home = () => {
 								<Alert variant="danger">
 									Error: data was not fetched from the server
 								</Alert>
-							) : productLoading ? (
-								// any: add loading animation with container height
-								<div>Loading...</div>
-							) : (
-								productData &&
+							) : productData && !productLoading ? (
 								productData.products?.map((product) => {
 									if (product.images?.length) {
 										return (
@@ -124,6 +121,10 @@ const Home = () => {
 										);
 									}
 								})
+							) : (
+								<div style={{ height: "18.5rem" }}>
+									<Loading />
+								</div>
 							)}
 						</Row>
 					</Container>

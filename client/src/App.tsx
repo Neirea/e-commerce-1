@@ -13,17 +13,17 @@ import RequireAuth from "./components/RequireAuth";
 import { Role } from "./generated/graphql";
 import UserProfile from "./pages/UserProfile";
 import Product from "./pages/Product";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
 	const { user, isLoading } = useAppContext();
 
 	return (
 		<>
+			<ScrollToTop />
 			<Header />
 			{isLoading ? (
-				<Container as="main" className="mt-5 text-center">
-					Loading...
-				</Container>
+				<Container as="main" className="main-loading" />
 			) : (
 				<Routes>
 					<Route path="/" element={<Home />} />
