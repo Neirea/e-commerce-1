@@ -11,6 +11,7 @@ const SearchBar = () => {
 	};
 	const search = (e: FormEvent) => {
 		e.preventDefault();
+		if (!searchText) return;
 		navigate(`/search?value=${searchText}`);
 	};
 	return (

@@ -56,6 +56,7 @@ export type CreateProductInput = {
   name: Scalars['String'];
   price: Scalars['Float'];
   shipping_cost: Scalars['Float'];
+  variants?: InputMaybe<Array<Scalars['Int']>>;
 };
 
 export type Image = {
@@ -143,13 +144,14 @@ export type Product = {
   description: Scalars['JSON'];
   discount: Scalars['Int'];
   id: Scalars['Int'];
-  images?: Maybe<Array<Image>>;
+  images: Array<Image>;
   inventory: Scalars['Int'];
   name: Scalars['String'];
   num_of_reviews: Scalars['Int'];
   price: Scalars['Float'];
   shipping_cost: Scalars['Float'];
   updated_at: Scalars['Date'];
+  variants: Array<Product>;
 };
 
 export type Query = {
@@ -204,6 +206,7 @@ export type UpdateProductInput = {
   name: Scalars['String'];
   price: Scalars['Float'];
   shipping_cost: Scalars['Float'];
+  variants?: InputMaybe<Array<Scalars['Int']>>;
 };
 
 export type UpdateUserInput = {
@@ -285,19 +288,19 @@ export type DeleteCompanyMutation = { __typename?: 'Mutation', deleteCompany: bo
 export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllProductsQuery = { __typename?: 'Query', products: Array<{ __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string }, images?: Array<{ __typename?: 'Image', img_id: string, img_src: string }> | null }> };
+export type GetAllProductsQuery = { __typename?: 'Query', products: Array<{ __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string }, images: Array<{ __typename?: 'Image', img_src: string }>, variants: Array<{ __typename?: 'Product', id: number }> }> };
 
 export type GetAllFeaturedProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllFeaturedProductsQuery = { __typename?: 'Query', products: Array<{ __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string }, images?: Array<{ __typename?: 'Image', img_id: string, img_src: string }> | null }> };
+export type GetAllFeaturedProductsQuery = { __typename?: 'Query', products: Array<{ __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string }, images: Array<{ __typename?: 'Image', img_id: string, img_src: string }> }> };
 
 export type GetSingleProductQueryVariables = Exact<{
   id: Scalars['Int'];
 }>;
 
 
-export type GetSingleProductQuery = { __typename?: 'Query', product?: { __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string }, images?: Array<{ __typename?: 'Image', img_id: string, img_src: string }> | null } | null };
+export type GetSingleProductQuery = { __typename?: 'Query', product?: { __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string }, images: Array<{ __typename?: 'Image', img_id: string, img_src: string }> } | null };
 
 export type CreateProductMutationVariables = Exact<{
   input: CreateProductInput;
@@ -620,8 +623,10 @@ export const GetAllProductsDocument = gql`
     avg_rating
     num_of_reviews
     images {
-      img_id
       img_src
+    }
+    variants {
+      id
     }
   }
 }

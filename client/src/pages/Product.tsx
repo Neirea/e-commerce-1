@@ -76,7 +76,7 @@ const Product = () => {
 								<div
 									className={
 										selectedImage === idx
-											? "text-center border border-primary"
+											? "text-center border border-dark"
 											: "text-center"
 									}
 									key={img.img_id}
@@ -111,6 +111,8 @@ const Product = () => {
 										className="w-25"
 										type="number"
 										value={amount}
+										min={1}
+										max={data.product.inventory}
 										onChange={handleAmount}
 									/>
 								</Col>
@@ -125,11 +127,11 @@ const Product = () => {
 										</div>
 										<div>
 											<b>
-												{`${
+												{`${Math.floor(
 													((100 - data.product.discount) / 100) *
-													amount *
-													data.product.price
-												} $`}
+														amount *
+														data.product.price
+												)} $`}
 											</b>
 										</div>
 									</div>

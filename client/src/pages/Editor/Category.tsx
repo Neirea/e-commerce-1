@@ -22,9 +22,9 @@ import { serverUrl } from "../../utils/server";
 const Category = () => {
 	const [uploadLoading, setUploadLoading] = useState(false);
 	const [categoryId, setCategoryId] = useState<number>(0);
+	const [name, setName] = useState<string>("");
 	const [parentId, setParentId] = useState<number>(0);
 	const [selectedImage, setSelectedImage] = useState<File | undefined>();
-	const [name, setName] = useState<string>("");
 	const {
 		data,
 		loading: categoryLoading,
@@ -49,8 +49,6 @@ const Category = () => {
 	] = useMutation<DeleteCategoryMutation, DeleteCategoryMutationVariables>(
 		MUTATION_DELETE_CATEGORY
 	);
-	const selectParentRef = useRef<HTMLSelectElement>(null);
-	const selectCategoryRef = useRef<HTMLSelectElement>(null);
 	const filesRef = useRef<HTMLInputElement>(null);
 
 	const loading =
@@ -65,8 +63,9 @@ const Category = () => {
 		createCategoryError || updateCategoryError || deleteCategoryError;
 
 	const resetForm = () => {
-		if (selectParentRef.current) selectParentRef.current.selectedIndex = 0;
-		if (selectCategoryRef.current) selectCategoryRef.current.selectedIndex = 0;
+		setName("");
+		setCategoryId(0);
+		setParentId(0);
 		if (filesRef.current) filesRef.current.value = "";
 	};
 
@@ -80,25 +79,18 @@ const Category = () => {
 
 	const handleCategorySelect = (e: ChangeEvent<HTMLSelectElement>) => {
 		const idx = +e.target.value;
-		setCategoryId(idx);
 
 		if (idx === 0) {
-			setName("");
-			if (selectParentRef.current) selectParentRef.current.selectedIndex = 0;
+			resetForm();
 			return;
 		}
 		if (data?.categories) {
 			const category = data.categories.find((item) => item.id === idx)!;
-			setName(category.name);
-			if (selectParentRef.current) {
-				if (category.parent == null) {
-					selectParentRef.current.selectedIndex = 0;
-					return;
-				}
-				selectParentRef.current.selectedIndex = [
-					...selectParentRef.current.options,
-				].findIndex((option) => +option.value === category.parent?.id);
+			if (category.parent) {
+				setParentId(category.parent.id);
 			}
+			setCategoryId(idx);
+			setName(category.name);
 		}
 	};
 
@@ -117,11 +109,8 @@ const Category = () => {
 				id: categoryId,
 			},
 		});
-		resetForm();
 		await refetch();
-		setName("");
-		setParentId(0);
-		setCategoryId(0);
+		resetForm();
 	};
 
 	const handleSubmit = async (e: FormEvent) => {
@@ -170,11 +159,8 @@ const Category = () => {
 				},
 			});
 		}
-		resetForm();
 		await refetch();
-		setName("");
-		setCategoryId(0);
-		setParentId(0);
+		resetForm();
 		setSelectedImage(undefined);
 	};
 
@@ -190,8 +176,8 @@ const Category = () => {
 					<div className="d-flex gap-2">
 						<Form.Select
 							aria-label="Create category to create, update or delete"
+							value={categoryId.toString()}
 							onChange={handleCategorySelect}
-							ref={selectCategoryRef}
 						>
 							<option key={"category_upsert-0"} value={0}>
 								{"Create new category"}
@@ -221,8 +207,8 @@ const Category = () => {
 				<Form.Group className="mb-3">
 					<Form.Select
 						aria-label="Select Parent Category"
+						value={parentId.toString()}
 						onChange={handleParentSelect}
-						ref={selectParentRef}
 					>
 						<option key={"parent-0"} value={0}>
 							{"Choose Parent"}

@@ -21,8 +21,10 @@ export const QUERY_ALL_PRODUCT = gql`
 			avg_rating
 			num_of_reviews
 			images {
-				img_id
 				img_src
+			}
+			variants {
+				id
 			}
 		}
 	}

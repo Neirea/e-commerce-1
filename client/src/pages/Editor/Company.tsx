@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { ChangeEvent, FormEvent, useState, useRef } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import {
 	CreateCompanyMutation,
@@ -44,7 +44,6 @@ const Company = () => {
 	] = useMutation<DeleteCompanyMutation, DeleteCompanyMutationVariables>(
 		MUTATION_DELETE_COMPANY
 	);
-	const selectRef = useRef<HTMLSelectElement>(null);
 	const loading =
 		companyLoading ||
 		createCompanyLoading ||
@@ -57,7 +56,6 @@ const Company = () => {
 
 	const handleSelect = (e: ChangeEvent<HTMLSelectElement>) => {
 		const idx = +e.target.value;
-		setCompanyId(idx);
 		if (idx === 0) {
 			setName("");
 			return;
@@ -65,6 +63,7 @@ const Company = () => {
 		if (data?.companies) {
 			const company = data.companies.find((item) => item.id === idx)!;
 			setName(company.name);
+			setCompanyId(idx);
 		}
 	};
 	const handleName = (e: ChangeEvent<HTMLInputElement>) => {
@@ -79,7 +78,6 @@ const Company = () => {
 			},
 		});
 		await refetch();
-		if (selectRef.current) selectRef.current.selectedIndex = 0;
 		setName("");
 		setCompanyId(0);
 	};
@@ -107,7 +105,6 @@ const Company = () => {
 		}
 
 		await refetch();
-		if (selectRef.current) selectRef.current.selectedIndex = 0;
 		setName("");
 		setCompanyId(0);
 	};
@@ -125,7 +122,7 @@ const Company = () => {
 						<Form.Select
 							aria-label="Choose company to create, update or delete"
 							onChange={handleSelect}
-							ref={selectRef}
+							value={companyId.toString()}
 						>
 							<option key={"delete-0"} value={0}>
 								{"Create new company"}

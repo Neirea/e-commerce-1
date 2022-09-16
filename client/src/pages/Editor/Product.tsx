@@ -73,12 +73,10 @@ const Product = () => {
 
 	const [productId, setProductId] = useState<number>(0);
 	const [selectedImages, setSelectedImages] = useState<File[]>([]);
+	const [selectedVariants, setSelectedVariants] = useState<string[]>([]);
 	const [values, setValues] = useState(defaultValues);
 	const [inputError, setInputError] = useState(0);
 	const [uploadLoading, setUploadLoading] = useState(false);
-	const selectProductRef = useRef<HTMLSelectElement>(null);
-	const selectCategoryRef = useRef<HTMLSelectElement>(null);
-	const selectCompanyRef = useRef<HTMLSelectElement>(null);
 	const filesRef = useRef<HTMLInputElement>(null);
 
 	const loading =
@@ -102,26 +100,23 @@ const Product = () => {
 	);
 
 	const resetForm = () => {
-		if (selectProductRef.current) selectProductRef.current.selectedIndex = 0;
-		if (selectCompanyRef.current) selectCompanyRef.current.selectedIndex = 0;
-		if (selectCategoryRef.current) selectCategoryRef.current.selectedIndex = 0;
+		setValues(defaultValues);
+		setProductId(0);
+		setSelectedVariants([]);
 		if (filesRef.current) filesRef.current.value = "";
 	};
 
 	const handleProductSelect = (e: ChangeEvent<HTMLSelectElement>) => {
 		const idx = +e.target.value;
-
-		setProductId(idx);
 		if (idx === 0) {
-			setValues(defaultValues);
-			if (selectCategoryRef.current)
-				selectCategoryRef.current.selectedIndex = 0;
-			if (selectCompanyRef.current) selectCompanyRef.current.selectedIndex = 0;
+			resetForm();
 			return;
 		}
+
 		if (productData?.products) {
 			const product = productData.products.find((item) => item.id === idx)!;
-
+			setProductId(idx);
+			setSelectedVariants(product.variants.map((i) => i.id.toString()));
 			setValues({
 				name: product.name,
 				description: JSON.stringify(product.description),
@@ -132,18 +127,15 @@ const Product = () => {
 				shipping_cost: product.shipping_cost,
 				discount: product.discount,
 			});
-
-			if (selectCompanyRef.current) {
-				selectCompanyRef.current.selectedIndex = [
-					...selectCompanyRef.current.options,
-				].findIndex((option) => +option.value === product.company.id);
-			}
-			if (selectCategoryRef.current) {
-				selectCategoryRef.current.selectedIndex = [
-					...selectCategoryRef.current.options,
-				].findIndex((option) => +option.value === product.category.id);
-			}
 		}
+	};
+
+	const handleVariantSelect = (e: ChangeEvent<HTMLSelectElement>) => {
+		setSelectedVariants(
+			[...e.target.selectedOptions].map((opt) => {
+				return opt.value;
+			})
+		);
 	};
 
 	const handleFiles = (e: ChangeEvent<HTMLInputElement>) => {
@@ -165,16 +157,16 @@ const Product = () => {
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
+
+		//decide where to show error;
 		if (!isJson) {
 			setInputError(1);
 			return;
 		}
-
 		if (!values.company_id) {
 			setInputError(2);
 			return;
 		}
-
 		if (!values.category_id) {
 			setInputError(3);
 			return;
@@ -182,8 +174,7 @@ const Product = () => {
 
 		const newProduct = {
 			...values,
-			category_id: values.category_id,
-			company_id: values.company_id,
+			variants: selectedVariants.map((i) => +i),
 			description: JSON.parse(values.description),
 			img_id: [] as string[],
 			img_src: [] as string[],
@@ -213,11 +204,9 @@ const Product = () => {
 		} else {
 			await createProduct({ variables: { input: newProduct } });
 		}
-		resetForm();
 		await refetch();
+		resetForm();
 		setInputError(0);
-		setValues(defaultValues);
-		setProductId(0);
 		setSelectedImages([]);
 	};
 
@@ -228,10 +217,8 @@ const Product = () => {
 				id: productId,
 			},
 		});
-		resetForm();
 		await refetch();
-		setValues(defaultValues);
-		setProductId(0);
+		resetForm();
 	};
 
 	return (
@@ -244,8 +231,8 @@ const Product = () => {
 					<div className="d-flex gap-2">
 						<Form.Select
 							aria-label="Create or Choose Product to update"
+							value={productId}
 							onChange={handleProductSelect}
-							ref={selectProductRef}
 						>
 							<option key={"product_upsert-0"} value={0}>
 								{"Create new Product"}
@@ -340,9 +327,9 @@ const Product = () => {
 					className="mt-3 mb-3"
 					name="company_id"
 					onChange={handleChange}
-					ref={selectCompanyRef}
+					value={values.company_id}
 				>
-					<option key={0} value={0}>
+					<option disabled hidden key={0} value={0}>
 						{"Choose company"}
 					</option>
 					{companyData &&
@@ -360,15 +347,35 @@ const Product = () => {
 					<Form.Select
 						aria-label="Select Category"
 						name="category_id"
+						value={values.category_id}
 						onChange={handleChange}
-						ref={selectCategoryRef}
 					>
-						<option key={0} value={0}>
+						<option disabled hidden key={0} value={0}>
 							{"Choose category"}
 						</option>
 						{categoryData &&
 							categoryData.categories?.map((elem) => (
 								<option key={`pcategory-${elem.id}`} value={elem.id}>
+									{elem.name}
+								</option>
+							))}
+					</Form.Select>
+				</Form.Group>
+				<Form.Group className="mb-3">
+					<Form.Label>
+						Variants
+						<span className="text-muted"> (Hold Ctrl to select multiple)</span>
+					</Form.Label>
+					<Form.Select
+						aria-label="Choose variants"
+						value={selectedVariants}
+						onChange={handleVariantSelect}
+						size="sm"
+						multiple
+					>
+						{productData &&
+							productData.products?.map((elem) => (
+								<option key={`product_variants-${elem.id}`} value={elem.id}>
 									{elem.name}
 								</option>
 							))}
