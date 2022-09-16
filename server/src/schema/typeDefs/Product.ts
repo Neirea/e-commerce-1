@@ -23,6 +23,7 @@ const productTypes = gql`
 		created_at: DateTime!
 		updated_at: DateTime!
 		images: [Image!]
+		variants: [Product]
 	}
 	extend type Query {
 		products: [Product!]!
@@ -41,6 +42,7 @@ const productTypes = gql`
 		img_src: [String!]!
 		company_id: Int!
 		category_id: Int!
+		variants: [Int!]
 	}
 	input UpdateProductInput {
 		id: Int!
@@ -54,6 +56,7 @@ const productTypes = gql`
 		img_src: [String!]!
 		company_id: Int!
 		category_id: Int!
+		variants: [Int!]
 	}
 
 	extend type Mutation {

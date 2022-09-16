@@ -55,6 +55,7 @@ export type CreateProductInput = {
   name: Scalars['String'];
   price: Scalars['Float'];
   shipping_cost: Scalars['Float'];
+  variants?: InputMaybe<Array<Scalars['Int']>>;
 };
 
 export type Image = {
@@ -149,6 +150,7 @@ export type Product = {
   price: Scalars['Float'];
   shipping_cost: Scalars['Float'];
   updated_at: Scalars['Date'];
+  variants?: Maybe<Array<Maybe<Product>>>;
 };
 
 export type Query = {
@@ -203,6 +205,7 @@ export type UpdateProductInput = {
   name: Scalars['String'];
   price: Scalars['Float'];
   shipping_cost: Scalars['Float'];
+  variants?: InputMaybe<Array<Scalars['Int']>>;
 };
 
 export type UpdateUserInput = {
@@ -406,6 +409,7 @@ export type ProductResolvers<ContextType = any, ParentType extends ResolversPare
   price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   shipping_cost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   updated_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
+  variants?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

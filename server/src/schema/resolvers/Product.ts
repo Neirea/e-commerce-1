@@ -15,15 +15,32 @@ const productResolvers = {
 	Query: {
 		products: () => {
 			return prisma.product.findMany({
-				include: { company: true, category: true, images: true },
+				include: {
+					company: true,
+					category: true,
+					images: true,
+					variants: {
+						include: {
+							images: true,
+						},
+					},
+				},
 				orderBy: { name: "asc" },
 			});
-			// return prisma.$queryRaw`SELECT * FROM public."Product";`;
 		},
 		product: (parent: any, { id }: { id: number }) => {
 			return prisma.product.findUnique({
 				where: { id: id },
-				include: { company: true, category: true, images: true },
+				include: {
+					company: true,
+					category: true,
+					images: true,
+					variants: {
+						include: {
+							images: true,
+						},
+					},
+				},
 			});
 		},
 	},
@@ -33,51 +50,42 @@ const productResolvers = {
 			{ input }: { input: CreateProductInput },
 			{ req }: { req: Request }
 		) => {
-			if (!req.session.user?.role.includes(Role.ADMIN)) {
+			if (!req.session.user?.role.includes(Role.EDITOR)) {
 				throw new AuthenticationError(
 					"You don't have permissions for this action"
 				);
 			}
-			const {
-				category_id,
-				company_id,
-				description,
-				price,
-				name,
-				inventory,
-				shipping_cost,
-				discount,
-			} = input;
-			if (name.length < 3) throw new UserInputError("Name is too short");
+			const { variants, img_id, img_src, ...createData } = input;
+			if (input.name.length < 3) throw new UserInputError("Name is too short");
 
-			const newProduct = {
-				category_id,
-				company_id,
-				description,
-				price,
-				name,
-				inventory,
-				shipping_cost,
-				discount,
-			};
-
-			//create product and its images
-			const productImages = input.img_id.map((img, i) => {
-				return { img_id: img, img_src: input.img_src[i] };
+			//create product, create product images and connection to variants
+			const connectArr = variants?.map((p_id) => {
+				return { id: p_id };
 			});
+			const productImages = img_id.map((img, i) => {
+				return { img_id: img, img_src: img_src[i] };
+			});
+
 			await prisma.product.create({
 				data: {
-					...newProduct,
+					...createData,
 					images: {
 						create: productImages,
 					},
+					variants: {
+						connect: connectArr,
+					},
+					variantsRelation: {
+						connect: connectArr,
+					},
 				},
 			});
+
 			//create connection between company and category
 			await prisma.category.update({
-				where: { id: category_id },
+				where: { id: input.category_id },
 				data: {
-					companies: { connect: { id: company_id } },
+					companies: { connect: { id: input.company_id } },
 				},
 			});
 			return true;
@@ -87,62 +95,55 @@ const productResolvers = {
 			{ input }: { input: UpdateProductInput },
 			{ req }: { req: Request }
 		) => {
-			if (!req.session.user?.role.includes(Role.ADMIN)) {
+			if (!req.session.user?.role.includes(Role.EDITOR)) {
 				throw new AuthenticationError(
 					"You don't have permissions for this action"
 				);
 			}
-			const {
-				id,
-				category_id,
-				company_id,
-				description,
-				price,
-				name,
-				inventory,
-				shipping_cost,
-				discount,
-			} = input;
-			if (name.length < 3) throw new UserInputError("Name is too short");
+			const { id, variants, img_id, img_src, ...updateData } = input;
+			if (input.name.length < 3) throw new UserInputError("Name is too short");
 
-			const updatedProduct = {
-				category_id,
-				company_id,
-				description,
-				price,
-				name,
-				inventory,
-				shipping_cost,
-				discount,
-			};
 			//delete old images
 			if (input.img_id.length) {
 				const oldImages = await prisma.productImage.findMany({
 					where: { product_id: id },
 				});
-				//delete old ones
-				await prisma.productImage.deleteMany({ where: { product_id: id } });
 				oldImages.forEach(
 					async (img) => await cloudinary.uploader.destroy(img.img_id)
 				);
+				await prisma.productImage.deleteMany({
+					where: { product_id: id },
+				});
 			}
-			const productImages = input.img_id.map((img, i) => {
-				return { img_id: img, img_src: input.img_src[i] };
+
+			//update product, create product images and connection to variants
+			const connectArr = variants?.map((p_id) => {
+				return { id: p_id };
 			});
+			const productImages = img_id.map((img, i) => {
+				return { img_id: img, img_src: img_src[i] };
+			});
+
 			await prisma.product.update({
 				where: { id: id },
 				data: {
-					...updatedProduct,
+					...updateData,
 					images: {
 						create: productImages,
+					},
+					variants: {
+						connect: connectArr,
+					},
+					variantsRelation: {
+						connect: connectArr,
 					},
 				},
 			});
 			//update relationbetween company and category
 			await prisma.category.update({
-				where: { id: category_id },
+				where: { id: input.category_id },
 				data: {
-					companies: { connect: { id: company_id } },
+					companies: { connect: { id: input.company_id } },
 				},
 			});
 
@@ -153,11 +154,12 @@ const productResolvers = {
 			{ id }: { id: number },
 			{ req }: { req: Request }
 		) => {
-			if (!req.session.user?.role.includes(Role.ADMIN)) {
+			if (!req.session.user?.role.includes(Role.EDITOR)) {
 				throw new AuthenticationError(
 					"You don't have permissions for this action"
 				);
 			}
+
 			const data = await prisma.product.delete({
 				where: { id: id },
 				include: { images: true },

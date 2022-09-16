@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures=["fullTextSearch"]
 }
 
 datasource db {
@@ -38,8 +39,10 @@ model Product {
   num_of_reviews Int @default(0)  // updated on Review placement
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
-  company Company @relation(fields: [company_id],references: [id])
-  category Category @relation(fields: [category_id],references: [id])
+  variants Product[] @relation("variants")
+  variantsRelation Product[] @relation("variants")
+  company Company @relation(fields: [company_id],references: [id],onDelete: Cascade)
+  category Category @relation(fields: [category_id],references: [id],onDelete: Cascade)
   reviews Review[]
   orders SingleOrderItem[]
   images ProductImage[]
@@ -49,7 +52,7 @@ model ProductImage{
   img_id String @id
   img_src String
   product_id Int
-  product Product @relation(fields: [product_id],references: [id])
+  product Product @relation(fields: [product_id],references: [id],onDelete: Cascade)
 }
 
 model Company{
