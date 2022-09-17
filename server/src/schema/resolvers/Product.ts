@@ -1,12 +1,13 @@
 import { PrismaClient, Role } from "@prisma/client";
+import { AuthenticationError, UserInputError } from "apollo-server-express";
+import { v2 as cloudinary } from "cloudinary";
+import { Request } from "express";
 import GraphQLJSON from "graphql-type-json";
-import {
+import type {
 	CreateProductInput,
+	QueryProductInput,
 	UpdateProductInput,
 } from "../../generated/graphql";
-import { Request } from "express";
-import { v2 as cloudinary } from "cloudinary";
-import { AuthenticationError, UserInputError } from "apollo-server-express";
 
 const prisma = new PrismaClient({ log: ["query"] });
 
@@ -39,6 +40,77 @@ const productResolvers = {
 						include: {
 							images: true,
 						},
+					},
+				},
+			});
+		},
+		filteredProducts: (
+			parent: any,
+			{ input }: { input: QueryProductInput }
+		) => {
+			const searchString = input.search_string
+				? input.search_string + ":*"
+				: undefined;
+
+			return prisma.product.findMany({
+				where: {
+					OR: [
+						{
+							name: {
+								search: searchString,
+							},
+						},
+						{
+							category: {
+								name: {
+									search: searchString,
+								},
+							},
+						},
+						{
+							company: {
+								name: {
+									search: searchString,
+								},
+							},
+						},
+						{
+							description: {
+								path: ["OS"],
+								string_contains: input.search_string ?? undefined,
+							},
+						},
+					],
+					company_id: input.company_id ?? undefined,
+					category_id: input.category_id ?? undefined,
+					price: {
+						gte: input.min_price ?? undefined,
+						lte: input.max_price ?? undefined,
+					},
+				},
+				include: {
+					images: true,
+				},
+			});
+		},
+		featuredProducts: () => {
+			return prisma.product.findMany({
+				include: {
+					images: true,
+				},
+				orderBy: {
+					discount: "desc",
+				},
+			});
+		},
+		popularProducts: () => {
+			return prisma.product.findMany({
+				include: {
+					images: true,
+				},
+				orderBy: {
+					orders: {
+						_count: "desc",
 					},
 				},
 			});

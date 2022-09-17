@@ -22,15 +22,26 @@ const productTypes = gql`
 		num_of_reviews: Int!
 		created_at: DateTime!
 		updated_at: DateTime!
-		images: [Image!]
-		variants: [Product]
+		images: [Image!]!
+		variants: [Product!]!
 	}
 	extend type Query {
 		products: [Product!]!
 		product(id: Int!): Product
+		filteredProducts(input: QueryProductInput!): [Product!]!
+		featuredProducts: [Product!]!
+		popularProducts: [Product!]!
+	}
+	# Query inputs
+	input QueryProductInput {
+		category_id: Int
+		company_id: Int
+		min_price: Int
+		max_price: Int
+		search_string: String
 	}
 
-	# Mutations
+	# Mutations inputs
 	input CreateProductInput {
 		name: String!
 		price: Float!

@@ -143,25 +143,33 @@ export type Product = {
   description: Scalars['JSON'];
   discount: Scalars['Int'];
   id: Scalars['Int'];
-  images?: Maybe<Array<Image>>;
+  images: Array<Image>;
   inventory: Scalars['Int'];
   name: Scalars['String'];
   num_of_reviews: Scalars['Int'];
   price: Scalars['Float'];
   shipping_cost: Scalars['Float'];
   updated_at: Scalars['Date'];
-  variants?: Maybe<Array<Maybe<Product>>>;
+  variants: Array<Product>;
 };
 
 export type Query = {
   __typename?: 'Query';
   categories: Array<Category>;
   companies: Array<Company>;
+  featured: Array<Product>;
+  fproducts: Array<Product>;
+  popular: Array<Product>;
   product?: Maybe<Product>;
   products: Array<Product>;
   showMe?: Maybe<User>;
   user?: Maybe<User>;
   users?: Maybe<Array<User>>;
+};
+
+
+export type QueryFproductsArgs = {
+  input: QueryProductInput;
 };
 
 
@@ -172,6 +180,14 @@ export type QueryProductArgs = {
 
 export type QueryUserArgs = {
   id: Scalars['Int'];
+};
+
+export type QueryProductInput = {
+  category_id?: InputMaybe<Scalars['Int']>;
+  company_id?: InputMaybe<Scalars['Int']>;
+  max_price?: InputMaybe<Scalars['Int']>;
+  min_price?: InputMaybe<Scalars['Int']>;
+  search_string?: InputMaybe<Scalars['String']>;
 };
 
 export enum Role {
@@ -316,6 +332,7 @@ export type ResolversTypes = {
   Platform: Platform;
   Product: ResolverTypeWrapper<Product>;
   Query: ResolverTypeWrapper<{}>;
+  QueryProductInput: QueryProductInput;
   Role: Role;
   String: ResolverTypeWrapper<Scalars['String']>;
   UpdateCategoryInput: UpdateCategoryInput;
@@ -341,6 +358,7 @@ export type ResolversParentTypes = {
   Mutation: {};
   Product: Product;
   Query: {};
+  QueryProductInput: QueryProductInput;
   String: Scalars['String'];
   UpdateCategoryInput: UpdateCategoryInput;
   UpdateCompanyInput: UpdateCompanyInput;
@@ -402,20 +420,23 @@ export type ProductResolvers<ContextType = any, ParentType extends ResolversPare
   description?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   discount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  images?: Resolver<Maybe<Array<ResolversTypes['Image']>>, ParentType, ContextType>;
+  images?: Resolver<Array<ResolversTypes['Image']>, ParentType, ContextType>;
   inventory?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   num_of_reviews?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   shipping_cost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   updated_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  variants?: Resolver<Maybe<Array<Maybe<ResolversTypes['Product']>>>, ParentType, ContextType>;
+  variants?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType>;
   companies?: Resolver<Array<ResolversTypes['Company']>, ParentType, ContextType>;
+  featured?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
+  fproducts?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryFproductsArgs, 'input'>>;
+  popular?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
   product?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryProductArgs, 'id'>>;
   products?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
   showMe?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
