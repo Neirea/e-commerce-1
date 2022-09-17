@@ -1,4 +1,4 @@
-import { Container, Row, Col, Card, Button, Alert } from "react-bootstrap";
+import { Container, Row, Col, Button, Alert } from "react-bootstrap";
 import MenuCard from "../components/MenuCard";
 import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/client";
@@ -63,20 +63,21 @@ const Home = () => {
 								if (category.img_src) {
 									return (
 										<Col key={`cat-${category.id}`}>
-											<Card.Body className="text-center d-flex flex-column">
-												<Card.Link
-													as={Link}
+											<div className="text-center d-flex flex-column">
+												<Link
 													to={`/search?category=${category.name}`}
 													className="custom-link"
 												>
 													<img
 														className="mb-2"
 														src={category.img_src}
+														title={category.name}
+														alt={category.name}
 														style={{ width: "15rem" }}
 													/>
 													<div>{category.name}</div>
-												</Card.Link>
-											</Card.Body>
+												</Link>
+											</div>
 										</Col>
 									);
 								}
@@ -101,22 +102,23 @@ const Home = () => {
 									if (product.images?.length) {
 										return (
 											<Col key={`prod-${product.id}`}>
-												<Card.Body className="text-center d-flex flex-column">
-													<Card.Link
-														as={Link}
+												<div className="text-center d-flex flex-column">
+													<Link
 														className="custom-link"
 														to={`/product/${product.id}`}
 													>
 														<img
 															src={product.images[0].img_src}
+															title={product.name}
+															alt={product.name}
 															className="mb-2"
 															style={{
 																height: "15rem",
 															}}
 														/>
 														<div>{product.name}</div>
-													</Card.Link>
-												</Card.Body>
+													</Link>
+												</div>
 											</Col>
 										);
 									}

@@ -1,14 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { ChangeEvent, FormEvent, useState } from "react";
-import {
-	Container,
-	Row,
-	Col,
-	Alert,
-	Form,
-	Button,
-	Card,
-} from "react-bootstrap";
+import { Container, Row, Col, Alert, Form, Button } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
 import Loading from "../components/Loading";
 import {
@@ -67,7 +59,7 @@ const Product = () => {
 								<img
 									style={{ height: "25rem" }}
 									src={data.product.images[selectedImage].img_src}
-									alt="Main product image"
+									alt={data.product.name}
 								/>
 							)}
 							{/* show all images here */}
@@ -85,7 +77,7 @@ const Product = () => {
 										>
 											<img
 												src={img.img_src}
-												alt="alt.image"
+												alt={data.product?.name}
 												style={{ height: "100%" }}
 												onClick={() => setSelectedImage(idx)}
 											/>
@@ -105,17 +97,24 @@ const Product = () => {
 								);
 							})}
 							<h4 className="mt-2">Other variants:</h4>
-							{data.product.variants.map((v) => {
+							{data.product.variants.map((product) => {
 								return (
 									<div
-										key={`v-${v.id}`}
+										key={`v-${product.id}`}
 										style={{ height: "7rem", width: "7rem" }}
 									>
-										<Link className="text-center" to={`/product/${v.id}`}>
+										<Link
+											className="text-center"
+											to={`/product/${product.id}`}
+											onClick={() => {
+												setSelectedImage(0);
+											}}
+										>
 											<img
-												src={v.images[0].img_src}
+												src={product.images[0].img_src}
 												style={{ height: "100%" }}
-												title={v.name}
+												title={product.name}
+												alt={product.name}
 											/>
 										</Link>
 									</div>
@@ -182,22 +181,23 @@ const Product = () => {
 										if (product.images?.length) {
 											return (
 												<Col key={`prod-${product.id}`}>
-													<Card.Body className="text-center d-flex flex-column">
-														<Card.Link
-															as={Link}
+													<div className="text-center d-flex flex-column">
+														<Link
 															className="custom-link"
 															to={`/product/${product.id}`}
 														>
 															<img
 																src={product.images[0].img_src}
+																alt={product.name}
+																title={product.name}
 																className="mb-2"
 																style={{
 																	height: "15rem",
 																}}
 															/>
 															<div>{product.name}</div>
-														</Card.Link>
-													</Card.Body>
+														</Link>
+													</div>
 												</Col>
 											);
 										}
