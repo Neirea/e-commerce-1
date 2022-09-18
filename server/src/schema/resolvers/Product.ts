@@ -6,6 +6,7 @@ import GraphQLJSON from "graphql-type-json";
 import type {
 	CreateProductInput,
 	QueryProductInput,
+	QueryRelatedInput,
 	UpdateProductInput,
 } from "../../generated/graphql";
 
@@ -49,10 +50,15 @@ const productResolvers = {
 			{ input }: { input: QueryProductInput }
 		) => {
 			const searchString = input.search_string
-				? input.search_string + ":*"
+				? input.search_string
+						.split(" ")
+						.map((s) => s + ":*")
+						.join(" | ")
 				: undefined;
 
 			return prisma.product.findMany({
+				skip: input.offset,
+				take: input.limit,
 				where: {
 					OR: [
 						{
@@ -74,12 +80,6 @@ const productResolvers = {
 								},
 							},
 						},
-						{
-							description: {
-								path: ["OS"],
-								string_contains: input.search_string ?? undefined,
-							},
-						},
 					],
 					company_id: input.company_id ?? undefined,
 					category_id: input.category_id ?? undefined,
@@ -93,8 +93,13 @@ const productResolvers = {
 				},
 			});
 		},
-		featuredProducts: () => {
+		featuredProducts: (
+			parent: any,
+			{ limit, offset }: { limit: number; offset: number }
+		) => {
 			return prisma.product.findMany({
+				skip: offset,
+				take: limit,
 				include: {
 					images: true,
 				},
@@ -103,10 +108,35 @@ const productResolvers = {
 				},
 			});
 		},
-		popularProducts: () => {
+		relatedProducts: (parent: any, { input }: { input: QueryRelatedInput }) => {
 			return prisma.product.findMany({
+				where: {
+					OR: [
+						{
+							company_id: input.company_id,
+							category_id: input.category_id,
+						},
+					],
+				},
+				skip: input.offset,
+				take: input.limit,
 				include: {
 					images: true,
+				},
+			});
+		},
+		popularProducts: (
+			parent: any,
+			{ limit, offset }: { limit: number; offset: number }
+		) => {
+			return prisma.product.findMany({
+				skip: offset,
+				take: limit,
+				include: {
+					images: true,
+					_count: {
+						select: { orders: true },
+					},
 				},
 				orderBy: {
 					orders: {

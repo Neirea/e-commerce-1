@@ -157,24 +157,42 @@ export type Query = {
   __typename?: 'Query';
   categories: Array<Category>;
   companies: Array<Company>;
-  featured: Array<Product>;
-  fproducts: Array<Product>;
-  popular: Array<Product>;
+  featuredProducts: Array<Product>;
+  filteredProducts: Array<Product>;
+  popularProducts: Array<Product>;
   product?: Maybe<Product>;
   products: Array<Product>;
+  relatedProducts: Array<Product>;
   showMe?: Maybe<User>;
   user?: Maybe<User>;
   users?: Maybe<Array<User>>;
 };
 
 
-export type QueryFproductsArgs = {
+export type QueryFeaturedProductsArgs = {
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+};
+
+
+export type QueryFilteredProductsArgs = {
   input: QueryProductInput;
+};
+
+
+export type QueryPopularProductsArgs = {
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
 };
 
 
 export type QueryProductArgs = {
   id: Scalars['Int'];
+};
+
+
+export type QueryRelatedProductsArgs = {
+  input: QueryRelatedInput;
 };
 
 
@@ -185,9 +203,18 @@ export type QueryUserArgs = {
 export type QueryProductInput = {
   category_id?: InputMaybe<Scalars['Int']>;
   company_id?: InputMaybe<Scalars['Int']>;
+  limit: Scalars['Int'];
   max_price?: InputMaybe<Scalars['Int']>;
   min_price?: InputMaybe<Scalars['Int']>;
+  offset: Scalars['Int'];
   search_string?: InputMaybe<Scalars['String']>;
+};
+
+export type QueryRelatedInput = {
+  category_id: Scalars['Int'];
+  company_id: Scalars['Int'];
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
 };
 
 export enum Role {
@@ -333,6 +360,7 @@ export type ResolversTypes = {
   Product: ResolverTypeWrapper<Product>;
   Query: ResolverTypeWrapper<{}>;
   QueryProductInput: QueryProductInput;
+  QueryRelatedInput: QueryRelatedInput;
   Role: Role;
   String: ResolverTypeWrapper<Scalars['String']>;
   UpdateCategoryInput: UpdateCategoryInput;
@@ -359,6 +387,7 @@ export type ResolversParentTypes = {
   Product: Product;
   Query: {};
   QueryProductInput: QueryProductInput;
+  QueryRelatedInput: QueryRelatedInput;
   String: Scalars['String'];
   UpdateCategoryInput: UpdateCategoryInput;
   UpdateCompanyInput: UpdateCompanyInput;
@@ -434,11 +463,12 @@ export type ProductResolvers<ContextType = any, ParentType extends ResolversPare
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   categories?: Resolver<Array<ResolversTypes['Category']>, ParentType, ContextType>;
   companies?: Resolver<Array<ResolversTypes['Company']>, ParentType, ContextType>;
-  featured?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
-  fproducts?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryFproductsArgs, 'input'>>;
-  popular?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
+  featuredProducts?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryFeaturedProductsArgs, 'limit' | 'offset'>>;
+  filteredProducts?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryFilteredProductsArgs, 'input'>>;
+  popularProducts?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryPopularProductsArgs, 'limit' | 'offset'>>;
   product?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryProductArgs, 'id'>>;
   products?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
+  relatedProducts?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryRelatedProductsArgs, 'input'>>;
   showMe?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   users?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;

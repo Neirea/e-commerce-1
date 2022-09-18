@@ -29,8 +29,15 @@ const productTypes = gql`
 		products: [Product!]!
 		product(id: Int!): Product
 		filteredProducts(input: QueryProductInput!): [Product!]!
-		featuredProducts: [Product!]!
-		popularProducts: [Product!]!
+		featuredProducts(limit: Int!, offset: Int!): [Product!]!
+		popularProducts(limit: Int!, offset: Int!): [Product!]!
+		relatedProducts(input: QueryRelatedInput!): [Product!]!
+	}
+	input QueryRelatedInput {
+		limit: Int!
+		offset: Int!
+		company_id: Int!
+		category_id: Int!
 	}
 	# Query inputs
 	input QueryProductInput {
@@ -39,6 +46,8 @@ const productTypes = gql`
 		min_price: Int
 		max_price: Int
 		search_string: String
+		limit: Int!
+		offset: Int!
 	}
 
 	# Mutations inputs
