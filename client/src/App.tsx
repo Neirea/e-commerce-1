@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Home from "./pages/Home";
+import Home from "./pages/Home/Home";
 import Footer from "./components/Footer";
 import Header from "./components/Header/Header";
 import SearchPage from "./pages/SearchPage";
@@ -20,35 +20,37 @@ function App() {
 
 	return (
 		<>
-			<ScrollToTop />
 			<Header />
 			{isLoading ? (
 				<Container as="main" className="main-loading" />
 			) : (
-				<Routes>
-					<Route path="/" element={<Home />} />
-					<Route path="/search" element={<SearchPage />} />
-					{/* editor routes */}
-					<Route
-						element={<RequireAuth allowedRoles={[Role.Admin, Role.Editor]} />}
-					>
-						<Route path="/editor" element={<Editor />} />
-					</Route>
-					<Route path="/product/:id" element={<Product />} />
-					{/* user routes */}
-					<Route
-						element={
-							<RequireAuth
-								allowedRoles={[Role.Admin, Role.Editor, Role.User]}
-							/>
-						}
-					>
-						<Route path="/profile" element={<UserProfile user={user} />} />
-					</Route>
+				<>
+					<ScrollToTop />
+					<Routes>
+						<Route path="/" element={<Home />} />
+						<Route path="/search" element={<SearchPage />} />
+						{/* editor routes */}
+						<Route
+							element={<RequireAuth allowedRoles={[Role.Admin, Role.Editor]} />}
+						>
+							<Route path="/editor" element={<Editor />} />
+						</Route>
+						<Route path="/product/:id" element={<Product />} />
+						{/* user routes */}
+						<Route
+							element={
+								<RequireAuth
+									allowedRoles={[Role.Admin, Role.Editor, Role.User]}
+								/>
+							}
+						>
+							<Route path="/profile" element={<UserProfile user={user} />} />
+						</Route>
 
-					<Route path="/unauthorized" element={<Unauthorized />} />
-					<Route path="*" element={<Error />} />
-				</Routes>
+						<Route path="/unauthorized" element={<Unauthorized />} />
+						<Route path="*" element={<Error />} />
+					</Routes>
+				</>
 			)}
 
 			<Footer />
