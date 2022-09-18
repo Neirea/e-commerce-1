@@ -1,4 +1,4 @@
-import { Container, Row, Col } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import { useAppContext } from "../../context/AppContext";
 import { Role } from "../../generated/graphql";
 import Category from "./Category";

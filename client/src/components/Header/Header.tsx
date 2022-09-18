@@ -1,6 +1,6 @@
 import { BiCart } from "@react-icons/all-files/bi/BiCart";
 import { useState } from "react";
-import { Button, Container, Nav, Navbar } from "react-bootstrap";
+import { Container, Nav, Navbar } from "react-bootstrap";
 import { useAppContext } from "../../context/AppContext";
 import Cart from "../Cart";
 import Login from "../Login";
@@ -27,7 +27,7 @@ const Header = () => {
 		<Navbar bg="dark" variant="dark">
 			<Container className="d-flex">
 				<Navbar.Brand href="/" className="d-none d-lg-block">
-					Tech Stop
+					Techway
 				</Navbar.Brand>
 				<SearchBar />
 				<Nav className="d-flex align-items-center">

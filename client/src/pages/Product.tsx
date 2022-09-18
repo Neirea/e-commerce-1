@@ -1,13 +1,16 @@
 import { useQuery } from "@apollo/client";
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Container, Row, Col, Alert, Form, Button } from "react-bootstrap";
+import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
-import Loading from "../components/Loading";
+import { v4 as uuidv4 } from "uuid";
+import ProductsGrid from "../components/ProductsGrid";
 import {
-	GetAllProductsQuery,
+	GetRelatedProductsQuery,
 	GetSingleProductQuery,
 } from "../generated/graphql";
-import { GET_SINGLE_PRODUCT, QUERY_ALL_PRODUCT } from "../queries/Product";
+import { GET_SINGLE_PRODUCT, QUERY_RELATED_PRODUCTS } from "../queries/Product";
+
+const FETCH_NUMBER = 5;
 
 const Product = () => {
 	const { id } = useParams();
@@ -17,11 +20,25 @@ const Product = () => {
 		GET_SINGLE_PRODUCT,
 		{ variables: { id: +id! } }
 	);
+
+	const isSkip = data?.product === undefined;
 	const {
-		data: productData,
-		loading: productLoading,
-		error: productError,
-	} = useQuery<GetAllProductsQuery>(QUERY_ALL_PRODUCT);
+		data: relatedProductData,
+		loading: relatedProductLoading,
+		error: relatedProductError,
+		fetchMore,
+	} = useQuery<GetRelatedProductsQuery>(QUERY_RELATED_PRODUCTS, {
+		variables: {
+			input: {
+				limit: FETCH_NUMBER,
+				offset: 0,
+				company_id: data?.product?.company.id,
+				category_id: data?.product?.category.id,
+			},
+		},
+		skip: isSkip,
+	});
+	const [showMore, setShowMore] = useState(true);
 
 	const handleAmount = (e: ChangeEvent<HTMLInputElement>) => {
 		setAmount(+e.target.value);
@@ -32,6 +49,30 @@ const Product = () => {
 		// add to cart variable
 		// open cart modal
 	};
+
+	// const fetchMoreProducts = async () => {
+	// 	await fetchMore({
+	// 		variables: {
+	// 			offset: relatedProductData?.relatedProducts.length,
+	// 			limit: FETCH_NUMBER,
+	// 		},
+	// 		updateQuery(prev, { fetchMoreResult }) {
+	// 			if (!fetchMoreResult.relatedProducts.length) {
+	// 				setShowMore(false);
+	// 				return prev;
+	// 			}
+	// 			if (fetchMoreResult.relatedProducts.length < FETCH_NUMBER) {
+	// 				setShowMore(false);
+	// 			}
+	// 			return Object.assign({}, prev, {
+	// 				featuredProducts: [
+	// 					...prev.relatedProducts,
+	// 					...fetchMoreResult.relatedProducts,
+	// 				],
+	// 			});
+	// 		},
+	// 	});
+	// };
 
 	if (error) {
 		return (
@@ -90,36 +131,40 @@ const Product = () => {
 							<h2 className="mb-3">{data.product.name}</h2>
 							{Object.entries(data.product.description).map(([key, value]) => {
 								return (
-									<div className="lh-lg" key={key}>
+									<div className="lh-lg" key={uuidv4()}>
 										<b>{`${key}: `}</b>
 										<span>{`${value}`}</span>
 									</div>
 								);
 							})}
-							<h4 className="mt-2">Other variants:</h4>
-							{data.product.variants.map((product) => {
-								return (
-									<div
-										key={`v-${product.id}`}
-										style={{ height: "7rem", width: "7rem" }}
-									>
-										<Link
-											className="text-center"
-											to={`/product/${product.id}`}
-											onClick={() => {
-												setSelectedImage(0);
-											}}
-										>
-											<img
-												src={product.images[0].img_src}
-												style={{ height: "100%" }}
-												title={product.name}
-												alt={product.name}
-											/>
-										</Link>
+							{data.product.variants.length > 0 && (
+								<>
+									<h4 className="mt-2">Other variants:</h4>
+
+									<div className="d-flex gap-4">
+										{data.product.variants.map((product) => {
+											return (
+												<div key={uuidv4()} style={{ height: "7rem" }}>
+													<Link
+														className="text-center"
+														to={`/product/${product.id}`}
+														onClick={() => {
+															setSelectedImage(0);
+														}}
+													>
+														<img
+															src={product.images[0].img_src}
+															style={{ height: "100%" }}
+															title={product.name}
+															alt={product.name}
+														/>
+													</Link>
+												</div>
+											);
+										})}
 									</div>
-								);
-							})}
+								</>
+							)}
 							<Form onSubmit={handleSubmit}>
 								<Row className="d-flex justify-content-between align-items-center gap-3 pt-3 mb-4">
 									<Col>
@@ -161,52 +206,13 @@ const Product = () => {
 					</>
 				)}
 			</Row>
-
-			<Row>
-				{!productData || productLoading ? (
-					<div style={{ height: "18.5rem" }}>
-						<Loading />
-					</div>
-				) : (
-					<Col>
-						<h2 className="mb-4 text-center">Related Products:</h2>
-						{/* fix to show as grid any (to do same in Home) */}
-
-						{productError ? (
-							<Alert variant="danger">Failed to fetch products</Alert>
-						) : (
-							<div className="d-flex justify-content-center align-items-center gap-3 flex-wrap">
-								{productData &&
-									productData.products?.map((product) => {
-										if (product.images?.length) {
-											return (
-												<Col key={`prod-${product.id}`}>
-													<div className="text-center d-flex flex-column">
-														<Link
-															className="custom-link"
-															to={`/product/${product.id}`}
-														>
-															<img
-																src={product.images[0].img_src}
-																alt={product.name}
-																title={product.name}
-																className="mb-2"
-																style={{
-																	height: "15rem",
-																}}
-															/>
-															<div>{product.name}</div>
-														</Link>
-													</div>
-												</Col>
-											);
-										}
-									})}
-							</div>
-						)}
-					</Col>
-				)}
-			</Row>
+			<h2 className="mb-4 text-center">Related Products:</h2>
+			<ProductsGrid
+				currentProduct={data?.product}
+				products={relatedProductData?.relatedProducts}
+				productLoading={relatedProductLoading}
+				productError={relatedProductError}
+			/>
 		</Container>
 	);
 };

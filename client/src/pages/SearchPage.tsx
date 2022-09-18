@@ -18,7 +18,7 @@ const SearchPage = () => {
 				</Form.Select>
 			</div>
 			<Row className="border-top mt-2">
-				<Col sm="2" className="border-bottom border-end">
+				<Col sm="2" className="border-end">
 					{/* Below or Filter for details */}
 					<div className="mt-3">Category 1</div>
 					<div className="ps-2">SubCategory(2)</div>

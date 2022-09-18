@@ -30,28 +30,68 @@ export const QUERY_ALL_PRODUCT = gql`
 	}
 `;
 
-export const QUERY_FEATURED_PRODUCTS = gql`
-	query GetAllFeaturedProducts {
-		products {
+export const QUERY_FILTERED_PRODUCTS = gql`
+	query GetFilteredProducts($input: QueryProductInput!) {
+		filteredProducts(input: $input) {
 			id
 			name
 			price
-			description
-			company {
-				id
-				name
-			}
-			category {
-				id
-				name
-			}
 			inventory
-			shipping_cost
 			discount
 			avg_rating
 			num_of_reviews
 			images {
-				img_id
+				img_src
+			}
+		}
+	}
+`;
+
+export const QUERY_FEATURED_PRODUCTS = gql`
+	query GetFeaturedProducts($limit: Int!, $offset: Int!) {
+		featuredProducts(limit: $limit, offset: $offset) {
+			id
+			name
+			price
+			inventory
+			discount
+			avg_rating
+			num_of_reviews
+			images {
+				img_src
+			}
+		}
+	}
+`;
+
+export const QUERY_POPULAR_PRODUCTS = gql`
+	query GetPopularProducts($limit: Int!, $offset: Int!) {
+		popularProducts(limit: $limit, offset: $offset) {
+			id
+			name
+			price
+			inventory
+			discount
+			avg_rating
+			num_of_reviews
+			images {
+				img_src
+			}
+		}
+	}
+`;
+
+export const QUERY_RELATED_PRODUCTS = gql`
+	query GetRelatedProducts($input: QueryRelatedInput!) {
+		relatedProducts(input: $input) {
+			id
+			name
+			price
+			inventory
+			discount
+			avg_rating
+			num_of_reviews
+			images {
 				img_src
 			}
 		}

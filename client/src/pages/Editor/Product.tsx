@@ -1,6 +1,8 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { ChangeEvent, FormEvent, useState, useRef, useMemo } from "react";
-import { Form, Button, Alert } from "react-bootstrap";
+import { ChangeEvent, FormEvent, useMemo, useRef, useState } from "react";
+import { Alert, Button, Form } from "react-bootstrap";
+import { v4 as uuidv4 } from "uuid";
+import { ImageResult } from "../../commonTypes";
 import {
 	CreateProductMutation,
 	CreateProductMutationVariables,
@@ -21,7 +23,6 @@ import {
 	QUERY_ALL_PRODUCT,
 } from "../../queries/Product";
 import isJSON from "../../utils/isJSON";
-import { ImageResult } from "../../commonTypes";
 import { serverUrl } from "../../utils/server";
 
 const defaultValues = {
@@ -234,12 +235,10 @@ const Product = () => {
 							value={productId}
 							onChange={handleProductSelect}
 						>
-							<option key={"product_upsert-0"} value={0}>
-								{"Create new Product"}
-							</option>
+							<option value={0}>{"Create new Product"}</option>
 							{productData &&
 								productData.products?.map((elem) => (
-									<option key={`product_upsert-${elem.id}`} value={elem.id}>
+									<option key={uuidv4()} value={elem.id}>
 										{elem.name}
 									</option>
 								))}
@@ -329,12 +328,12 @@ const Product = () => {
 					onChange={handleChange}
 					value={values.company_id}
 				>
-					<option disabled hidden key={0} value={0}>
+					<option disabled hidden value={0}>
 						{"Choose company"}
 					</option>
 					{companyData &&
 						companyData.companies?.map((elem) => (
-							<option key={`company-${elem.id}`} value={elem.id}>
+							<option key={uuidv4()} value={elem.id}>
 								{elem.name}
 							</option>
 						))}
@@ -350,12 +349,12 @@ const Product = () => {
 						value={values.category_id}
 						onChange={handleChange}
 					>
-						<option disabled hidden key={0} value={0}>
+						<option disabled hidden value={0}>
 							{"Choose category"}
 						</option>
 						{categoryData &&
 							categoryData.categories?.map((elem) => (
-								<option key={`pcategory-${elem.id}`} value={elem.id}>
+								<option key={uuidv4()} value={elem.id}>
 									{elem.name}
 								</option>
 							))}
@@ -375,7 +374,7 @@ const Product = () => {
 					>
 						{productData &&
 							productData.products?.map((elem) => (
-								<option key={`product_variants-${elem.id}`} value={elem.id}>
+								<option key={uuidv4()} value={elem.id}>
 									{elem.name}
 								</option>
 							))}

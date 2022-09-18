@@ -5,9 +5,22 @@ import { BrowserRouter } from "react-router-dom";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import { AppProvider } from "./context/AppContext";
 import { serverUrl } from "./utils/server";
+import { offsetLimitPagination } from "@apollo/client/utilities";
+
+const cache = new InMemoryCache({
+	typePolicies: {
+		Query: {
+			fields: {
+				filteredProducts: offsetLimitPagination(),
+				featuredProducts: offsetLimitPagination(),
+				popularProducts: offsetLimitPagination(),
+			},
+		},
+	},
+});
 
 const client = new ApolloClient({
-	cache: new InMemoryCache(),
+	cache: cache,
 	uri: `${serverUrl}/graphql`,
 	credentials: "include",
 });

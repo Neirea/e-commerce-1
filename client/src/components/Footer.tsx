@@ -23,9 +23,9 @@ const Footer = () => {
 						</div>
 					</Col>
 					<Col className="text-center">
-						<h5>About Tech Stop</h5>
+						<h5>About Techway</h5>
 						<p className="text-secondary small">
-							"Tech Stop" is a demo website to demonstrate a custom ecommerce
+							"Techway" is a demo website to demonstrate a custom ecommerce
 							flow. Listed products are not real and we do not collect any
 							payment information. You are advised to not use your real personal
 							or payment information.

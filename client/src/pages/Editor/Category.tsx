@@ -1,22 +1,23 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { ChangeEvent, FormEvent, useState, useRef } from "react";
-import { Form, Button, Alert } from "react-bootstrap";
+import { ChangeEvent, FormEvent, useRef, useState } from "react";
+import { Alert, Button, Form } from "react-bootstrap";
+import { v4 as uuidv4 } from "uuid";
+import { ImageResult } from "../../commonTypes";
 import type {
 	CreateCategoryMutation,
 	CreateCategoryMutationVariables,
+	DeleteCategoryMutation,
+	DeleteCategoryMutationVariables,
 	GetAllCategoriesQuery,
 	UpdateCategoryMutation,
 	UpdateCategoryMutationVariables,
-	DeleteCategoryMutation,
-	DeleteCategoryMutationVariables,
 } from "../../generated/graphql";
 import {
-	QUERY_ALL_CATEGORIES,
 	MUTATION_CREATE_CATEGORY,
-	MUTATION_UPDATE_CATEGORY,
 	MUTATION_DELETE_CATEGORY,
+	MUTATION_UPDATE_CATEGORY,
+	QUERY_ALL_CATEGORIES,
 } from "../../queries/Category";
-import { ImageResult } from "../../commonTypes";
 import { serverUrl } from "../../utils/server";
 
 const Category = () => {
@@ -179,12 +180,10 @@ const Category = () => {
 							value={categoryId.toString()}
 							onChange={handleCategorySelect}
 						>
-							<option key={"category_upsert-0"} value={0}>
-								{"Create new category"}
-							</option>
+							<option value={0}>{"Create new category"}</option>
 							{data &&
 								data.categories?.map((elem: any) => (
-									<option key={`category_upsert-${elem.id}`} value={elem.id}>
+									<option key={uuidv4()} value={elem.id}>
 										{elem.name}
 									</option>
 								))}
@@ -210,12 +209,10 @@ const Category = () => {
 						value={parentId.toString()}
 						onChange={handleParentSelect}
 					>
-						<option key={"parent-0"} value={0}>
-							{"Choose Parent"}
-						</option>
+						<option value={0}>{"Choose Parent"}</option>
 						{data &&
 							data.categories?.map((elem: any) => (
-								<option key={`parent-${elem.id}`} value={elem.id}>
+								<option key={uuidv4()} value={elem.id}>
 									{elem.name}
 								</option>
 							))}
