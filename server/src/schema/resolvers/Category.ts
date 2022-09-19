@@ -1,11 +1,11 @@
 import { PrismaClient, Role } from "@prisma/client";
+import { AuthenticationError, UserInputError } from "apollo-server-express";
+import { v2 as cloudinary } from "cloudinary";
 import { Request } from "express";
 import {
 	CreateCategoryInput,
 	UpdateCategoryInput,
 } from "../../generated/graphql";
-import { v2 as cloudinary } from "cloudinary";
-import { AuthenticationError, UserInputError } from "apollo-server-express";
 
 const prisma = new PrismaClient({ log: ["query"] });
 
@@ -53,8 +53,8 @@ const categoryResolvers = {
 			await prisma.category.update({
 				where: { id: category_id },
 				data: { parent_id, name, img_id, img_src },
-				include: { companies: true },
 			});
+
 			if (oldCategory?.img_id && img_id) {
 				await cloudinary.uploader.destroy(oldCategory?.img_id);
 			}

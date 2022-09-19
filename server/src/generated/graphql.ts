@@ -193,6 +193,8 @@ export type QueryProductArgs = {
 
 export type QueryRelatedProductsArgs = {
   input: QueryRelatedInput;
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
 };
 
 
@@ -213,8 +215,7 @@ export type QueryProductInput = {
 export type QueryRelatedInput = {
   category_id: Scalars['Int'];
   company_id: Scalars['Int'];
-  limit: Scalars['Int'];
-  offset: Scalars['Int'];
+  id: Scalars['Int'];
 };
 
 export enum Role {
@@ -468,7 +469,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   popularProducts?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryPopularProductsArgs, 'limit' | 'offset'>>;
   product?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryProductArgs, 'id'>>;
   products?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
-  relatedProducts?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryRelatedProductsArgs, 'input'>>;
+  relatedProducts?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryRelatedProductsArgs, 'input' | 'limit' | 'offset'>>;
   showMe?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
   users?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;

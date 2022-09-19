@@ -108,22 +108,51 @@ const productResolvers = {
 				},
 			});
 		},
-		relatedProducts: (parent: any, { input }: { input: QueryRelatedInput }) => {
-			return prisma.product.findMany({
+		relatedProducts: async (
+			parent: any,
+			{
+				limit,
+				offset,
+				input,
+			}: { limit: number; offset: number; input: QueryRelatedInput }
+		) => {
+			const showFirst = await prisma.product.findMany({
 				where: {
-					OR: [
-						{
-							company_id: input.company_id,
-							category_id: input.category_id,
-						},
-					],
+					NOT: { id: input.id },
+					company_id: input.company_id,
+					category_id: input.category_id,
 				},
-				skip: input.offset,
-				take: input.limit,
+				skip: offset,
+				take: limit,
 				include: {
 					images: true,
 				},
 			});
+			if (showFirst.length === limit) return showFirst;
+			const count = await prisma.product.count({
+				where: {
+					NOT: { id: input.id },
+					company_id: input.company_id,
+					category_id: input.category_id,
+				},
+			});
+
+			const offSet = offset - count < 0 ? 0 : offset - count;
+			const showSecond = await prisma.product.findMany({
+				where: {
+					NOT: {
+						company_id: input.company_id,
+					},
+					category_id: input.category_id,
+				},
+				skip: offSet,
+				take: limit - showFirst.length,
+				include: {
+					images: true,
+				},
+			});
+
+			return showFirst.concat(showSecond);
 		},
 		popularProducts: (
 			parent: any,

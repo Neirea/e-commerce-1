@@ -31,11 +31,14 @@ const productTypes = gql`
 		filteredProducts(input: QueryProductInput!): [Product!]!
 		featuredProducts(limit: Int!, offset: Int!): [Product!]!
 		popularProducts(limit: Int!, offset: Int!): [Product!]!
-		relatedProducts(input: QueryRelatedInput!): [Product!]!
+		relatedProducts(
+			limit: Int!
+			offset: Int!
+			input: QueryRelatedInput!
+		): [Product!]!
 	}
 	input QueryRelatedInput {
-		limit: Int!
-		offset: Int!
+		id: Int!
 		company_id: Int!
 		category_id: Int!
 	}
