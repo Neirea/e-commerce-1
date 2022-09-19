@@ -1,6 +1,5 @@
 import { useApolloClient, useQuery } from "@apollo/client";
-import { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
+import { useEffect } from "react";
 import ProductsGrid from "../../components/ProductsGrid";
 import {
 	GetRelatedProductsQuery,
@@ -8,6 +7,7 @@ import {
 } from "../../generated/graphql";
 import { QUERY_RELATED_PRODUCTS } from "../../queries/Product";
 import { FETCH_NUMBER } from "../../utils/numbers";
+import useInView from "../../utils/useInView";
 
 const RelatedProducts = ({
 	product,
@@ -30,53 +30,51 @@ const RelatedProducts = ({
 			},
 		},
 	});
-	const [showMore, setShowMore] = useState(true);
 	const { cache } = useApolloClient();
 
-	const fetchMoreProducts = async () => {
-		const fetchedMore = await fetchMore({
-			variables: {
-				offset: relatedProductData?.relatedProducts.length,
-				limit: FETCH_NUMBER,
-				input: {
-					id: product?.id,
-					company_id: product?.company.id,
-					category_id: product?.category.id,
-				},
-			},
-		});
-		if (fetchedMore.data.relatedProducts.length < FETCH_NUMBER)
-			setShowMore(false);
-	};
+	const { containerRef, isVisible } = useInView<HTMLDivElement>({
+		root: null,
+		rootMargin: "0px",
+		treshold: 1.0,
+	});
+
+	useEffect(() => {
+		if (isVisible) {
+			const test = async () => {
+				await fetchMore({
+					variables: {
+						offset: relatedProductData?.relatedProducts.length,
+						limit: FETCH_NUMBER,
+						input: {
+							id: product?.id,
+							company_id: product?.company.id,
+							category_id: product?.category.id,
+						},
+					},
+				});
+			};
+			test();
+		}
+	}, [isVisible]);
 
 	useEffect(() => {
 		return () => {
 			if (product?.id) {
+				//invalidate cache if swap on other product
 				cache.evict({ id: "ROOT_QUERY", fieldName: "relatedProducts" });
 			}
 		};
 	}, [product?.id]);
 
 	return (
-		<div>
+		<>
 			<ProductsGrid
 				products={relatedProductData?.relatedProducts}
 				productLoading={relatedProductLoading}
 				productError={relatedProductError}
 			/>
-			{showMore && (
-				<div className="text-center mt-3">
-					<Button
-						size="lg"
-						variant={"outline-success"}
-						className="w-25 fs-6"
-						onClick={fetchMoreProducts}
-					>
-						Load More
-					</Button>
-				</div>
-			)}
-		</div>
+			<div ref={containerRef} />
+		</>
 	);
 };
 
