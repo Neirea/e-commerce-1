@@ -2,8 +2,7 @@ import { ApolloError } from "@apollo/client";
 import { Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { GetSingleProductQuery } from "../generated/graphql";
-import toPriceNumber from "../utils/priceNumber";
+import { toPriceNumber } from "../utils/numbers";
 import Loading from "./Loading";
 
 interface IProductData {
@@ -20,12 +19,10 @@ interface IProductData {
 }
 
 const ProductsGrid = ({
-	currentProduct,
 	products,
 	productError,
 	productLoading,
 }: {
-	currentProduct?: GetSingleProductQuery["product"] | null;
 	products: Array<IProductData> | undefined;
 	productError: ApolloError | undefined;
 	productLoading: boolean;
@@ -38,7 +35,6 @@ const ProductsGrid = ({
 				</Alert>
 			) : products && !productLoading ? (
 				products.map((product) => {
-					if (product.id === currentProduct?.id) return <></>;
 					return (
 						<div key={uuidv4()} className="d-flex justify-content-center mb-4">
 							<div className="d-flex flex-column justify-content-between">
@@ -51,10 +47,8 @@ const ProductsGrid = ({
 											src={product.images[0].img_src}
 											title={product.name}
 											alt={product.name}
+											height={240}
 											className="mb-2"
-											style={{
-												height: "15rem",
-											}}
 										/>
 									)}
 									<div className="product-name">{product.name}</div>

@@ -41,7 +41,6 @@ const Product = () => {
 		data: productData,
 		loading: productLoading,
 		error: productError,
-		refetch,
 	} = useQuery<GetAllProductsQuery>(QUERY_ALL_PRODUCT);
 	const {
 		data: companyData,
@@ -200,12 +199,17 @@ const Product = () => {
 
 		if (productId) {
 			await updateProduct({
-				variables: { input: { ...newProduct, id: productId } },
+				variables: {
+					input: { ...newProduct, id: productId },
+				},
+				refetchQueries: ["GetAllProducts"],
 			});
 		} else {
-			await createProduct({ variables: { input: newProduct } });
+			await createProduct({
+				variables: { input: newProduct },
+				refetchQueries: ["GetAllProducts"],
+			});
 		}
-		await refetch();
 		resetForm();
 		setInputError(0);
 		setSelectedImages([]);
@@ -217,8 +221,8 @@ const Product = () => {
 			variables: {
 				id: productId,
 			},
+			refetchQueries: ["GetAllProducts"],
 		});
-		await refetch();
 		resetForm();
 	};
 

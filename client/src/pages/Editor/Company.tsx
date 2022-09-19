@@ -25,7 +25,6 @@ const Company = () => {
 		data,
 		loading: companyLoading,
 		error: companyError,
-		refetch,
 	} = useQuery<GetAllCompaniesQuery>(QUERY_ALL_COMPANIES);
 	const [
 		createCompany,
@@ -77,8 +76,8 @@ const Company = () => {
 			variables: {
 				id: companyId,
 			},
+			refetchQueries: ["GetAllCompanies"],
 		});
-		await refetch();
 		setName("");
 		setCompanyId(0);
 	};
@@ -94,6 +93,7 @@ const Company = () => {
 						name: name,
 					},
 				},
+				refetchQueries: ["GetAllCompanies"],
 			});
 		} else {
 			await createCompany({
@@ -102,10 +102,10 @@ const Company = () => {
 						name: name,
 					},
 				},
+				refetchQueries: ["GetAllCompanies"],
 			});
 		}
 
-		await refetch();
 		setName("");
 		setCompanyId(0);
 	};

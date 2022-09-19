@@ -4,8 +4,7 @@ import { Button, Container } from "react-bootstrap";
 import ProductsGrid from "../../components/ProductsGrid";
 import { GetFeaturedProductsQuery } from "../../generated/graphql";
 import { QUERY_FEATURED_PRODUCTS } from "../../queries/Product";
-
-const FETCH_NUMBER = 5;
+import { FETCH_NUMBER } from "../../utils/numbers";
 
 const Featured = () => {
 	const {
@@ -19,27 +18,14 @@ const Featured = () => {
 	const [showMore, setShowMore] = useState(true);
 
 	const fetchMoreProducts = async () => {
-		await fetchMore({
+		const fetchedMore = await fetchMore({
 			variables: {
 				offset: productData?.featuredProducts.length,
 				limit: FETCH_NUMBER,
 			},
-			updateQuery(prev, { fetchMoreResult }) {
-				if (!fetchMoreResult.featuredProducts.length) {
-					setShowMore(false);
-					return prev;
-				}
-				if (fetchMoreResult.featuredProducts.length < FETCH_NUMBER) {
-					setShowMore(false);
-				}
-				return Object.assign({}, prev, {
-					featuredProducts: [
-						...prev.featuredProducts,
-						...fetchMoreResult.featuredProducts,
-					],
-				});
-			},
 		});
+		if (fetchedMore.data.featuredProducts.length < FETCH_NUMBER)
+			setShowMore(false);
 	};
 
 	return (

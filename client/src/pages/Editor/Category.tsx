@@ -30,7 +30,6 @@ const Category = () => {
 		data,
 		loading: categoryLoading,
 		error: categoryError,
-		refetch,
 	} = useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
 	const [
 		createCategory,
@@ -109,8 +108,8 @@ const Category = () => {
 			variables: {
 				id: categoryId,
 			},
+			refetchQueries: ["GetAllCategories"],
 		});
-		await refetch();
 		resetForm();
 	};
 
@@ -142,25 +141,26 @@ const Category = () => {
 					input: {
 						id: categoryId,
 						name: name,
-						parent_id: parentId,
+						parent_id: parentId === 0 ? undefined : parentId,
 						img_id,
 						img_src,
 					},
 				},
+				refetchQueries: ["GetAllCategories"],
 			});
 		} else {
 			await createCategory({
 				variables: {
 					input: {
 						name: name,
-						parent_id: parentId,
+						parent_id: parentId === 0 ? undefined : parentId,
 						img_id,
 						img_src,
 					},
 				},
+				refetchQueries: ["GetAllCategories"],
 			});
 		}
-		await refetch();
 		resetForm();
 		setSelectedImage(undefined);
 	};

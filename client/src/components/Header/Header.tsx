@@ -40,7 +40,7 @@ const Header = () => {
 					)}
 					<Login handleClose={handleCloseLogin} show={showLogin} />
 					{/* make this link look like button aboove */}
-					<Nav.Link onClick={handleShowCart}>
+					<Nav.Link onClick={handleShowCart} aria-label="open cart">
 						<BiCart size={"1.5rem"} />
 					</Nav.Link>
 					<Cart handleClose={handleCloseCart} show={showCart} />

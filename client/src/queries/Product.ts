@@ -82,8 +82,12 @@ export const QUERY_POPULAR_PRODUCTS = gql`
 `;
 
 export const QUERY_RELATED_PRODUCTS = gql`
-	query GetRelatedProducts($input: QueryRelatedInput!) {
-		relatedProducts(input: $input) {
+	query GetRelatedProducts(
+		$limit: Int!
+		$offset: Int!
+		$input: QueryRelatedInput!
+	) {
+		relatedProducts(limit: $limit, offset: $offset, input: $input) {
 			id
 			name
 			price

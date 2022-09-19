@@ -3,14 +3,9 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import ProductsGrid from "../components/ProductsGrid";
-import {
-	GetRelatedProductsQuery,
-	GetSingleProductQuery,
-} from "../generated/graphql";
-import { GET_SINGLE_PRODUCT, QUERY_RELATED_PRODUCTS } from "../queries/Product";
-
-const FETCH_NUMBER = 5;
+import { GetSingleProductQuery } from "../../generated/graphql";
+import { GET_SINGLE_PRODUCT } from "../../queries/Product";
+import RelatedProducts from "./RelatedProducts";
 
 const Product = () => {
 	const { id } = useParams();
@@ -21,25 +16,6 @@ const Product = () => {
 		{ variables: { id: +id! } }
 	);
 
-	const isSkip = data?.product === undefined;
-	const {
-		data: relatedProductData,
-		loading: relatedProductLoading,
-		error: relatedProductError,
-		fetchMore,
-	} = useQuery<GetRelatedProductsQuery>(QUERY_RELATED_PRODUCTS, {
-		variables: {
-			input: {
-				limit: FETCH_NUMBER,
-				offset: 0,
-				company_id: data?.product?.company.id,
-				category_id: data?.product?.category.id,
-			},
-		},
-		skip: isSkip,
-	});
-	const [showMore, setShowMore] = useState(true);
-
 	const handleAmount = (e: ChangeEvent<HTMLInputElement>) => {
 		setAmount(+e.target.value);
 	};
@@ -49,30 +25,6 @@ const Product = () => {
 		// add to cart variable
 		// open cart modal
 	};
-
-	// const fetchMoreProducts = async () => {
-	// 	await fetchMore({
-	// 		variables: {
-	// 			offset: relatedProductData?.relatedProducts.length,
-	// 			limit: FETCH_NUMBER,
-	// 		},
-	// 		updateQuery(prev, { fetchMoreResult }) {
-	// 			if (!fetchMoreResult.relatedProducts.length) {
-	// 				setShowMore(false);
-	// 				return prev;
-	// 			}
-	// 			if (fetchMoreResult.relatedProducts.length < FETCH_NUMBER) {
-	// 				setShowMore(false);
-	// 			}
-	// 			return Object.assign({}, prev, {
-	// 				featuredProducts: [
-	// 					...prev.relatedProducts,
-	// 					...fetchMoreResult.relatedProducts,
-	// 				],
-	// 			});
-	// 		},
-	// 	});
-	// };
 
 	if (error) {
 		return (
@@ -207,12 +159,7 @@ const Product = () => {
 				)}
 			</Row>
 			<h2 className="mb-4 text-center">Related Products:</h2>
-			<ProductsGrid
-				currentProduct={data?.product}
-				products={relatedProductData?.relatedProducts}
-				productLoading={relatedProductLoading}
-				productError={relatedProductError}
-			/>
+			{data?.product && <RelatedProducts product={data?.product} />}
 		</Container>
 	);
 };

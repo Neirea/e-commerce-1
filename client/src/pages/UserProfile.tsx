@@ -1,6 +1,6 @@
 import { useMutation } from "@apollo/client";
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Form, Button, Alert, Container } from "react-bootstrap";
+import { Alert, Button, Container, Form } from "react-bootstrap";
 import {
 	ShowCurrentUserQuery,
 	UpdateUserMutation,
@@ -21,8 +21,6 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
 		address: user?.address || "",
 		phone: user?.phone || "",
 	});
-
-	console.log("user=", user);
 
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setValues({ ...values, [e.target.name]: e.target.value });

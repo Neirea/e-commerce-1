@@ -6,7 +6,9 @@
 main {
 	flex: 1;
 }
-
+.form-select[multiple] {
+	height: 12rem;
+}
 .d-grid {
 	width: 100%;
 	grid-template-columns: repeat(auto-fit, 15.9rem);

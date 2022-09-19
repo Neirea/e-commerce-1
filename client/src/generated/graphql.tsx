@@ -194,6 +194,8 @@ export type QueryProductArgs = {
 
 export type QueryRelatedProductsArgs = {
   input: QueryRelatedInput;
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
 };
 
 
@@ -214,8 +216,7 @@ export type QueryProductInput = {
 export type QueryRelatedInput = {
   category_id: Scalars['Int'];
   company_id: Scalars['Int'];
-  limit: Scalars['Int'];
-  offset: Scalars['Int'];
+  id: Scalars['Int'];
 };
 
 export enum Role {
@@ -357,6 +358,8 @@ export type GetPopularProductsQueryVariables = Exact<{
 export type GetPopularProductsQuery = { __typename?: 'Query', popularProducts: Array<{ __typename?: 'Product', id: number, name: string, price: number, inventory: number, discount: number, avg_rating: number, num_of_reviews: number, images: Array<{ __typename?: 'Image', img_src: string }> }> };
 
 export type GetRelatedProductsQueryVariables = Exact<{
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
   input: QueryRelatedInput;
 }>;
 
@@ -861,8 +864,8 @@ export type GetPopularProductsQueryHookResult = ReturnType<typeof useGetPopularP
 export type GetPopularProductsLazyQueryHookResult = ReturnType<typeof useGetPopularProductsLazyQuery>;
 export type GetPopularProductsQueryResult = Apollo.QueryResult<GetPopularProductsQuery, GetPopularProductsQueryVariables>;
 export const GetRelatedProductsDocument = gql`
-    query GetRelatedProducts($input: QueryRelatedInput!) {
-  relatedProducts(input: $input) {
+    query GetRelatedProducts($limit: Int!, $offset: Int!, $input: QueryRelatedInput!) {
+  relatedProducts(limit: $limit, offset: $offset, input: $input) {
     id
     name
     price
@@ -889,6 +892,8 @@ export const GetRelatedProductsDocument = gql`
  * @example
  * const { data, loading, error } = useGetRelatedProductsQuery({
  *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
  *      input: // value for 'input'
  *   },
  * });

@@ -4,8 +4,7 @@ import { Button, Container } from "react-bootstrap";
 import ProductsGrid from "../../components/ProductsGrid";
 import { GetPopularProductsQuery } from "../../generated/graphql";
 import { QUERY_POPULAR_PRODUCTS } from "../../queries/Product";
-
-const FETCH_NUMBER = 5;
+import { FETCH_NUMBER } from "../../utils/numbers";
 
 const Popular = () => {
 	const {
@@ -19,24 +18,14 @@ const Popular = () => {
 	const [showMore, setShowMore] = useState(true);
 
 	const fetchMoreProducts = async () => {
-		await fetchMore({
+		const fetchedMore = await fetchMore({
 			variables: {
 				offset: productData?.popularProducts.length,
 				limit: FETCH_NUMBER,
 			},
-			updateQuery(prev, { fetchMoreResult }) {
-				if (!fetchMoreResult.popularProducts.length) {
-					setShowMore(false);
-					return prev;
-				}
-				return Object.assign({}, prev, {
-					popularProducts: [
-						...prev.popularProducts,
-						...fetchMoreResult.popularProducts,
-					],
-				});
-			},
 		});
+		if (fetchedMore.data.popularProducts.length < FETCH_NUMBER)
+			setShowMore(false);
 	};
 
 	return (

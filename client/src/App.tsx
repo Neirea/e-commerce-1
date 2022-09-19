@@ -12,8 +12,8 @@ import { Container } from "react-bootstrap";
 import RequireAuth from "./components/RequireAuth";
 import { Role } from "./generated/graphql";
 import UserProfile from "./pages/UserProfile";
-import Product from "./pages/Product";
 import ScrollToTop from "./components/ScrollToTop";
+import Product from "./pages/Product/Product";
 
 function App() {
 	const { user, isLoading } = useAppContext();

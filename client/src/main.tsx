@@ -14,6 +14,7 @@ const cache = new InMemoryCache({
 				filteredProducts: offsetLimitPagination(),
 				featuredProducts: offsetLimitPagination(),
 				popularProducts: offsetLimitPagination(),
+				relatedProducts: offsetLimitPagination(),
 			},
 		},
 	},
