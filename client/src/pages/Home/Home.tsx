@@ -18,7 +18,10 @@ const Home = () => {
 	return (
 		<>
 			<Container as="main">
-				<Container className="d-flex flex-column justify-content-center align-items-center  mt-5 mb-5 gap-3">
+				<Container
+					as="section"
+					className="d-flex flex-column justify-content-center align-items-center  mt-5 mb-5 gap-3"
+				>
 					<Row className="w-100">
 						<Col className="col-7 p-0">
 							<img

@@ -29,7 +29,7 @@ const Featured = () => {
 	};
 
 	return (
-		<Container className="mt-3 gap-3">
+		<Container as="section" className="mt-3 gap-3">
 			<h2 className="text-center mt-5 mb-5">Featured</h2>
 			<ProductsGrid
 				products={productData?.featuredProducts}

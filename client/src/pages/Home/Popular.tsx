@@ -29,7 +29,7 @@ const Popular = () => {
 	};
 
 	return (
-		<Container className="mt-3 gap-3">
+		<Container as="section" className="mt-3 gap-3">
 			<h2 className="text-center mt-5 mb-5">Popular</h2>
 
 			<ProductsGrid
