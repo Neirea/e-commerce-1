@@ -7,8 +7,13 @@ export const QUERY_ALL_CATEGORIES = gql`
 			name
 			img_id
 			img_src
-			parent {
+			parent_id
+			companies {
 				id
+				name
+			}
+			_count {
+				products
 			}
 		}
 	}

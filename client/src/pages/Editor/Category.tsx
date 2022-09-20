@@ -86,8 +86,8 @@ const Category = () => {
 		}
 		if (data?.categories) {
 			const category = data.categories.find((item) => item.id === idx)!;
-			if (category.parent) {
-				setParentId(category.parent.id);
+			if (category.parent_id) {
+				setParentId(category.parent_id);
 			}
 			setCategoryId(idx);
 			setName(category.name);

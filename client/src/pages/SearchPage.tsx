@@ -1,11 +1,54 @@
 import { Container, Row, Col, Form, Image, Button } from "react-bootstrap";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { BiCart } from "@react-icons/all-files/bi/BiCart";
+import { useQuery } from "@apollo/client";
+import { GetAllCategoriesQuery } from "../generated/graphql";
+import { QUERY_ALL_CATEGORIES } from "../queries/Category";
+import { v4 as uuidv4 } from "uuid";
+import { useMemo } from "react";
 
 const SearchPage = () => {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const searchValue = searchParams.get("value");
 	const searchCategory = searchParams.get("category");
+
+	const {
+		data: categoryData,
+		loading: categoryLoading,
+		error: categoryError,
+	} = useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
+
+	const sortedCategories = useMemo(() => {
+		const categories = categoryData?.categories;
+		if (categories == null) return [];
+
+		type Categories = GetAllCategoriesQuery["categories"];
+		type resultType = {
+			elem: GetAllCategoriesQuery["categories"][number];
+			depth: number;
+		};
+
+		const orderByParents = (
+			data: Categories,
+			depth: number,
+			p_id?: number | undefined
+		) => {
+			if (p_id !== undefined) depth++;
+			return data.reduce((r: resultType[], e) => {
+				//check if element is parent to any element
+				if (p_id == e.parent_id) {
+					//push element
+					r.push({ elem: e, depth });
+					//push its children after
+					r.push(...orderByParents(data, depth, e.id));
+				}
+				return r;
+			}, []);
+		};
+
+		return orderByParents(categories, 0);
+	}, [categoryData?.categories]);
+
 	return (
 		<Container as="main">
 			<h4 className="mb-3 mt-3">{`Results for «${searchValue}»`}</h4>
@@ -19,13 +62,20 @@ const SearchPage = () => {
 			</div>
 			<Row className="border-top mt-2">
 				<Col sm="2" className="border-end">
-					{/* Below or Filter for details */}
-					<div className="mt-3">Category 1</div>
-					<div className="ps-2">SubCategory(2)</div>
-					<div className="ps-2">SubCategory(6)</div>
-					<div>Category 2(5)</div>
-					<div>Category 3</div>
-					<div className="ps-2">SubCategory(6)</div>
+					{sortedCategories.map(({ elem, depth }) => {
+						return (
+							<div
+								className="mt-2"
+								style={{ paddingLeft: `${depth * 7.5}%` }}
+								key={uuidv4()}
+							>
+								<Link className="custom-link" to={`/seach?category=${elem.id}`}>
+									{elem.name}
+								</Link>
+								<span className="text-muted">{` (${elem._count.products})`}</span>
+							</div>
+						);
+					})}
 				</Col>
 
 				<Col sm="10">
