@@ -14,6 +14,7 @@ export const QUERY_ALL_PRODUCT = gql`
 			category {
 				id
 				name
+				parent_id
 			}
 			inventory
 			shipping_cost
@@ -31,8 +32,12 @@ export const QUERY_ALL_PRODUCT = gql`
 `;
 
 export const QUERY_FILTERED_PRODUCTS = gql`
-	query GetFilteredProducts($input: QueryProductInput!) {
-		filteredProducts(input: $input) {
+	query GetFilteredProducts(
+		$limit: Int!
+		$offset: Int!
+		$input: QueryProductInput!
+	) {
+		filteredProducts(limit: $limit, offset: $offset, input: $input) {
 			id
 			name
 			price
@@ -42,6 +47,18 @@ export const QUERY_FILTERED_PRODUCTS = gql`
 			num_of_reviews
 			images {
 				img_src
+			}
+			company {
+				id
+				name
+			}
+			category {
+				id
+				name
+				parent_id
+			}
+			_count {
+				orders
 			}
 		}
 	}

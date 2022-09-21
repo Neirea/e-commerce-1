@@ -138,6 +138,7 @@ export enum Platform {
 
 export type Product = {
   __typename?: 'Product';
+  _count: ProductOrdersCount;
   avg_rating: Scalars['Float'];
   category: Category;
   company: Company;
@@ -158,6 +159,11 @@ export type Product = {
 export type ProductCount = {
   __typename?: 'ProductCount';
   products: Scalars['Int'];
+};
+
+export type ProductOrdersCount = {
+  __typename?: 'ProductOrdersCount';
+  orders: Scalars['Int'];
 };
 
 export type Query = {
@@ -184,6 +190,8 @@ export type QueryFeaturedProductsArgs = {
 
 export type QueryFilteredProductsArgs = {
   input: QueryProductInput;
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
 };
 
 
@@ -212,11 +220,10 @@ export type QueryUserArgs = {
 export type QueryProductInput = {
   category_id?: InputMaybe<Scalars['Int']>;
   company_id?: InputMaybe<Scalars['Int']>;
-  limit: Scalars['Int'];
   max_price?: InputMaybe<Scalars['Int']>;
   min_price?: InputMaybe<Scalars['Int']>;
-  offset: Scalars['Int'];
   search_string?: InputMaybe<Scalars['String']>;
+  sortMode: Scalars['Int'];
 };
 
 export type QueryRelatedInput = {
@@ -338,14 +345,16 @@ export type DeleteCompanyMutation = { __typename?: 'Mutation', deleteCompany: bo
 export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllProductsQuery = { __typename?: 'Query', products: Array<{ __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string }, images: Array<{ __typename?: 'Image', img_src: string }>, variants: Array<{ __typename?: 'Product', id: number }> }> };
+export type GetAllProductsQuery = { __typename?: 'Query', products: Array<{ __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string, parent_id?: number | null }, images: Array<{ __typename?: 'Image', img_src: string }>, variants: Array<{ __typename?: 'Product', id: number }> }> };
 
 export type GetFilteredProductsQueryVariables = Exact<{
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
   input: QueryProductInput;
 }>;
 
 
-export type GetFilteredProductsQuery = { __typename?: 'Query', filteredProducts: Array<{ __typename?: 'Product', id: number, name: string, price: number, inventory: number, discount: number, avg_rating: number, num_of_reviews: number, images: Array<{ __typename?: 'Image', img_src: string }> }> };
+export type GetFilteredProductsQuery = { __typename?: 'Query', filteredProducts: Array<{ __typename?: 'Product', id: number, name: string, price: number, inventory: number, discount: number, avg_rating: number, num_of_reviews: number, images: Array<{ __typename?: 'Image', img_src: string }>, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string, parent_id?: number | null }, _count: { __typename?: 'ProductOrdersCount', orders: number } }> };
 
 export type GetFeaturedProductsQueryVariables = Exact<{
   limit: Scalars['Int'];
@@ -698,6 +707,7 @@ export const GetAllProductsDocument = gql`
     category {
       id
       name
+      parent_id
     }
     inventory
     shipping_cost
@@ -741,8 +751,8 @@ export type GetAllProductsQueryHookResult = ReturnType<typeof useGetAllProductsQ
 export type GetAllProductsLazyQueryHookResult = ReturnType<typeof useGetAllProductsLazyQuery>;
 export type GetAllProductsQueryResult = Apollo.QueryResult<GetAllProductsQuery, GetAllProductsQueryVariables>;
 export const GetFilteredProductsDocument = gql`
-    query GetFilteredProducts($input: QueryProductInput!) {
-  filteredProducts(input: $input) {
+    query GetFilteredProducts($limit: Int!, $offset: Int!, $input: QueryProductInput!) {
+  filteredProducts(limit: $limit, offset: $offset, input: $input) {
     id
     name
     price
@@ -752,6 +762,18 @@ export const GetFilteredProductsDocument = gql`
     num_of_reviews
     images {
       img_src
+    }
+    company {
+      id
+      name
+    }
+    category {
+      id
+      name
+      parent_id
+    }
+    _count {
+      orders
     }
   }
 }
@@ -769,6 +791,8 @@ export const GetFilteredProductsDocument = gql`
  * @example
  * const { data, loading, error } = useGetFilteredProductsQuery({
  *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
  *      input: // value for 'input'
  *   },
  * });

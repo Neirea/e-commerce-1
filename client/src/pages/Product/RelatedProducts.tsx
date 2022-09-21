@@ -40,7 +40,7 @@ const RelatedProducts = ({
 
 	useEffect(() => {
 		if (isVisible) {
-			const test = async () => {
+			(async () => {
 				await fetchMore({
 					variables: {
 						offset: relatedProductData?.relatedProducts.length,
@@ -52,8 +52,7 @@ const RelatedProducts = ({
 						},
 					},
 				});
-			};
-			test();
+			})();
 		}
 	}, [isVisible]);
 
