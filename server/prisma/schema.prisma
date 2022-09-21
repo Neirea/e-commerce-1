@@ -69,7 +69,7 @@ model Category {
   img_src String?
   parent_id Int?
   parent Category? @relation("subCategory",fields: [parent_id],references: [id])
-  child Category[] @relation("subCategory")
+  children Category[] @relation("subCategory")
   companies Company[]
   products Product[]
 }

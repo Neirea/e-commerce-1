@@ -27,7 +27,6 @@ const productResolvers = {
 						},
 					},
 				},
-				orderBy: { name: "asc" },
 			});
 		},
 		product: (parent: any, { id }: { id: number }) => {
@@ -45,9 +44,13 @@ const productResolvers = {
 				},
 			});
 		},
-		filteredProducts: (
+		filteredProducts: async (
 			parent: any,
-			{ input }: { input: QueryProductInput }
+			{
+				offset,
+				limit,
+				input,
+			}: { offset: number; limit: number; input: QueryProductInput }
 		) => {
 			const searchString = input.search_string
 				? input.search_string
@@ -56,9 +59,9 @@ const productResolvers = {
 						.join(" | ")
 				: undefined;
 
-			return prisma.product.findMany({
-				skip: input.offset,
-				take: input.limit,
+			const data = await prisma.product.findMany({
+				skip: offset,
+				take: limit,
 				where: {
 					OR: [
 						{
@@ -90,8 +93,26 @@ const productResolvers = {
 				},
 				include: {
 					images: true,
+					category: true,
+					company: true,
+					_count: {
+						select: {
+							orders: true,
+						},
+					},
 				},
 			});
+			if (input.sortMode === 0) {
+				return data.sort((a, b) => a._count.orders - b._count.orders);
+			}
+			if (input.sortMode === 1) {
+				return data.sort((a, b) => a.price - b.price);
+			}
+			if (input.sortMode === 2) {
+				return data.sort((a, b) => b.price - a.price);
+			}
+
+			return data;
 		},
 		featuredProducts: (
 			parent: any,

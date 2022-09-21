@@ -13,10 +13,10 @@ const categoryResolvers = {
 	Query: {
 		categories: () => {
 			return prisma.category.findMany({
-				include: { companies: true, parent: true },
-				orderBy: { name: "asc" },
+				include: {
+					companies: true,
+				},
 			});
-			//return prisma.$queryRaw`SELECT * FROM public."Category";`;
 		},
 	},
 	Mutation: {

@@ -8,6 +8,10 @@ const productTypes = gql`
 		img_src: String!
 	}
 
+	type ProductOrdersCount {
+		orders: Int!
+	}
+
 	type Product {
 		id: Int!
 		name: String!
@@ -22,13 +26,18 @@ const productTypes = gql`
 		num_of_reviews: Int!
 		created_at: DateTime!
 		updated_at: DateTime!
+		_count: ProductOrdersCount!
 		images: [Image!]!
 		variants: [Product!]!
 	}
 	extend type Query {
 		products: [Product!]!
 		product(id: Int!): Product
-		filteredProducts(input: QueryProductInput!): [Product!]!
+		filteredProducts(
+			limit: Int!
+			offset: Int!
+			input: QueryProductInput!
+		): [Product!]!
 		featuredProducts(limit: Int!, offset: Int!): [Product!]!
 		popularProducts(limit: Int!, offset: Int!): [Product!]!
 		relatedProducts(
@@ -48,9 +57,8 @@ const productTypes = gql`
 		company_id: Int
 		min_price: Int
 		max_price: Int
+		sortMode: Int!
 		search_string: String
-		limit: Int!
-		offset: Int!
 	}
 
 	# Mutations inputs
