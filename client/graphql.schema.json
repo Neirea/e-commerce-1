@@ -24,22 +24,6 @@
         "description": null,
         "fields": [
           {
-            "name": "_count",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "ProductCount",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "companies",
             "description": null,
             "args": [],

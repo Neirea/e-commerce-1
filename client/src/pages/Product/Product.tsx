@@ -5,6 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { GetSingleProductQuery } from "../../generated/graphql";
 import { GET_SINGLE_PRODUCT } from "../../queries/Product";
+import { toPriceNumber } from "../../utils/numbers";
 import RelatedProducts from "./RelatedProducts";
 
 const Product = () => {
@@ -133,14 +134,14 @@ const Product = () => {
 										<div className="d-flex gap-3">
 											<div>
 												{data.product.discount && (
-													<s className="text-muted fs-5">{`${
+													<s className="text-muted fs-5">{`${toPriceNumber(
 														amount * data.product.price
-													} $`}</s>
+													)} $`}</s>
 												)}
 											</div>
 											<div>
 												<b>
-													{`${Math.floor(
+													{`${toPriceNumber(
 														((100 - data.product.discount) / 100) *
 															amount *
 															data.product.price
