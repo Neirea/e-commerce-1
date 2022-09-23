@@ -12,7 +12,7 @@ const SearchBar = () => {
 	const search = (e: FormEvent) => {
 		e.preventDefault();
 		if (!searchText) return;
-		navigate(`/search?value=${searchText}`);
+		navigate(`/search?v=${searchText}`);
 	};
 	return (
 		<Form onSubmit={search} style={{ width: "40rem" }}>

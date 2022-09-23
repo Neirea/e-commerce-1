@@ -1,8 +1,10 @@
 import { useQuery } from "@apollo/client";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import * as qs from "query-string";
+import { ChangeEvent, useEffect, useMemo } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import MultiRangeSlider from "../components/MultiRangeSlider";
 import ProductsGrid from "../components/ProductsGrid";
 import { GetFilteredProductsQuery } from "../generated/graphql";
 import { QUERY_FILTERED_PRODUCTS } from "../queries/Product";
@@ -11,10 +13,11 @@ import useInView from "../utils/useInView";
 const FETCH_NUMBER = 12;
 
 const SearchPage = () => {
-	const [searchParams, setSearchParams] = useSearchParams();
-	const searchValue = searchParams.get("value");
-	const searchCategory = searchParams.get("category");
-	const [sortBy, setSortBy] = useState(0);
+	const navigate = useNavigate();
+	const searchParams = qs.parse(location.search);
+	const categoryParam = searchParams.c != null ? +searchParams.c : undefined;
+	const sortParam = searchParams.sort != null ? +searchParams.sort : undefined;
+	const companyParam = searchParams.b != null ? +searchParams.b : undefined;
 
 	const {
 		data: productData,
@@ -26,7 +29,12 @@ const SearchPage = () => {
 		variables: {
 			offset: 0,
 			limit: FETCH_NUMBER,
-			input: { search_string: searchValue, sortMode: 0 },
+			input: {
+				search_string: searchParams.v,
+				sortMode: sortParam,
+				category_id: categoryParam,
+				company_id: companyParam,
+			},
 		},
 	});
 
@@ -36,32 +44,55 @@ const SearchPage = () => {
 		treshold: 1.0,
 	});
 
+	//fetching
+	useEffect(() => {
+		if (productData?.filteredProducts) {
+			const getProducts = async () => {
+				//refetch if data already exists
+				await refetch({
+					offset: 0,
+					limit: FETCH_NUMBER,
+					input: {
+						search_string: searchParams.v,
+						sortMode: sortParam,
+						category_id: categoryParam,
+						company_id: companyParam,
+					},
+				});
+			};
+			getProducts();
+		}
+	}, [location.search]);
+
 	const handleSort = async (e: ChangeEvent<HTMLSelectElement>) => {
-		setSortBy(+e.target.value);
+		navigate({
+			pathname: "/search",
+			search: qs.stringify({ ...searchParams, sort: e.target.value }),
+		});
 	};
 
-	//refetch stuff
+	//only fetch additional products if we didn't get max available products
 	useEffect(() => {
-		(async () => {
-			await refetch({
-				input: { sortMode: sortBy, search_string: searchValue },
-			});
-		})();
-	}, [sortBy, searchValue]);
-
-	useEffect(() => {
-		if (isVisible) {
+		if (
+			isVisible &&
+			productData?.filteredProducts &&
+			productData.filteredProducts.length % FETCH_NUMBER === 0
+		) {
 			(async () => {
 				await fetchMore({
 					variables: {
-						offset: productData?.filteredProducts.length,
+						offset: productData.filteredProducts.length,
 						limit: FETCH_NUMBER,
-						input: { sortMode: sortBy, search_string: searchValue },
+						input: {
+							search_string: searchParams.v,
+							sortMode: sortParam,
+							category_id: categoryParam,
+						},
 					},
 				});
 			})();
 		}
-	}, [isVisible]);
+	}, [isVisible, productData?.filteredProducts]);
 
 	const getProductCount = (category_id: number) => {
 		let count = 0;
@@ -71,6 +102,7 @@ const SearchPage = () => {
 		return count;
 	};
 
+	//get category structured array
 	const sortedCategories = useMemo(() => {
 		type Category =
 			GetFilteredProductsQuery["filteredProducts"][number]["category"];
@@ -109,13 +141,12 @@ const SearchPage = () => {
 
 	return (
 		<Container as="main">
-			<h4 className="mb-3 mt-3">{`Results for «${searchValue}»`}</h4>
+			<h4 className="mb-3 mt-3">{`Results for «${searchParams.v}»`}</h4>
 			<div className="d-flex justify-content-end align-items-center gap-3">
 				<span>Sort by</span>
 				<Form.Select
 					className="w-auto"
 					aria-label="Sort by"
-					value={sortBy}
 					onChange={handleSort}
 				>
 					<option value={0}>Most popular</option>
@@ -133,7 +164,13 @@ const SearchPage = () => {
 								style={{ paddingLeft: `${depth * 7.5}%` }}
 								key={uuidv4()}
 							>
-								<Link className="custom-link" to={`/seach?category=${elem.id}`}>
+								<Link
+									className="custom-link"
+									to={{
+										pathname: "/search",
+										search: qs.stringify({ ...searchParams, c: elem.id }),
+									}}
+								>
 									{elem.name}
 								</Link>
 								<span className="text-muted">{` (${getProductCount(
@@ -142,6 +179,7 @@ const SearchPage = () => {
 							</div>
 						);
 					})}
+					<MultiRangeSlider />
 				</Col>
 
 				<Col sm="10" className="mt-2">

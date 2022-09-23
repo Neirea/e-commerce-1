@@ -222,7 +222,7 @@ export type QueryProductInput = {
   max_price?: InputMaybe<Scalars['Int']>;
   min_price?: InputMaybe<Scalars['Int']>;
   search_string?: InputMaybe<Scalars['String']>;
-  sortMode: Scalars['Int'];
+  sortMode?: InputMaybe<Scalars['Int']>;
 };
 
 export type QueryRelatedInput = {
