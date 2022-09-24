@@ -28,7 +28,7 @@ const ProductsGrid = ({
 	productLoading: boolean;
 }) => {
 	return (
-		<div className="d-grid">
+		<div className="d-grid justify-content-center">
 			{productError ? (
 				<Alert variant="danger">
 					Error: data was not fetched from the server

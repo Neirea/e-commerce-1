@@ -23,7 +23,7 @@ const Home = () => {
 					className="d-flex flex-column justify-content-center align-items-center  mt-5 mb-5 gap-3"
 				>
 					<Row className="w-100">
-						<Col className="col-7 p-0">
+						<Col className="col-7 p-0 d-none d-lg-block">
 							<img
 								src="https://res.cloudinary.com/dna5i1spz/image/upload/v1663072786/ecommerce-1/static/logo_left_abz14a.jpg"
 								alt="First img"
@@ -32,7 +32,7 @@ const Home = () => {
 								className="img-fit-cover"
 							/>
 						</Col>
-						<Col className="bg-success col-5 p-5 d-flex flex-column justify-content-center">
+						<Col className="bg-success col-lg-5 p-5 d-flex flex-column justify-content-center">
 							<h1 className="text-light fw-bold text-center fs-1">
 								About Techway
 							</h1>

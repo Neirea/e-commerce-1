@@ -60,7 +60,7 @@ export const QUERY_FILTERED_PRODUCTS = gql`
 `;
 
 export const QUERY_SEARCH_DATA = gql`
-	query GetSearchData($input: QueryPriceInput!) {
+	query GetSearchData($input: QuerySearchDataInput!) {
 		searchData(input: $input) {
 			min
 			max

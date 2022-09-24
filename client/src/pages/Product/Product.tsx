@@ -48,7 +48,7 @@ const Product = () => {
 					<div style={{ height: "36.5rem" }} />
 				) : (
 					<>
-						<Col className="d-flex flex-column align-items-center">
+						<Col className="d-flex flex-column align-items-center mb-3">
 							{data.product.images?.length && (
 								<img
 									style={{ height: "25rem" }}
@@ -151,7 +151,11 @@ const Product = () => {
 										</div>
 									</Col>
 								</Row>
-								<Button type="submit" variant="success" className="w-25">
+								<Button
+									type="submit"
+									variant="success"
+									style={{ width: "10rem" }}
+								>
 									Add to Cart
 								</Button>
 							</Form>

@@ -37,6 +37,8 @@ const SearchPage = () => {
 				search_string: searchParams.v,
 				category_id: categoryParam,
 				company_id: companyParam,
+				min_price: minParam,
+				max_price: maxParam,
 			},
 		},
 	});
@@ -95,6 +97,8 @@ const SearchPage = () => {
 						search_string: searchParams.v,
 						category_id: categoryParam,
 						company_id: companyParam,
+						min_price: minParam,
+						max_price: maxParam,
 					},
 				});
 			})();
@@ -136,7 +140,9 @@ const SearchPage = () => {
 
 	return (
 		<Container as="main">
-			<h4 className="mb-3 mt-3">{`Results for «${searchParams.v}»`}</h4>
+			<h4 className="mb-3 mt-3">
+				{`Results for «${searchParams.v || "none"}»`}
+			</h4>
 			<div className="d-flex justify-content-end align-items-center gap-3">
 				<span>Sort by</span>
 				<Form.Select
