@@ -1,9 +1,6 @@
 import { gql } from "apollo-server-express";
 
 const categoryTypes = gql`
-	type ProductCount {
-		products: Int!
-	}
 	type Category {
 		id: Int!
 		name: String!
@@ -11,6 +8,7 @@ const categoryTypes = gql`
 		img_src: String
 		parent_id: Int
 		companies: [Company!]
+		productCount: Int
 	}
 
 	extend type Query {

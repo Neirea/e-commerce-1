@@ -4,7 +4,10 @@ import { v2 as cloudinary } from "cloudinary";
 import { Request } from "express";
 import GraphQLJSON from "graphql-type-json";
 import type {
+	Category,
+	Company,
 	CreateProductInput,
+	QueryPriceInput,
 	QueryProductInput,
 	QueryRelatedInput,
 	UpdateProductInput,
@@ -44,6 +47,91 @@ const productResolvers = {
 				},
 			});
 		},
+		searchData: async (parent: any, { input }: { input: QueryPriceInput }) => {
+			const searchString = input.search_string
+				? input.search_string
+						.split(" ")
+						.map((s) => s + ":*")
+						.join(" | ")
+				: undefined;
+			const data = await prisma.product.findMany({
+				where: {
+					OR: [
+						{
+							name: {
+								search: searchString,
+							},
+						},
+						{
+							category: {
+								name: {
+									search: searchString,
+								},
+							},
+						},
+						{
+							company: {
+								name: {
+									search: searchString,
+								},
+							},
+						},
+					],
+					company_id: input.company_id ?? undefined,
+					category_id: input.category_id ?? undefined,
+				},
+				select: {
+					price: true,
+					category: {
+						select: {
+							id: true,
+							name: true,
+							parent_id: true,
+						},
+					},
+					company: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+				},
+			});
+
+			let min = Infinity;
+			let max = 0;
+			const allCategories: Category[] = [];
+			const allCompanies: Company[] = [];
+			data.forEach((p) => {
+				if (p.price < min) min = p.price;
+				if (p.price > max) max = p.price;
+				allCategories.push(p.category);
+				allCompanies.push(p.company);
+			});
+			const categories = [
+				...new Map(allCategories.map((item) => [item["id"], item])).values(),
+			];
+			const companies = [
+				...new Map(allCompanies.map((item) => [item["id"], item])).values(),
+			];
+			const catCount: any = {};
+			allCategories.forEach(function (x) {
+				catCount[x.id] = (catCount[x.id] || 0) + 1;
+			});
+			const compCount: any = {};
+			allCompanies.forEach(function (x) {
+				compCount[x.id] = (compCount[x.id] || 0) + 1;
+			});
+
+			categories.map((elem) => {
+				elem.productCount = catCount[elem.id];
+			});
+			companies.map((elem) => {
+				elem.productCount = compCount[elem.id];
+			});
+
+			return { min, max, categories, companies };
+		},
 		filteredProducts: async (
 			parent: any,
 			{
@@ -58,7 +146,21 @@ const productResolvers = {
 						.map((s) => s + ":*")
 						.join(" | ")
 				: undefined;
-
+			let sortBy: any = {
+				orders: {
+					_count: "desc",
+				},
+			};
+			if (input.sortMode === 1) {
+				sortBy = {
+					price: "asc",
+				};
+			}
+			if (input.sortMode === 2) {
+				sortBy = {
+					price: "desc",
+				};
+			}
 			const data = await prisma.product.findMany({
 				skip: offset,
 				take: limit,
@@ -93,7 +195,17 @@ const productResolvers = {
 				},
 				include: {
 					images: true,
-					category: true,
+					category: {
+						select: {
+							id: true,
+							name: true,
+							_count: {
+								select: {
+									products: true,
+								},
+							},
+						},
+					},
 					company: true,
 					_count: {
 						select: {
@@ -101,16 +213,8 @@ const productResolvers = {
 						},
 					},
 				},
+				orderBy: sortBy,
 			});
-			if (input.sortMode === 0) {
-				return data.sort((a, b) => a._count.orders - b._count.orders);
-			}
-			if (input.sortMode === 1) {
-				return data.sort((a, b) => a.price - b.price);
-			}
-			if (input.sortMode === 2) {
-				return data.sort((a, b) => b.price - a.price);
-			}
 
 			return data;
 		},

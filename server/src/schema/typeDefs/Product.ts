@@ -12,6 +12,13 @@ const productTypes = gql`
 		orders: Int!
 	}
 
+	type QuerySearchDataResult {
+		min: Int!
+		max: Int!
+		categories: [Category!]!
+		companies: [Company!]!
+	}
+
 	type Product {
 		id: Int!
 		name: String!
@@ -38,6 +45,7 @@ const productTypes = gql`
 			offset: Int!
 			input: QueryProductInput!
 		): [Product!]!
+		searchData(input: QueryPriceInput!): QuerySearchDataResult!
 		featuredProducts(limit: Int!, offset: Int!): [Product!]!
 		popularProducts(limit: Int!, offset: Int!): [Product!]!
 		relatedProducts(
@@ -46,18 +54,25 @@ const productTypes = gql`
 			input: QueryRelatedInput!
 		): [Product!]!
 	}
-	input QueryRelatedInput {
-		id: Int!
-		company_id: Int!
-		category_id: Int!
-	}
+
 	# Query inputs
 	input QueryProductInput {
 		category_id: Int
 		company_id: Int
 		min_price: Int
 		max_price: Int
-		sortMode: Int!
+		sortMode: Int
+		search_string: String
+	}
+	input QueryRelatedInput {
+		id: Int!
+		company_id: Int!
+		category_id: Int!
+	}
+	input QueryPriceInput {
+		category_id: Int
+		company_id: Int
+		sortMode: Int
 		search_string: String
 	}
 
