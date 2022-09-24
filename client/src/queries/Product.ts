@@ -52,13 +52,28 @@ export const QUERY_FILTERED_PRODUCTS = gql`
 				id
 				name
 			}
-			category {
+			_count {
+				orders
+			}
+		}
+	}
+`;
+
+export const QUERY_SEARCH_DATA = gql`
+	query GetSearchData($input: QueryPriceInput!) {
+		searchData(input: $input) {
+			min
+			max
+			categories {
 				id
 				name
 				parent_id
+				productCount
 			}
-			_count {
-				orders
+			companies {
+				id
+				name
+				productCount
 			}
 		}
 	}

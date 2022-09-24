@@ -1,16 +1,21 @@
 import { useQuery } from "@apollo/client";
 import * as qs from "query-string";
-import { ChangeEvent, useEffect, useMemo } from "react";
+import { ChangeEvent, useEffect } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import MultiRangeSlider from "../components/MultiRangeSlider";
 import ProductsGrid from "../components/ProductsGrid";
-import { GetFilteredProductsQuery } from "../generated/graphql";
-import { QUERY_FILTERED_PRODUCTS } from "../queries/Product";
+import {
+	GetFilteredProductsQuery,
+	GetSearchDataQuery,
+} from "../generated/graphql";
+import { QUERY_FILTERED_PRODUCTS, QUERY_SEARCH_DATA } from "../queries/Product";
 import useInView from "../utils/useInView";
+import sortByParentId from "../utils/sortByParents";
 
 const FETCH_NUMBER = 12;
+type CategoryType = GetSearchDataQuery["searchData"]["categories"][number];
 
 const SearchPage = () => {
 	const navigate = useNavigate();
@@ -18,6 +23,23 @@ const SearchPage = () => {
 	const categoryParam = searchParams.c != null ? +searchParams.c : undefined;
 	const sortParam = searchParams.sort != null ? +searchParams.sort : undefined;
 	const companyParam = searchParams.b != null ? +searchParams.b : undefined;
+	const minParam = searchParams.min != null ? +searchParams.min : undefined;
+	const maxParam = searchParams.max != null ? +searchParams.max : undefined;
+
+	//general data about search results
+	const {
+		data: searchData,
+		loading: searchLoading,
+		refetch: refetchData,
+	} = useQuery<GetSearchDataQuery>(QUERY_SEARCH_DATA, {
+		variables: {
+			input: {
+				search_string: searchParams.v,
+				category_id: categoryParam,
+				company_id: companyParam,
+			},
+		},
+	});
 
 	const {
 		data: productData,
@@ -34,6 +56,8 @@ const SearchPage = () => {
 				sortMode: sortParam,
 				category_id: categoryParam,
 				company_id: companyParam,
+				min_price: minParam,
+				max_price: maxParam,
 			},
 		},
 	});
@@ -44,10 +68,10 @@ const SearchPage = () => {
 		treshold: 1.0,
 	});
 
-	//fetching
+	//fetching if query string changes
 	useEffect(() => {
 		if (productData?.filteredProducts) {
-			const getProducts = async () => {
+			(async () => {
 				//refetch if data already exists
 				await refetch({
 					offset: 0,
@@ -57,21 +81,27 @@ const SearchPage = () => {
 						sortMode: sortParam,
 						category_id: categoryParam,
 						company_id: companyParam,
+						min_price: minParam,
+						max_price: maxParam,
 					},
 				});
-			};
-			getProducts();
+			})();
+		}
+		if (searchData?.searchData && categoryParam) {
+			//refetch if category changes
+			(async () => {
+				await refetchData({
+					input: {
+						search_string: searchParams.v,
+						category_id: categoryParam,
+						company_id: companyParam,
+					},
+				});
+			})();
 		}
 	}, [location.search]);
 
-	const handleSort = async (e: ChangeEvent<HTMLSelectElement>) => {
-		navigate({
-			pathname: "/search",
-			search: qs.stringify({ ...searchParams, sort: e.target.value }),
-		});
-	};
-
-	//only fetch additional products if we didn't get max available products
+	//only fetch additional products if we didn't get max available products (any - x2 load)
 	useEffect(() => {
 		if (
 			isVisible &&
@@ -87,57 +117,22 @@ const SearchPage = () => {
 							search_string: searchParams.v,
 							sortMode: sortParam,
 							category_id: categoryParam,
+							company_id: companyParam,
+							min_price: minParam,
+							max_price: maxParam,
 						},
 					},
 				});
 			})();
 		}
-	}, [isVisible, productData?.filteredProducts]);
+	}, [isVisible]);
 
-	const getProductCount = (category_id: number) => {
-		let count = 0;
-		productData?.filteredProducts?.forEach((product) => {
-			if (product.category.id === category_id) count++;
+	const handleSort = async (e: ChangeEvent<HTMLSelectElement>) => {
+		navigate({
+			pathname: "/search",
+			search: qs.stringify({ ...searchParams, sort: e.target.value }),
 		});
-		return count;
 	};
-
-	//get category structured array
-	const sortedCategories = useMemo(() => {
-		type Category =
-			GetFilteredProductsQuery["filteredProducts"][number]["category"];
-		type resultType = {
-			elem: Category;
-			depth: number;
-		};
-
-		const categoriesSet = new Set<Category>();
-		productData?.filteredProducts.forEach((e) => {
-			categoriesSet.add(e.category);
-		});
-		const categories = [...categoriesSet];
-		if (!categories.length) return [];
-
-		const orderByParents = (
-			data: Category[],
-			depth: number,
-			p_id?: number | undefined
-		) => {
-			if (p_id !== undefined) depth++;
-			return data.reduce((r: resultType[], e) => {
-				//check if element is parent to any element
-				if (p_id == e.parent_id) {
-					//push element
-					r.push({ elem: e, depth });
-					//push its children after
-					r.push(...orderByParents(data, depth, e.id));
-				}
-				return r;
-			}, []);
-		};
-
-		return orderByParents(categories, 0);
-	}, [productData?.filteredProducts]);
 
 	return (
 		<Container as="main">
@@ -156,30 +151,70 @@ const SearchPage = () => {
 			</div>
 
 			<Row className="border-top mt-2">
-				<Col sm="2" className="border-end">
-					{sortedCategories.map(({ elem, depth }) => {
-						return (
-							<div
-								className="mt-2"
-								style={{ paddingLeft: `${depth * 7.5}%` }}
-								key={uuidv4()}
-							>
-								<Link
-									className="custom-link"
-									to={{
-										pathname: "/search",
-										search: qs.stringify({ ...searchParams, c: elem.id }),
-									}}
-								>
-									{elem.name}
-								</Link>
-								<span className="text-muted">{` (${getProductCount(
-									elem.id
-								)})`}</span>
+				<Col sm="2" className="border-end mb-5 pt-3">
+					{searchData?.searchData && (
+						<>
+							<div>
+								<b>Categories:</b>
 							</div>
-						);
-					})}
-					<MultiRangeSlider />
+							<div className="border-bottom pb-3">
+								{sortByParentId<CategoryType>(
+									searchData.searchData.categories
+								).map(({ elem, depth }) => {
+									return (
+										<div
+											className="mt-2"
+											style={{ paddingLeft: `${depth * 7.5}%` }}
+											key={uuidv4()}
+										>
+											<Link
+												className="custom-link text-primary"
+												to={{
+													pathname: "/search",
+													search: qs.stringify({ ...searchParams, c: elem.id }),
+												}}
+											>
+												{elem.name}
+											</Link>
+											<span className="text-muted">{` (${elem.productCount})`}</span>
+										</div>
+									);
+								})}
+								{categoryParam && (
+									<div className="pb-3 ps-3">
+										{searchData.searchData.companies.map((elem) => {
+											return (
+												<div className="mt-2" key={uuidv4()}>
+													<Link
+														className="custom-link text-primary"
+														to={{
+															pathname: "/search",
+															search: qs.stringify({
+																...searchParams,
+																b: elem.id,
+															}),
+														}}
+													>
+														{elem.name}
+													</Link>
+													<span className="text-muted">{` (${elem.productCount})`}</span>
+												</div>
+											);
+										})}
+									</div>
+								)}
+							</div>
+						</>
+					)}
+					{searchData?.searchData && !searchLoading && (
+						<MultiRangeSlider
+							key={uuidv4()}
+							max={searchData.searchData.max}
+							min={searchData.searchData.min}
+							curLeft={minParam}
+							curRight={maxParam}
+						/>
+					)}
 				</Col>
 
 				<Col sm="10" className="mt-2">
@@ -189,13 +224,15 @@ const SearchPage = () => {
 						</h2>
 					)}
 					{productData?.filteredProducts && (
-						<ProductsGrid
-							products={productData.filteredProducts}
-							productError={productError}
-							productLoading={productLoading}
-						/>
+						<>
+							<ProductsGrid
+								products={productData.filteredProducts}
+								productError={productError}
+								productLoading={productLoading}
+							/>
+							<div ref={containerRef} />
+						</>
 					)}
-					<div ref={containerRef} />
 				</Col>
 			</Row>
 		</Container>

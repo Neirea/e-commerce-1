@@ -25,6 +25,7 @@ export type Category = {
   img_src?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   parent_id?: Maybe<Scalars['Int']>;
+  productCount?: Maybe<Scalars['Int']>;
 };
 
 export type Company = {
@@ -32,6 +33,7 @@ export type Company = {
   categories?: Maybe<Array<Category>>;
   id: Scalars['Int'];
   name: Scalars['String'];
+  productCount?: Maybe<Scalars['Int']>;
 };
 
 export type CreateCategoryInput = {
@@ -155,11 +157,6 @@ export type Product = {
   variants: Array<Product>;
 };
 
-export type ProductCount = {
-  __typename?: 'ProductCount';
-  products: Scalars['Int'];
-};
-
 export type ProductOrdersCount = {
   __typename?: 'ProductOrdersCount';
   orders: Scalars['Int'];
@@ -175,6 +172,7 @@ export type Query = {
   product?: Maybe<Product>;
   products: Array<Product>;
   relatedProducts: Array<Product>;
+  searchData: QuerySearchDataResult;
   showMe?: Maybe<User>;
   user?: Maybe<User>;
   users?: Maybe<Array<User>>;
@@ -212,8 +210,20 @@ export type QueryRelatedProductsArgs = {
 };
 
 
+export type QuerySearchDataArgs = {
+  input: QueryPriceInput;
+};
+
+
 export type QueryUserArgs = {
   id: Scalars['Int'];
+};
+
+export type QueryPriceInput = {
+  category_id?: InputMaybe<Scalars['Int']>;
+  company_id?: InputMaybe<Scalars['Int']>;
+  search_string?: InputMaybe<Scalars['String']>;
+  sortMode?: InputMaybe<Scalars['Int']>;
 };
 
 export type QueryProductInput = {
@@ -229,6 +239,14 @@ export type QueryRelatedInput = {
   category_id: Scalars['Int'];
   company_id: Scalars['Int'];
   id: Scalars['Int'];
+};
+
+export type QuerySearchDataResult = {
+  __typename?: 'QuerySearchDataResult';
+  categories: Array<Category>;
+  companies: Array<Company>;
+  max: Scalars['Int'];
+  min: Scalars['Int'];
 };
 
 export enum Role {
@@ -353,7 +371,14 @@ export type GetFilteredProductsQueryVariables = Exact<{
 }>;
 
 
-export type GetFilteredProductsQuery = { __typename?: 'Query', filteredProducts: Array<{ __typename?: 'Product', id: number, name: string, price: number, inventory: number, discount: number, avg_rating: number, num_of_reviews: number, images: Array<{ __typename?: 'Image', img_src: string }>, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string, parent_id?: number | null }, _count: { __typename?: 'ProductOrdersCount', orders: number } }> };
+export type GetFilteredProductsQuery = { __typename?: 'Query', filteredProducts: Array<{ __typename?: 'Product', id: number, name: string, price: number, inventory: number, discount: number, avg_rating: number, num_of_reviews: number, images: Array<{ __typename?: 'Image', img_src: string }>, company: { __typename?: 'Company', id: number, name: string }, _count: { __typename?: 'ProductOrdersCount', orders: number } }> };
+
+export type GetSearchDataQueryVariables = Exact<{
+  input: QueryPriceInput;
+}>;
+
+
+export type GetSearchDataQuery = { __typename?: 'Query', searchData: { __typename?: 'QuerySearchDataResult', min: number, max: number, categories: Array<{ __typename?: 'Category', id: number, name: string, parent_id?: number | null, productCount?: number | null }>, companies: Array<{ __typename?: 'Company', id: number, name: string, productCount?: number | null }> } };
 
 export type GetFeaturedProductsQueryVariables = Exact<{
   limit: Scalars['Int'];
@@ -763,11 +788,6 @@ export const GetFilteredProductsDocument = gql`
       id
       name
     }
-    category {
-      id
-      name
-      parent_id
-    }
     _count {
       orders
     }
@@ -804,6 +824,53 @@ export function useGetFilteredProductsLazyQuery(baseOptions?: Apollo.LazyQueryHo
 export type GetFilteredProductsQueryHookResult = ReturnType<typeof useGetFilteredProductsQuery>;
 export type GetFilteredProductsLazyQueryHookResult = ReturnType<typeof useGetFilteredProductsLazyQuery>;
 export type GetFilteredProductsQueryResult = Apollo.QueryResult<GetFilteredProductsQuery, GetFilteredProductsQueryVariables>;
+export const GetSearchDataDocument = gql`
+    query GetSearchData($input: QueryPriceInput!) {
+  searchData(input: $input) {
+    min
+    max
+    categories {
+      id
+      name
+      parent_id
+      productCount
+    }
+    companies {
+      id
+      name
+      productCount
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetSearchDataQuery__
+ *
+ * To run a query within a React component, call `useGetSearchDataQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSearchDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSearchDataQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useGetSearchDataQuery(baseOptions: Apollo.QueryHookOptions<GetSearchDataQuery, GetSearchDataQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSearchDataQuery, GetSearchDataQueryVariables>(GetSearchDataDocument, options);
+      }
+export function useGetSearchDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSearchDataQuery, GetSearchDataQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSearchDataQuery, GetSearchDataQueryVariables>(GetSearchDataDocument, options);
+        }
+export type GetSearchDataQueryHookResult = ReturnType<typeof useGetSearchDataQuery>;
+export type GetSearchDataLazyQueryHookResult = ReturnType<typeof useGetSearchDataLazyQuery>;
+export type GetSearchDataQueryResult = Apollo.QueryResult<GetSearchDataQuery, GetSearchDataQueryVariables>;
 export const GetFeaturedProductsDocument = gql`
     query GetFeaturedProducts($limit: Int!, $offset: Int!) {
   featuredProducts(limit: $limit, offset: $offset) {

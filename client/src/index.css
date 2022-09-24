@@ -2,6 +2,7 @@
 	display: flex;
 	min-height: 100vh;
 	flex-direction: column;
+	--thumb-size: 1.5rem;
 }
 main {
 	flex: 1;
@@ -41,6 +42,83 @@ main {
 .custom-link:hover {
 	color: black;
 	text-decoration: underline;
+}
+
+/* slider */
+.multi-slider {
+	position: relative;
+	width: 100%;
+}
+
+.slider__track,
+.slider__range {
+	position: absolute;
+	border-radius: 3px;
+	height: 5px;
+}
+
+.slider__track {
+	background-color: #ced4da;
+	width: 100%;
+	z-index: 1;
+}
+
+.slider__range {
+	background-color: #7da740;
+	z-index: 2;
+}
+
+/* Removing the default appearance */
+.thumb,
+.thumb::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.thumb {
+	pointer-events: none;
+	position: absolute;
+	height: 0;
+	width: 100%;
+	outline: none;
+}
+
+.thumb--zindex-3 {
+	z-index: 3;
+}
+.thumb--zindex-4 {
+	z-index: 4;
+}
+.thumb--zindex-5 {
+	z-index: 5;
+}
+
+/* For Chrome browsers */
+.thumb::-webkit-slider-thumb {
+	background-color: #f1f5f7;
+	border: none;
+	border-radius: 50%;
+	box-shadow: 0 0 1px 1px #ced4da;
+	cursor: pointer;
+	height: var(--thumb-size);
+	width: var(--thumb-size);
+	margin-top: 4px;
+	pointer-events: all;
+	position: relative;
+}
+
+/* For Firefox browsers */
+.thumb::-moz-range-thumb {
+	background-color: #f1f5f7;
+	border: none;
+	border-radius: 50%;
+	box-shadow: 0 0 1px 1px #ced4da;
+	cursor: pointer;
+	height: var(--thumb-size);
+	width: var(--thumb-size);
+	margin-top: 4px;
+	pointer-events: all;
+	position: relative;
 }
 
 /* loading animation */
