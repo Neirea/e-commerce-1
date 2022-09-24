@@ -14,6 +14,7 @@ import { Role } from "./generated/graphql";
 import UserProfile from "./pages/UserProfile";
 import ScrollToTop from "./components/ScrollToTop";
 import Product from "./pages/Product/Product";
+import Help from "./pages/Help";
 
 function App() {
 	const { user, isLoading } = useAppContext();
@@ -29,6 +30,7 @@ function App() {
 					<Routes>
 						<Route path="/" element={<Home />} />
 						<Route path="/search" element={<SearchPage />} />
+						<Route path="/help" element={<Help />} />
 						{/* editor routes */}
 						<Route
 							element={<RequireAuth allowedRoles={[Role.Admin, Role.Editor]} />}
@@ -46,7 +48,7 @@ function App() {
 						>
 							<Route path="/profile" element={<UserProfile user={user} />} />
 						</Route>
-
+						{/* error routes */}
 						<Route path="/unauthorized" element={<Unauthorized />} />
 						<Route path="*" element={<Error />} />
 					</Routes>
