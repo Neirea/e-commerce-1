@@ -45,7 +45,7 @@ const productTypes = gql`
 			offset: Int!
 			input: QueryProductInput!
 		): [Product!]!
-		searchData(input: QueryPriceInput!): QuerySearchDataResult!
+		searchData(input: QuerySearchDataInput!): QuerySearchDataResult!
 		featuredProducts(limit: Int!, offset: Int!): [Product!]!
 		popularProducts(limit: Int!, offset: Int!): [Product!]!
 		relatedProducts(
@@ -69,10 +69,11 @@ const productTypes = gql`
 		company_id: Int!
 		category_id: Int!
 	}
-	input QueryPriceInput {
+	input QuerySearchDataInput {
 		category_id: Int
 		company_id: Int
-		sortMode: Int
+		min_price: Int
+		max_price: Int
 		search_string: String
 	}
 

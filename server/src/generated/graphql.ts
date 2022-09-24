@@ -210,19 +210,12 @@ export type QueryRelatedProductsArgs = {
 
 
 export type QuerySearchDataArgs = {
-  input: QueryPriceInput;
+  input: QuerySearchDataInput;
 };
 
 
 export type QueryUserArgs = {
   id: Scalars['Int'];
-};
-
-export type QueryPriceInput = {
-  category_id?: InputMaybe<Scalars['Int']>;
-  company_id?: InputMaybe<Scalars['Int']>;
-  search_string?: InputMaybe<Scalars['String']>;
-  sortMode?: InputMaybe<Scalars['Int']>;
 };
 
 export type QueryProductInput = {
@@ -238,6 +231,14 @@ export type QueryRelatedInput = {
   category_id: Scalars['Int'];
   company_id: Scalars['Int'];
   id: Scalars['Int'];
+};
+
+export type QuerySearchDataInput = {
+  category_id?: InputMaybe<Scalars['Int']>;
+  company_id?: InputMaybe<Scalars['Int']>;
+  max_price?: InputMaybe<Scalars['Int']>;
+  min_price?: InputMaybe<Scalars['Int']>;
+  search_string?: InputMaybe<Scalars['String']>;
 };
 
 export type QuerySearchDataResult = {
@@ -391,9 +392,9 @@ export type ResolversTypes = {
   Product: ResolverTypeWrapper<Product>;
   ProductOrdersCount: ResolverTypeWrapper<ProductOrdersCount>;
   Query: ResolverTypeWrapper<{}>;
-  QueryPriceInput: QueryPriceInput;
   QueryProductInput: QueryProductInput;
   QueryRelatedInput: QueryRelatedInput;
+  QuerySearchDataInput: QuerySearchDataInput;
   QuerySearchDataResult: ResolverTypeWrapper<QuerySearchDataResult>;
   Role: Role;
   String: ResolverTypeWrapper<Scalars['String']>;
@@ -421,9 +422,9 @@ export type ResolversParentTypes = {
   Product: Product;
   ProductOrdersCount: ProductOrdersCount;
   Query: {};
-  QueryPriceInput: QueryPriceInput;
   QueryProductInput: QueryProductInput;
   QueryRelatedInput: QueryRelatedInput;
+  QuerySearchDataInput: QuerySearchDataInput;
   QuerySearchDataResult: QuerySearchDataResult;
   String: Scalars['String'];
   UpdateCategoryInput: UpdateCategoryInput;

@@ -7,9 +7,9 @@ import type {
 	Category,
 	Company,
 	CreateProductInput,
-	QueryPriceInput,
 	QueryProductInput,
 	QueryRelatedInput,
+	QuerySearchDataInput,
 	UpdateProductInput,
 } from "../../generated/graphql";
 
@@ -47,7 +47,10 @@ const productResolvers = {
 				},
 			});
 		},
-		searchData: async (parent: any, { input }: { input: QueryPriceInput }) => {
+		searchData: async (
+			parent: any,
+			{ input }: { input: QuerySearchDataInput }
+		) => {
 			const searchString = input.search_string
 				? input.search_string
 						.split(" ")
@@ -102,18 +105,31 @@ const productResolvers = {
 			let max = 0;
 			const allCategories: Category[] = [];
 			const allCompanies: Company[] = [];
+			const maxPrice = input.max_price ?? Infinity;
+			const minPrice = input.min_price ?? 0;
 			data.forEach((p) => {
 				if (p.price < min) min = p.price;
 				if (p.price > max) max = p.price;
-				allCategories.push(p.category);
-				allCompanies.push(p.company);
+				if (input.max_price || input.min_price) {
+					if (p.price <= maxPrice && p.price >= minPrice) {
+						allCategories.push(p.category);
+						allCompanies.push(p.company);
+					}
+				} else {
+					allCategories.push(p.category);
+					allCompanies.push(p.company);
+				}
 			});
+
+			//get unique categories, companies
 			const categories = [
 				...new Map(allCategories.map((item) => [item["id"], item])).values(),
 			];
 			const companies = [
 				...new Map(allCompanies.map((item) => [item["id"], item])).values(),
 			];
+
+			// count procuts per category, company
 			const catCount: any = {};
 			allCategories.forEach(function (x) {
 				catCount[x.id] = (catCount[x.id] || 0) + 1;
