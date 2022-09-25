@@ -1,6 +1,6 @@
 export interface ImageResult {
-	images: {
+	images: Array<{
 		img_id: string;
 		img_src: string;
-	}[];
+	}>;
 }

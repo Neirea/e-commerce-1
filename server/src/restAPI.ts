@@ -45,7 +45,7 @@ app.post("/editor/upload-images", async (req, res) => {
 		img_id: string;
 		img_src: string;
 	}
-	const imageFiles = req.files?.images as UploadedFile[] | UploadedFile;
+	const imageFiles = req.files?.images as Array<UploadedFile> | UploadedFile;
 	if (Array.isArray(imageFiles)) {
 		if (!imageFiles || !imageFiles.length) {
 			res.json({ images: [] });
@@ -55,7 +55,7 @@ app.post("/editor/upload-images", async (req, res) => {
 			img_id: string;
 			img_src: string;
 		}
-		const resultImages: UploadedImage[] = [];
+		const resultImages: Array<UploadedImage> = [];
 
 		for (let i = 0; i < imageFiles.length; i++) {
 			const result = await cloudinary.uploader.upload(
@@ -86,7 +86,7 @@ app.post("/editor/upload-images", async (req, res) => {
 			return;
 		}
 
-		const resultImages: UploadedImage[] = [];
+		const resultImages: Array<UploadedImage> = [];
 		const result = await cloudinary.uploader.upload(imageFiles.tempFilePath, {
 			transformation: [
 				{

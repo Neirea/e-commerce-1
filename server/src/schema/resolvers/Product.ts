@@ -103,8 +103,8 @@ const productResolvers = {
 
 			let min = Infinity;
 			let max = 0;
-			const allCategories: Category[] = [];
-			const allCompanies: Company[] = [];
+			const allCategories: Array<Category> = [];
+			const allCompanies: Array<Company> = [];
 			const maxPrice = input.max_price ?? Infinity;
 			const minPrice = input.min_price ?? 0;
 			data.forEach((p) => {

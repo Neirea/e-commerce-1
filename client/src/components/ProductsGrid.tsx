@@ -4,26 +4,25 @@ import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { toPriceNumber } from "../utils/numbers";
 import Loading from "./Loading";
+import { Product } from "../generated/graphql";
 
-interface IProductData {
-	id: number;
-	name: string;
-	price: number;
-	inventory: number;
-	discount: number;
-	avg_rating: number;
-	num_of_reviews: number;
-	images: Array<{
-		img_src: string;
-	}>;
-}
+type ProductType = Pick<
+	Product,
+	| "id"
+	| "name"
+	| "price"
+	| "inventory"
+	| "discount"
+	| "avg_rating"
+	| "num_of_reviews"
+> & { images: Array<Pick<Product["images"][number], "img_src">> };
 
 const ProductsGrid = ({
 	products,
 	productError,
 	productLoading,
 }: {
-	products: Array<IProductData> | undefined;
+	products: Array<ProductType> | undefined;
 	productError: ApolloError | undefined;
 	productLoading: boolean;
 }) => {

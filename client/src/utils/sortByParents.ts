@@ -14,7 +14,7 @@ const sortByParentId = <T extends ISortElement>(array: Array<T>) => {
 		p_id?: number | undefined
 	) => {
 		if (p_id !== undefined) depth++;
-		return data.reduce((r: IResult[], e) => {
+		return data.reduce((r: Array<IResult>, e) => {
 			//check if element is parent to any element
 			if (p_id == e.parent_id) {
 				//push element
