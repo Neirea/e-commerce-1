@@ -2,7 +2,7 @@
 	display: flex;
 	min-height: 100vh;
 	flex-direction: column;
-	--thumb-size: 1.5rem;
+	--thumb-size: 24px;
 }
 main {
 	flex: 1;

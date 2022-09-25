@@ -89,7 +89,7 @@ const SearchPage = () => {
 				});
 			})();
 		}
-		if (searchData?.searchData && categoryParam) {
+		if (searchData?.searchData) {
 			//refetch if category changes
 			(async () => {
 				await refetchData({
@@ -105,7 +105,7 @@ const SearchPage = () => {
 		}
 	}, [location.search]);
 
-	//only fetch additional products if we didn't get max available products (any - x2 load)
+	//fetch additional products if we didn't get max available products
 	useEffect(() => {
 		if (
 			isVisible &&
@@ -156,8 +156,8 @@ const SearchPage = () => {
 				</Form.Select>
 			</div>
 
-			<Row className="border-top mt-2">
-				<Col sm="2" className="border-end mb-5 pt-3">
+			<Row className="border-top mt-2 flex-column flex-lg-row">
+				<Col className="col-lg-2 border-end mb-5 pt-3">
 					{searchData?.searchData && (
 						<>
 							<div>
@@ -223,7 +223,7 @@ const SearchPage = () => {
 					)}
 				</Col>
 
-				<Col sm="10" className="mt-2">
+				<Col className="col-lg-10 mt-2">
 					{productData?.filteredProducts.length === 0 && (
 						<h2 className="text-center mt-5">
 							Couldn't find any products with this search

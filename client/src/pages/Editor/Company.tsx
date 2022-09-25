@@ -127,7 +127,7 @@ const Company = () => {
 						>
 							<option value={0}>{"Create new company"}</option>
 							{data &&
-								data.companies?.map((elem: any) => (
+								data.companies?.map((elem) => (
 									<option key={uuidv4()} value={elem.id}>
 										{elem.name}
 									</option>

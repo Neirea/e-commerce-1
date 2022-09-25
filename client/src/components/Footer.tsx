@@ -33,17 +33,17 @@ const Footer = () => {
 						<div className="d-flex justify-content-center gap-3">
 							<div>
 								<a href="https://github.com/Neirea">
-									<FaGithub size="1.5rem" />
+									<FaGithub size={24} />
 								</a>
 							</div>
 							<div>
 								<a href="https://www.linkedin.com/in/yevhenii-shumilin-2ab431188/">
-									<FaLinkedin size="1.5rem" />
+									<FaLinkedin size={24} />
 								</a>
 							</div>
 							<div>
 								<a href="mailto:neirea@ukr.net">
-									<FiMail size="1.5rem" />
+									<FiMail size={24} />
 								</a>
 							</div>
 						</div>
@@ -53,8 +53,8 @@ const Footer = () => {
 						<p className="text-secondary small">
 							"Techway" is a demo website to demonstrate a custom ecommerce
 							flow. Listed products are not real and we do not collect any
-							payment information. You are advised to not use your real personal
-							or payment information.
+							payment information. Do not use your real personal or payment
+							information.
 						</p>
 					</Col>
 				</Row>

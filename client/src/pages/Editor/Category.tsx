@@ -182,7 +182,7 @@ const Category = () => {
 						>
 							<option value={0}>{"Create new category"}</option>
 							{data &&
-								data.categories?.map((elem: any) => (
+								data.categories?.map((elem) => (
 									<option key={uuidv4()} value={elem.id}>
 										{elem.name}
 									</option>
@@ -211,7 +211,7 @@ const Category = () => {
 					>
 						<option value={0}>{"Choose Parent"}</option>
 						{data &&
-							data.categories?.map((elem: any) => (
+							data.categories?.map((elem) => (
 								<option key={uuidv4()} value={elem.id}>
 									{elem.name}
 								</option>

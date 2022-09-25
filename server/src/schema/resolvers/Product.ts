@@ -129,20 +129,19 @@ const productResolvers = {
 				...new Map(allCompanies.map((item) => [item["id"], item])).values(),
 			];
 
-			// count procuts per category, company
-			const catCount: any = {};
+			// count products per category, company
+			const catCount: { [key: string]: number } = {};
 			allCategories.forEach(function (x) {
 				catCount[x.id] = (catCount[x.id] || 0) + 1;
 			});
-			const compCount: any = {};
+			const compCount: { [key: string]: number } = {};
 			allCompanies.forEach(function (x) {
 				compCount[x.id] = (compCount[x.id] || 0) + 1;
 			});
-
-			categories.map((elem) => {
+			categories.forEach((elem) => {
 				elem.productCount = catCount[elem.id];
 			});
-			companies.map((elem) => {
+			companies.forEach((elem) => {
 				elem.productCount = compCount[elem.id];
 			});
 
@@ -162,7 +161,10 @@ const productResolvers = {
 						.map((s) => s + ":*")
 						.join(" | ")
 				: undefined;
-			let sortBy: any = {
+			let sortBy: {
+				orders?: { _count: "desc" | "asc" };
+				price?: "desc" | "asc";
+			} = {
 				orders: {
 					_count: "desc",
 				},

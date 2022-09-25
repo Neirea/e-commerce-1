@@ -12,7 +12,6 @@ interface IAppContext {
 export const AppContext = createContext({} as IAppContext);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-	//set user type? *any
 	const {
 		data,
 		loading: isLoading,

@@ -39,6 +39,7 @@ const Home = () => {
 							<p className="text-light fs-4">
 								Demo website to demonstrate a custom ecommerce flow. Listed
 								products are not real and no payment information is collected.
+								Do not use your real personal or payment information.
 							</p>
 							<Link to="/search">
 								<Button variant="light" className="w-100">
