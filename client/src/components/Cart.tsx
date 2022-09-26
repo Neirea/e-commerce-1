@@ -10,6 +10,7 @@ import {
 	useCartContext,
 } from "../context/CartContext";
 import { toPriceNumber } from "../utils/numbers";
+import { useNavigate } from "react-router-dom";
 
 const Cart = ({
 	handleClose,
@@ -18,6 +19,7 @@ const Cart = ({
 	handleClose: () => void;
 	show: boolean;
 }) => {
+	const navigate = useNavigate();
 	const { cart, addProductToCart, removeProductFromCart } = useCartContext();
 	const totalPrice = cart.reduce(
 		(prev, curr) =>
@@ -139,7 +141,13 @@ const Cart = ({
 				<Row className="align-items-center mt-3">
 					<Col className="fs-4">Total: {toPriceNumber(totalPrice)} $</Col>
 					<Col className="text-end">
-						<Button variant="success">Checkout</Button>
+						<Button
+							variant="success"
+							onClick={() => navigate("/checkout")}
+							disabled={!cart.length}
+						>
+							Checkout
+						</Button>
 					</Col>
 				</Row>
 			</Modal.Body>
