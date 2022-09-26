@@ -4,6 +4,7 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import { AppProvider } from "./context/AppContext";
+import { CartProvider } from "./context/CartContext";
 import { serverUrl } from "./utils/server";
 import { offsetLimitPagination } from "@apollo/client/utilities";
 
@@ -31,7 +32,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 		<BrowserRouter>
 			<ApolloProvider client={client}>
 				<AppProvider>
-					<App />
+					<CartProvider>
+						<App />
+					</CartProvider>
 				</AppProvider>
 			</ApolloProvider>
 		</BrowserRouter>

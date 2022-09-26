@@ -41,7 +41,7 @@ const ProductsGrid = ({
 									className="custom-link d-flex flex-column justify-content-center align-items-center text-center"
 									to={`/product/${product.id}`}
 								>
-									{product.images?.length && (
+									{!!product.images?.length && (
 										<img
 											src={product.images[0].img_src}
 											title={product.name}

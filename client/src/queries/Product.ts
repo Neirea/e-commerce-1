@@ -31,6 +31,22 @@ export const QUERY_ALL_PRODUCT = gql`
 	}
 `;
 
+export const QUERY_PRODUCTS_BY_ID = gql`
+	query GetProductsById($ids: [Int!]!) {
+		productsById(ids: $ids) {
+			id
+			name
+			price
+			inventory
+			shipping_cost
+			discount
+			images {
+				img_src
+			}
+		}
+	}
+`;
+
 export const QUERY_FILTERED_PRODUCTS = gql`
 	query GetFilteredProducts(
 		$limit: Int!

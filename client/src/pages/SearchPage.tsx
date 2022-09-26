@@ -158,7 +158,7 @@ const SearchPage = () => {
 
 			<Row className="border-top mt-2 flex-column flex-lg-row">
 				<Col className="col-lg-2 border-end mb-5 pt-3">
-					{searchData?.searchData && (
+					{!!searchData?.searchData && (
 						<>
 							<div>
 								<b>Categories:</b>
@@ -186,7 +186,7 @@ const SearchPage = () => {
 										</div>
 									);
 								})}
-								{categoryParam && (
+								{!!categoryParam && (
 									<div className="pb-3 ps-3">
 										{searchData.searchData.companies.map((elem) => {
 											return (
@@ -212,7 +212,7 @@ const SearchPage = () => {
 							</div>
 						</>
 					)}
-					{searchData?.searchData && !searchLoading && (
+					{!!searchData?.searchData && !searchLoading && (
 						<MultiRangeSlider
 							key={uuidv4()}
 							max={searchData.searchData.max}
@@ -229,7 +229,7 @@ const SearchPage = () => {
 							Couldn't find any products with this search
 						</h2>
 					)}
-					{productData?.filteredProducts && (
+					{!!productData?.filteredProducts && (
 						<>
 							<ProductsGrid
 								products={productData.filteredProducts}

@@ -1,8 +1,10 @@
 import { useQuery } from "@apollo/client";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import Cart from "../../components/Cart";
+import { useCartContext } from "../../context/CartContext";
 import { GetSingleProductQuery } from "../../generated/graphql";
 import { GET_SINGLE_PRODUCT } from "../../queries/Product";
 import { toPriceNumber } from "../../utils/numbers";
@@ -10,21 +12,39 @@ import RelatedProducts from "./RelatedProducts";
 
 const Product = () => {
 	const { id } = useParams();
+	const { addProductToCart } = useCartContext();
 	const [selectedImage, setSelectedImage] = useState(0);
+	const [showCart, setShowCart] = useState(false);
 	const [amount, setAmount] = useState(1);
 	const { data, loading, error } = useQuery<GetSingleProductQuery>(
 		GET_SINGLE_PRODUCT,
 		{ variables: { id: +id! } }
 	);
 
+	//reset amount when product changes
+	useEffect(() => {
+		if (id) {
+			setAmount(1);
+		}
+	}, [id]);
+
 	const handleAmount = (e: ChangeEvent<HTMLInputElement>) => {
 		setAmount(+e.target.value);
 	};
 
+	// Cart Modal
+	const handleShowCart = () => setShowCart(true);
+	const handleCloseCart = () => setShowCart(false);
+
 	const handleSubmit = (e: FormEvent) => {
 		e.preventDefault();
 		// add to cart variable
+
+		if (data?.product) {
+			addProductToCart({ product: data.product, amount: amount });
+		}
 		// open cart modal
+		handleShowCart();
 	};
 
 	if (error) {
@@ -49,7 +69,7 @@ const Product = () => {
 				) : (
 					<>
 						<Col className="d-flex flex-column align-items-center mb-3">
-							{data.product.images?.length && (
+							{!!data.product.images?.length && (
 								<img
 									style={{ height: "25rem" }}
 									src={data.product.images[selectedImage].img_src}
@@ -90,7 +110,7 @@ const Product = () => {
 									</div>
 								);
 							})}
-							{data.product.variants.length > 0 && (
+							{!!data.product.variants.length && (
 								<>
 									<h4 className="mt-2">Other variants:</h4>
 
@@ -131,22 +151,26 @@ const Product = () => {
 										/>
 									</Col>
 									<Col className="fs-3">
-										<div className="d-flex gap-3">
+										<div className="d-flex gap-3 align-items-center">
 											<div>
-												{data.product.discount && (
+												{!!data.product.discount && (
 													<s className="text-muted fs-5">{`${toPriceNumber(
 														amount * data.product.price
 													)} $`}</s>
 												)}
 											</div>
-											<div>
-												<b>
-													{`${toPriceNumber(
-														((100 - data.product.discount) / 100) *
-															amount *
-															data.product.price
-													)} $`}
-												</b>
+											<div
+												className={
+													data.product.discount
+														? "text-danger fs-3 lh-1"
+														: "fs-3 lh-1"
+												}
+											>
+												{`${toPriceNumber(
+													((100 - data.product.discount) / 100) *
+														amount *
+														data.product.price
+												)} $`}
 											</div>
 										</div>
 									</Col>
@@ -154,6 +178,7 @@ const Product = () => {
 								<Button
 									type="submit"
 									variant="success"
+									disabled={!data.product.inventory}
 									style={{ width: "10rem" }}
 								>
 									Add to Cart
@@ -163,8 +188,9 @@ const Product = () => {
 					</>
 				)}
 			</Row>
+			<Cart handleClose={handleCloseCart} show={showCart} />
 			<h2 className="mb-4 text-center">Related Products:</h2>
-			{data?.product && <RelatedProducts product={data?.product} />}
+			{!!data?.product && <RelatedProducts product={data?.product} />}
 		</Container>
 	);
 };
