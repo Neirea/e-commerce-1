@@ -170,6 +170,7 @@ export type Query = {
   popularProducts: Array<Product>;
   product?: Maybe<Product>;
   products: Array<Product>;
+  productsById: Array<Product>;
   relatedProducts: Array<Product>;
   searchData: QuerySearchDataResult;
   showMe?: Maybe<User>;
@@ -199,6 +200,11 @@ export type QueryPopularProductsArgs = {
 
 export type QueryProductArgs = {
   id: Scalars['Int'];
+};
+
+
+export type QueryProductsByIdArgs = {
+  ids: Array<Scalars['Int']>;
 };
 
 
@@ -514,6 +520,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   popularProducts?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryPopularProductsArgs, 'limit' | 'offset'>>;
   product?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryProductArgs, 'id'>>;
   products?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
+  productsById?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryProductsByIdArgs, 'ids'>>;
   relatedProducts?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryRelatedProductsArgs, 'input' | 'limit' | 'offset'>>;
   searchData?: Resolver<ResolversTypes['QuerySearchDataResult'], ParentType, ContextType, RequireFields<QuerySearchDataArgs, 'input'>>;
   showMe?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;

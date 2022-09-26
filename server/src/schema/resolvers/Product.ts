@@ -47,6 +47,17 @@ const productResolvers = {
 				},
 			});
 		},
+		productsById: (parent: any, { ids }: { ids: Array<number> }) => {
+			if (!ids.length || !ids) return [];
+			return prisma.product.findMany({
+				where: {
+					id: { in: ids },
+				},
+				include: {
+					images: true,
+				},
+			});
+		},
 		searchData: async (
 			parent: any,
 			{ input }: { input: QuerySearchDataInput }

@@ -40,6 +40,7 @@ const productTypes = gql`
 	extend type Query {
 		products: [Product!]!
 		product(id: Int!): Product
+		productsById(ids: [Int!]!): [Product!]!
 		filteredProducts(
 			limit: Int!
 			offset: Int!
