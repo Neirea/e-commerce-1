@@ -1,36 +1,52 @@
-import { GraphQLScalarType, Kind } from "graphql";
 import { PrismaClient } from "@prisma/client";
-import GraphQLJSON from "graphql-type-json";
+import { Request } from "express";
+import { AuthenticationError } from "apollo-server-express";
+import { CreateOrderInput, Status } from "../../generated/graphql";
+import { OrderStatus } from "@prisma/client";
 
 const prisma = new PrismaClient({ log: ["query"] });
 
 const orderResolvers = {
 	Query: {
-		orders: (parent: any, args: any) => {
-			const orders = prisma.$queryRaw`SELECT * FROM public."Order";`;
-			console.log("orders=", orders);
-
-			return orders;
-			//add error handling
-			if (orders) return { orders: orders };
-			return { message: "There was an Error" };
+		orders: (parent: any, args: any, { req }: { req: Request }) => {
+			if (req.session.user == null) {
+				throw new AuthenticationError("You must login to access this route");
+			}
+			return prisma.order.findMany({
+				where: { user_id: req.session.user?.id },
+			});
 		},
 	},
 	Mutation: {
-		createOrder: (parent: any, args: any) => {
-			const order = args.input;
-
-			return prisma.order.create({ data: order });
+		createOrder: async (
+			parent: any,
+			{ input }: { input: CreateOrderInput }
+		) => {
+			await prisma.order.create({ data: input });
+			return true;
 		},
-		updateOrder: (parent: any, args: any) => {
-			const order_id = args.input.id;
-			return prisma.review.update({
-				where: { id: order_id },
-				data: { ...args.input }, // probably wrong #any
+		updateOrder: async (
+			parent: any,
+			{ id, status }: { id: number; status: Status }
+		) => {
+			await prisma.order.update({
+				where: { id: id },
+				data: { status: status as OrderStatus },
 			});
+			return true;
 		},
-		deleteOrder: (parent: any, args: any) => {
-			return prisma.order.delete({ where: { id: args.id } });
+		cancelOrder: async (parent: any, { id }: { id: number }) => {
+			await prisma.order.update({
+				where: { id: id },
+				data: { status: Status.CANCELLED },
+			});
+			return true;
+		},
+		deleteOrder: async (parent: any, { id }: { id: number }) => {
+			await prisma.order.delete({
+				where: { id: id },
+			});
+			return true;
 		},
 	},
 };

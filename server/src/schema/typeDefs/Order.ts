@@ -1,39 +1,47 @@
 import { gql } from "apollo-server-express";
 
-const OrderTypes = gql`
+const orderTypes = gql`
 	# create scalar or enum for status
+
+	enum Status {
+		PENDING
+		ACCEPTED
+		PROCESSING
+		DELIVERED
+		CANCELLED
+	}
+
+	type SingleOrderItem {
+		id: Int!
+		order_id: Int!
+		amount: Int!
+		product_id: Int!
+	}
 	type Order {
 		id: Int!
-		total: Int
-		shipping_fee: Int
-		status: String
+		total: Int!
+		shipping_fee: Int!
+		status: Status!
 		user_id: Int!
+		order_items: [SingleOrderItem!]!
 	}
 
 	extend type Query {
-		orders: [Order!]
-	}
-
-	interface OrderInputType {
-		title: String
-		rating: Int!
-		comment: String
+		orders: [Order!]!
 	}
 
 	input CreateOrderInput {
-		total: Int
-		shipping_fee: Int
+		total: Int!
+		shipping_fee: Int!
 		user_id: Int!
-	}
-	input UpdateOrderInput {
-		status: String
 	}
 
 	extend type Mutation {
-		createOrder(input: CreateOrderInput!): Order!
-		updateOrder(input: UpdateOrderInput!): Order!
-		deleteOrder(id: Int!): Order
+		createOrder(input: CreateOrderInput!): Boolean!
+		updateOrder(id: Int!, status: Status!): Boolean!
+		cancelOrder(id: Int!): Boolean!
+		deleteOrder(id: Int!): Boolean!
 	}
 `;
 
-export default OrderTypes;
+export default orderTypes;
