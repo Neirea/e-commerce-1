@@ -1,36 +1,43 @@
-import { GraphQLScalarType, Kind } from "graphql";
 import { PrismaClient } from "@prisma/client";
-import GraphQLJSON from "graphql-type-json";
+import { CreateReviewInput, UpdateReviewInput } from "../../generated/graphql";
 
 const prisma = new PrismaClient({ log: ["query"] });
 
 const reviewResolvers = {
 	Query: {
-		reviews: (parent: any, args: any) => {
-			const reviews = prisma.$queryRaw`SELECT * FROM public."Review";`;
-			console.log("reviews=", reviews);
-
-			return reviews;
-			//add error handling
-			if (reviews) return { reviews: reviews };
-			return { message: "There was an Error" };
+		reviews: (parent: any, { id }: { id: number }) => {
+			return prisma.review.findMany({
+				where: {
+					product_id: id,
+				},
+			});
 		},
 	},
 	Mutation: {
-		createReview: (parent: any, args: any) => {
-			const category = args.input;
-
-			return prisma.review.create({ data: category });
+		createReview: async (
+			parent: any,
+			{ input }: { input: CreateReviewInput }
+		) => {
+			await prisma.review.create({
+				data: {
+					...input,
+					comment: input.comment || "",
+				},
+			});
+			return true;
 		},
-		updateReview: (parent: any, args: any) => {
-			const review_id = args.input.id;
+		updateReview: (parent: any, { input }: { input: UpdateReviewInput }) => {
 			return prisma.review.update({
-				where: { id: review_id },
-				data: { ...args.input }, // probably wrong #any
+				where: { id: input.id },
+				data: {
+					title: input.title || undefined,
+					rating: input.rating || undefined,
+					comment: input.comment || undefined,
+				},
 			});
 		},
-		deleteReview: (parent: any, args: any) => {
-			return prisma.review.delete({ where: { id: args.id } });
+		deleteReview: (parent: any, { id }: { id: number }) => {
+			return prisma.review.delete({ where: { id: id } });
 		},
 	},
 };

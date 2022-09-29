@@ -12,31 +12,26 @@ const reviewTypes = gql`
 	}
 
 	extend type Query {
-		reviews: [Review!]
+		reviews(id: Int!): [Review!]
 	}
-
-	interface ReviewInputType {
-		title: String
-		rating: Int!
-		comment: String
-	}
-
 	input CreateReviewInput {
-		title: String
+		user_id: Int!
+		title: String!
 		rating: Int!
 		comment: String
 		product_id: Int!
 	}
 	input UpdateReviewInput {
+		id: Int!
 		title: String
-		rating: Int!
+		rating: Int
 		comment: String
 	}
 
 	extend type Mutation {
-		createReview(input: CreateReviewInput!): Review!
-		updateReview(input: UpdateReviewInput!): Review!
-		deleteReview(id: Int!): Review
+		createReview(input: CreateReviewInput!): Boolean!
+		updateReview(input: UpdateReviewInput!): Boolean!
+		deleteReview(id: Int!): Boolean!
 	}
 `;
 
