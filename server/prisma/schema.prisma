@@ -107,11 +107,11 @@ model SingleOrderItem {
 }
 
 enum OrderStatus {
-  PENDING
-  FAILED
-  PAID
-  DELIVERED
-  CANCELLED
+		PENDING
+		ACCEPTED
+		PROCESSING
+		DELIVERED
+		CANCELLED
 }
 
 enum Platform {
