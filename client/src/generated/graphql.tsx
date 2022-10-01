@@ -47,6 +47,12 @@ export type CreateCompanyInput = {
   name: Scalars['String'];
 };
 
+export type CreateOrderInput = {
+  shipping_fee: Scalars['Int'];
+  total: Scalars['Int'];
+  user_id: Scalars['Int'];
+};
+
 export type CreateProductInput = {
   category_id: Scalars['Int'];
   company_id: Scalars['Int'];
@@ -61,6 +67,14 @@ export type CreateProductInput = {
   variants?: InputMaybe<Array<Scalars['Int']>>;
 };
 
+export type CreateReviewInput = {
+  comment?: InputMaybe<Scalars['String']>;
+  product_id: Scalars['Int'];
+  rating: Scalars['Int'];
+  title: Scalars['String'];
+  user_id: Scalars['Int'];
+};
+
 export type Image = {
   __typename?: 'Image';
   img_id: Scalars['String'];
@@ -69,72 +83,125 @@ export type Image = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  cancelOrder: Scalars['Boolean'];
   createCategory: Scalars['Boolean'];
   createCompany: Scalars['Boolean'];
+  createOrder: Scalars['Boolean'];
   createProduct: Scalars['Boolean'];
+  createReview: Scalars['Boolean'];
   deleteCategory: Scalars['Boolean'];
   deleteCompany: Scalars['Boolean'];
+  deleteOrder: Scalars['Boolean'];
   deleteProduct: Scalars['Boolean'];
+  deleteReview: Scalars['Boolean'];
   logout: Scalars['Boolean'];
   updateCategory: Scalars['Boolean'];
   updateCompany: Scalars['Boolean'];
+  updateOrder: Scalars['Boolean'];
   updateProduct: Scalars['Boolean'];
+  updateReview: Scalars['Boolean'];
   updateUser: Scalars['Boolean'];
 };
 
 
-export type MutationCreateCategoryArgs = {
+export type MutationcancelOrderArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type MutationcreateCategoryArgs = {
   input: CreateCategoryInput;
 };
 
 
-export type MutationCreateCompanyArgs = {
+export type MutationcreateCompanyArgs = {
   input: CreateCompanyInput;
 };
 
 
-export type MutationCreateProductArgs = {
+export type MutationcreateOrderArgs = {
+  input: CreateOrderInput;
+};
+
+
+export type MutationcreateProductArgs = {
   input: CreateProductInput;
 };
 
 
-export type MutationDeleteCategoryArgs = {
+export type MutationcreateReviewArgs = {
+  input: CreateReviewInput;
+};
+
+
+export type MutationdeleteCategoryArgs = {
   id: Scalars['Int'];
 };
 
 
-export type MutationDeleteCompanyArgs = {
+export type MutationdeleteCompanyArgs = {
   id: Scalars['Int'];
 };
 
 
-export type MutationDeleteProductArgs = {
+export type MutationdeleteOrderArgs = {
   id: Scalars['Int'];
 };
 
 
-export type MutationUpdateCategoryArgs = {
+export type MutationdeleteProductArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type MutationdeleteReviewArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type MutationupdateCategoryArgs = {
   input: UpdateCategoryInput;
 };
 
 
-export type MutationUpdateCompanyArgs = {
+export type MutationupdateCompanyArgs = {
   input: UpdateCompanyInput;
 };
 
 
-export type MutationUpdateProductArgs = {
+export type MutationupdateOrderArgs = {
+  id: Scalars['Int'];
+  status: Status;
+};
+
+
+export type MutationupdateProductArgs = {
   input: UpdateProductInput;
 };
 
 
-export type MutationUpdateUserArgs = {
+export type MutationupdateReviewArgs = {
+  input: UpdateReviewInput;
+};
+
+
+export type MutationupdateUserArgs = {
   input: UpdateUserInput;
 };
 
+export type Order = {
+  __typename?: 'Order';
+  id: Scalars['Int'];
+  order_items: Array<SingleOrderItem>;
+  shipping_fee: Scalars['Int'];
+  status: Status;
+  total: Scalars['Int'];
+  user_id: Scalars['Int'];
+};
+
 export enum Platform {
-  Facebook = 'FACEBOOK',
-  Google = 'GOOGLE'
+  FACEBOOK = 'FACEBOOK',
+  GOOGLE = 'GOOGLE'
 }
 
 export type Product = {
@@ -168,11 +235,13 @@ export type Query = {
   companies: Array<Company>;
   featuredProducts: Array<Product>;
   filteredProducts: Array<Product>;
+  orders: Array<Order>;
   popularProducts: Array<Product>;
   product?: Maybe<Product>;
   products: Array<Product>;
   productsById: Array<Product>;
   relatedProducts: Array<Product>;
+  reviews?: Maybe<Array<Review>>;
   searchData: QuerySearchDataResult;
   showMe?: Maybe<User>;
   user?: Maybe<User>;
@@ -180,48 +249,53 @@ export type Query = {
 };
 
 
-export type QueryFeaturedProductsArgs = {
+export type QueryfeaturedProductsArgs = {
   limit: Scalars['Int'];
   offset: Scalars['Int'];
 };
 
 
-export type QueryFilteredProductsArgs = {
+export type QueryfilteredProductsArgs = {
   input: QueryProductInput;
   limit: Scalars['Int'];
   offset: Scalars['Int'];
 };
 
 
-export type QueryPopularProductsArgs = {
+export type QuerypopularProductsArgs = {
   limit: Scalars['Int'];
   offset: Scalars['Int'];
 };
 
 
-export type QueryProductArgs = {
+export type QueryproductArgs = {
   id: Scalars['Int'];
 };
 
 
-export type QueryProductsByIdArgs = {
+export type QueryproductsByIdArgs = {
   ids: Array<Scalars['Int']>;
 };
 
 
-export type QueryRelatedProductsArgs = {
+export type QueryrelatedProductsArgs = {
   input: QueryRelatedInput;
   limit: Scalars['Int'];
   offset: Scalars['Int'];
 };
 
 
-export type QuerySearchDataArgs = {
+export type QueryreviewsArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QuerysearchDataArgs = {
   input: QuerySearchDataInput;
 };
 
 
-export type QueryUserArgs = {
+export type QueryuserArgs = {
   id: Scalars['Int'];
 };
 
@@ -256,10 +330,37 @@ export type QuerySearchDataResult = {
   min: Scalars['Int'];
 };
 
+export type Review = {
+  __typename?: 'Review';
+  comment?: Maybe<Scalars['String']>;
+  created_at: Scalars['Date'];
+  id: Scalars['Int'];
+  product_id: Scalars['Int'];
+  rating: Scalars['Int'];
+  title?: Maybe<Scalars['String']>;
+  updated_at: Scalars['Date'];
+};
+
 export enum Role {
-  Admin = 'ADMIN',
-  Editor = 'EDITOR',
-  User = 'USER'
+  ADMIN = 'ADMIN',
+  EDITOR = 'EDITOR',
+  USER = 'USER'
+}
+
+export type SingleOrderItem = {
+  __typename?: 'SingleOrderItem';
+  amount: Scalars['Int'];
+  id: Scalars['Int'];
+  order_id: Scalars['Int'];
+  product_id: Scalars['Int'];
+};
+
+export enum Status {
+  ACCEPTED = 'ACCEPTED',
+  CANCELLED = 'CANCELLED',
+  DELIVERED = 'DELIVERED',
+  PENDING = 'PENDING',
+  PROCESSING = 'PROCESSING'
 }
 
 export type UpdateCategoryInput = {
@@ -288,6 +389,13 @@ export type UpdateProductInput = {
   price: Scalars['Float'];
   shipping_cost: Scalars['Float'];
   variants?: InputMaybe<Array<Scalars['Int']>>;
+};
+
+export type UpdateReviewInput = {
+  comment?: InputMaybe<Scalars['String']>;
+  id: Scalars['Int'];
+  rating?: InputMaybe<Scalars['Int']>;
+  title?: InputMaybe<Scalars['String']>;
 };
 
 export type UpdateUserInput = {

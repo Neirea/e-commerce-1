@@ -14,6 +14,7 @@ const MultiRangeSlider = ({
 	curLeft: number | undefined;
 	curRight: number | undefined;
 }) => {
+	//calculate correct position of min and max values of a search
 	const minValue =
 		curLeft && curRight && curLeft > min && curLeft < max && curLeft < curRight
 			? curLeft
@@ -30,8 +31,6 @@ const MultiRangeSlider = ({
 	const searchParams = qs.parse(location.search);
 	const [minVal, setMinVal] = useState(minValue);
 	const [maxVal, setMaxVal] = useState(maxValue);
-	const [inputMin, setInputMin] = useState(minValue);
-	const [inputMax, setInputMax] = useState(maxValue);
 	const minValRef = useRef<HTMLInputElement>(null);
 	const maxValRef = useRef<HTMLInputElement>(null);
 	const range = useRef<HTMLDivElement>(null);
@@ -53,11 +52,6 @@ const MultiRangeSlider = ({
 				range.current.style.width = `${maxPercent - minPercent}%`;
 			}
 		}
-		//need this timeout to not update value too often
-		const handler = setTimeout(() => setInputMin(minVal));
-		return () => {
-			clearTimeout(handler);
-		};
 	}, [minVal, getPercent]);
 
 	//(max - min) * 0.135
@@ -71,18 +65,13 @@ const MultiRangeSlider = ({
 				range.current.style.width = `${maxPercent - minPercent}%`;
 			}
 		}
-		//need this timeout to not update value too often
-		const handler = setTimeout(() => setInputMax(maxVal));
-		return () => {
-			clearTimeout(handler);
-		};
 	}, [maxVal, getPercent]);
 
 	const handleSlider = (e: FormEvent) => {
 		e.preventDefault();
 		navigate({
 			pathname: "/search",
-			search: qs.stringify({ ...searchParams, min: inputMin, max: inputMax }),
+			search: qs.stringify({ ...searchParams, min: minVal, max: maxVal }),
 		});
 	};
 
@@ -100,24 +89,24 @@ const MultiRangeSlider = ({
 					className="p-0 text-center"
 					min={min}
 					max={maxVal}
-					value={inputMin}
+					value={minVal}
 					pattern="^[0-9]*$"
-					onChange={(e) => setInputMin(+e.target.value)}
+					onChange={(e) => setMinVal(+e.target.value)}
 				/>
 				<Form.Control
 					type="text"
 					className="p-0 text-center"
 					min={minVal}
 					max={max}
-					value={inputMax}
+					value={maxVal}
 					pattern="^[0-9]*$"
-					onChange={(e) => setInputMax(+e.target.value)}
+					onChange={(e) => setMaxVal(+e.target.value)}
 				/>
 				<Button
 					variant="success"
 					type="submit"
 					disabled={
-						inputMin < min || inputMin > max || inputMax > max || inputMax < min
+						minVal < min || minVal > max || maxVal > max || maxVal < min
 					}
 				>
 					OK
