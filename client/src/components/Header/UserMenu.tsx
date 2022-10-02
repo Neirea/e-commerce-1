@@ -10,11 +10,11 @@ import { MUTATION_LOGOUT } from "../../queries/User";
 
 const UserMenu = () => {
 	const navigate = useNavigate();
-	const { user, refetchUser } = useAppContext();
+	const { user } = useAppContext();
 	const [handleLogout] = useMutation(MUTATION_LOGOUT);
 
 	const isShowEditor =
-		user && [Role.Admin, Role.Editor].some((role) => user.role.includes(role));
+		user && [Role.ADMIN, Role.EDITOR].some((role) => user.role.includes(role));
 
 	return (
 		<Navbar variant="dark" bg="dark" expand="lg">
@@ -41,9 +41,9 @@ const UserMenu = () => {
 							<NavDropdown.Divider />
 							<NavDropdown.Item
 								onClick={async () => {
-									await handleLogout();
-									await refetchUser();
-									//refresh page
+									await handleLogout({
+										refetchQueries: ["ShowCurrentUserQuery"],
+									});
 									navigate(0);
 								}}
 							>

@@ -10,7 +10,7 @@ const Editor = () => {
 	return (
 		<Container as="main">
 			<Row>
-				{user?.role.some((role) => [Role.Admin].includes(role)) && (
+				{user?.role.some((role) => [Role.ADMIN].includes(role)) && (
 					<Col>
 						<Category />
 						<Company />

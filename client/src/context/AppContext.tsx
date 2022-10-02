@@ -6,7 +6,6 @@ import { QUERY_SHOW_ME } from "../queries/User";
 interface IAppContext {
 	user: ShowCurrentUserQuery["showMe"];
 	isLoading: boolean;
-	refetchUser: () => Promise<ApolloQueryResult<ShowCurrentUserQuery>>;
 }
 
 export const AppContext = createContext({} as IAppContext);
@@ -15,7 +14,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 	const {
 		data,
 		loading: isLoading,
-		refetch: refetchUser,
 		error,
 	} = useQuery<ShowCurrentUserQuery>(QUERY_SHOW_ME);
 
@@ -24,7 +22,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 	}
 
 	return (
-		<AppContext.Provider value={{ user: data?.showMe, isLoading, refetchUser }}>
+		<AppContext.Provider value={{ user: data?.showMe, isLoading }}>
 			{children}
 		</AppContext.Provider>
 	);
