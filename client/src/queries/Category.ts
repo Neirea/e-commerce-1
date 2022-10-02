@@ -5,7 +5,6 @@ export const QUERY_ALL_CATEGORIES = gql`
 		categories {
 			id
 			name
-			img_id
 			img_src
 			parent_id
 			companies {

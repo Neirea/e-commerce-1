@@ -157,3 +157,22 @@ main {
 		transform: rotate(360deg);
 	}
 }
+
+/* categories menu */
+
+.menu-wrapper {
+	position: absolute;
+	left: 0;
+	top: 70px;
+	z-index: 1;
+	width: 0px;
+	overflow: hidden;
+	transition: 0.1s linear;
+}
+.menu-list {
+	display: flex;
+	flex-direction: column;
+	list-style: none;
+	min-width: 11rem;
+	border: 1px solid red;
+}
