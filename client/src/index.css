@@ -71,6 +71,7 @@ main {
 /* Removing the default appearance */
 .thumb,
 .thumb::-webkit-slider-thumb {
+	appearance: none;
 	-webkit-appearance: none;
 	-webkit-tap-highlight-color: transparent;
 }
@@ -159,20 +160,42 @@ main {
 }
 
 /* categories menu */
-
-.menu-wrapper {
+.menu-portal {
 	position: absolute;
-	left: 0;
+	display: flex;
+	justify-content: center;
 	top: 70px;
-	z-index: 1;
-	width: 0px;
-	overflow: hidden;
-	transition: 0.1s linear;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.7);
+	z-index: 2000;
 }
-.menu-list {
+.menu-wrapper {
+	position: fixed;
 	display: flex;
 	flex-direction: column;
+	margin-top: 1px;
+	width: min(100%, 60rem);
+	height: 20rem;
+	opacity: 1;
+	background-color: white;
+	border-radius: 0.25rem;
+	overflow: hidden;
+	z-index: 2001;
+	animation: showMenu 0.2s linear;
+}
+@keyframes showMenu {
+	0% {
+		opacity: 0;
+		transform: translateY(-15px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0px);
+	}
+}
+
+.menu-list {
 	list-style: none;
-	min-width: 11rem;
-	border: 1px solid red;
 }

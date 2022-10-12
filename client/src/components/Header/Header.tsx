@@ -14,19 +14,17 @@ import { useOutsideClick } from "../../utils/useOutsideClick";
 
 const Header = () => {
 	const { user } = useAppContext();
-	const { data, error, loading } =
-		useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
+	const { data } = useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
 
 	const [showLogin, setShowLogin] = useState(false);
 	const [showCart, setShowCart] = useState(false);
 	const [showCategories, setShowCategories] = useState(false);
 	const menuButtonRef = useRef<HTMLButtonElement | null>(null);
+	const categoriesRef = useRef<HTMLDivElement | null>(null);
 
 	// Categories Menu
-	const handleShowCategories = () => setShowCategories(true);
-	const handleCloseCategories = () => setShowCategories(false);
 	const toggleCategories = () => setShowCategories((old) => !old);
-	useOutsideClick(menuButtonRef, setShowCategories);
+	const handleCloseCategories = () => setShowCategories(false);
 
 	// Login Modal
 	const handleShowLogin = () => setShowLogin(true);
@@ -36,8 +34,10 @@ const Header = () => {
 	const handleShowCart = () => setShowCart(true);
 	const handleCloseCart = () => setShowCart(false);
 
+	useOutsideClick([menuButtonRef, categoriesRef], handleCloseCategories);
+
 	return (
-		<Navbar bg="dark" variant="dark">
+		<Navbar bg="dark" variant="dark" sticky="top">
 			<Container className="d-flex">
 				<Navbar.Brand href="/" className="d-none d-lg-block">
 					Techway
@@ -50,11 +50,14 @@ const Header = () => {
 					Browse
 				</Button>
 				{/* create portal and menu that pops up from left side of the screen */}
-				<Categories
-					categories={data?.categories}
-					handleClose={handleCloseCategories}
-					show={showCategories}
-				/>
+				{!!showCategories && (
+					<Categories
+						categories={data?.categories}
+						handleClose={handleCloseCategories}
+						show={showCategories}
+						ref={categoriesRef}
+					/>
+				)}
 				<SearchBar />
 				<Nav className="d-flex align-items-center">
 					{user ? (

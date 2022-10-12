@@ -1,19 +1,22 @@
-import { Dispatch, MutableRefObject, SetStateAction, useEffect } from "react";
+import { MutableRefObject, useEffect } from "react";
 
 /* Hook that sets state to false on click outside of the passed ref */
 export const useOutsideClick = (
-	ref: MutableRefObject<any>,
-	set: Dispatch<SetStateAction<any>>
+	refs: Array<MutableRefObject<any>>,
+	handleClose: () => void
 ) => {
 	useEffect(() => {
 		const handleClickOutside = (e: MouseEvent) => {
-			if (ref.current && !ref.current.contains(e.target)) {
-				set(false);
+			if (
+				refs.every((ref) => ref.current != null) &&
+				refs.every((ref) => !ref.current.contains(e.target))
+			) {
+				handleClose();
 			}
 		};
 		document.addEventListener("click", handleClickOutside);
 		return () => {
 			document.removeEventListener("click", handleClickOutside);
 		};
-	}, [ref, set]);
+	}, [refs, handleClose]);
 };
