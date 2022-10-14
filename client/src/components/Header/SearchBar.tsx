@@ -19,7 +19,7 @@ const SearchBar = () => {
 			<InputGroup>
 				<Form.Control
 					className="flex-grow-1"
-					placeholder="Search..."
+					placeholder="Look for..."
 					onChange={handleSearchText}
 					aria-label="Search"
 					aria-describedby="btn-search"

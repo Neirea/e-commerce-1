@@ -47,14 +47,13 @@ const Header = () => {
 					onClick={toggleCategories}
 					ref={menuButtonRef}
 				>
-					Browse
+					Сatalog
 				</Button>
 				{/* create portal and menu that pops up from left side of the screen */}
 				{!!showCategories && (
 					<Categories
 						categories={data?.categories}
 						handleClose={handleCloseCategories}
-						show={showCategories}
 						ref={categoriesRef}
 					/>
 				)}

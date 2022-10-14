@@ -1,7 +1,9 @@
-import { useLayoutEffect, forwardRef, useState } from "react";
+import { useLayoutEffect, forwardRef, useState, useEffect } from "react";
 import ReactDOM from "react-dom";
+import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { GetAllCategoriesQuery } from "../../generated/graphql";
+import { BiChevronRight } from "@react-icons/all-files/bi/BiChevronRight";
 
 const createWrapperAndAppend = () => {
 	const modalRoot = document.createElement("div");
@@ -14,16 +16,35 @@ const Categories = (
 	{
 		categories,
 		handleClose,
-		show,
 	}: {
 		categories: GetAllCategoriesQuery["categories"] | undefined;
 		handleClose: () => void;
-		show: boolean;
 	},
 	ref: React.Ref<HTMLDivElement>
 ) => {
+	const [lastHover, setLastHover] = useState<number | null>(null);
 	const [modalWrapper, setModalWrapper] = useState<HTMLElement | null>();
-	// useOutsideClick(menuRef, handleClose);
+	const [subCategories, setSubCategories] = useState<Map<
+		number,
+		Array<GetAllCategoriesQuery["categories"][0]>
+	> | null>(null);
+
+	useEffect(() => {
+		if (categories?.length) {
+			const subsMap = new Map<
+				number,
+				Array<GetAllCategoriesQuery["categories"][0]>
+			>();
+			categories.forEach((item) => {
+				if (item.parent_id != null) {
+					const currentSub = subsMap.get(item.parent_id);
+					const newInfo = currentSub !== undefined ? [...currentSub, item] : [];
+					subsMap.set(item.parent_id, [...new Set(newInfo)]);
+				}
+			});
+			setSubCategories(subsMap);
+		}
+	}, [categories]);
 
 	useLayoutEffect(() => {
 		let modalRoot = document.getElementById("menu-portal");
@@ -41,7 +62,7 @@ const Categories = (
 
 	return ReactDOM.createPortal(
 		<section className="menu-portal">
-			<div className="menu-wrapper pt-3" ref={ref}>
+			<div className="menu-wrapper" ref={ref}>
 				<ul className="menu-list">
 					{categories?.map((category) => {
 						if (category.parent_id == undefined) {
@@ -49,15 +70,34 @@ const Categories = (
 								<li
 									key={uuidv4()}
 									className="menu-item"
-									// to={`/search?c=${category.id}`}
 									onClick={handleClose}
+									onMouseEnter={() => setLastHover(category.id)}
 								>
-									{category.name}
+									<Link
+										to={`/search?c=${category.id}`}
+										className="d-flex gap-3 align-items-center"
+									>
+										{category.name}
+										{!!subCategories?.get(category.id)?.length && (
+											<BiChevronRight size={20} />
+										)}
+									</Link>
 								</li>
 							);
 						}
 					})}
 				</ul>
+				{lastHover !== null && !!subCategories?.get(lastHover)?.length && (
+					<ul className="submenu-list">
+						{subCategories?.get(lastHover)?.map((category) => {
+							return (
+								<li key={uuidv4()} className="menu-item" onClick={handleClose}>
+									<Link to={`/search?c=${category.id}`}>{category.name}</Link>
+								</li>
+							);
+						})}
+					</ul>
+				)}
 			</div>
 		</section>,
 		modalWrapper

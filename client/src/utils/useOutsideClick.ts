@@ -8,8 +8,9 @@ export const useOutsideClick = (
 	useEffect(() => {
 		const handleClickOutside = (e: MouseEvent) => {
 			if (
-				refs.every((ref) => ref.current != null) &&
-				refs.every((ref) => !ref.current.contains(e.target))
+				refs.every(
+					(ref) => ref.current != null && !ref.current.contains(e.target)
+				)
 			) {
 				handleClose();
 			}

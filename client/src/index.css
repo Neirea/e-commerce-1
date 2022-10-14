@@ -162,22 +162,17 @@ main {
 /* categories menu */
 .menu-portal {
 	position: absolute;
-	display: flex;
-	justify-content: center;
 	top: 70px;
 	left: 0;
 	right: 0;
 	bottom: 0;
+	padding-left: 20%;
 	background-color: rgba(0, 0, 0, 0.7);
 	z-index: 2000;
 }
 .menu-wrapper {
 	position: fixed;
 	display: flex;
-	flex-direction: column;
-	margin-top: 1px;
-	width: min(100%, 60rem);
-	height: 20rem;
 	opacity: 1;
 	background-color: white;
 	border-radius: 0.25rem;
@@ -196,6 +191,25 @@ main {
 	}
 }
 
-.menu-list {
+.menu-list,
+.submenu-list {
 	list-style: none;
+	line-height: 2;
+	padding: 1rem;
+	margin: 0;
+}
+.menu-list {
+	padding-right: 0.25rem;
+}
+.submenu-list {
+	/* background-color: #fafafa; */
+	border-left: 1px solid rgba(128, 128, 128, 0.5);
+}
+
+.menu-item a {
+	color: var(--bs-body-color);
+	text-decoration: none;
+}
+.menu-item a:hover {
+	text-decoration: underline;
 }
