@@ -21,7 +21,6 @@ model User {
   created_at DateTime @default(now())
   avatar String
   orders Order[]
-  reviews Review[]
 }
 // add payment info for users accounts -> any
 
@@ -43,7 +42,6 @@ model Product {
   variantsRelation Product[] @relation("variants")
   company Company @relation(fields: [company_id],references: [id],onDelete: Cascade)
   category Category @relation(fields: [category_id],references: [id],onDelete: Cascade)
-  reviews Review[]
   orders SingleOrderItem[]
   images ProductImage[]
 }
@@ -74,19 +72,6 @@ model Category {
   products Product[]
 }
 
-
-model Review {
-  id Int @id @default(autoincrement())
-  title String
-  rating Int
-  comment String
-  user User @relation(fields: [user_id],references: [id])
-  user_id Int
-  product Product @relation(fields: [product_id],references: [id])
-  product_id Int
-  created_at DateTime @default(now())
-  edited_at DateTime @default(now())
-}
 
 model Order {
   id Int @default(autoincrement()) @id

@@ -71,85 +71,92 @@ const Cart = ({
 			</Modal.Header>
 
 			<Modal.Body>
-				{!!cart.length &&
-					cart.map((item) => {
-						return (
-							<Row className="border-bottom pb-3 pt-3" key={uuidv4()}>
-								<div className="d-flex justify-content-between mb-3">
-									<div>{item.product.name}</div>
-									<Button
-										variant="link"
-										onClick={() => removeProductFromCart(item.product)}
-									>
-										<AiOutlineDelete size={24} />
-									</Button>
-								</div>
-								<Row className="justify-content-between align-items-center text-center gap-3">
-									<Col sm={"4"}>
-										<Image height={100} src={item.product.images[0].img_src} />
-									</Col>
-									<Col sm={"2"} className="d-flex justify-content-center">
+				{!!cart.length ? (
+					<>
+						{cart.map((item) => {
+							return (
+								<Row className="border-bottom pb-3 pt-3" key={uuidv4()}>
+									<div className="d-flex justify-content-between mb-3">
+										<div>{item.product.name}</div>
 										<Button
 											variant="link"
-											className="text-decoration-none p-0"
-											onClick={() => handleDecrease(item)}
+											onClick={() => removeProductFromCart(item.product)}
 										>
-											<FiMinus size="2rem" />
+											<AiOutlineDelete size={24} />
 										</Button>
-										<FormControl
-											type="text"
-											className="p-0 ps-2 pe-2 text-center"
-											style={{ width: "3rem" }}
-											onChange={(e) => handleSetAmount(e, item)}
-											value={item.amount}
-										/>
-										<Button
-											variant="link"
-											className="text-decoration-none p-0"
-											onClick={() => handleIncrease(item)}
-										>
-											<BsPlus size="2rem" />
-										</Button>
-									</Col>
-									<Col sm={"4"}>
-										<div>
-											{!!item.product.discount && (
-												<s className="text-muted fs-5">{`${toPriceNumber(
-													item.amount * item.product.price
-												)} $`}</s>
-											)}
-										</div>
-										<div
-											className={
-												item.product.discount
-													? "text-danger fs-4 lh-1"
-													: "fs-4 lh-1"
-											}
-										>
-											{`${toPriceNumber(
-												((100 - item.product.discount) / 100) *
-													item.amount *
-													item.product.price
-											)} $`}
-										</div>
-									</Col>
+									</div>
+									<Row className="justify-content-between align-items-center text-center gap-3">
+										<Col sm={"4"}>
+											<Image
+												height={100}
+												src={item.product.images[0].img_src}
+											/>
+										</Col>
+										<Col sm={"2"} className="d-flex justify-content-center">
+											<Button
+												variant="link"
+												className="text-decoration-none p-0"
+												onClick={() => handleDecrease(item)}
+											>
+												<FiMinus size="2rem" />
+											</Button>
+											<FormControl
+												type="text"
+												className="p-0 ps-2 pe-2 text-center"
+												style={{ width: "3rem" }}
+												onChange={(e) => handleSetAmount(e, item)}
+												value={item.amount}
+											/>
+											<Button
+												variant="link"
+												className="text-decoration-none p-0"
+												onClick={() => handleIncrease(item)}
+											>
+												<BsPlus size="2rem" />
+											</Button>
+										</Col>
+										<Col sm={"4"}>
+											<div>
+												{!!item.product.discount && (
+													<s className="text-muted fs-5">{`${toPriceNumber(
+														item.amount * item.product.price
+													)} $`}</s>
+												)}
+											</div>
+											<div
+												className={
+													item.product.discount
+														? "text-danger fs-4 lh-1"
+														: "fs-4 lh-1"
+												}
+											>
+												{`${toPriceNumber(
+													((100 - item.product.discount) / 100) *
+														item.amount *
+														item.product.price
+												)} $`}
+											</div>
+										</Col>
+									</Row>
 								</Row>
-							</Row>
-						);
-					})}
-				{/* Total */}
-				<Row className="align-items-center mt-3">
-					<Col className="fs-4">Total: {toPriceNumber(totalPrice)} $</Col>
-					<Col className="text-end">
-						<Button
-							variant="success"
-							onClick={() => navigate("/checkout")}
-							disabled={!cart.length}
-						>
-							Checkout
-						</Button>
-					</Col>
-				</Row>
+							);
+						})}
+						<Row className="align-items-center mt-3">
+							<Col className="fs-4">Total: {toPriceNumber(totalPrice)} $</Col>
+							<Col className="text-end">
+								<Button
+									variant="success"
+									onClick={() => navigate("/checkout")}
+									disabled={!cart.length}
+								>
+									Checkout
+								</Button>
+							</Col>
+						</Row>
+					</>
+				) : (
+					<div className="text-center fs-2">Cart is empty</div>
+				)}
 			</Modal.Body>
 		</Modal>
 	);
