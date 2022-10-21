@@ -32,54 +32,49 @@ const defaultContext: CartContext<ProductDBType> = {
 export const CartContext = createContext(defaultContext);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
+	const [products, setProducts] = useState<Array<CartItem<ProductDBType>>>([]);
 	const localCart: Array<CartItem<CartProductBase>> = JSON.parse(
 		localStorage.getItem("cart") || "[]"
 	);
-	const { data } = useQuery<GetProductsByIdQuery>(QUERY_PRODUCTS_BY_ID, {
+	useQuery<GetProductsByIdQuery>(QUERY_PRODUCTS_BY_ID, {
 		variables: { ids: localCart.map((i) => i.product.id) },
-		skip: !localCart.length,
+		// skip: !localCart.length,
+		onCompleted(data) {
+			if (data.productsById.length) {
+				const newState: Array<CartItem<ProductDBType>> = localCart.map(
+					(item) => {
+						const cartProduct = data.productsById.find(
+							(i) => item.product.id === i.id
+						)!;
+						return {
+							product: cartProduct,
+							amount: item.amount,
+						};
+					}
+				);
+				setProducts(newState);
+			}
+		},
 	});
-	const [products, setProducts] = useState<Array<CartItem<ProductDBType>>>([]);
-	// ---------------------------------------------------------------------------
 
-	const getProductById = (id: number) => {
-		return products.find((p) => p.product.id === id);
-	};
-
-	//sync cart from localstorage with server data
+	//transfer cart state to local storage
 	useEffect(() => {
-		if (data?.productsById.length) {
-			const newState: Array<CartItem<ProductDBType>> = localCart.map((item) => {
-				const cartProduct = data.productsById.find(
-					(i) => item.product.id === i.id
-				)!;
-				return {
-					product: cartProduct,
-					amount: item.amount,
-				};
-			});
-
-			setProducts(newState);
-		}
-	}, [data?.productsById]);
-
-	useEffect(() => {
-		if (products) {
-			//store product id and its amount in localstorage
-			localStorage.setItem(
-				"cart",
-				JSON.stringify(
-					products.map((p) => {
-						return { product: { id: p.product.id }, amount: p.amount };
-					})
-				)
-			);
-		}
+		if (!products) return;
+		localStorage.setItem(
+			"cart",
+			JSON.stringify(
+				products.map((p) => {
+					return { product: { id: p.product.id }, amount: p.amount };
+				})
+			)
+		);
 	}, [products]);
 
 	const addProductToCart = (item: CartItem<ProductDBType>) => {
 		//check for existing product
-		const existingProduct = getProductById(item.product.id);
+		const existingProduct = products.find(
+			(p) => p.product.id === item.product.id
+		);
 
 		let newState: Array<CartItem<ProductDBType>> = [];
 		if (existingProduct) {
@@ -96,7 +91,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 			setProducts(newState);
 			return;
 		}
-		setProducts([...products, item]);
+		setProducts((old) => [...old, item]);
 	};
 
 	const removeProductFromCart = (product: ProductDBType) => {

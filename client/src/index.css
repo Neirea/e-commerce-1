@@ -202,8 +202,7 @@ main {
 	padding-right: 0.25rem;
 }
 .submenu-list {
-	/* background-color: #fafafa; */
-	border-left: 1px solid rgba(128, 128, 128, 0.5);
+	border-left: 1px solid rgba(128, 128, 128, 0.15);
 }
 
 .menu-item a {
