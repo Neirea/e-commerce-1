@@ -11,9 +11,11 @@ import { QUERY_ALL_CATEGORIES } from "../../queries/Category";
 import { useQuery } from "@apollo/client";
 import Categories from "./Categories";
 import { useOutsideClick } from "../../utils/useOutsideClick";
+import { useCartContext } from "../../context/CartContext";
 
 const Header = () => {
 	const { user } = useAppContext();
+	const { cart } = useCartContext();
 	const { data } = useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
 
 	const [showLogin, setShowLogin] = useState(false);
@@ -21,6 +23,8 @@ const Header = () => {
 	const [showCategories, setShowCategories] = useState(false);
 	const menuButtonRef = useRef<HTMLButtonElement | null>(null);
 	const categoriesRef = useRef<HTMLDivElement | null>(null);
+
+	const cartAmount = cart.reduce((prev, curr) => prev + curr.amount, 0);
 
 	// Categories Menu
 	const toggleCategories = () => setShowCategories((old) => !old);
@@ -66,8 +70,13 @@ const Header = () => {
 					)}
 					<Login handleClose={handleCloseLogin} show={showLogin} />
 					{/* make this link look like button aboove */}
-					<Nav.Link onClick={handleShowCart} aria-label="open cart">
+					<Nav.Link
+						onClick={handleShowCart}
+						aria-label="open cart"
+						className="position-relative"
+					>
 						<BiCart size={24} />
+						{!!cartAmount && <div className="cart-amount">{cartAmount}</div>}
 					</Nav.Link>
 					<Cart handleClose={handleCloseCart} show={showCart} />
 				</Nav>

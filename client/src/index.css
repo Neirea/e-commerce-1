@@ -3,6 +3,7 @@
 	min-height: 100vh;
 	flex-direction: column;
 	--thumb-size: 24px;
+	--green: #7da740;
 }
 main {
 	flex: 1;
@@ -64,7 +65,7 @@ main {
 }
 
 .slider__range {
-	background-color: #7da740;
+	background-color: var(--green);
 	z-index: 2;
 }
 
@@ -139,7 +140,7 @@ main {
 	border: 8px solid #fff;
 	border-radius: 50%;
 	animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-	border-color: #7da740 transparent transparent transparent;
+	border-color: var(--green) transparent transparent transparent;
 }
 .lds-ring div:nth-child(1) {
 	animation-delay: -0.45s;
@@ -211,4 +212,16 @@ main {
 }
 .menu-item a:hover {
 	text-decoration: underline;
+}
+.cart-amount {
+	position: absolute;
+	top: 0;
+	right: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 1rem;
+	width: 1rem;
+	background-color: var(--green);
+	border-radius: 50%;
 }
