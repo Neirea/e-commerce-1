@@ -124,7 +124,7 @@ const Category = () => {
 			const formData = new FormData();
 			formData.append("images", selectedImage);
 
-			const imageResult = await fetch(`${serverUrl}/editor/upload-images`, {
+			const imageResult = await fetch(`${serverUrl}/api/editor/upload-images`, {
 				method: "POST",
 				body: formData,
 			})

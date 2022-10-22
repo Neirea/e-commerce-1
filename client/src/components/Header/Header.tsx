@@ -41,7 +41,7 @@ const Header = () => {
 	useOutsideClick([menuButtonRef, categoriesRef], handleCloseCategories);
 
 	return (
-		<Navbar bg="dark" variant="dark" sticky="top">
+		<Navbar bg="dark" variant="dark" sticky="top" style={{ height: "70px" }}>
 			<Container className="d-flex">
 				<Navbar.Brand href="/" className="d-none d-lg-block">
 					Techway

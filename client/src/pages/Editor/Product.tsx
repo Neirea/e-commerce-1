@@ -186,7 +186,7 @@ const Product = () => {
 			selectedImages.forEach((image) => {
 				formData.append("images", image);
 			});
-			const imageResult = await fetch(`${serverUrl}/editor/upload-images`, {
+			const imageResult = await fetch(`${serverUrl}/api/editor/upload-images`, {
 				method: "POST",
 				body: formData,
 			})

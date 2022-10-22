@@ -15,10 +15,13 @@ const Login = ({
 			? window.location.pathname.slice(1) + window.location.search
 			: "";
 	const handleLoginGoogle = async () => {
-		window.open(`${serverUrl}/auth/login/google?path=${fromUrl}`, "_self");
+		window.open(`${serverUrl}/api/auth/login/google?path=${fromUrl}`, "_self");
 	};
 	const handleLoginFacebook = async () => {
-		window.open(`${serverUrl}/auth/login/facebook?path=${fromUrl}`, "_self");
+		window.open(
+			`${serverUrl}/api/auth/login/facebook?path=${fromUrl}`,
+			"_self"
+		);
 	};
 
 	return (

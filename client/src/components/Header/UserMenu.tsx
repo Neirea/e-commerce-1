@@ -1,17 +1,16 @@
-import { useMutation } from "@apollo/client";
+import { useApolloClient } from "@apollo/client";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAppContext } from "../../context/AppContext";
 import { Role } from "../../generated/graphql";
-import { MUTATION_LOGOUT } from "../../queries/User";
+import { serverUrl } from "../../utils/server";
 
 const UserMenu = () => {
-	const navigate = useNavigate();
 	const { user } = useAppContext();
-	const [handleLogout] = useMutation(MUTATION_LOGOUT);
+	const client = useApolloClient();
 
 	const isShowEditor =
 		user && [Role.ADMIN, Role.EDITOR].some((role) => user.role.includes(role));
@@ -41,10 +40,14 @@ const UserMenu = () => {
 							<NavDropdown.Divider />
 							<NavDropdown.Item
 								onClick={async () => {
-									await handleLogout({
-										refetchQueries: ["ShowCurrentUserQuery"],
-									});
-									navigate(0);
+									await fetch(`${serverUrl}/api/auth/logout`, {
+										method: "DELETE",
+										credentials: "include",
+									}).then(() =>
+										client.refetchQueries({
+											include: ["ShowCurrentUser"],
+										})
+									);
 								}}
 							>
 								Logout

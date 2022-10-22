@@ -67,14 +67,6 @@ export type CreateProductInput = {
   variants?: InputMaybe<Array<Scalars['Int']>>;
 };
 
-export type CreateReviewInput = {
-  comment?: InputMaybe<Scalars['String']>;
-  product_id: Scalars['Int'];
-  rating: Scalars['Int'];
-  title: Scalars['String'];
-  user_id: Scalars['Int'];
-};
-
 export type Image = {
   __typename?: 'Image';
   img_id: Scalars['String'];
@@ -88,18 +80,14 @@ export type Mutation = {
   createCompany: Scalars['Boolean'];
   createOrder: Scalars['Boolean'];
   createProduct: Scalars['Boolean'];
-  createReview: Scalars['Boolean'];
   deleteCategory: Scalars['Boolean'];
   deleteCompany: Scalars['Boolean'];
   deleteOrder: Scalars['Boolean'];
   deleteProduct: Scalars['Boolean'];
-  deleteReview: Scalars['Boolean'];
-  logout: Scalars['Boolean'];
   updateCategory: Scalars['Boolean'];
   updateCompany: Scalars['Boolean'];
   updateOrder: Scalars['Boolean'];
   updateProduct: Scalars['Boolean'];
-  updateReview: Scalars['Boolean'];
   updateUser: Scalars['Boolean'];
 };
 
@@ -129,11 +117,6 @@ export type MutationcreateProductArgs = {
 };
 
 
-export type MutationcreateReviewArgs = {
-  input: CreateReviewInput;
-};
-
-
 export type MutationdeleteCategoryArgs = {
   id: Scalars['Int'];
 };
@@ -150,11 +133,6 @@ export type MutationdeleteOrderArgs = {
 
 
 export type MutationdeleteProductArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type MutationdeleteReviewArgs = {
   id: Scalars['Int'];
 };
 
@@ -177,11 +155,6 @@ export type MutationupdateOrderArgs = {
 
 export type MutationupdateProductArgs = {
   input: UpdateProductInput;
-};
-
-
-export type MutationupdateReviewArgs = {
-  input: UpdateReviewInput;
 };
 
 
@@ -241,7 +214,6 @@ export type Query = {
   products: Array<Product>;
   productsById: Array<Product>;
   relatedProducts: Array<Product>;
-  reviews?: Maybe<Array<Review>>;
   searchData: QuerySearchDataResult;
   showMe?: Maybe<User>;
   user?: Maybe<User>;
@@ -285,11 +257,6 @@ export type QueryrelatedProductsArgs = {
 };
 
 
-export type QueryreviewsArgs = {
-  id: Scalars['Int'];
-};
-
-
 export type QuerysearchDataArgs = {
   input: QuerySearchDataInput;
 };
@@ -328,17 +295,6 @@ export type QuerySearchDataResult = {
   companies: Array<Company>;
   max: Scalars['Int'];
   min: Scalars['Int'];
-};
-
-export type Review = {
-  __typename?: 'Review';
-  comment?: Maybe<Scalars['String']>;
-  created_at: Scalars['Date'];
-  id: Scalars['Int'];
-  product_id: Scalars['Int'];
-  rating: Scalars['Int'];
-  title?: Maybe<Scalars['String']>;
-  updated_at: Scalars['Date'];
 };
 
 export enum Role {
@@ -391,13 +347,6 @@ export type UpdateProductInput = {
   variants?: InputMaybe<Array<Scalars['Int']>>;
 };
 
-export type UpdateReviewInput = {
-  comment?: InputMaybe<Scalars['String']>;
-  id: Scalars['Int'];
-  rating?: InputMaybe<Scalars['Int']>;
-  title?: InputMaybe<Scalars['String']>;
-};
-
 export type UpdateUserInput = {
   address?: InputMaybe<Scalars['String']>;
   email?: InputMaybe<Scalars['String']>;
@@ -425,7 +374,7 @@ export type User = {
 export type GetAllCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: number, name: string, img_id?: string | null, img_src?: string | null, parent_id?: number | null, companies?: Array<{ __typename?: 'Company', id: number, name: string }> | null }> };
+export type GetAllCategoriesQuery = { __typename?: 'Query', categories: Array<{ __typename?: 'Category', id: number, name: string, img_src?: string | null, parent_id?: number | null, companies?: Array<{ __typename?: 'Company', id: number, name: string }> | null }> };
 
 export type CreateCategoryMutationVariables = Exact<{
   input: CreateCategoryInput;
@@ -567,18 +516,12 @@ export type UpdateUserMutationVariables = Exact<{
 
 export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: boolean };
 
-export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
-
-
-export type LogoutMutation = { __typename?: 'Mutation', logout: boolean };
-
 
 export const GetAllCategoriesDocument = gql`
     query GetAllCategories {
   categories {
     id
     name
-    img_id
     img_src
     parent_id
     companies {
@@ -1399,33 +1342,3 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
-export const LogoutDocument = gql`
-    mutation Logout {
-  logout
-}
-    `;
-export type LogoutMutationFn = Apollo.MutationFunction<LogoutMutation, LogoutMutationVariables>;
-
-/**
- * __useLogoutMutation__
- *
- * To run a mutation, you first call `useLogoutMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useLogoutMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [logoutMutation, { data, loading, error }] = useLogoutMutation({
- *   variables: {
- *   },
- * });
- */
-export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<LogoutMutation, LogoutMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument, options);
-      }
-export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
-export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
-export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;

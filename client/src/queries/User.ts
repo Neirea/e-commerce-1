@@ -20,9 +20,3 @@ export const MUTATION_UPDATE_USER = gql`
 		updateUser(input: $input)
 	}
 `;
-
-export const MUTATION_LOGOUT = gql`
-	mutation Logout {
-		logout
-	}
-`;
