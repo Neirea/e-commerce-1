@@ -44,7 +44,6 @@ const userTypeDefs = gql`
 
 	type Mutation {
 		updateUser(input: UpdateUserInput!): Boolean!
-		logout: Boolean!
 	}
 `;
 

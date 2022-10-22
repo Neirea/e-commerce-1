@@ -5,19 +5,19 @@ import "express-async-errors";
 import { v2 as cloudinary } from "cloudinary";
 import connectRedis from "connect-redis";
 import cors from "cors";
-import fileUpload, { UploadedFile } from "express-fileupload";
-import express, { Request } from "express";
-import fs from "fs";
+import express from "express";
+import fileUpload from "express-fileupload";
 import session from "express-session";
 import { buildCheckFunction } from "express-validator";
 import helmet from "helmet";
 import Redis from "ioredis";
 import passport from "passport";
 //user imports
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { ApolloServer } from "apollo-server-express";
 import notFound from "./middleware/not-found";
 import { resolvers, typeDefs } from "./schema";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import restApiRouter from "./authRouter";
 
 export const app = express();
 
@@ -60,12 +60,7 @@ export const app = express();
 		origin: ["http://localhost:3000", "https://studio.apollographql.com"],
 		credentials: true,
 	};
-	app.use(
-		cors({
-			origin: corsOptions.origin,
-			credentials: true,
-		})
-	);
+	app.use(cors(corsOptions));
 	const server = new ApolloServer({
 		typeDefs,
 		resolvers,
@@ -111,7 +106,7 @@ export const app = express();
 	app.use(passport.initialize());
 
 	//REST API Routes
-	require("./restAPI");
+	app.use("/api", restApiRouter);
 
 	// not found middleware
 	app.use(notFound);

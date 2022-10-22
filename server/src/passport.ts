@@ -108,7 +108,7 @@ passport.use(
 		{
 			clientID: process.env.GOOGLE_CLIENT_ID!,
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-			callbackURL: "/auth/google/callback",
+			callbackURL: "/api/auth/google/callback",
 			passReqToCallback: true,
 		},
 		loginGoogle
@@ -119,7 +119,7 @@ passport.use(
 		{
 			clientID: process.env.FACEBOOK_CLIENT_ID!,
 			clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
-			callbackURL: "/auth/facebook/callback",
+			callbackURL: "/api/auth/facebook/callback",
 			profileFields: ["emails", "name", "photos"],
 		},
 		loginFacebook

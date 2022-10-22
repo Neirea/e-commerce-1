@@ -74,22 +74,6 @@ const userResolvers = {
 			}
 			return false;
 		},
-		logout: (
-			parent: any,
-			args: undefined,
-			{ req, res }: { req: Request; res: Response }
-		) => {
-			if (req.session) {
-				//deletes from session from Redis too
-				req.session.destroy((err: any) => {
-					if (err) {
-						return false;
-					}
-				});
-			}
-			res.clearCookie("sid");
-			return true;
-		},
 	},
 };
 

@@ -1,4 +1,6 @@
+import { Role } from "@prisma/client";
 import { v2 as cloudinary } from "cloudinary";
+import { Router } from "express";
 import { UploadedFile } from "express-fileupload";
 import fs from "fs";
 import { StatusCodes } from "http-status-codes";
@@ -6,17 +8,19 @@ import passport from "passport";
 import { app } from ".";
 import { failedLogin, loginCallback } from "./passport";
 
+const router = Router();
+
 //auth routes
-app.get("/auth/login/failed", failedLogin);
+router.get("/auth/login/failed", failedLogin);
 //google
-app.get("/auth/login/google", (req, res, next) => {
+router.get("/auth/login/google", (req, res, next) => {
 	app.set("redirect", req.query.path);
 	passport.authenticate("google", {
 		session: false,
 		scope: ["profile", "email"],
 	})(req, res, next);
 });
-app.get(
+router.get(
 	"/auth/google/callback",
 	passport.authenticate("google", {
 		session: false,
@@ -25,14 +29,14 @@ app.get(
 	loginCallback
 );
 //facebook
-app.get("/auth/login/facebook", (req, res, next) => {
+router.get("/auth/login/facebook", (req, res, next) => {
 	app.set("redirect", req.query.path);
 	passport.authenticate("facebook", {
 		session: false,
 		scope: ["email"],
 	})(req, res, next);
 });
-app.get(
+router.get(
 	"/auth/facebook/callback",
 	passport.authenticate("facebook", {
 		session: false,
@@ -40,7 +44,25 @@ app.get(
 	}),
 	loginCallback
 );
-app.post("/editor/upload-images", async (req, res) => {
+router.delete("/auth/logout", (req, res) => {
+	if (req.session) {
+		console.log("session", req.session);
+
+		//deletes from session from Redis too
+		req.session.destroy((err: any) => {
+			if (err) {
+				return false;
+			}
+		});
+	}
+	res.clearCookie("sid");
+	res.status(StatusCodes.OK).json({ message: "Success" });
+});
+router.post("/editor/upload-images", async (req, res) => {
+	if (!req.session.user?.role.includes(Role.EDITOR)) {
+		res.status(200).json({ message: "OK" });
+		return;
+	}
 	interface UploadedImage {
 		img_id: string;
 		img_src: string;
@@ -110,3 +132,5 @@ app.post("/editor/upload-images", async (req, res) => {
 		res.status(StatusCodes.OK).json({ images: resultImages });
 	}
 });
+
+export default router;

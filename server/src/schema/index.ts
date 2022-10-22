@@ -6,8 +6,6 @@ import categoryTypes from "./typeDefs/Category";
 import categoryResolvers from "./resolvers/Category";
 import companyTypes from "./typeDefs/Company";
 import companyResolvers from "./resolvers/Company";
-import reviewTypes from "./typeDefs/Review";
-import reviewResolvers from "./resolvers/Review";
 import orderTypes from "./typeDefs/Order";
 import orderResolvers from "./resolvers/Order";
 import { merge } from "lodash";
@@ -17,7 +15,6 @@ export const typeDefs = [
 	productTypes,
 	categoryTypes,
 	companyTypes,
-	reviewTypes,
 	orderTypes,
 ];
 export const resolvers = merge(
@@ -25,6 +22,5 @@ export const resolvers = merge(
 	productResolvers,
 	categoryResolvers,
 	companyResolvers,
-	reviewResolvers,
 	orderResolvers
 );
