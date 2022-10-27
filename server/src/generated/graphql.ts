@@ -179,7 +179,6 @@ export enum Platform {
 export type Product = {
   __typename?: 'Product';
   _count: ProductOrdersCount;
-  avg_rating: Scalars['Float'];
   category: Category;
   company: Company;
   created_at: Scalars['Date'];
@@ -189,7 +188,6 @@ export type Product = {
   images: Array<Image>;
   inventory: Scalars['Int'];
   name: Scalars['String'];
-  num_of_reviews: Scalars['Int'];
   price: Scalars['Float'];
   shipping_cost: Scalars['Float'];
   updated_at: Scalars['Date'];
@@ -566,7 +564,6 @@ export type OrderResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type ProductResolvers<ContextType = any, ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']> = {
   _count?: Resolver<ResolversTypes['ProductOrdersCount'], ParentType, ContextType>;
-  avg_rating?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   category?: Resolver<ResolversTypes['Category'], ParentType, ContextType>;
   company?: Resolver<ResolversTypes['Company'], ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
@@ -576,7 +573,6 @@ export type ProductResolvers<ContextType = any, ParentType extends ResolversPare
   images?: Resolver<Array<ResolversTypes['Image']>, ParentType, ContextType>;
   inventory?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  num_of_reviews?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   shipping_cost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   updated_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;

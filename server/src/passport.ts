@@ -14,10 +14,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { app } from "./index";
 
 const prisma = new PrismaClient({ log: ["query"] });
-const clientUrl =
-	process.env.NODE_ENV !== "production"
-		? "http://localhost:3000"
-		: "https://ecommerce-neirea.railway.app";
+const clientUrl = process.env.CLIENT_URL!;
 
 export const failedLogin = (req: Request, res: Response) => {
 	res.status(401).redirect(`${clientUrl}/login?error=login_failed`);

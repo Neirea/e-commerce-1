@@ -34,8 +34,6 @@ model Product {
   category_id Int
   shipping_cost Float @default(0)
   discount Int @default(0)
-  avg_rating Float @default(0)    // aggregate fields
-  num_of_reviews Int @default(0)  // updated on Review placement
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
   variants Product[] @relation("variants")

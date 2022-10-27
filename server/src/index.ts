@@ -17,7 +17,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { ApolloServer } from "apollo-server-express";
 import notFound from "./middleware/not-found";
 import { resolvers, typeDefs } from "./schema";
-import restApiRouter from "./authRouter";
+import apiRouter from "./apiRouter";
 
 export const app = express();
 
@@ -57,7 +57,7 @@ export const app = express();
 	);
 
 	const corsOptions = {
-		origin: ["http://localhost:3000", "https://studio.apollographql.com"],
+		origin: [process.env.CLIENT_URL!],
 		credentials: true,
 	};
 	app.use(cors(corsOptions));
@@ -106,7 +106,7 @@ export const app = express();
 	app.use(passport.initialize());
 
 	//REST API Routes
-	app.use("/api", restApiRouter);
+	app.use("/api", apiRouter);
 
 	// not found middleware
 	app.use(notFound);

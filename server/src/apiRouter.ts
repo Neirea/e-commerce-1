@@ -1,14 +1,68 @@
-import { Role } from "@prisma/client";
+import { PrismaClient, Role } from "@prisma/client";
 import { v2 as cloudinary } from "cloudinary";
-import { Router } from "express";
+import { Router, Request } from "express";
 import { UploadedFile } from "express-fileupload";
 import fs from "fs";
 import { StatusCodes } from "http-status-codes";
 import passport from "passport";
+import Stripe from "stripe";
 import { app } from ".";
 import { failedLogin, loginCallback } from "./passport";
 
+interface CheckoutProduct {
+	id: number;
+	amount: number;
+}
+interface CustomRequest<T> extends Request {
+	body: T;
+}
+
 const router = Router();
+const prisma = new PrismaClient({ log: ["query"] });
+const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY!, {
+	apiVersion: "2022-08-01",
+});
+const clientUrl = process.env.CLIENT_URL!;
+
+router.post("/checkout", async (req: CustomRequest<CheckoutProduct[]>, res) => {
+	const products = await prisma.product.findMany({
+		where: {
+			id: {
+				in: req.body.map((item) => item.id),
+			},
+		},
+		select: {
+			id: true,
+			name: true,
+			price: true,
+			discount: true,
+			shipping_cost: true,
+			inventory: true,
+		},
+	});
+
+	const session = await stripe.checkout.sessions.create({
+		payment_method_types: ["card"],
+		mode: "payment",
+		line_items: products.map((item) => {
+			const productAmount = req.body.find((p) => p.id === item.id)?.amount;
+			return {
+				price_data: {
+					currency: "usd",
+					product_data: {
+						name: item.name,
+					},
+					unit_amount: item.price * 100, // in cents
+				},
+				quantity: productAmount || 0,
+			};
+		}),
+		success_url: `${clientUrl}/checkout?res=success`,
+		cancel_url: `${clientUrl}/checkout?res=cancel`,
+	});
+
+	res.json({ url: session.url });
+});
 
 //auth routes
 router.get("/auth/login/failed", failedLogin);

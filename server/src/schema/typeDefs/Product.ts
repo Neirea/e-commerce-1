@@ -29,8 +29,6 @@ const productTypes = gql`
 		inventory: Int!
 		shipping_cost: Float!
 		discount: Int!
-		avg_rating: Float!
-		num_of_reviews: Int!
 		created_at: DateTime!
 		updated_at: DateTime!
 		_count: ProductOrdersCount!
