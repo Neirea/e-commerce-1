@@ -19,8 +19,6 @@ export const QUERY_ALL_PRODUCT = gql`
 			inventory
 			shipping_cost
 			discount
-			avg_rating
-			num_of_reviews
 			images {
 				img_src
 			}
@@ -59,8 +57,6 @@ export const QUERY_FILTERED_PRODUCTS = gql`
 			price
 			inventory
 			discount
-			avg_rating
-			num_of_reviews
 			images {
 				img_src
 			}
@@ -103,8 +99,6 @@ export const QUERY_FEATURED_PRODUCTS = gql`
 			price
 			inventory
 			discount
-			avg_rating
-			num_of_reviews
 			images {
 				img_src
 			}
@@ -120,8 +114,6 @@ export const QUERY_POPULAR_PRODUCTS = gql`
 			price
 			inventory
 			discount
-			avg_rating
-			num_of_reviews
 			images {
 				img_src
 			}
@@ -141,8 +133,6 @@ export const QUERY_RELATED_PRODUCTS = gql`
 			price
 			inventory
 			discount
-			avg_rating
-			num_of_reviews
 			images {
 				img_src
 			}
@@ -168,8 +158,6 @@ export const GET_SINGLE_PRODUCT = gql`
 			inventory
 			shipping_cost
 			discount
-			avg_rating
-			num_of_reviews
 			images {
 				img_id
 				img_src

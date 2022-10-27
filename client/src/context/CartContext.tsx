@@ -22,12 +22,14 @@ export interface CartContext<ProductType extends CartProductBase> {
 	cart: Array<CartItem<ProductType>>;
 	addProductToCart: (item: CartItem<ProductType>) => void;
 	removeProductFromCart: (item: ProductType) => void;
+	clearCart: () => void;
 }
 
 const defaultContext: CartContext<ProductDBType> = {
 	cart: [],
 	addProductToCart: () => {},
 	removeProductFromCart: () => {},
+	clearCart: () => {},
 };
 export const CartContext = createContext(defaultContext);
 
@@ -100,10 +102,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 		setProducts(newProducts);
 	};
 
+	const clearCart = () => {
+		setProducts([]);
+	};
+
 	const contextValue: CartContext<ProductDBType> = {
 		cart: products,
 		addProductToCart: addProductToCart,
 		removeProductFromCart: removeProductFromCart,
+		clearCart: clearCart,
 	};
 
 	return (

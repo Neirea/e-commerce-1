@@ -15,6 +15,7 @@ import UserProfile from "./pages/UserProfile";
 import ScrollToTop from "./components/ScrollToTop";
 import Product from "./pages/Product/Product";
 import Help from "./pages/Help";
+import Checkout from "./pages/Checkout";
 
 function App() {
 	const { user, isLoading } = useAppContext();
@@ -38,6 +39,7 @@ function App() {
 							<Route path="/editor" element={<Editor />} />
 						</Route>
 						<Route path="/product/:id" element={<Product />} />
+						<Route path="/checkout" element={<Checkout />} />
 						{/* user routes */}
 						<Route
 							element={

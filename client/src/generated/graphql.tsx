@@ -180,7 +180,6 @@ export enum Platform {
 export type Product = {
   __typename?: 'Product';
   _count: ProductOrdersCount;
-  avg_rating: Scalars['Float'];
   category: Category;
   company: Company;
   created_at: Scalars['Date'];
@@ -190,7 +189,6 @@ export type Product = {
   images: Array<Image>;
   inventory: Scalars['Int'];
   name: Scalars['String'];
-  num_of_reviews: Scalars['Int'];
   price: Scalars['Float'];
   shipping_cost: Scalars['Float'];
   updated_at: Scalars['Date'];
@@ -426,7 +424,7 @@ export type DeleteCompanyMutation = { __typename?: 'Mutation', deleteCompany: bo
 export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllProductsQuery = { __typename?: 'Query', products: Array<{ __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string, parent_id?: number | null }, images: Array<{ __typename?: 'Image', img_src: string }>, variants: Array<{ __typename?: 'Product', id: number }> }> };
+export type GetAllProductsQuery = { __typename?: 'Query', products: Array<{ __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string, parent_id?: number | null }, images: Array<{ __typename?: 'Image', img_src: string }>, variants: Array<{ __typename?: 'Product', id: number }> }> };
 
 export type GetProductsByIdQueryVariables = Exact<{
   ids: Array<Scalars['Int']> | Scalars['Int'];
@@ -442,7 +440,7 @@ export type GetFilteredProductsQueryVariables = Exact<{
 }>;
 
 
-export type GetFilteredProductsQuery = { __typename?: 'Query', filteredProducts: Array<{ __typename?: 'Product', id: number, name: string, price: number, inventory: number, discount: number, avg_rating: number, num_of_reviews: number, images: Array<{ __typename?: 'Image', img_src: string }>, company: { __typename?: 'Company', id: number, name: string }, _count: { __typename?: 'ProductOrdersCount', orders: number } }> };
+export type GetFilteredProductsQuery = { __typename?: 'Query', filteredProducts: Array<{ __typename?: 'Product', id: number, name: string, price: number, inventory: number, discount: number, images: Array<{ __typename?: 'Image', img_src: string }>, company: { __typename?: 'Company', id: number, name: string }, _count: { __typename?: 'ProductOrdersCount', orders: number } }> };
 
 export type GetSearchDataQueryVariables = Exact<{
   input: QuerySearchDataInput;
@@ -457,7 +455,7 @@ export type GetFeaturedProductsQueryVariables = Exact<{
 }>;
 
 
-export type GetFeaturedProductsQuery = { __typename?: 'Query', featuredProducts: Array<{ __typename?: 'Product', id: number, name: string, price: number, inventory: number, discount: number, avg_rating: number, num_of_reviews: number, images: Array<{ __typename?: 'Image', img_src: string }> }> };
+export type GetFeaturedProductsQuery = { __typename?: 'Query', featuredProducts: Array<{ __typename?: 'Product', id: number, name: string, price: number, inventory: number, discount: number, images: Array<{ __typename?: 'Image', img_src: string }> }> };
 
 export type GetPopularProductsQueryVariables = Exact<{
   limit: Scalars['Int'];
@@ -465,7 +463,7 @@ export type GetPopularProductsQueryVariables = Exact<{
 }>;
 
 
-export type GetPopularProductsQuery = { __typename?: 'Query', popularProducts: Array<{ __typename?: 'Product', id: number, name: string, price: number, inventory: number, discount: number, avg_rating: number, num_of_reviews: number, images: Array<{ __typename?: 'Image', img_src: string }> }> };
+export type GetPopularProductsQuery = { __typename?: 'Query', popularProducts: Array<{ __typename?: 'Product', id: number, name: string, price: number, inventory: number, discount: number, images: Array<{ __typename?: 'Image', img_src: string }> }> };
 
 export type GetRelatedProductsQueryVariables = Exact<{
   limit: Scalars['Int'];
@@ -474,14 +472,14 @@ export type GetRelatedProductsQueryVariables = Exact<{
 }>;
 
 
-export type GetRelatedProductsQuery = { __typename?: 'Query', relatedProducts: Array<{ __typename?: 'Product', id: number, name: string, price: number, inventory: number, discount: number, avg_rating: number, num_of_reviews: number, images: Array<{ __typename?: 'Image', img_src: string }> }> };
+export type GetRelatedProductsQuery = { __typename?: 'Query', relatedProducts: Array<{ __typename?: 'Product', id: number, name: string, price: number, inventory: number, discount: number, images: Array<{ __typename?: 'Image', img_src: string }> }> };
 
 export type GetSingleProductQueryVariables = Exact<{
   id: Scalars['Int'];
 }>;
 
 
-export type GetSingleProductQuery = { __typename?: 'Query', product?: { __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, avg_rating: number, num_of_reviews: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string }, images: Array<{ __typename?: 'Image', img_id: string, img_src: string }>, variants: Array<{ __typename?: 'Product', id: number, name: string, images: Array<{ __typename?: 'Image', img_src: string }> }> } | null };
+export type GetSingleProductQuery = { __typename?: 'Query', product?: { __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string }, images: Array<{ __typename?: 'Image', img_id: string, img_src: string }>, variants: Array<{ __typename?: 'Product', id: number, name: string, images: Array<{ __typename?: 'Image', img_src: string }> }> } | null };
 
 export type CreateProductMutationVariables = Exact<{
   input: CreateProductInput;
@@ -798,8 +796,6 @@ export const GetAllProductsDocument = gql`
     inventory
     shipping_cost
     discount
-    avg_rating
-    num_of_reviews
     images {
       img_src
     }
@@ -887,8 +883,6 @@ export const GetFilteredProductsDocument = gql`
     price
     inventory
     discount
-    avg_rating
-    num_of_reviews
     images {
       img_src
     }
@@ -987,8 +981,6 @@ export const GetFeaturedProductsDocument = gql`
     price
     inventory
     discount
-    avg_rating
-    num_of_reviews
     images {
       img_src
     }
@@ -1032,8 +1024,6 @@ export const GetPopularProductsDocument = gql`
     price
     inventory
     discount
-    avg_rating
-    num_of_reviews
     images {
       img_src
     }
@@ -1077,8 +1067,6 @@ export const GetRelatedProductsDocument = gql`
     price
     inventory
     discount
-    avg_rating
-    num_of_reviews
     images {
       img_src
     }
@@ -1133,8 +1121,6 @@ export const GetSingleProductDocument = gql`
     inventory
     shipping_cost
     discount
-    avg_rating
-    num_of_reviews
     images {
       img_id
       img_src

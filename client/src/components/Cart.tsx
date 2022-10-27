@@ -10,7 +10,7 @@ import {
 	useCartContext,
 } from "../context/CartContext";
 import { toPriceNumber } from "../utils/numbers";
-import { useNavigate } from "react-router-dom";
+import { serverUrl } from "../utils/server";
 
 const Cart = ({
 	handleClose,
@@ -19,7 +19,6 @@ const Cart = ({
 	handleClose: () => void;
 	show: boolean;
 }) => {
-	const navigate = useNavigate();
 	const { cart, addProductToCart, removeProductFromCart } = useCartContext();
 	const totalPrice = cart.reduce(
 		(prev, curr) =>
@@ -56,6 +55,42 @@ const Cart = ({
 					? 1
 					: setAmount,
 		});
+	};
+
+	const handleCheckout = () => {
+		const checkoutBody = cart.map((item) => {
+			return { id: item.product.id, amount: item.amount };
+		});
+		console.log("body=", checkoutBody);
+
+		fetch(`${serverUrl}/api/checkout`, {
+			method: "POST",
+			credentials: "include",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(checkoutBody),
+		})
+			.then((res) => {
+				if (res.ok) return res.json();
+				return res.json().then((json) => Promise.reject(json));
+			})
+			.then(({ url }) => {
+				window.open(url, "_self");
+			})
+			.catch((e) => {
+				switch (e.type) {
+					case "StripeCardError":
+						console.log(`A payment error occurred: ${e.message}`);
+						break;
+					case "StripeInvalidRequestError":
+						console.log("An invalid request occurred.");
+						break;
+					default:
+						console.log("Another problem occurred, maybe unrelated to Stripe.");
+						break;
+				}
+			});
 	};
 
 	return (
@@ -146,7 +181,7 @@ const Cart = ({
 							<Col className="text-end">
 								<Button
 									variant="success"
-									onClick={() => navigate("/checkout")}
+									onClick={handleCheckout}
 									disabled={!cart.length}
 								>
 									Checkout

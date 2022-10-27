@@ -8,13 +8,7 @@ import { Product } from "../generated/graphql";
 
 type ProductType = Pick<
 	Product,
-	| "id"
-	| "name"
-	| "price"
-	| "inventory"
-	| "discount"
-	| "avg_rating"
-	| "num_of_reviews"
+	"id" | "name" | "price" | "inventory" | "discount"
 > & { images: Array<Pick<Product["images"][number], "img_src">> };
 
 const ProductsGrid = ({
