@@ -16,6 +16,8 @@ import ScrollToTop from "./components/ScrollToTop";
 import Product from "./pages/Product/Product";
 import Help from "./pages/Help";
 import Checkout from "./pages/Checkout";
+import OrderPayment from "./pages/OrderPayment";
+import Orders from "./pages/Orders";
 
 function App() {
 	const { user, isLoading } = useAppContext();
@@ -40,6 +42,8 @@ function App() {
 						</Route>
 						<Route path="/product/:id" element={<Product />} />
 						<Route path="/checkout" element={<Checkout />} />
+						<Route path="/order_payment" element={<OrderPayment />} />
+
 						{/* user routes */}
 						<Route
 							element={
@@ -49,6 +53,7 @@ function App() {
 							}
 						>
 							<Route path="/profile" element={<UserProfile user={user} />} />
+							<Route path="/orders" element={<Orders />} />
 						</Route>
 						{/* error routes */}
 						<Route path="/unauthorized" element={<Unauthorized />} />

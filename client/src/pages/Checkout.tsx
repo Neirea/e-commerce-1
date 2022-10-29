@@ -8,7 +8,7 @@ import { useAppContext } from "../context/AppContext";
 
 const Checkout = () => {
 	const { user } = useAppContext();
-	const { cart } = useCartContext();
+	const { cart, clearCart } = useCartContext();
 
 	const [name, setName] = useState(
 		(user?.given_name || "").concat(
@@ -57,10 +57,16 @@ const Checkout = () => {
 			}),
 		})
 			.then((res) => {
-				if (res.ok) return res.json();
+				if (res.ok) {
+					return res.json();
+				}
+				//reject promise on failed stripe action
 				return res.json().then((json) => Promise.reject(json));
 			})
 			.then(({ url }) => {
+				//clear cart on successful request
+				clearCart();
+				//open stripe window
 				window.open(url, "_self");
 			})
 			.catch((e) => {
@@ -168,7 +174,7 @@ const Checkout = () => {
 						onClick={handleCheckout}
 						disabled={!cart.length}
 					>
-						Checkout
+						Proceed
 					</Button>
 				</div>
 			</Form>

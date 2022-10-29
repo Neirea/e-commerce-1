@@ -48,9 +48,11 @@ export type CreateCompanyInput = {
 };
 
 export type CreateOrderInput = {
-  shipping_fee: Scalars['Int'];
-  total: Scalars['Int'];
-  user_id: Scalars['Int'];
+  buyer_email: Scalars['String'];
+  buyer_name: Scalars['String'];
+  buyer_phone?: InputMaybe<Scalars['String']>;
+  delivery_address: Scalars['String'];
+  user_id?: InputMaybe<Scalars['Int']>;
 };
 
 export type CreateProductInput = {
@@ -164,12 +166,14 @@ export type MutationupdateUserArgs = {
 
 export type Order = {
   __typename?: 'Order';
+  buyer_email: Scalars['String'];
+  buyer_name: Scalars['String'];
+  buyer_phone?: Maybe<Scalars['String']>;
+  delivery_address: Scalars['String'];
   id: Scalars['Int'];
   order_items: Array<SingleOrderItem>;
-  shipping_fee: Scalars['Int'];
   status: Status;
-  total: Scalars['Int'];
-  user_id: Scalars['Int'];
+  user_id?: Maybe<Scalars['Int']>;
 };
 
 export enum Platform {
@@ -306,6 +310,7 @@ export type SingleOrderItem = {
   amount: Scalars['Int'];
   id: Scalars['Int'];
   order_id: Scalars['Int'];
+  price: Scalars['Int'];
   product_id: Scalars['Int'];
 };
 
