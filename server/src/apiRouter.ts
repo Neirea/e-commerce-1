@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { OrderStatus, PrismaClient, Role } from "@prisma/client";
 import { v2 as cloudinary } from "cloudinary";
 import { Router, Request } from "express";
 import { UploadedFile } from "express-fileupload";
@@ -9,9 +9,17 @@ import Stripe from "stripe";
 import { app } from ".";
 import { failedLogin, loginCallback } from "./passport";
 
-interface CheckoutProduct {
-	id: number;
-	amount: number;
+interface CheckoutBody {
+	items: {
+		id: number;
+		amount: number;
+	}[];
+	buyer: {
+		name: string;
+		email: string;
+		address: string;
+		phone: string;
+	};
 }
 interface CustomRequest<T> extends Request {
 	body: T;
@@ -24,28 +32,38 @@ const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY!, {
 });
 const clientUrl = process.env.CLIENT_URL!;
 
-router.post("/checkout", async (req: CustomRequest<CheckoutProduct[]>, res) => {
-	const products = await prisma.product.findMany({
+router.patch("/checkout/:orderId", async (req, res) => {
+	const order = await prisma.order.findUnique({
 		where: {
-			id: {
-				in: req.body.map((item) => item.id),
-			},
+			id: +req.params.orderId,
 		},
-		select: {
-			id: true,
-			name: true,
-			price: true,
-			discount: true,
-			shipping_cost: true,
-			inventory: true,
+		include: {
+			orders: {
+				select: {
+					amount: true,
+					product: true,
+				},
+			},
 		},
 	});
 
+	if (order == null) throw new Error("Failed to retrieve order data");
+
+	const orderProducts = order.orders.map((order) => {
+		return {
+			name: order.product.name,
+			price: order.product.price,
+			amount: order.amount,
+		};
+	});
+
+	//start payment session
 	const session = await stripe.checkout.sessions.create({
 		payment_method_types: ["card"],
 		mode: "payment",
-		line_items: products.map((item) => {
-			const productAmount = req.body.find((p) => p.id === item.id)?.amount;
+
+		customer_email: order.buyer_email,
+		line_items: orderProducts.map((item) => {
 			return {
 				price_data: {
 					currency: "usd",
@@ -54,14 +72,110 @@ router.post("/checkout", async (req: CustomRequest<CheckoutProduct[]>, res) => {
 					},
 					unit_amount: item.price * 100, // in cents
 				},
-				quantity: productAmount || 0,
+				quantity: item.amount || 0,
 			};
 		}),
-		success_url: `${clientUrl}/checkout?res=success`,
-		cancel_url: `${clientUrl}/checkout?res=cancel`,
+		success_url: `${process.env.SERVER_URL}/api/payment/${order.id}?success=true`,
+		cancel_url: `${process.env.SERVER_URL}/api/payment/${order.id}?success=false`,
 	});
 
 	res.json({ url: session.url });
+});
+
+router.post("/checkout", async (req: CustomRequest<CheckoutBody>, res) => {
+	const products = await prisma.product.findMany({
+		where: {
+			id: {
+				in: req.body.items.map((item) => item.id),
+			},
+		},
+		select: {
+			id: true,
+			name: true,
+			price: true,
+			discount: true,
+			inventory: true,
+			shipping_cost: true,
+		},
+	});
+
+	//products info for order
+	const orderProducts = products.map((product) => {
+		const productAmount = req.body.items.find(
+			(p) => p.id === product.id
+		)?.amount;
+		if (!productAmount) {
+			throw new Error("Failed to proceed this order");
+		}
+		return {
+			id: product.id,
+			name: product.name,
+			amount: productAmount,
+			price: ((100 - product.discount) / 100) * product.price, // in dollars
+		};
+	});
+
+	//create order
+	const order = await prisma.order.create({
+		data: {
+			user_id: req.session.user?.id,
+			buyer_name: req.body.buyer.name,
+			buyer_email: req.body.buyer.email,
+			delivery_address: req.body.buyer.address,
+			buyer_phone: req.body.buyer.phone || undefined,
+			shipping_cost: Math.max(...products.map((p) => p.shipping_cost)),
+			orders: {
+				createMany: {
+					data: orderProducts.map((p) => {
+						return { product_id: p.id, amount: p.amount, price: p.price };
+					}),
+				},
+			},
+		},
+	});
+
+	//start payment session
+	const session = await stripe.checkout.sessions.create({
+		payment_method_types: ["card"],
+		mode: "payment",
+		customer_email: req.body.buyer.email,
+		line_items: orderProducts.map((item) => {
+			return {
+				price_data: {
+					currency: "usd",
+					product_data: {
+						name: item.name,
+					},
+					unit_amount: item.price * 100, // in cents
+				},
+				quantity: item.amount || 0,
+			};
+		}),
+		success_url: `${process.env.SERVER_URL}/api/payment/${order.id}?success=true`,
+		cancel_url: `${process.env.SERVER_URL}/api/payment/${order.id}?success=false`,
+	});
+
+	res.json({ url: session.url });
+});
+//proceed after payment
+router.get("/payment/:orderId", async (req, res) => {
+	const isSuccess = req.query.success === "true" ? true : false;
+	const orderId = +req.params.orderId;
+	if (isSuccess) {
+		await prisma.order.update({
+			where: {
+				id: orderId,
+			},
+			data: {
+				status: OrderStatus.ACCEPTED,
+			},
+		});
+		res.redirect(`${clientUrl}/order_payment?order_id=${orderId}&success=true`);
+	} else {
+		res.redirect(
+			`${clientUrl}/order_payment?order_id=${orderId}&success=false`
+		);
+	}
 });
 
 //auth routes
@@ -100,8 +214,6 @@ router.get(
 );
 router.delete("/auth/logout", (req, res) => {
 	if (req.session) {
-		console.log("session", req.session);
-
 		//deletes from session from Redis too
 		req.session.destroy((err: any) => {
 			if (err) {

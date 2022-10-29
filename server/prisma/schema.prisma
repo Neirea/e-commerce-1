@@ -74,17 +74,23 @@ model Category {
 model Order {
   id Int @default(autoincrement()) @id
   status OrderStatus @default(PENDING)
-  user User @relation(fields: [user_id],references: [id])
-  user_id Int @unique
   orders SingleOrderItem[]
+  shipping_cost Float @default(0)
+  user User? @relation(fields: [user_id],references: [id])
+  user_id Int?
+  buyer_name String
+  buyer_email String
+  buyer_phone String?
+  delivery_address String
   payment_time DateTime?
 }
 
 model SingleOrderItem {
   id Int @default(autoincrement()) @id
   order Order @relation(fields: [order_id],references: [id])
-  order_id Int @unique
+  order_id Int
   amount Int
+  price Float
   product Product @relation(fields: [product_id],references: [id])
   product_id Int
 }

@@ -15,14 +15,17 @@ const orderTypes = gql`
 		id: Int!
 		order_id: Int!
 		amount: Int!
+		price: Int!
 		product_id: Int!
 	}
 	type Order {
 		id: Int!
-		total: Int!
-		shipping_fee: Int!
 		status: Status!
-		user_id: Int!
+		user_id: Int
+		buyer_name: String!
+		buyer_email: String!
+		buyer_phone: String
+		delivery_address: String!
 		order_items: [SingleOrderItem!]!
 	}
 
@@ -31,9 +34,11 @@ const orderTypes = gql`
 	}
 
 	input CreateOrderInput {
-		total: Int!
-		shipping_fee: Int!
-		user_id: Int!
+		user_id: Int
+		buyer_name: String!
+		buyer_email: String!
+		buyer_phone: String
+		delivery_address: String!
 	}
 
 	extend type Mutation {

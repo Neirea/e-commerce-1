@@ -47,9 +47,11 @@ export type CreateCompanyInput = {
 };
 
 export type CreateOrderInput = {
-  shipping_fee: Scalars['Int'];
-  total: Scalars['Int'];
-  user_id: Scalars['Int'];
+  buyer_email: Scalars['String'];
+  buyer_name: Scalars['String'];
+  buyer_phone?: InputMaybe<Scalars['String']>;
+  delivery_address: Scalars['String'];
+  user_id?: InputMaybe<Scalars['Int']>;
 };
 
 export type CreateProductInput = {
@@ -163,12 +165,14 @@ export type MutationupdateUserArgs = {
 
 export type Order = {
   __typename?: 'Order';
+  buyer_email: Scalars['String'];
+  buyer_name: Scalars['String'];
+  buyer_phone?: Maybe<Scalars['String']>;
+  delivery_address: Scalars['String'];
   id: Scalars['Int'];
   order_items: Array<SingleOrderItem>;
-  shipping_fee: Scalars['Int'];
   status: Status;
-  total: Scalars['Int'];
-  user_id: Scalars['Int'];
+  user_id?: Maybe<Scalars['Int']>;
 };
 
 export enum Platform {
@@ -305,6 +309,7 @@ export type SingleOrderItem = {
   amount: Scalars['Int'];
   id: Scalars['Int'];
   order_id: Scalars['Int'];
+  price: Scalars['Int'];
   product_id: Scalars['Int'];
 };
 
@@ -553,12 +558,14 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type OrderResolvers<ContextType = any, ParentType extends ResolversParentTypes['Order'] = ResolversParentTypes['Order']> = {
+  buyer_email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  buyer_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  buyer_phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  delivery_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   order_items?: Resolver<Array<ResolversTypes['SingleOrderItem']>, ParentType, ContextType>;
-  shipping_fee?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['Status'], ParentType, ContextType>;
-  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  user_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  user_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -614,6 +621,7 @@ export type SingleOrderItemResolvers<ContextType = any, ParentType extends Resol
   amount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   order_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  price?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   product_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
