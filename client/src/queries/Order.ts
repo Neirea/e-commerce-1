@@ -16,6 +16,8 @@ export const QUERY_ALL_ORDERS = gql`
 				price
 				product {
 					name
+					price
+					discount
 				}
 			}
 		}

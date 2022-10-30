@@ -86,8 +86,16 @@ const Orders = () => {
 					</thead>
 					<tbody>
 						{sortedOrders.map((order) => {
-							const totalOrderPrice = order.order_items.reduce(
-								(prev, curr) => prev + curr.price,
+							const totalOrderPricePending = order.order_items.reduce(
+								(prev, curr) =>
+									prev +
+									curr.amount *
+										((100 - curr.product.discount) / 100) *
+										curr.product.price,
+								0
+							);
+							const totalOrderPricePaid = order.order_items.reduce(
+								(prev, curr) => prev + curr.amount * curr.price,
 								0
 							);
 							const textColor =
@@ -103,20 +111,16 @@ const Orders = () => {
 												<tr>
 													<th>Name</th>
 													<th>Amount</th>
-													<th>Price</th>
 												</tr>
 											</thead>
 											<tbody>
 												{order.order_items.map((item) => {
 													return (
 														<tr key={uuidv4()}>
-															<td style={{ width: "60%" }}>
+															<td style={{ width: "80%" }}>
 																{item.product?.name}
 															</td>
 															<td style={{ width: "20%" }}>x{item.amount}</td>
-															<td style={{ width: "20%" }}>
-																{toPriceNumber(item.price)} $
-															</td>
 														</tr>
 													);
 												})}
@@ -135,7 +139,12 @@ const Orders = () => {
 											</Button>
 										)}
 									</td>
-									<td className="fs-5">{toPriceNumber(totalOrderPrice)} $</td>
+									<td className="fs-5">
+										{order.status === Status.PENDING
+											? toPriceNumber(totalOrderPricePending)
+											: toPriceNumber(totalOrderPricePaid)}{" "}
+										$
+									</td>
 								</tr>
 							);
 						})}

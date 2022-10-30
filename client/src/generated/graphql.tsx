@@ -291,7 +291,7 @@ export type SingleOrderItem = {
   id: Scalars['Int'];
   order_id: Scalars['Int'];
   price: Scalars['Float'];
-  product?: Maybe<Product>;
+  product: Product;
   product_id: Scalars['Int'];
 };
 
@@ -410,7 +410,7 @@ export type DeleteCompanyMutation = { __typename?: 'Mutation', deleteCompany: bo
 export type GetAllOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllOrdersQuery = { __typename?: 'Query', orders: Array<{ __typename?: 'Order', id: number, status: Status, user_id?: number | null, buyer_name: string, buyer_email: string, buyer_phone?: string | null, delivery_address: string, shipping_cost: number, order_items: Array<{ __typename?: 'SingleOrderItem', amount: number, price: number, product?: { __typename?: 'Product', name: string } | null }> }> };
+export type GetAllOrdersQuery = { __typename?: 'Query', orders: Array<{ __typename?: 'Order', id: number, status: Status, user_id?: number | null, buyer_name: string, buyer_email: string, buyer_phone?: string | null, delivery_address: string, shipping_cost: number, order_items: Array<{ __typename?: 'SingleOrderItem', amount: number, price: number, product: { __typename?: 'Product', name: string, price: number, discount: number } }> }> };
 
 export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -784,6 +784,8 @@ export const GetAllOrdersDocument = gql`
       price
       product {
         name
+        price
+        discount
       }
     }
   }
