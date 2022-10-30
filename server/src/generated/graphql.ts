@@ -46,14 +46,6 @@ export type CreateCompanyInput = {
   name: Scalars['String'];
 };
 
-export type CreateOrderInput = {
-  buyer_email: Scalars['String'];
-  buyer_name: Scalars['String'];
-  buyer_phone?: InputMaybe<Scalars['String']>;
-  delivery_address: Scalars['String'];
-  user_id?: InputMaybe<Scalars['Int']>;
-};
-
 export type CreateProductInput = {
   category_id: Scalars['Int'];
   company_id: Scalars['Int'];
@@ -79,7 +71,6 @@ export type Mutation = {
   cancelOrder: Scalars['Boolean'];
   createCategory: Scalars['Boolean'];
   createCompany: Scalars['Boolean'];
-  createOrder: Scalars['Boolean'];
   createProduct: Scalars['Boolean'];
   deleteCategory: Scalars['Boolean'];
   deleteCompany: Scalars['Boolean'];
@@ -87,7 +78,6 @@ export type Mutation = {
   deleteProduct: Scalars['Boolean'];
   updateCategory: Scalars['Boolean'];
   updateCompany: Scalars['Boolean'];
-  updateOrder: Scalars['Boolean'];
   updateProduct: Scalars['Boolean'];
   updateUser: Scalars['Boolean'];
 };
@@ -105,11 +95,6 @@ export type MutationcreateCategoryArgs = {
 
 export type MutationcreateCompanyArgs = {
   input: CreateCompanyInput;
-};
-
-
-export type MutationcreateOrderArgs = {
-  input: CreateOrderInput;
 };
 
 
@@ -148,12 +133,6 @@ export type MutationupdateCompanyArgs = {
 };
 
 
-export type MutationupdateOrderArgs = {
-  id: Scalars['Int'];
-  status: Status;
-};
-
-
 export type MutationupdateProductArgs = {
   input: UpdateProductInput;
 };
@@ -171,6 +150,7 @@ export type Order = {
   delivery_address: Scalars['String'];
   id: Scalars['Int'];
   order_items: Array<SingleOrderItem>;
+  shipping_cost: Scalars['Float'];
   status: Status;
   user_id?: Maybe<Scalars['Int']>;
 };
@@ -309,7 +289,8 @@ export type SingleOrderItem = {
   amount: Scalars['Int'];
   id: Scalars['Int'];
   order_id: Scalars['Int'];
-  price: Scalars['Int'];
+  price: Scalars['Float'];
+  product: Product;
   product_id: Scalars['Int'];
 };
 
@@ -447,7 +428,6 @@ export type ResolversTypes = {
   Company: ResolverTypeWrapper<Company>;
   CreateCategoryInput: CreateCategoryInput;
   CreateCompanyInput: CreateCompanyInput;
-  CreateOrderInput: CreateOrderInput;
   CreateProductInput: CreateProductInput;
   Date: ResolverTypeWrapper<Scalars['Date']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
@@ -482,7 +462,6 @@ export type ResolversParentTypes = {
   Company: Company;
   CreateCategoryInput: CreateCategoryInput;
   CreateCompanyInput: CreateCompanyInput;
-  CreateOrderInput: CreateOrderInput;
   CreateProductInput: CreateProductInput;
   Date: Scalars['Date'];
   Float: Scalars['Float'];
@@ -544,7 +523,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   cancelOrder?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationcancelOrderArgs, 'id'>>;
   createCategory?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationcreateCategoryArgs, 'input'>>;
   createCompany?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationcreateCompanyArgs, 'input'>>;
-  createOrder?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationcreateOrderArgs, 'input'>>;
   createProduct?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationcreateProductArgs, 'input'>>;
   deleteCategory?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationdeleteCategoryArgs, 'id'>>;
   deleteCompany?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationdeleteCompanyArgs, 'id'>>;
@@ -552,7 +530,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteProduct?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationdeleteProductArgs, 'id'>>;
   updateCategory?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationupdateCategoryArgs, 'input'>>;
   updateCompany?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationupdateCompanyArgs, 'input'>>;
-  updateOrder?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationupdateOrderArgs, 'id' | 'status'>>;
   updateProduct?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationupdateProductArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationupdateUserArgs, 'input'>>;
 };
@@ -564,6 +541,7 @@ export type OrderResolvers<ContextType = any, ParentType extends ResolversParent
   delivery_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   order_items?: Resolver<Array<ResolversTypes['SingleOrderItem']>, ParentType, ContextType>;
+  shipping_cost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   status?: Resolver<ResolversTypes['Status'], ParentType, ContextType>;
   user_id?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -621,7 +599,8 @@ export type SingleOrderItemResolvers<ContextType = any, ParentType extends Resol
   amount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   order_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  price?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  product?: Resolver<ResolversTypes['Product'], ParentType, ContextType>;
   product_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

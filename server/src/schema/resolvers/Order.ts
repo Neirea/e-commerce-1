@@ -1,8 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request } from "express";
 import { AuthenticationError } from "apollo-server-express";
-import { CreateOrderInput, Status } from "../../generated/graphql";
-import { OrderStatus } from "@prisma/client";
+import { Status } from "../../generated/graphql";
 
 const prisma = new PrismaClient({ log: ["query"] });
 
@@ -14,27 +13,19 @@ const orderResolvers = {
 			}
 			return prisma.order.findMany({
 				where: { user_id: req.session.user?.id },
+				include: {
+					order_items: {
+						select: {
+							product: true,
+							amount: true,
+							price: true,
+						},
+					},
+				},
 			});
 		},
 	},
 	Mutation: {
-		createOrder: async (
-			parent: any,
-			{ input }: { input: CreateOrderInput }
-		) => {
-			await prisma.order.create({ data: input });
-			return true;
-		},
-		updateOrder: async (
-			parent: any,
-			{ id, status }: { id: number; status: Status }
-		) => {
-			await prisma.order.update({
-				where: { id: id },
-				data: { status: status as OrderStatus },
-			});
-			return true;
-		},
 		cancelOrder: async (parent: any, { id }: { id: number }) => {
 			await prisma.order.update({
 				where: { id: id },

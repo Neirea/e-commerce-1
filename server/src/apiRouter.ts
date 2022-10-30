@@ -7,6 +7,7 @@ import { StatusCodes } from "http-status-codes";
 import passport from "passport";
 import Stripe from "stripe";
 import { app } from ".";
+import { Status } from "./generated/graphql";
 import { failedLogin, loginCallback } from "./passport";
 
 interface CheckoutBody {
@@ -38,8 +39,9 @@ router.patch("/checkout/:orderId", async (req, res) => {
 			id: +req.params.orderId,
 		},
 		include: {
-			orders: {
+			order_items: {
 				select: {
+					id: true,
 					amount: true,
 					product: true,
 				},
@@ -48,11 +50,27 @@ router.patch("/checkout/:orderId", async (req, res) => {
 	});
 
 	if (order == null) throw new Error("Failed to retrieve order data");
+	if (req.session.user?.id != order.user_id)
+		throw new Error("Order does not belong to this user");
+	if (order.status !== Status.PENDING) {
+		throw new Error("This order has been paid already");
+	}
 
-	const orderProducts = order.orders.map((order) => {
+	const orderProducts = order.order_items.map((order) => {
+		const updatedPrice =
+			((100 - order.product.discount) / 100) * order.product.price;
+		//update price information for order
+		prisma.singleOrderItem.update({
+			where: {
+				id: order.id,
+			},
+			data: {
+				price: updatedPrice,
+			},
+		});
 		return {
 			name: order.product.name,
-			price: order.product.price,
+			price: updatedPrice,
 			amount: order.amount,
 		};
 	});
@@ -124,7 +142,7 @@ router.post("/checkout", async (req: CustomRequest<CheckoutBody>, res) => {
 			delivery_address: req.body.buyer.address,
 			buyer_phone: req.body.buyer.phone || undefined,
 			shipping_cost: Math.max(...products.map((p) => p.shipping_cost)),
-			orders: {
+			order_items: {
 				createMany: {
 					data: orderProducts.map((p) => {
 						return { product_id: p.id, amount: p.amount, price: p.price };
@@ -168,6 +186,7 @@ router.get("/payment/:orderId", async (req, res) => {
 			},
 			data: {
 				status: OrderStatus.ACCEPTED,
+				payment_time: new Date(),
 			},
 		});
 		res.redirect(`${clientUrl}/order_payment?order_id=${orderId}&success=true`);

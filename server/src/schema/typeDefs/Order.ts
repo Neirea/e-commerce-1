@@ -15,8 +15,9 @@ const orderTypes = gql`
 		id: Int!
 		order_id: Int!
 		amount: Int!
-		price: Int!
+		price: Float!
 		product_id: Int!
+		product: Product!
 	}
 	type Order {
 		id: Int!
@@ -25,6 +26,7 @@ const orderTypes = gql`
 		buyer_name: String!
 		buyer_email: String!
 		buyer_phone: String
+		shipping_cost: Float!
 		delivery_address: String!
 		order_items: [SingleOrderItem!]!
 	}
@@ -33,17 +35,7 @@ const orderTypes = gql`
 		orders: [Order!]!
 	}
 
-	input CreateOrderInput {
-		user_id: Int
-		buyer_name: String!
-		buyer_email: String!
-		buyer_phone: String
-		delivery_address: String!
-	}
-
 	extend type Mutation {
-		createOrder(input: CreateOrderInput!): Boolean!
-		updateOrder(id: Int!, status: Status!): Boolean!
 		cancelOrder(id: Int!): Boolean!
 		deleteOrder(id: Int!): Boolean!
 	}

@@ -74,7 +74,7 @@ model Category {
 model Order {
   id Int @default(autoincrement()) @id
   status OrderStatus @default(PENDING)
-  orders SingleOrderItem[]
+  order_items SingleOrderItem[]
   shipping_cost Float @default(0)
   user User? @relation(fields: [user_id],references: [id])
   user_id Int?
