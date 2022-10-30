@@ -8,6 +8,13 @@
 main {
 	flex: 1;
 }
+
+tr > th,
+td {
+	text-align: center;
+	vertical-align: middle;
+}
+
 .form-select[multiple] {
 	height: 12rem;
 }

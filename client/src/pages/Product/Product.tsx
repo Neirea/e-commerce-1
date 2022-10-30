@@ -47,16 +47,15 @@ const Product = () => {
 		handleShowCart();
 	};
 
-	if (error) {
+	if (error || data?.product === null) {
 		return (
 			<Container as="main" className="d-flex justify-content-center flex-row">
-				<Alert variant="danger" className="mt-5 text-center w-50 h-100">
-					<Alert.Heading as="h1">Error</Alert.Heading>
-					<p>
-						{"Failed to fetch product with id:"}{" "}
-						<b className="fs-5">{`${id}`}</b>
-					</p>
-				</Alert>
+				<div className="mt-5 text-center">
+					<h1 className="text-danger">Error</h1>
+					<h3 className="mt-3">
+						{"Failed to fetch product with id:"} <b>{`${id}`}</b>
+					</h3>
+				</div>
 			</Container>
 		);
 	}

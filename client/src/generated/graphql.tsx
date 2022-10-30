@@ -47,14 +47,6 @@ export type CreateCompanyInput = {
   name: Scalars['String'];
 };
 
-export type CreateOrderInput = {
-  buyer_email: Scalars['String'];
-  buyer_name: Scalars['String'];
-  buyer_phone?: InputMaybe<Scalars['String']>;
-  delivery_address: Scalars['String'];
-  user_id?: InputMaybe<Scalars['Int']>;
-};
-
 export type CreateProductInput = {
   category_id: Scalars['Int'];
   company_id: Scalars['Int'];
@@ -80,7 +72,6 @@ export type Mutation = {
   cancelOrder: Scalars['Boolean'];
   createCategory: Scalars['Boolean'];
   createCompany: Scalars['Boolean'];
-  createOrder: Scalars['Boolean'];
   createProduct: Scalars['Boolean'];
   deleteCategory: Scalars['Boolean'];
   deleteCompany: Scalars['Boolean'];
@@ -88,7 +79,6 @@ export type Mutation = {
   deleteProduct: Scalars['Boolean'];
   updateCategory: Scalars['Boolean'];
   updateCompany: Scalars['Boolean'];
-  updateOrder: Scalars['Boolean'];
   updateProduct: Scalars['Boolean'];
   updateUser: Scalars['Boolean'];
 };
@@ -106,11 +96,6 @@ export type MutationcreateCategoryArgs = {
 
 export type MutationcreateCompanyArgs = {
   input: CreateCompanyInput;
-};
-
-
-export type MutationcreateOrderArgs = {
-  input: CreateOrderInput;
 };
 
 
@@ -149,12 +134,6 @@ export type MutationupdateCompanyArgs = {
 };
 
 
-export type MutationupdateOrderArgs = {
-  id: Scalars['Int'];
-  status: Status;
-};
-
-
 export type MutationupdateProductArgs = {
   input: UpdateProductInput;
 };
@@ -172,6 +151,7 @@ export type Order = {
   delivery_address: Scalars['String'];
   id: Scalars['Int'];
   order_items: Array<SingleOrderItem>;
+  shipping_cost: Scalars['Float'];
   status: Status;
   user_id?: Maybe<Scalars['Int']>;
 };
@@ -310,7 +290,8 @@ export type SingleOrderItem = {
   amount: Scalars['Int'];
   id: Scalars['Int'];
   order_id: Scalars['Int'];
-  price: Scalars['Int'];
+  price: Scalars['Float'];
+  product?: Maybe<Product>;
   product_id: Scalars['Int'];
 };
 
@@ -425,6 +406,11 @@ export type DeleteCompanyMutationVariables = Exact<{
 
 
 export type DeleteCompanyMutation = { __typename?: 'Mutation', deleteCompany: boolean };
+
+export type GetAllOrdersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllOrdersQuery = { __typename?: 'Query', orders: Array<{ __typename?: 'Order', id: number, status: Status, user_id?: number | null, buyer_name: string, buyer_email: string, buyer_phone?: string | null, delivery_address: string, shipping_cost: number, order_items: Array<{ __typename?: 'SingleOrderItem', amount: number, price: number, product?: { __typename?: 'Product', name: string } | null }> }> };
 
 export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -782,6 +768,54 @@ export function useDeleteCompanyMutation(baseOptions?: Apollo.MutationHookOption
 export type DeleteCompanyMutationHookResult = ReturnType<typeof useDeleteCompanyMutation>;
 export type DeleteCompanyMutationResult = Apollo.MutationResult<DeleteCompanyMutation>;
 export type DeleteCompanyMutationOptions = Apollo.BaseMutationOptions<DeleteCompanyMutation, DeleteCompanyMutationVariables>;
+export const GetAllOrdersDocument = gql`
+    query GetAllOrders {
+  orders {
+    id
+    status
+    user_id
+    buyer_name
+    buyer_email
+    buyer_phone
+    delivery_address
+    shipping_cost
+    order_items {
+      amount
+      price
+      product {
+        name
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetAllOrdersQuery__
+ *
+ * To run a query within a React component, call `useGetAllOrdersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllOrdersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllOrdersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllOrdersQuery(baseOptions?: Apollo.QueryHookOptions<GetAllOrdersQuery, GetAllOrdersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllOrdersQuery, GetAllOrdersQueryVariables>(GetAllOrdersDocument, options);
+      }
+export function useGetAllOrdersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllOrdersQuery, GetAllOrdersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllOrdersQuery, GetAllOrdersQueryVariables>(GetAllOrdersDocument, options);
+        }
+export type GetAllOrdersQueryHookResult = ReturnType<typeof useGetAllOrdersQuery>;
+export type GetAllOrdersLazyQueryHookResult = ReturnType<typeof useGetAllOrdersLazyQuery>;
+export type GetAllOrdersQueryResult = Apollo.QueryResult<GetAllOrdersQuery, GetAllOrdersQueryVariables>;
 export const GetAllProductsDocument = gql`
     query GetAllProducts {
   products {

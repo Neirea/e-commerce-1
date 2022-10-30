@@ -57,6 +57,8 @@ const Checkout = () => {
 			}),
 		})
 			.then((res) => {
+				//clear cart on successful request
+				clearCart();
 				if (res.ok) {
 					return res.json();
 				}
@@ -64,8 +66,6 @@ const Checkout = () => {
 				return res.json().then((json) => Promise.reject(json));
 			})
 			.then(({ url }) => {
-				//clear cart on successful request
-				clearCart();
 				//open stripe window
 				window.open(url, "_self");
 			})
