@@ -1,8 +1,6 @@
 import { gql } from "apollo-server-express";
 
 const orderTypes = gql`
-    # create scalar or enum for status
-
     enum Status {
         PENDING
         ACCEPTED

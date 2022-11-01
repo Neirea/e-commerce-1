@@ -1,124 +1,126 @@
 import { Platform, PrismaClient, Role } from "@prisma/client";
-import AuthenticationError from "./errors/authentication";
 import type { Request, Response } from "express";
 import passport from "passport";
 import {
-	Profile as FacebookProfile,
-	Strategy as FacebookStrategy,
+    Profile as FacebookProfile,
+    Strategy as FacebookStrategy,
 } from "passport-facebook";
 import type {
-	Profile as GoogleProfile,
-	VerifyCallback,
+    Profile as GoogleProfile,
+    VerifyCallback,
 } from "passport-google-oauth20";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import AuthenticationError from "./errors/authentication";
 import { app } from "./index";
 
-const prisma = new PrismaClient({ log: ["query"] });
+const prisma = new PrismaClient();
 const clientUrl = process.env.CLIENT_URL!;
 
 export const failedLogin = (req: Request, res: Response) => {
-	res.status(401).redirect(`${clientUrl}/login?error=login_failed`);
+    res.status(401).redirect(`${clientUrl}/login?error=login_failed`);
 };
 
 export const loginCallback = (req: Request, res: Response) => {
-	const redirect = app.get("redirect");
-	app.set("redirect", undefined);
+    const redirect = app.get("redirect");
+    app.set("redirect", undefined);
 
-	if (!req.user) {
-		throw new AuthenticationError("Authentication error. Something went wrong");
-	}
-	if (req.session) {
-		req.session.user = req.user.user;
-		req.session.accessToken = req.user.accessToken;
-	}
+    if (!req.user) {
+        throw new AuthenticationError(
+            "Authentication error. Something went wrong"
+        );
+    }
+    if (req.session) {
+        req.session.user = req.user.user;
+        req.session.accessToken = req.user.accessToken;
+    }
 
-	// Successful authentication, redirect to page where user specifies username
-	res.redirect(`${clientUrl}/${redirect}`);
+    // Successful authentication, redirect to page where user specifies username
+    res.redirect(`${clientUrl}/${redirect}`);
 };
 
 /* login actions */
 const loginGoogle = async (
-	req: Request,
-	accessToken: string | undefined,
-	refreshToken: string | undefined,
-	profile: GoogleProfile,
-	done: VerifyCallback
+    req: Request,
+    accessToken: string | undefined,
+    refreshToken: string | undefined,
+    profile: GoogleProfile,
+    done: VerifyCallback
 ) => {
-	const { id, name, _json } = profile;
+    const { id, name, _json } = profile;
 
-	let user = await prisma.user.findFirst({
-		where: { platform_id: id },
-	});
-	if (!user) {
-		//update profile if different
-		const isFirstAccount = (await prisma.user.count()) === 0;
+    let user = await prisma.user.findFirst({
+        where: { platform_id: id },
+    });
+    if (!user) {
+        //update profile if different
+        const isFirstAccount = (await prisma.user.count()) === 0;
 
-		const userData = {
-			given_name: name?.givenName || "",
-			family_name: name?.familyName || "",
-			platform_id: id,
-			platform: Platform.GOOGLE,
-			role: isFirstAccount ? Object.values(Role) : [Role.USER],
-			address: "",
-			email: _json.email!,
-			avatar: _json.picture || "",
-		};
-		user = await prisma.user.create({ data: userData });
-	}
+        const userData = {
+            given_name: name?.givenName || "",
+            family_name: name?.familyName || "",
+            platform_id: id,
+            platform: Platform.GOOGLE,
+            role: isFirstAccount ? Object.values(Role) : [Role.USER],
+            address: "",
+            email: _json.email!,
+            avatar: _json.picture || "",
+        };
+        user = await prisma.user.create({ data: userData });
+    }
 
-	done(null, { user, accessToken });
+    done(null, { user, accessToken });
 };
 
 const loginFacebook = async (
-	accessToken: string | undefined,
-	refreshToken: string | undefined,
-	profile: FacebookProfile,
-	done: VerifyCallback
+    accessToken: string | undefined,
+    refreshToken: string | undefined,
+    profile: FacebookProfile,
+    done: VerifyCallback
 ) => {
-	const { id, name, photos, emails } = profile;
+    const { id, name, photos, emails } = profile;
 
-	let user = await prisma.user.findFirst({
-		where: { platform_id: id },
-	});
+    let user = await prisma.user.findFirst({
+        where: { platform_id: id },
+    });
 
-	if (!user) {
-		const isFirstAccount = (await prisma.user.count()) === 0;
+    if (!user) {
+        const isFirstAccount = (await prisma.user.count()) === 0;
 
-		const userData = {
-			given_name: name?.givenName || "",
-			family_name: name?.familyName || "",
-			platform: Platform.FACEBOOK,
-			platform_id: id,
-			role: isFirstAccount ? Role.ADMIN : Role.USER,
-			address: "",
-			email: emails ? emails[0].value : "",
-			avatar: photos ? photos[0].value : "",
-		};
-		user = await prisma.user.create({ data: userData });
-	}
+        const userData = {
+            given_name: name?.givenName || "",
+            family_name: name?.familyName || "",
+            platform: Platform.FACEBOOK,
+            platform_id: id,
+            role: isFirstAccount ? Role.ADMIN : Role.USER,
+            address: "",
+            email: emails ? emails[0].value : "",
+            avatar: photos ? photos[0].value : "",
+        };
+        user = await prisma.user.create({ data: userData });
+    }
 
-	done(null, { user, accessToken });
+    done(null, { user, accessToken });
 };
 
 passport.use(
-	new GoogleStrategy(
-		{
-			clientID: process.env.GOOGLE_CLIENT_ID!,
-			clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-			callbackURL: "/api/auth/google/callback",
-			passReqToCallback: true,
-		},
-		loginGoogle
-	)
+    new GoogleStrategy(
+        {
+            clientID: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            callbackURL: "/api/auth/google/callback",
+            passReqToCallback: true,
+        },
+        loginGoogle
+    )
 );
 passport.use(
-	new FacebookStrategy(
-		{
-			clientID: process.env.FACEBOOK_CLIENT_ID!,
-			clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
-			callbackURL: "/api/auth/facebook/callback",
-			profileFields: ["emails", "name", "photos"],
-		},
-		loginFacebook
-	)
+    new FacebookStrategy(
+        {
+            clientID: process.env.FACEBOOK_CLIENT_ID!,
+            clientSecret: process.env.FACEBOOK_CLIENT_SECRET!,
+            callbackURL: "/api/auth/facebook/callback",
+            profileFields: ["emails", "name", "photos"],
+        },
+        loginFacebook
+    )
 );

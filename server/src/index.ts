@@ -2,6 +2,8 @@
 import "dotenv/config";
 import "express-async-errors";
 //packages
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { ApolloServer } from "apollo-server-express";
 import { v2 as cloudinary } from "cloudinary";
 import connectRedis from "connect-redis";
 import cors from "cors";
@@ -13,11 +15,9 @@ import helmet from "helmet";
 import Redis from "ioredis";
 import passport from "passport";
 //user imports
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
-import { ApolloServer } from "apollo-server-express";
+import apiRouter from "./apiRouter";
 import notFound from "./middleware/not-found";
 import { resolvers, typeDefs } from "./schema";
-import apiRouter from "./apiRouter";
 
 export const app = express();
 

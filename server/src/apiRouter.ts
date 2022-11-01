@@ -1,6 +1,6 @@
 import { OrderStatus, PrismaClient, Role } from "@prisma/client";
 import { v2 as cloudinary } from "cloudinary";
-import { Router, Request } from "express";
+import { Request, Router } from "express";
 import { UploadedFile } from "express-fileupload";
 import fs from "fs";
 import { StatusCodes } from "http-status-codes";
@@ -27,7 +27,7 @@ interface CustomRequest<T> extends Request {
 }
 
 const router = Router();
-const prisma = new PrismaClient({ log: ["query"] });
+const prisma = new PrismaClient();
 const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY!, {
     apiVersion: "2022-08-01",
 });
@@ -184,7 +184,7 @@ router.get("/payment/:orderId", async (req, res) => {
     const isSuccess = req.query.success === "true" ? true : false;
     const orderId = +req.params.orderId;
     if (isSuccess) {
-        await prisma.order.update({
+        const order = await prisma.order.update({
             where: {
                 id: orderId,
             },
@@ -192,7 +192,25 @@ router.get("/payment/:orderId", async (req, res) => {
                 status: OrderStatus.ACCEPTED,
                 payment_time: new Date(),
             },
+            include: {
+                order_items: true,
+            },
         });
+        console.log(order);
+
+        order.order_items.forEach(async (o) => {
+            await prisma.product.update({
+                where: {
+                    id: o.product_id,
+                },
+                data: {
+                    inventory: {
+                        decrement: o.amount,
+                    },
+                },
+            });
+        });
+
         res.redirect(
             `${clientUrl}/order_payment?order_id=${orderId}&success=true`
         );
