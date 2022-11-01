@@ -296,7 +296,7 @@ router.post("/editor/upload-images", async (req, res) => {
                         {
                             width: 640,
                             height: 640,
-                            crop: "lfill",
+                            crop: "pad",
                             fetch_format: "jpg",
                         },
                     ],

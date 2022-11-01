@@ -96,6 +96,7 @@ const productResolvers = {
                 },
                 select: {
                     price: true,
+                    discount: true,
                     category: {
                         select: {
                             id: true,
@@ -119,10 +120,11 @@ const productResolvers = {
             const maxPrice = input.max_price ?? 2147483647;
             const minPrice = input.min_price ?? 0;
             data.forEach((p) => {
-                if (p.price < min) min = p.price;
-                if (p.price > max) max = p.price;
+                const price = ((100 - p.discount) / 100) * p.price;
+                if (price < min) min = price;
+                if (price > max) max = price;
                 if (input.max_price || input.min_price) {
-                    if (p.price <= maxPrice && p.price >= minPrice) {
+                    if (price <= maxPrice && price >= minPrice) {
                         allCategories.push(p.category);
                         allCompanies.push(p.company);
                     }
