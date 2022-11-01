@@ -82,6 +82,7 @@ model Order {
   buyer_email String
   buyer_phone String?
   delivery_address String
+  created_at DateTime @default(now())
   payment_time DateTime?
 }
 

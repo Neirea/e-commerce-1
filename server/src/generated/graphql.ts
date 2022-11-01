@@ -147,6 +147,7 @@ export type Order = {
   buyer_email: Scalars['String'];
   buyer_name: Scalars['String'];
   buyer_phone?: Maybe<Scalars['String']>;
+  created_at: Scalars['Date'];
   delivery_address: Scalars['String'];
   id: Scalars['Int'];
   order_items: Array<SingleOrderItem>;
@@ -538,6 +539,7 @@ export type OrderResolvers<ContextType = any, ParentType extends ResolversParent
   buyer_email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   buyer_name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   buyer_phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   delivery_address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   order_items?: Resolver<Array<ResolversTypes['SingleOrderItem']>, ParentType, ContextType>;
