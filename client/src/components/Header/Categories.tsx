@@ -1,9 +1,9 @@
-import { useLayoutEffect, forwardRef, useState, useEffect } from "react";
+import { BiChevronRight } from "@react-icons/all-files/bi/BiChevronRight";
+import { forwardRef, useEffect, useLayoutEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { GetAllCategoriesQuery } from "../../generated/graphql";
-import { BiChevronRight } from "@react-icons/all-files/bi/BiChevronRight";
 
 const createWrapperAndAppend = () => {
     const modalRoot = document.createElement("div");

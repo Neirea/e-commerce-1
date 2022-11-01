@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import Cart from "../../components/Cart";

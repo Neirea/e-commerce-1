@@ -1,10 +1,10 @@
 import { useQuery } from "@apollo/client";
-import { Container, Table, Alert, Button } from "react-bootstrap";
+import { Button, Container, Table } from "react-bootstrap";
+import { v4 as uuidv4 } from "uuid";
+import Loading from "../components/Loading";
 import { GetAllOrdersQuery, Status } from "../generated/graphql";
 import { QUERY_ALL_ORDERS } from "../queries/Order";
-import { v4 as uuidv4 } from "uuid";
 import { toPriceNumber } from "../utils/numbers";
-import Loading from "../components/Loading";
 import { serverUrl } from "../utils/server";
 
 const Orders = () => {

@@ -6,22 +6,22 @@ import Company from "./Company";
 import Product from "./Product";
 
 const Editor = () => {
-	const { user } = useAppContext();
-	return (
-		<Container as="main">
-			<Row>
-				{user?.role.some((role) => [Role.ADMIN].includes(role)) && (
-					<Col>
-						<Category />
-						<Company />
-					</Col>
-				)}
-				<Col>
-					<Product />
-				</Col>
-			</Row>
-		</Container>
-	);
+    const { user } = useAppContext();
+    return (
+        <Container as="main">
+            <Row>
+                {user?.role.some((role) => [Role.ADMIN].includes(role)) && (
+                    <Col>
+                        <Category />
+                        <Company />
+                    </Col>
+                )}
+                <Col>
+                    <Product />
+                </Col>
+            </Row>
+        </Container>
+    );
 };
 
 export default Editor;

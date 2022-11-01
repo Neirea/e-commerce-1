@@ -1,23 +1,23 @@
-import { Routes, Route } from "react-router-dom";
+import { Container } from "react-bootstrap";
+import { Route, Routes } from "react-router-dom";
 import "./bootstrap.theme.css";
-import Home from "./pages/Home/Home";
 import Footer from "./components/Footer";
 import Header from "./components/Header/Header";
-import SearchPage from "./pages/SearchPage";
-import Editor from "./pages/Editor/Editor";
-import Unauthorized from "./pages/Unauthorized";
-import Error from "./pages/Error";
-import { useAppContext } from "./context/AppContext";
-import { Container } from "react-bootstrap";
 import RequireAuth from "./components/RequireAuth";
-import { Role } from "./generated/graphql";
-import UserProfile from "./pages/UserProfile";
 import ScrollToTop from "./components/ScrollToTop";
-import Product from "./pages/Product/Product";
-import Help from "./pages/Help";
+import { useAppContext } from "./context/AppContext";
+import { Role } from "./generated/graphql";
 import Checkout from "./pages/Checkout";
+import Editor from "./pages/Editor/Editor";
+import Error from "./pages/Error";
+import Help from "./pages/Help";
+import Home from "./pages/Home/Home";
 import OrderPayment from "./pages/OrderPayment";
 import Orders from "./pages/Orders";
+import Product from "./pages/Product/Product";
+import SearchPage from "./pages/SearchPage";
+import Unauthorized from "./pages/Unauthorized";
+import UserProfile from "./pages/UserProfile";
 
 function App() {
     const { user, isLoading } = useAppContext();

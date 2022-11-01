@@ -1,10 +1,10 @@
 import { ChangeEvent, useState } from "react";
-import { useCartContext } from "../context/CartContext";
-import { serverUrl } from "../utils/server";
-import { Button, Col, Container, Image, Form, Row } from "react-bootstrap";
-import { toPriceNumber } from "../utils/numbers";
+import { Button, Col, Container, Form, Image, Row } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
 import { useAppContext } from "../context/AppContext";
+import { useCartContext } from "../context/CartContext";
+import { toPriceNumber } from "../utils/numbers";
+import { serverUrl } from "../utils/server";
 
 const Checkout = () => {
     const { user } = useAppContext();
