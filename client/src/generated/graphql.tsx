@@ -148,6 +148,7 @@ export type Order = {
   buyer_email: Scalars['String'];
   buyer_name: Scalars['String'];
   buyer_phone?: Maybe<Scalars['String']>;
+  created_at: Scalars['Date'];
   delivery_address: Scalars['String'];
   id: Scalars['Int'];
   order_items: Array<SingleOrderItem>;
@@ -410,7 +411,7 @@ export type DeleteCompanyMutation = { __typename?: 'Mutation', deleteCompany: bo
 export type GetAllOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllOrdersQuery = { __typename?: 'Query', orders: Array<{ __typename?: 'Order', id: number, status: Status, user_id?: number | null, buyer_name: string, buyer_email: string, buyer_phone?: string | null, delivery_address: string, shipping_cost: number, order_items: Array<{ __typename?: 'SingleOrderItem', amount: number, price: number, product: { __typename?: 'Product', name: string, price: number, discount: number } }> }> };
+export type GetAllOrdersQuery = { __typename?: 'Query', orders: Array<{ __typename?: 'Order', id: number, status: Status, user_id?: number | null, buyer_name: string, buyer_email: string, buyer_phone?: string | null, delivery_address: string, shipping_cost: number, created_at: any, order_items: Array<{ __typename?: 'SingleOrderItem', amount: number, price: number, product: { __typename?: 'Product', name: string, price: number, discount: number } }> }> };
 
 export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -779,6 +780,7 @@ export const GetAllOrdersDocument = gql`
     buyer_phone
     delivery_address
     shipping_cost
+    created_at
     order_items {
       amount
       price

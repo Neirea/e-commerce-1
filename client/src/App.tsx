@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+import "./bootstrap.theme.css";
 import Home from "./pages/Home/Home";
 import Footer from "./components/Footer";
 import Header from "./components/Header/Header";
@@ -20,51 +20,68 @@ import OrderPayment from "./pages/OrderPayment";
 import Orders from "./pages/Orders";
 
 function App() {
-	const { user, isLoading } = useAppContext();
+    const { user, isLoading } = useAppContext();
 
-	return (
-		<>
-			<Header />
-			{isLoading ? (
-				<Container as="main" className="main-loading" />
-			) : (
-				<>
-					<ScrollToTop />
-					<Routes>
-						<Route path="/" element={<Home />} />
-						<Route path="/search" element={<SearchPage />} />
-						<Route path="/help" element={<Help />} />
-						{/* editor routes */}
-						<Route
-							element={<RequireAuth allowedRoles={[Role.ADMIN, Role.EDITOR]} />}
-						>
-							<Route path="/editor" element={<Editor />} />
-						</Route>
-						<Route path="/product/:id" element={<Product />} />
-						<Route path="/checkout" element={<Checkout />} />
-						<Route path="/order_payment" element={<OrderPayment />} />
+    return (
+        <>
+            <Header />
+            {isLoading ? (
+                <Container as="main" className="main-loading" />
+            ) : (
+                <>
+                    <ScrollToTop />
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/search" element={<SearchPage />} />
+                        <Route path="/help" element={<Help />} />
+                        {/* editor routes */}
+                        <Route
+                            element={
+                                <RequireAuth
+                                    allowedRoles={[Role.ADMIN, Role.EDITOR]}
+                                />
+                            }
+                        >
+                            <Route path="/editor" element={<Editor />} />
+                        </Route>
+                        <Route path="/product/:id" element={<Product />} />
+                        <Route path="/checkout" element={<Checkout />} />
+                        <Route
+                            path="/order_payment"
+                            element={<OrderPayment />}
+                        />
 
-						{/* user routes */}
-						<Route
-							element={
-								<RequireAuth
-									allowedRoles={[Role.ADMIN, Role.EDITOR, Role.USER]}
-								/>
-							}
-						>
-							<Route path="/profile" element={<UserProfile user={user} />} />
-							<Route path="/orders" element={<Orders />} />
-						</Route>
-						{/* error routes */}
-						<Route path="/unauthorized" element={<Unauthorized />} />
-						<Route path="*" element={<Error />} />
-					</Routes>
-				</>
-			)}
+                        {/* user routes */}
+                        <Route
+                            element={
+                                <RequireAuth
+                                    allowedRoles={[
+                                        Role.ADMIN,
+                                        Role.EDITOR,
+                                        Role.USER,
+                                    ]}
+                                />
+                            }
+                        >
+                            <Route
+                                path="/profile"
+                                element={<UserProfile user={user} />}
+                            />
+                            <Route path="/orders" element={<Orders />} />
+                        </Route>
+                        {/* error routes */}
+                        <Route
+                            path="/unauthorized"
+                            element={<Unauthorized />}
+                        />
+                        <Route path="*" element={<Error />} />
+                    </Routes>
+                </>
+            )}
 
-			<Footer />
-		</>
-	);
+            <Footer />
+        </>
+    );
 }
 
 export default App;
