@@ -1,5 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { Button, Container, Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import Loading from "../components/Loading";
 import { GetAllOrdersQuery, Status } from "../generated/graphql";
@@ -137,11 +138,16 @@ const Orders = () => {
                                                                         width: "80%",
                                                                     }}
                                                                 >
-                                                                    {
-                                                                        item
-                                                                            .product
-                                                                            ?.name
-                                                                    }
+                                                                    <Link
+                                                                        className="custom-link"
+                                                                        to={`/product/${item.product.id}`}
+                                                                    >
+                                                                        {
+                                                                            item
+                                                                                .product
+                                                                                .name
+                                                                        }
+                                                                    </Link>
                                                                 </td>
                                                                 <td
                                                                     style={{

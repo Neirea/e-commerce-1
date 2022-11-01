@@ -16,6 +16,7 @@ export const QUERY_ALL_ORDERS = gql`
                 amount
                 price
                 product {
+                    id
                     name
                     price
                     discount

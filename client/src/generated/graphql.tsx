@@ -411,7 +411,7 @@ export type DeleteCompanyMutation = { __typename?: 'Mutation', deleteCompany: bo
 export type GetAllOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllOrdersQuery = { __typename?: 'Query', orders: Array<{ __typename?: 'Order', id: number, status: Status, user_id?: number | null, buyer_name: string, buyer_email: string, buyer_phone?: string | null, delivery_address: string, shipping_cost: number, created_at: any, order_items: Array<{ __typename?: 'SingleOrderItem', amount: number, price: number, product: { __typename?: 'Product', name: string, price: number, discount: number } }> }> };
+export type GetAllOrdersQuery = { __typename?: 'Query', orders: Array<{ __typename?: 'Order', id: number, status: Status, user_id?: number | null, buyer_name: string, buyer_email: string, buyer_phone?: string | null, delivery_address: string, shipping_cost: number, created_at: any, order_items: Array<{ __typename?: 'SingleOrderItem', amount: number, price: number, product: { __typename?: 'Product', id: number, name: string, price: number, discount: number } }> }> };
 
 export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -785,6 +785,7 @@ export const GetAllOrdersDocument = gql`
       amount
       price
       product {
+        id
         name
         price
         discount
