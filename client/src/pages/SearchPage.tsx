@@ -246,7 +246,7 @@ const SearchPage = () => {
                             Couldn't find any products with this search
                         </h2>
                     )}
-                    {searchLoading && (
+                    {searchLoading && !productData?.filteredProducts && (
                         <div className="mt-5">
                             <Loading />
                         </div>
