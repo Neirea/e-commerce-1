@@ -25,7 +25,7 @@ const Home = () => {
                     <Row className="w-100">
                         <Col className="col-7 p-0 d-none d-lg-block">
                             <img
-                                src="https://res.cloudinary.com/dna5i1spz/image/upload/v1663072786/ecommerce-1/static/logo_left_abz14a.jpg"
+                                src="https://res.cloudinary.com/dna5i1spz/image/upload/v1667474975/ecommerce-1/static/logo_left_dqui4i.jpg"
                                 alt="First img"
                                 width="100%"
                                 height="100%"

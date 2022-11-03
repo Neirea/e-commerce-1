@@ -47,7 +47,7 @@ const Header = () => {
             sticky="top"
             style={{ height: "70px" }}
         >
-            <Container className="d-flex">
+            <Container className="d-flex gap-2">
                 <Navbar.Brand href="/" className="d-none d-lg-block">
                     Techway
                 </Navbar.Brand>
