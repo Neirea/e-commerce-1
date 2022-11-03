@@ -196,7 +196,6 @@ router.get("/payment/:orderId", async (req, res) => {
                 order_items: true,
             },
         });
-        console.log(order);
 
         order.order_items.forEach(async (o) => {
             await prisma.product.update({

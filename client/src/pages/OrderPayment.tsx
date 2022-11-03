@@ -1,9 +1,11 @@
 import qs from "query-string";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
 
 const OrderPayment = () => {
     const navigate = useNavigate();
+    const { user } = useAppContext();
     const searchParams = qs.parse(location.search);
 
     return (
@@ -11,11 +13,13 @@ const OrderPayment = () => {
             {searchParams.success === "true" ? (
                 <h2>Payment was successfuly received</h2>
             ) : (
-                <h2>Payment was canceled. Go to your order to try again</h2>
+                <h2>Payment was canceled. Please try again</h2>
             )}
-            <Button variant="success" onClick={() => navigate("/orders")}>
-                Your orders
-            </Button>
+            {user && (
+                <Button variant="success" onClick={() => navigate("/orders")}>
+                    Your orders
+                </Button>
+            )}
         </main>
     );
 };
