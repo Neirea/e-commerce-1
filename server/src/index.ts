@@ -111,6 +111,7 @@ export const app = express();
     //REST API Routes
     app.use("/api", apiRouter);
     app.use("/", (req, res) => {
+        console.log(req.session);
         res.send("Welcome to Tech Stop demo server");
     });
 
