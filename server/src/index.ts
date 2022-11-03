@@ -48,6 +48,7 @@ export const app = express();
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 maxAge: 1000 * 60 * 60 * 24 * 30, //30 days
+                domain: process.env.CLIENT_URL!,
             },
         })
     );
@@ -101,7 +102,6 @@ export const app = express();
             return err;
         },
     });
-
     await server.start();
     server.applyMiddleware({ app, cors: corsOptions });
 
@@ -111,7 +111,6 @@ export const app = express();
     //REST API Routes
     app.use("/api", apiRouter);
     app.use("/", (req, res) => {
-        console.log("base session=", req.session);
         res.send("Welcome to Tech Stop demo server");
     });
 
