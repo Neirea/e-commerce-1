@@ -110,6 +110,9 @@ export const app = express();
 
     //REST API Routes
     app.use("/api", apiRouter);
+    app.use("/", (req, res) => {
+        res.send("Welcome to Tech Stop demo server");
+    });
 
     // not found middleware
     app.use(notFound);
