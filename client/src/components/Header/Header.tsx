@@ -14,7 +14,7 @@ import SearchBar from "./SearchBar";
 import UserMenu from "./UserMenu";
 
 const Header = () => {
-    const { user } = useAppContext();
+    const { user, isLoading } = useAppContext();
     const { cart } = useCartContext();
     const { data } = useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
 
@@ -76,7 +76,7 @@ const Header = () => {
                             style={{ minWidth: "5rem" }}
                             className="d-flex justify-content-end"
                         >
-                            Login
+                            {isLoading ? "" : "Login"}
                         </Nav.Link>
                     )}
                     <Login handleClose={handleCloseLogin} show={showLogin} />

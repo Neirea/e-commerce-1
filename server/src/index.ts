@@ -27,7 +27,7 @@ export const app = express();
         api_key: process.env.CLDNRY_API_KEY,
         api_secret: process.env.CLDNRY_API_SECRET,
     });
-    app.set("trust proxy", 1);
+    // app.set("trust proxy", 1);
     app.use(helmet());
     app.use(buildCheckFunction(["body", "query", "params"])());
     app.use(fileUpload({ useTempFiles: true }));
