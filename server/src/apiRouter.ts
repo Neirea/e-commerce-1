@@ -244,7 +244,6 @@ router.get("/auth/login/facebook", (req, res, next) => {
     app.set("redirect", req.query.path);
     passport.authenticate("facebook", {
         session: false,
-        scope: ["email"],
     })(req, res, next);
 });
 router.get(
