@@ -44,6 +44,7 @@ export const app = express();
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET!,
             resave: false,
+            proxy: true,
             cookie: {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
@@ -62,8 +63,6 @@ export const app = express();
         typeDefs,
         resolvers,
         context: ({ req, res }) => {
-            console.log("context session=", req.session);
-
             return { req, res };
         },
         plugins: [
@@ -115,6 +114,8 @@ export const app = express();
     //REST API Routes
     app.use("/api", apiRouter);
     app.use("/", (req, res) => {
+        console.log("base session user=", req.session.user);
+
         res.send("Welcome to Tech Stop demo server");
     });
 
