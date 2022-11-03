@@ -103,10 +103,12 @@ export const app = express();
         },
     });
     await server.start();
-    server.applyMiddleware({ app, cors: corsOptions });
 
     //init passport
     app.use(passport.initialize());
+
+    //graphql cors middleware
+    server.applyMiddleware({ app, cors: corsOptions });
 
     //REST API Routes
     app.use("/api", apiRouter);
