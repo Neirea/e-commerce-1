@@ -53,7 +53,7 @@ export const app = express();
     );
 
     const corsOptions = {
-        origin: [process.env.CLIENT_URL!],
+        origin: [process.env.CLIENT_URL!, "https://*.netlify.app"],
         credentials: true,
     };
     app.use(cors(corsOptions));
