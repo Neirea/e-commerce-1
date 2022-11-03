@@ -62,6 +62,8 @@ export const app = express();
         typeDefs,
         resolvers,
         context: ({ req, res }) => {
+            console.log("context session=", req.session);
+
             return { req, res };
         },
         plugins: [
