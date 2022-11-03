@@ -71,7 +71,13 @@ const Header = () => {
                     {user ? (
                         <UserMenu />
                     ) : (
-                        <Nav.Link onClick={handleShowLogin}>Login</Nav.Link>
+                        <Nav.Link
+                            onClick={handleShowLogin}
+                            style={{ minWidth: "5rem" }}
+                            className="d-flex justify-content-end"
+                        >
+                            Login
+                        </Nav.Link>
                     )}
                     <Login handleClose={handleCloseLogin} show={showLogin} />
                     {/* make this link look like button aboove */}

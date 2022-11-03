@@ -54,6 +54,8 @@ const userResolvers = {
             return prisma.user.findUnique({ where: { id: id } });
         },
         showMe: (parent: any, args: undefined, { req }: { req: Request }) => {
+            console.log("session=", req.session.user);
+
             if (!req.session.user) {
                 return undefined;
             }
