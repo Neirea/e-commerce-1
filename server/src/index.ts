@@ -60,7 +60,7 @@ export const app = express();
     const server = new ApolloServer({
         typeDefs,
         resolvers,
-        context: async ({ req, res }) => {
+        context: ({ req, res }) => {
             return { req, res };
         },
         plugins: [

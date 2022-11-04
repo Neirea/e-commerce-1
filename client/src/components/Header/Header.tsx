@@ -6,6 +6,7 @@ import { useAppContext } from "../../context/AppContext";
 import { useCartContext } from "../../context/CartContext";
 import { GetAllCategoriesQuery } from "../../generated/graphql";
 import { QUERY_ALL_CATEGORIES } from "../../queries/Category";
+import { serverUrl } from "../../utils/server";
 import { useOutsideClick } from "../../utils/useOutsideClick";
 import Cart from "../Cart";
 import Login from "../Login";
@@ -37,6 +38,9 @@ const Header = () => {
     // Cart Modal
     const handleShowCart = () => setShowCart(true);
     const handleCloseCart = () => setShowCart(false);
+    const handleTest = () => {
+        fetch(`${serverUrl}/`);
+    };
 
     useOutsideClick([menuButtonRef, categoriesRef], handleCloseCategories);
 
@@ -66,6 +70,7 @@ const Header = () => {
                         ref={categoriesRef}
                     />
                 )}
+                <Button onClick={handleTest}>Test</Button>
                 <SearchBar />
                 <Nav className="d-flex align-items-center">
                     {user ? (
