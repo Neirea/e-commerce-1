@@ -28,6 +28,7 @@ export const app = express();
         api_secret: process.env.CLDNRY_API_SECRET,
     });
     app.set("trust proxy", 1);
+    app.enable("trust proxy");
     app.use(helmet());
     app.use(buildCheckFunction(["body", "query", "params"])());
     app.use(fileUpload({ useTempFiles: true }));
@@ -107,12 +108,13 @@ export const app = express();
     app.use(passport.initialize());
 
     //graphql cors middleware
-    server.applyMiddleware({ app, cors: false });
+    server.applyMiddleware({ app, cors: corsOptions });
 
     //REST API Routes
     app.use("/api", apiRouter);
     app.use("/", (req, res) => {
         console.log("base session user=", req.session.user);
+        console.log("ip=", req.ip);
 
         res.send("Welcome to Tech Stop demo server");
     });
