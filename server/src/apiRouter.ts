@@ -258,11 +258,15 @@ router.delete("/auth/logout", (req, res) => {
     if (req.session) {
         //deletes from session from Redis too
         req.session.destroy((err: any) => {
+            console.log(err);
+
             if (err) {
                 return false;
             }
         });
     }
+    console.log("should clear cookie");
+
     res.clearCookie("sid");
     res.status(StatusCodes.OK).json({ message: "Success" });
 });
