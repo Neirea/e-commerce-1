@@ -77,7 +77,7 @@ const loginFacebook = async (
     profile: FacebookProfile,
     done: VerifyCallback
 ) => {
-    const { id, name, photos } = profile;
+    const { id, name, photos, emails } = profile;
 
     let user = await prisma.user.findFirst({
         where: { platform_id: id },
@@ -93,7 +93,7 @@ const loginFacebook = async (
             platform_id: id,
             role: isFirstAccount ? Role.ADMIN : Role.USER,
             address: "",
-            email: "",
+            email: emails ? emails[0].value : "",
             avatar: photos ? photos[0].value : "",
         };
         user = await prisma.user.create({ data: userData });
