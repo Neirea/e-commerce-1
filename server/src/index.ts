@@ -53,7 +53,7 @@ export const app = express();
     );
 
     const corsOptions = {
-        origin: process.env.CLIENT_URL!,
+        origin: [process.env.CLIENT_URL!],
         credentials: true,
     };
     app.use(cors(corsOptions));
@@ -107,7 +107,7 @@ export const app = express();
     app.use(passport.initialize());
 
     //graphql cors middleware
-    server.applyMiddleware({ app, cors: { origin: true, credentials: true } });
+    server.applyMiddleware({ app, cors: corsOptions });
 
     //REST API Routes
     app.use("/api", apiRouter);

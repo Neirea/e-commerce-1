@@ -39,7 +39,7 @@ const Header = () => {
     const handleShowCart = () => setShowCart(true);
     const handleCloseCart = () => setShowCart(false);
     const handleTest = () => {
-        fetch(`${serverUrl}/`);
+        fetch(`${serverUrl}/`, { credentials: "include" });
     };
 
     useOutsideClick([menuButtonRef, categoriesRef], handleCloseCategories);
