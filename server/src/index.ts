@@ -48,6 +48,12 @@ export const app = express();
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 maxAge: 1000 * 60 * 60 * 24 * 30, //30 days
+                sameSite:
+                    process.env.NODE_ENV === "production" ? "none" : undefined,
+                domain:
+                    process.env.NODE_ENV === "production"
+                        ? process.env.CLIENT_URL!
+                        : undefined,
             },
         })
     );
