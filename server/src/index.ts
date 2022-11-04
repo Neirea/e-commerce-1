@@ -50,10 +50,6 @@ export const app = express();
                 maxAge: 1000 * 60 * 60 * 24 * 30, //30 days
                 sameSite:
                     process.env.NODE_ENV === "production" ? "none" : undefined,
-                domain:
-                    process.env.NODE_ENV === "production"
-                        ? "techway-demo.netlify.app"
-                        : undefined,
             },
         })
     );
