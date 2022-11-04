@@ -108,7 +108,7 @@ export const app = express();
     app.use(passport.initialize());
 
     //graphql cors middleware
-    server.applyMiddleware({ app, cors: corsOptions });
+    server.applyMiddleware({ app, cors: false });
 
     //REST API Routes
     app.use("/api", apiRouter);
