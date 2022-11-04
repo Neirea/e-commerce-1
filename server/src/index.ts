@@ -27,7 +27,7 @@ export const app = express();
         api_key: process.env.CLDNRY_API_KEY,
         api_secret: process.env.CLDNRY_API_SECRET,
     });
-    app.set("trust proxy", 1);
+    // app.set("trust proxy", 1);
     app.use(helmet());
     app.use(buildCheckFunction(["body", "query", "params"])());
     app.use(fileUpload({ useTempFiles: true }));
@@ -44,7 +44,6 @@ export const app = express();
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET!,
             resave: false,
-            proxy: true,
             cookie: {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
@@ -108,10 +107,7 @@ export const app = express();
     app.use(passport.initialize());
 
     //graphql cors middleware
-    server.applyMiddleware({
-        app,
-        cors: { ...corsOptions, preflightContinue: true },
-    });
+    server.applyMiddleware({ app, cors: corsOptions });
 
     //REST API Routes
     app.use("/api", apiRouter);
