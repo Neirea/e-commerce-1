@@ -52,7 +52,7 @@ export const app = express();
                     process.env.NODE_ENV === "production" ? "none" : undefined,
                 domain:
                     process.env.NODE_ENV === "production"
-                        ? process.env.CLIENT_URL!
+                        ? "techway-demo.netlify.app"
                         : undefined,
             },
         })
