@@ -258,16 +258,21 @@ router.delete("/auth/logout", (req, res) => {
     if (req.session) {
         //deletes from session from Redis too
         req.session.destroy((err: any) => {
-            console.log(err);
-
             if (err) {
                 return false;
             }
         });
     }
-    console.log("should clear cookie");
 
-    res.clearCookie("sid");
+    if (process.env.NODE_ENV === "production") {
+        res.clearCookie("sid", {
+            sameSite: "none",
+            secure: true,
+        });
+    } else {
+        res.clearCookie("sid");
+    }
+
     res.status(StatusCodes.OK).json({ message: "Success" });
 });
 router.post("/editor/upload-images", async (req, res) => {
