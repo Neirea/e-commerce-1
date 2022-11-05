@@ -4,7 +4,7 @@ import "./bootstrap.theme.css";
 import Footer from "./components/Footer";
 import Header from "./components/Header/Header";
 import RequireAuth from "./components/RequireAuth";
-import ScrollToTop from "./components/ScrollToTop";
+import ScrollAndHash from "./components/ScrollAndHash";
 import { useAppContext } from "./context/AppContext";
 import { Role } from "./generated/graphql";
 import Checkout from "./pages/Checkout";
@@ -29,7 +29,7 @@ function App() {
                 <Container as="main" className="main-loading" />
             ) : (
                 <>
-                    <ScrollToTop />
+                    <ScrollAndHash />
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/search" element={<SearchPage />} />
