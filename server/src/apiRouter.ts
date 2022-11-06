@@ -184,6 +184,7 @@ router.get("/payment/:orderId", async (req, res) => {
     const isSuccess = req.query.success === "true" ? true : false;
     const orderId = +req.params.orderId;
     if (isSuccess) {
+        //update status
         const order = await prisma.order.update({
             where: {
                 id: orderId,
@@ -196,7 +197,7 @@ router.get("/payment/:orderId", async (req, res) => {
                 order_items: true,
             },
         });
-
+        // remove items from inventory
         order.order_items.forEach(async (o) => {
             await prisma.product.update({
                 where: {

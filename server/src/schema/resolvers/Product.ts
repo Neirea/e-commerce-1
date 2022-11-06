@@ -115,7 +115,7 @@ const productResolvers = {
                     company_id: input.company_id ?? undefined,
                     category_id: searchCategoryIds.length
                         ? { in: searchCategoryIds }
-                        : undefined,
+                        : input.category_id ?? undefined,
                 },
                 select: {
                     price: true,
@@ -262,7 +262,7 @@ const productResolvers = {
                     company_id: input.company_id ?? undefined,
                     category_id: searchCategoryIds.length
                         ? { in: searchCategoryIds }
-                        : undefined,
+                        : input.category_id ?? undefined,
                     price: {
                         gte: input.min_price ?? undefined,
                         lte: input.max_price ?? undefined,
