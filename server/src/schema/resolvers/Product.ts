@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { Prisma, PrismaClient, Role } from "@prisma/client";
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { v2 as cloudinary } from "cloudinary";
 import { Request } from "express";
@@ -14,6 +14,17 @@ import type {
 } from "../../generated/graphql";
 
 const prisma = new PrismaClient();
+
+const subCategoriesQuery = (
+    category_id: number
+) => Prisma.sql`WITH RECURSIVE subcategory AS (
+    SELECT ctg.id,ctg.name,ctg.parent_id FROM public."Category" AS ctg WHERE parent_id IS NULL AND id = ${category_id}
+UNION ALL
+    SELECT sc.id,sc.name,sc.parent_id FROM public."Category" sc
+    JOIN subcategory subcat
+    ON sc.parent_id = subcat.id
+)
+SELECT subcategory.id FROM subcategory;`;
 
 const productResolvers = {
     JSON: GraphQLJSON,
@@ -71,22 +82,11 @@ const productResolvers = {
 
             const searchCategoryIds: number[] = [];
             if (input.category_id) {
-                await prisma.category
-                    .findMany({
-                        where: {
-                            OR: [
-                                {
-                                    parent_id: input.category_id,
-                                },
-                                {
-                                    id: input.category_id,
-                                },
-                            ],
-                        },
-                    })
-                    .then((c) =>
-                        c.forEach((i) => searchCategoryIds.push(i.id))
-                    );
+                await prisma.$queryRaw<{ id: number }[]>`
+                    ${subCategoriesQuery(input.category_id)}
+                    `.then((res) =>
+                    res.forEach((i) => searchCategoryIds.push(i.id))
+                );
             }
 
             const data = await prisma.product.findMany({
@@ -113,10 +113,8 @@ const productResolvers = {
                         },
                     ],
                     company_id: input.company_id ?? undefined,
-                    category_id: input.category_id
-                        ? searchCategoryIds.length
-                            ? { in: searchCategoryIds }
-                            : input.category_id
+                    category_id: searchCategoryIds.length
+                        ? { in: searchCategoryIds }
                         : undefined,
                 },
                 select: {
@@ -230,22 +228,11 @@ const productResolvers = {
             const searchCategoryIds: number[] = [];
 
             if (input.category_id) {
-                await prisma.category
-                    .findMany({
-                        where: {
-                            OR: [
-                                {
-                                    parent_id: input.category_id,
-                                },
-                                {
-                                    id: input.category_id,
-                                },
-                            ],
-                        },
-                    })
-                    .then((c) =>
-                        c.forEach((i) => searchCategoryIds.push(i.id))
-                    );
+                await prisma.$queryRaw<{ id: number }[]>`
+                    ${subCategoriesQuery(input.category_id)}
+                    `.then((res) =>
+                    res.forEach((i) => searchCategoryIds.push(i.id))
+                );
             }
             const data = await prisma.product.findMany({
                 skip: offset,
@@ -273,10 +260,8 @@ const productResolvers = {
                         },
                     ],
                     company_id: input.company_id ?? undefined,
-                    category_id: input.category_id
-                        ? searchCategoryIds.length
-                            ? { in: searchCategoryIds }
-                            : input.category_id
+                    category_id: searchCategoryIds.length
+                        ? { in: searchCategoryIds }
                         : undefined,
                     price: {
                         gte: input.min_price ?? undefined,
