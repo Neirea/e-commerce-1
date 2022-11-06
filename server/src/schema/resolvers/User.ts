@@ -39,7 +39,6 @@ const userResolvers = {
                 );
             }
             return prisma.user.findMany();
-            // return prisma.$queryRaw`SELECT * FROM public."User";`;
         },
         user: (
             parent: any,

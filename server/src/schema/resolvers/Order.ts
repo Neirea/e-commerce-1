@@ -17,10 +17,8 @@ const orderResolvers = {
                 where: { user_id: req.session.user?.id },
                 include: {
                     order_items: {
-                        select: {
+                        include: {
                             product: true,
-                            amount: true,
-                            price: true,
                         },
                     },
                 },

@@ -68,6 +68,27 @@ const productResolvers = {
                       .map((s) => s + ":*")
                       .join(" | ")
                 : undefined;
+
+            const searchCategoryIds: number[] = [];
+            if (input.category_id) {
+                await prisma.category
+                    .findMany({
+                        where: {
+                            OR: [
+                                {
+                                    parent_id: input.category_id,
+                                },
+                                {
+                                    id: input.category_id,
+                                },
+                            ],
+                        },
+                    })
+                    .then((c) =>
+                        c.forEach((i) => searchCategoryIds.push(i.id))
+                    );
+            }
+
             const data = await prisma.product.findMany({
                 where: {
                     OR: [
@@ -92,30 +113,28 @@ const productResolvers = {
                         },
                     ],
                     company_id: input.company_id ?? undefined,
-                    category_id: input.category_id ?? undefined,
+                    category_id: input.category_id
+                        ? searchCategoryIds.length
+                            ? { in: searchCategoryIds }
+                            : input.category_id
+                        : undefined,
                 },
                 select: {
                     price: true,
                     discount: true,
                     category: {
-                        select: {
-                            id: true,
-                            name: true,
-                            parent_id: true,
-                        },
+                        include: { parent: true },
                     },
-                    company: {
-                        select: {
-                            id: true,
-                            name: true,
-                        },
-                    },
+                    company: true,
                 },
             });
 
             let min = 2147483647; //max 32bit integer
             let max = 0;
-            const allCategories: Array<Category> = [];
+            type ICategory = Category & {
+                parent?: Category | null;
+            };
+            const allCategories: Array<ICategory> = [];
             const allCompanies: Array<Company> = [];
             const maxPrice = input.max_price ?? 2147483647;
             const minPrice = input.min_price ?? 0;
@@ -132,6 +151,13 @@ const productResolvers = {
                     allCategories.push(p.category);
                     allCompanies.push(p.company);
                 }
+            });
+            //push parent categories
+            allCategories.forEach((elem) => {
+                if (elem.parent && elem.parent.id != null) {
+                    allCategories.push(elem.parent);
+                }
+                delete elem.parent;
             });
 
             //get unique categories, companies
@@ -162,7 +188,12 @@ const productResolvers = {
                 elem.productCount = compCount[elem.id];
             });
             if (min === 2147483647) min = 0;
-            return { min, max, categories, companies };
+            return {
+                min: Math.floor(min),
+                max: Math.floor(max),
+                categories,
+                companies,
+            };
         },
         filteredProducts: async (
             parent: any,
@@ -196,6 +227,26 @@ const productResolvers = {
                     price: "desc",
                 };
             }
+            const searchCategoryIds: number[] = [];
+
+            if (input.category_id) {
+                await prisma.category
+                    .findMany({
+                        where: {
+                            OR: [
+                                {
+                                    parent_id: input.category_id,
+                                },
+                                {
+                                    id: input.category_id,
+                                },
+                            ],
+                        },
+                    })
+                    .then((c) =>
+                        c.forEach((i) => searchCategoryIds.push(i.id))
+                    );
+            }
             const data = await prisma.product.findMany({
                 skip: offset,
                 take: limit,
@@ -222,7 +273,11 @@ const productResolvers = {
                         },
                     ],
                     company_id: input.company_id ?? undefined,
-                    category_id: input.category_id ?? undefined,
+                    category_id: input.category_id
+                        ? searchCategoryIds.length
+                            ? { in: searchCategoryIds }
+                            : input.category_id
+                        : undefined,
                     price: {
                         gte: input.min_price ?? undefined,
                         lte: input.max_price ?? undefined,
@@ -231,9 +286,7 @@ const productResolvers = {
                 include: {
                     images: true,
                     category: {
-                        select: {
-                            id: true,
-                            name: true,
+                        include: {
                             _count: {
                                 select: {
                                     products: true,

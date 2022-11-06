@@ -12,7 +12,6 @@ const companyResolvers = {
     Query: {
         companies: (parent: any, args: unknown, { req }: { req: Request }) => {
             return prisma.company.findMany({ include: { categories: true } });
-            // return prisma.$queryRaw`SELECT * FROM public."Company";`;
         },
     },
     Mutation: {
