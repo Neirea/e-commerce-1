@@ -191,12 +191,20 @@ const SearchPage = () => {
                                             >
                                                 {elem.name}
                                             </Link>
-                                            <span className="text-muted">{` (${elem.productCount})`}</span>
+                                            {!!elem.productCount && (
+                                                <span className="text-muted">{` (${elem.productCount})`}</span>
+                                            )}
                                         </div>
                                     );
                                 })}
                                 {!!categoryParam && (
-                                    <div className="pb-3 ps-3">
+                                    <div className="pb-3 mt-2">
+                                        {!!searchData.searchData.companies
+                                            .length && (
+                                            <div>
+                                                <b>Companies:</b>
+                                            </div>
+                                        )}
                                         {searchData.searchData.companies.map(
                                             (elem) => {
                                                 return (

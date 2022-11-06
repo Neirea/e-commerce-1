@@ -38,9 +38,6 @@ const Header = () => {
     // Cart Modal
     const handleShowCart = () => setShowCart(true);
     const handleCloseCart = () => setShowCart(false);
-    const handleTest = () => {
-        fetch(`${serverUrl}/`, { credentials: "include" });
-    };
 
     useOutsideClick([menuButtonRef, categoriesRef], handleCloseCategories);
 
@@ -70,7 +67,6 @@ const Header = () => {
                         ref={categoriesRef}
                     />
                 )}
-                <Button onClick={handleTest}>Test</Button>
                 <SearchBar />
                 <Nav className="d-flex align-items-center">
                     {user ? (
