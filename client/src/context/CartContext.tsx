@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import {
     createContext,
     ReactNode,
@@ -40,9 +40,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const localCart: Array<CartItem<CartProductBase>> = JSON.parse(
         localStorage.getItem("cart") || "[]"
     );
+    //load data on change of products in cart
     useQuery<GetProductsByIdQuery>(QUERY_PRODUCTS_BY_ID, {
         variables: { ids: localCart.map((i) => i.product.id) },
-        // skip: !localCart.length,
+        skip: !localCart.length,
         onCompleted(data) {
             if (data.productsById.length) {
                 const newState: Array<CartItem<ProductDBType>> = localCart.map(
@@ -56,23 +57,23 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                         };
                     }
                 );
+
                 setProducts(newState);
             }
         },
     });
 
-    //transfer cart state to local storage
-    useEffect(() => {
-        if (!products) return;
+    //function to add/change cart in local storage
+    const addCartToLocalStorage = (addProducts: typeof products) => {
         localStorage.setItem(
             "cart",
             JSON.stringify(
-                products.map((p) => {
+                addProducts.map((p) => {
                     return { product: { id: p.product.id }, amount: p.amount };
                 })
             )
         );
-    }, [products]);
+    };
 
     const addProductToCart = (item: CartItem<ProductDBType>) => {
         //check for existing product
@@ -93,19 +94,25 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             });
 
             setProducts(newState);
+            addCartToLocalStorage(newState);
             return;
         }
-        setProducts((old) => [...old, item]);
+        setProducts((old) => {
+            const newState = [...old, item];
+            addCartToLocalStorage(newState);
+            return newState;
+        });
     };
 
     const removeProductFromCart = (product: ProductDBType) => {
         const newProducts = products.filter((p) => p.product.id !== product.id);
-
         setProducts(newProducts);
+        addCartToLocalStorage(newProducts);
     };
 
     const clearCart = () => {
         setProducts([]);
+        addCartToLocalStorage([]);
     };
 
     const contextValue: CartContext<ProductDBType> = {
