@@ -27,8 +27,8 @@ const orderResolvers = {
     },
     Mutation: {
         cancelOrder: async (parent: any, { id }: { id: number }) => {
-            await prisma.order.update({
-                where: { id: id },
+            await prisma.order.updateMany({
+                where: { id: id, status: Status.PENDING },
                 data: { status: Status.CANCELLED },
             });
             return true;
