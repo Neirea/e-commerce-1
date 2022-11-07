@@ -161,7 +161,7 @@ const SearchPage = () => {
             </div>
 
             <Row className="border-top mt-2 flex-column flex-lg-row">
-                <Col className="col-lg-2 border-end mb-5 pt-3">
+                <Col className="col-lg-2 mb-5 pt-3 custom-border">
                     {!!searchData?.searchData && (
                         <>
                             <div>

@@ -43,6 +43,14 @@ td {
 .img-fit-cover {
     object-fit: cover;
 }
+.custom-border {
+    border-right: 1px solid #dfd7ca;
+}
+@media (max-width: 992px) {
+    .custom-border {
+        border-right: none;
+    }
+}
 .custom-link {
     color: black;
     text-decoration: none;
