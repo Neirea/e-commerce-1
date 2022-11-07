@@ -1,27 +1,42 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
+import { useState } from "react";
 import { Button, Container, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import Loading from "../components/Loading";
-import { GetAllOrdersQuery, Status } from "../generated/graphql";
-import { QUERY_ALL_ORDERS } from "../queries/Order";
+import {
+    CancelOrderMutation,
+    CancelOrderMutationVariables,
+    GetAllOrdersQuery,
+    Status,
+} from "../generated/graphql";
+import { MUTATION_CANCEL_ORDER, QUERY_ALL_ORDERS } from "../queries/Order";
 import { toPriceNumber } from "../utils/numbers";
 import { serverUrl } from "../utils/server";
 
 const Orders = () => {
+    const [paymentLoading, setPaymentLoading] = useState(false);
     const { data, loading, error } =
         useQuery<GetAllOrdersQuery>(QUERY_ALL_ORDERS);
+    const [handleCancel, { loading: cancelLoading }] = useMutation<
+        CancelOrderMutation,
+        CancelOrderMutationVariables
+    >(MUTATION_CANCEL_ORDER);
+
+    const actionLoading = paymentLoading || cancelLoading || loading;
 
     const sortedOrders = data?.orders
         ? [...data.orders].sort((a, b) => b.created_at - a.created_at)
         : undefined;
 
     const handlePayment = (id: number) => {
+        setPaymentLoading(true);
         fetch(`${serverUrl}/api/checkout/${id}`, {
             method: "PATCH",
             credentials: "include",
         })
             .then((res) => {
+                setPaymentLoading(false);
                 if (res.ok) {
                     return res.json();
                 }
@@ -172,15 +187,38 @@ const Orders = () => {
                                     <td className={`fs-5 ${textColor}`}>
                                         <div>{order.status}</div>
                                         {order.status === Status.PENDING && (
-                                            <Button
-                                                variant="success"
-                                                title="Pay for the order"
-                                                onClick={() =>
-                                                    handlePayment(order.id)
-                                                }
-                                            >
-                                                Continue
-                                            </Button>
+                                            <>
+                                                <Button
+                                                    variant="success"
+                                                    title="Pay for the order"
+                                                    disabled={actionLoading}
+                                                    className="d-block m-auto mb-1"
+                                                    onClick={() =>
+                                                        handlePayment(order.id)
+                                                    }
+                                                >
+                                                    Continue
+                                                </Button>
+                                                <Button
+                                                    variant="danger"
+                                                    title="Cancel Order"
+                                                    disabled={actionLoading}
+                                                    onClick={() =>
+                                                        handleCancel({
+                                                            variables: {
+                                                                id: order.id,
+                                                            },
+                                                            refetchQueries: [
+                                                                "GetAllOrders",
+                                                            ],
+                                                            awaitRefetchQueries:
+                                                                true,
+                                                        })
+                                                    }
+                                                >
+                                                    Cancel
+                                                </Button>
+                                            </>
                                         )}
                                     </td>
                                     <td className="fs-5">

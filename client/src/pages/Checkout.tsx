@@ -8,6 +8,7 @@ import { serverUrl } from "../utils/server";
 
 const Checkout = () => {
     const { user } = useAppContext();
+    const [loading, setLoading] = useState(false);
     const { cart, clearCart } = useCartContext();
 
     const [name, setName] = useState(
@@ -38,6 +39,7 @@ const Checkout = () => {
         setPhone(e.target.value);
 
     const handleCheckout = () => {
+        setLoading(true);
         const checkoutItems = cart.map((item) => {
             return { id: item.product.id, amount: item.amount };
         });
@@ -60,6 +62,7 @@ const Checkout = () => {
         })
             .then((res) => {
                 //clear cart on successful request
+                setLoading(false);
                 clearCart();
                 if (res.ok) {
                     return res.json();
@@ -191,7 +194,7 @@ const Checkout = () => {
                     <Button
                         variant="success"
                         onClick={handleCheckout}
-                        disabled={!cart.length}
+                        disabled={loading}
                     >
                         Proceed
                     </Button>

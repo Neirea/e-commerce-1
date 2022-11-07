@@ -413,6 +413,13 @@ export type GetAllOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAllOrdersQuery = { __typename?: 'Query', orders: Array<{ __typename?: 'Order', id: number, status: Status, user_id?: number | null, buyer_name: string, buyer_email: string, buyer_phone?: string | null, delivery_address: string, shipping_cost: number, created_at: any, order_items: Array<{ __typename?: 'SingleOrderItem', amount: number, price: number, product: { __typename?: 'Product', id: number, name: string, price: number, discount: number } }> }> };
 
+export type CancelOrderMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type CancelOrderMutation = { __typename?: 'Mutation', cancelOrder: boolean };
+
 export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -821,6 +828,37 @@ export function useGetAllOrdersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptio
 export type GetAllOrdersQueryHookResult = ReturnType<typeof useGetAllOrdersQuery>;
 export type GetAllOrdersLazyQueryHookResult = ReturnType<typeof useGetAllOrdersLazyQuery>;
 export type GetAllOrdersQueryResult = Apollo.QueryResult<GetAllOrdersQuery, GetAllOrdersQueryVariables>;
+export const CancelOrderDocument = gql`
+    mutation CancelOrder($id: Int!) {
+  cancelOrder(id: $id)
+}
+    `;
+export type CancelOrderMutationFn = Apollo.MutationFunction<CancelOrderMutation, CancelOrderMutationVariables>;
+
+/**
+ * __useCancelOrderMutation__
+ *
+ * To run a mutation, you first call `useCancelOrderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCancelOrderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [cancelOrderMutation, { data, loading, error }] = useCancelOrderMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useCancelOrderMutation(baseOptions?: Apollo.MutationHookOptions<CancelOrderMutation, CancelOrderMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CancelOrderMutation, CancelOrderMutationVariables>(CancelOrderDocument, options);
+      }
+export type CancelOrderMutationHookResult = ReturnType<typeof useCancelOrderMutation>;
+export type CancelOrderMutationResult = Apollo.MutationResult<CancelOrderMutation>;
+export type CancelOrderMutationOptions = Apollo.BaseMutationOptions<CancelOrderMutation, CancelOrderMutationVariables>;
 export const GetAllProductsDocument = gql`
     query GetAllProducts {
   products {

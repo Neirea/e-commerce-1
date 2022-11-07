@@ -25,3 +25,9 @@ export const QUERY_ALL_ORDERS = gql`
         }
     }
 `;
+
+export const MUTATION_CANCEL_ORDER = gql`
+    mutation CancelOrder($id: Int!) {
+        cancelOrder(id: $id)
+    }
+`;
