@@ -6,7 +6,6 @@ import { useAppContext } from "../../context/AppContext";
 import { useCartContext } from "../../context/CartContext";
 import { GetAllCategoriesQuery } from "../../generated/graphql";
 import { QUERY_ALL_CATEGORIES } from "../../queries/Category";
-import { serverUrl } from "../../utils/server";
 import { useOutsideClick } from "../../utils/useOutsideClick";
 import Cart from "../Cart";
 import Login from "../Login";
@@ -53,7 +52,7 @@ const Header = () => {
                     Techway
                 </Navbar.Brand>
                 <Button
-                    variant="secondary"
+                    variant="success"
                     onClick={toggleCategories}
                     ref={menuButtonRef}
                 >

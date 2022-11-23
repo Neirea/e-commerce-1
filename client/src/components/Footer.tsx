@@ -38,17 +38,26 @@ const Footer = () => {
 
                         <div className="d-flex justify-content-center gap-3">
                             <div>
-                                <a href="https://github.com/Neirea">
+                                <a
+                                    href="https://github.com/Neirea"
+                                    aria-label="GitHub"
+                                >
                                     <FaGithub size={24} />
                                 </a>
                             </div>
                             <div>
-                                <a href="https://www.linkedin.com/in/yevhenii-shumilin-2ab431188/">
+                                <a
+                                    href="https://www.linkedin.com/in/yevhenii-shumilin-2ab431188/"
+                                    aria-label="Linkedin"
+                                >
                                     <FaLinkedin size={24} />
                                 </a>
                             </div>
                             <div>
-                                <a href="mailto:neirea@ukr.net">
+                                <a
+                                    href="mailto:neirea@ukr.net"
+                                    aria-label="Send Email"
+                                >
                                     <FiMail size={24} />
                                 </a>
                             </div>

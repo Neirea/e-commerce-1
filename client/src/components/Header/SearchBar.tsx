@@ -1,6 +1,7 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Button, Form, InputGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { BsSearch } from "@react-icons/all-files/bs/BsSearch";
 
 const SearchBar = () => {
     const [searchText, setSearchText] = useState("");
@@ -24,8 +25,13 @@ const SearchBar = () => {
                     aria-label="Search"
                     aria-describedby="btn-search"
                 />
-                <Button variant="success" id="btn-search" type="submit">
-                    Search
+                <Button
+                    variant="secondary"
+                    id="btn-search"
+                    type="submit"
+                    aria-label="Search Button"
+                >
+                    <BsSearch size={24} />
                 </Button>
             </InputGroup>
         </Form>

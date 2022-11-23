@@ -27,9 +27,10 @@ const Home = () => {
                             <img
                                 src="https://res.cloudinary.com/dna5i1spz/image/upload/v1667474975/ecommerce-1/static/logo_left_dqui4i.jpg"
                                 alt="First img"
-                                width="100%"
-                                height="100%"
                                 className="img-fit-cover"
+                                loading="lazy"
+                                width={740}
+                                height={410}
                             />
                         </Col>
                         <Col className="bg-success col-lg-5 p-5 d-flex flex-column justify-content-center">
@@ -73,9 +74,8 @@ const Home = () => {
                                                         src={category.img_src}
                                                         title={category.name}
                                                         alt={category.name}
-                                                        style={{
-                                                            width: "15rem",
-                                                        }}
+                                                        width={240}
+                                                        height={240}
                                                     />
                                                     <div>{category.name}</div>
                                                 </Link>

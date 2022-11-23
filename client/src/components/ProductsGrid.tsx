@@ -44,6 +44,7 @@ const ProductsGrid = ({
                                                 src={product.images[0].img_src}
                                                 title={product.name}
                                                 alt={product.name}
+                                                loading="lazy"
                                                 width={240}
                                                 height={240}
                                                 className="mb-2"
