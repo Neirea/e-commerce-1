@@ -26,7 +26,7 @@ const SearchBar = () => {
                     aria-describedby="btn-search"
                 />
                 <Button
-                    variant="secondary"
+                    variant="success"
                     id="btn-search"
                     type="submit"
                     aria-label="Search Button"
