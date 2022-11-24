@@ -95,7 +95,7 @@ const MultiRangeSlider = ({
                     max={maxVal}
                     value={minVal}
                     pattern="^[0-9]*$"
-                    aria-labelledby="min price"
+                    aria-label="Min price value"
                     onChange={(e) => setMinVal(+e.target.value)}
                 />
                 <Form.Control
@@ -105,7 +105,7 @@ const MultiRangeSlider = ({
                     max={max}
                     value={maxVal}
                     pattern="^[0-9]*$"
-                    aria-labelledby="max price"
+                    aria-label="Max price value"
                     onChange={(e) => setMaxVal(+e.target.value)}
                 />
                 <Button
@@ -128,7 +128,7 @@ const MultiRangeSlider = ({
                     max={max}
                     value={minVal}
                     ref={minValRef}
-                    aria-labelledby="min price slider"
+                    aria-label="Min price slider"
                     onChange={(e) => {
                         const value = Math.min(+e.target.value, maxVal);
                         e.target.value = value.toString();
@@ -147,7 +147,7 @@ const MultiRangeSlider = ({
                     max={max}
                     value={maxVal}
                     ref={maxValRef}
-                    aria-labelledby="max price slider"
+                    aria-label="Max price slider"
                     onChange={(e) => {
                         const value = Math.max(+e.target.value, minVal);
                         e.target.value = value.toString();
