@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Container } from "react-bootstrap";
 import { Route, Routes } from "react-router-dom";
 import "./bootstrap.theme.css";
@@ -8,16 +9,20 @@ import ScrollAndHash from "./components/ScrollAndHash";
 import { useAppContext } from "./context/AppContext";
 import { Role } from "./generated/graphql";
 import Checkout from "./pages/Checkout";
-import Editor from "./pages/Editor/Editor";
 import Error from "./pages/Error";
 import Help from "./pages/Help";
 import Home from "./pages/Home/Home";
 import OrderPayment from "./pages/OrderPayment";
-import Orders from "./pages/Orders";
 import Product from "./pages/Product/Product";
 import SearchPage from "./pages/SearchPage";
 import Unauthorized from "./pages/Unauthorized";
-import UserProfile from "./pages/UserProfile";
+const Orders = lazy(() => import("./pages/Orders"));
+const UserProfile = lazy(() => import("./pages/UserProfile"));
+const Editor = lazy(() => import("./pages/Editor/Editor"));
+
+const Loading = () => {
+    return <Container as="main" className="main-loading" />;
+};
 
 function App() {
     const { user, isLoading } = useAppContext();
@@ -26,7 +31,7 @@ function App() {
         <>
             <Header />
             {isLoading ? (
-                <Container as="main" className="main-loading" />
+                <Loading />
             ) : (
                 <>
                     <ScrollAndHash />
@@ -34,6 +39,13 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/search" element={<SearchPage />} />
                         <Route path="/help" element={<Help />} />
+
+                        <Route path="/product/:id" element={<Product />} />
+                        <Route path="/checkout" element={<Checkout />} />
+                        <Route
+                            path="/order_payment"
+                            element={<OrderPayment />}
+                        />
                         {/* editor routes */}
                         <Route
                             element={
@@ -42,15 +54,15 @@ function App() {
                                 />
                             }
                         >
-                            <Route path="/editor" element={<Editor />} />
+                            <Route
+                                path="/editor"
+                                element={
+                                    <Suspense fallback={<Loading />}>
+                                        <Editor />
+                                    </Suspense>
+                                }
+                            />
                         </Route>
-                        <Route path="/product/:id" element={<Product />} />
-                        <Route path="/checkout" element={<Checkout />} />
-                        <Route
-                            path="/order_payment"
-                            element={<OrderPayment />}
-                        />
-
                         {/* user routes */}
                         <Route
                             element={
@@ -65,9 +77,20 @@ function App() {
                         >
                             <Route
                                 path="/profile"
-                                element={<UserProfile user={user} />}
+                                element={
+                                    <Suspense fallback={<Loading />}>
+                                        <UserProfile user={user} />
+                                    </Suspense>
+                                }
                             />
-                            <Route path="/orders" element={<Orders />} />
+                            <Route
+                                path="/orders"
+                                element={
+                                    <Suspense fallback={<Loading />}>
+                                        <Orders />
+                                    </Suspense>
+                                }
+                            />
                         </Route>
                         {/* error routes */}
                         <Route
