@@ -2,7 +2,6 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useState } from "react";
 import { Button, Container, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 import Loading from "../components/Loading";
 import {
     CancelOrderMutation,
@@ -133,7 +132,7 @@ const Orders = () => {
                                     : "text-success";
                             const createdAt = new Date(order.created_at);
                             return (
-                                <tr key={uuidv4()}>
+                                <tr key={order.id}>
                                     <td>{order.id}</td>
                                     <td>
                                         <Table borderless>
@@ -147,7 +146,12 @@ const Orders = () => {
                                                 {order.order_items.map(
                                                     (item) => {
                                                         return (
-                                                            <tr key={uuidv4()}>
+                                                            <tr
+                                                                key={
+                                                                    item.product
+                                                                        .id
+                                                                }
+                                                            >
                                                                 <td
                                                                     style={{
                                                                         width: "80%",

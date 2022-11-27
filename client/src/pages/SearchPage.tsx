@@ -3,7 +3,6 @@ import * as qs from "query-string";
 import { ChangeEvent, useEffect } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 import MultiRangeSlider from "../components/MultiRangeSlider";
 import ProductsGrid from "../components/ProductsGrid";
 import {
@@ -177,7 +176,7 @@ const SearchPage = () => {
                                             style={{
                                                 paddingLeft: `${depth * 7.5}%`,
                                             }}
-                                            key={uuidv4()}
+                                            key={elem.id}
                                         >
                                             <Link
                                                 className="custom-link text-primary"
@@ -210,7 +209,7 @@ const SearchPage = () => {
                                                 return (
                                                     <div
                                                         className="mt-2"
-                                                        key={uuidv4()}
+                                                        key={elem.id}
                                                     >
                                                         <Link
                                                             className="custom-link text-primary"
@@ -239,7 +238,6 @@ const SearchPage = () => {
                     )}
                     {!!searchData?.searchData && !searchLoading && (
                         <MultiRangeSlider
-                            key={uuidv4()}
                             max={searchData.searchData.max}
                             min={searchData.searchData.min}
                             curLeft={minParam}

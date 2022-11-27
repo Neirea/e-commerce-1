@@ -2,7 +2,6 @@ import { useQuery } from "@apollo/client";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 import Cart from "../../components/Cart";
 import { useCartContext } from "../../context/CartContext";
 import { GetSingleProductQuery } from "../../generated/graphql";
@@ -118,7 +117,7 @@ const Product = () => {
                             {Object.entries(data.product.description).map(
                                 ([key, value]) => {
                                     return (
-                                        <div className="lh-lg" key={uuidv4()}>
+                                        <div className="lh-lg" key={key}>
                                             <b>{`${key}: `}</b>
                                             <span>{`${value}`}</span>
                                         </div>
@@ -134,7 +133,7 @@ const Product = () => {
                                             (product) => {
                                                 return (
                                                     <div
-                                                        key={uuidv4()}
+                                                        key={product.id}
                                                         style={{
                                                             height: "7rem",
                                                         }}

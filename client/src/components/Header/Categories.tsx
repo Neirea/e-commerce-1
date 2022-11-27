@@ -2,7 +2,6 @@ import { BiChevronRight } from "@react-icons/all-files/bi/BiChevronRight";
 import { forwardRef, useEffect, useLayoutEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 import { GetAllCategoriesQuery } from "../../generated/graphql";
 
 const createWrapperAndAppend = () => {
@@ -72,7 +71,7 @@ const Categories = (
                         if (category.parent_id == undefined) {
                             return (
                                 <li
-                                    key={uuidv4()}
+                                    key={category.id}
                                     className="menu-item"
                                     onClick={handleClose}
                                     onMouseEnter={() =>
@@ -99,7 +98,7 @@ const Categories = (
                         {subCategories?.get(lastHover)?.map((category) => {
                             return (
                                 <li
-                                    key={uuidv4()}
+                                    key={category.id}
                                     className="menu-item"
                                     onClick={handleClose}
                                 >

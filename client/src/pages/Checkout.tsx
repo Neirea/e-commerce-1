@@ -1,6 +1,5 @@
 import { ChangeEvent, useState } from "react";
 import { Button, Col, Container, Form, Image, Row } from "react-bootstrap";
-import { v4 as uuidv4 } from "uuid";
 import { useAppContext } from "../context/AppContext";
 import { useCartContext } from "../context/CartContext";
 import { toPriceNumber } from "../utils/numbers";
@@ -140,7 +139,7 @@ const Checkout = () => {
                                 return (
                                     <Row
                                         className="border-bottom pb-3 pt-3 align-items-center"
-                                        key={uuidv4()}
+                                        key={item.product.id}
                                     >
                                         <Col className="d-flex justify-content-between">
                                             <div>{item.product.name}</div>

@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { ChangeEvent, FormEvent, useMemo, useRef, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
-import { v4 as uuidv4 } from "uuid";
 import { ImageResult } from "../../commonTypes";
 import {
     CreateProductMutation,
@@ -254,7 +253,7 @@ const Product = () => {
                             <option value={0}>{"Create new Product"}</option>
                             {productData &&
                                 productData.products?.map((elem) => (
-                                    <option key={uuidv4()} value={elem.id}>
+                                    <option key={elem.id} value={elem.id}>
                                         {elem.name}
                                     </option>
                                 ))}
@@ -358,7 +357,7 @@ const Product = () => {
                     </option>
                     {companyData &&
                         companyData.companies?.map((elem) => (
-                            <option key={uuidv4()} value={elem.id}>
+                            <option key={elem.id} value={elem.id}>
                                 {elem.name}
                             </option>
                         ))}
@@ -381,7 +380,7 @@ const Product = () => {
                         </option>
                         {categoryData &&
                             categoryData.categories?.map((elem) => (
-                                <option key={uuidv4()} value={elem.id}>
+                                <option key={elem.id} value={elem.id}>
                                     {elem.name}
                                 </option>
                             ))}
@@ -404,7 +403,7 @@ const Product = () => {
                     >
                         {productData &&
                             productData.products?.map((elem) => (
-                                <option key={uuidv4()} value={elem.id}>
+                                <option key={elem.id} value={elem.id}>
                                     {elem.name}
                                 </option>
                             ))}

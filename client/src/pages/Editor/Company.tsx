@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
-import { v4 as uuidv4 } from "uuid";
 import {
     CreateCompanyMutation,
     CreateCompanyMutationVariables,
@@ -130,7 +129,7 @@ const Company = () => {
                             <option value={0}>{"Create new company"}</option>
                             {data &&
                                 data.companies?.map((elem) => (
-                                    <option key={uuidv4()} value={elem.id}>
+                                    <option key={elem.id} value={elem.id}>
                                         {elem.name}
                                     </option>
                                 ))}

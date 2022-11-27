@@ -1,7 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { Alert, Button, Col, Container, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 import Loading from "../../components/Loading";
 import { GetAllCategoriesQuery } from "../../generated/graphql";
 import { QUERY_ALL_CATEGORIES } from "../../queries/Category";
@@ -61,7 +60,7 @@ const Home = () => {
                                 if (category.img_src) {
                                     return (
                                         <Col
-                                            key={uuidv4()}
+                                            key={category.id}
                                             className="d-flex justify-content-center mb-4"
                                         >
                                             <div style={{ width: "15rem" }}>

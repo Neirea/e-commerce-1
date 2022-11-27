@@ -85,9 +85,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         if (existingProduct) {
             newState = products.map((i) => {
                 if (i.product.id === existingProduct.product.id) {
+                    const amount =
+                        i.amount + item.amount > item.product.inventory
+                            ? item.product.inventory
+                            : i.amount + item.amount;
                     return {
                         product: i.product,
-                        amount: i.amount + item.amount,
+                        amount: amount,
                     };
                 }
                 return i;

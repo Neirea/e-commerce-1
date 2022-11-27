@@ -1,7 +1,6 @@
 import { useMutation, useQuery } from "@apollo/client";
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
-import { v4 as uuidv4 } from "uuid";
 import { ImageResult } from "../../commonTypes";
 import type {
     CreateCategoryMutation,
@@ -190,7 +189,7 @@ const Category = () => {
                             <option value={0}>{"Create new category"}</option>
                             {data &&
                                 data.categories?.map((elem) => (
-                                    <option key={uuidv4()} value={elem.id}>
+                                    <option key={elem.id} value={elem.id}>
                                         {elem.name}
                                     </option>
                                 ))}
@@ -222,7 +221,7 @@ const Category = () => {
                         <option value={0}>{"Choose Parent"}</option>
                         {data &&
                             data.categories?.map((elem) => (
-                                <option key={uuidv4()} value={elem.id}>
+                                <option key={elem.id} value={elem.id}>
                                     {elem.name}
                                 </option>
                             ))}

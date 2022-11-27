@@ -4,7 +4,6 @@ import { FiMinus } from "@react-icons/all-files/fi/FiMinus";
 import { BaseSyntheticEvent } from "react";
 import { Button, Col, FormControl, Image, Modal, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 import {
     CartItem,
     ProductDBType,
@@ -86,7 +85,7 @@ const Cart = ({
                             return (
                                 <Row
                                     className="border-bottom pb-3 pt-3"
-                                    key={uuidv4()}
+                                    key={item.product.id}
                                 >
                                     <div className="d-flex justify-content-between mb-3">
                                         <div>{item.product.name}</div>

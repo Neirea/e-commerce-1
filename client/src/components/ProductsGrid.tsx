@@ -1,7 +1,6 @@
 import { ApolloError } from "@apollo/client";
 import { Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 import { Product } from "../generated/graphql";
 import { toPriceNumber } from "../utils/numbers";
 import Loading from "./Loading";
@@ -31,7 +30,7 @@ const ProductsGrid = ({
                     products.map((product) => {
                         return (
                             <div
-                                key={uuidv4()}
+                                key={product.id}
                                 className="d-flex justify-content-center mb-4"
                             >
                                 <div className="d-flex flex-column justify-content-between">
