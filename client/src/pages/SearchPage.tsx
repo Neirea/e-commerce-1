@@ -238,6 +238,10 @@ const SearchPage = () => {
                     )}
                     {!!searchData?.searchData && !searchLoading && (
                         <MultiRangeSlider
+                            key={
+                                searchData.searchData.max -
+                                searchData.searchData.min
+                            }
                             max={searchData.searchData.max}
                             min={searchData.searchData.min}
                             curLeft={minParam}
