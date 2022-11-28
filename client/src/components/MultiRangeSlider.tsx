@@ -1,5 +1,12 @@
 import * as qs from "query-string";
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import {
+    FormEvent,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+    memo,
+} from "react";
 import { Button, Form, FormGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
@@ -14,27 +21,10 @@ const MultiRangeSlider = ({
     curLeft: number | undefined;
     curRight: number | undefined;
 }) => {
-    //calculate correct position of min and max values of a search
-    const minValue =
-        curLeft &&
-        curRight &&
-        curLeft > min &&
-        curLeft < max &&
-        curLeft < curRight
-            ? curLeft
-            : min;
-    const maxValue =
-        curLeft &&
-        curRight &&
-        curRight < max &&
-        curRight > min &&
-        curLeft < curRight
-            ? curRight
-            : max;
     const navigate = useNavigate();
     const searchParams = qs.parse(location.search);
-    const [minVal, setMinVal] = useState(minValue);
-    const [maxVal, setMaxVal] = useState(maxValue);
+    const [minVal, setMinVal] = useState(0);
+    const [maxVal, setMaxVal] = useState(0);
     const minValRef = useRef<HTMLInputElement>(null);
     const maxValRef = useRef<HTMLInputElement>(null);
     const range = useRef<HTMLDivElement>(null);
@@ -44,6 +34,28 @@ const MultiRangeSlider = ({
         (value: number) => Math.round(((value - min) / (max - min)) * 100),
         [min, max]
     );
+
+    //calculate correct position of min and max values of a search
+    useEffect(() => {
+        const minValue =
+            curLeft &&
+            curRight &&
+            curLeft > min &&
+            curLeft < max &&
+            curLeft < curRight
+                ? curLeft
+                : min;
+        const maxValue =
+            curLeft &&
+            curRight &&
+            curRight < max &&
+            curRight > min &&
+            curLeft < curRight
+                ? curRight
+                : max;
+        setMinVal(minValue);
+        setMaxVal(maxValue);
+    }, [curLeft, curRight, min, max]);
 
     // Set width of the range to decrease from the left side
     useEffect(() => {
@@ -166,4 +178,4 @@ const MultiRangeSlider = ({
     );
 };
 
-export default MultiRangeSlider;
+export default memo(MultiRangeSlider);
