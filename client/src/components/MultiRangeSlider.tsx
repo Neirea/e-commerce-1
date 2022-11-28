@@ -1,12 +1,5 @@
 import * as qs from "query-string";
-import {
-    FormEvent,
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-    memo,
-} from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Button, Form, FormGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
@@ -30,10 +23,8 @@ const MultiRangeSlider = ({
     const range = useRef<HTMLDivElement>(null);
 
     // Convert to percentage
-    const getPercent = useCallback(
-        (value: number) => Math.round(((value - min) / (max - min)) * 100),
-        [min, max]
-    );
+    const getPercent = (value: number) =>
+        Math.round(((value - min) / (max - min)) * 100);
 
     //calculate correct position of min and max values of a search
     useEffect(() => {
@@ -178,4 +169,4 @@ const MultiRangeSlider = ({
     );
 };
 
-export default memo(MultiRangeSlider);
+export default MultiRangeSlider;
