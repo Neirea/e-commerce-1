@@ -185,6 +185,7 @@ const SearchPage = () => {
                                                     search: qs.stringify({
                                                         ...searchParams,
                                                         c: elem.id,
+                                                        b: undefined,
                                                     }),
                                                 }}
                                             >
@@ -238,10 +239,9 @@ const SearchPage = () => {
                     )}
                     {!!searchData?.searchData && !searchLoading && (
                         <MultiRangeSlider
+                            key={location.search}
                             max={searchData.searchData.max}
                             min={searchData.searchData.min}
-                            curLeft={minParam}
-                            curRight={maxParam}
                         />
                     )}
                 </Col>

@@ -3,21 +3,19 @@ import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Button, Form, FormGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-const MultiRangeSlider = ({
-    min,
-    max,
-    curLeft,
-    curRight,
-}: {
-    min: number;
-    max: number;
-    curLeft: number | undefined;
-    curRight: number | undefined;
-}) => {
-    const navigate = useNavigate();
+const MultiRangeSlider = ({ min, max }: { min: number; max: number }) => {
     const searchParams = qs.parse(location.search);
-    const [minVal, setMinVal] = useState(0);
-    const [maxVal, setMaxVal] = useState(0);
+    const curL = searchParams.min != null ? +searchParams.min : undefined;
+    const curR = searchParams.max != null ? +searchParams.max : undefined;
+    //validate parameters
+    const minValue =
+        curL && curR && curL > min && curL < max && curL < curR ? curL : min;
+    const maxValue =
+        curL && curR && curR < max && curR > min && curL < curR ? curR : max;
+
+    const navigate = useNavigate();
+    const [minVal, setMinVal] = useState(minValue);
+    const [maxVal, setMaxVal] = useState(maxValue);
     const minValRef = useRef<HTMLInputElement>(null);
     const maxValRef = useRef<HTMLInputElement>(null);
     const range = useRef<HTMLDivElement>(null);
@@ -25,28 +23,6 @@ const MultiRangeSlider = ({
     // Convert to percentage
     const getPercent = (value: number) =>
         Math.round(((value - min) / (max - min)) * 100);
-
-    //calculate correct position of min and max values of a search
-    useEffect(() => {
-        const minValue =
-            curLeft &&
-            curRight &&
-            curLeft > min &&
-            curLeft < max &&
-            curLeft < curRight
-                ? curLeft
-                : min;
-        const maxValue =
-            curLeft &&
-            curRight &&
-            curRight < max &&
-            curRight > min &&
-            curLeft < curRight
-                ? curRight
-                : max;
-        setMinVal(minValue);
-        setMaxVal(maxValue);
-    }, [curLeft, curRight, min, max]);
 
     // Set width of the range to decrease from the left side
     useEffect(() => {
@@ -59,9 +35,8 @@ const MultiRangeSlider = ({
                 range.current.style.width = `${maxPercent - minPercent}%`;
             }
         }
-    }, [minVal, getPercent]);
+    }, [minVal]);
 
-    //(max - min) * 0.135
     // Set width of the range to decrease from the right side
     useEffect(() => {
         if (minValRef.current) {
@@ -72,7 +47,7 @@ const MultiRangeSlider = ({
                 range.current.style.width = `${maxPercent - minPercent}%`;
             }
         }
-    }, [maxVal, getPercent]);
+    }, [maxVal]);
 
     const handleSlider = (e: FormEvent) => {
         e.preventDefault();
