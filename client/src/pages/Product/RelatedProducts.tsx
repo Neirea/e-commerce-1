@@ -56,15 +56,6 @@ const RelatedProducts = ({
         }
     }, [isVisible]);
 
-    useEffect(() => {
-        return () => {
-            if (product?.id) {
-                //invalidate cache if swap on other product
-                cache.evict({ id: "ROOT_QUERY", fieldName: "relatedProducts" });
-            }
-        };
-    }, [product?.id]);
-
     return (
         <>
             <ProductsGrid

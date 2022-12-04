@@ -70,16 +70,6 @@ const SearchPage = () => {
         treshold: 1.0,
     });
 
-    useEffect(() => {
-        return () => {
-            //invalidate cache if query string changed
-            cache.evict({
-                id: "ROOT_QUERY",
-                fieldName: "filteredProducts",
-            });
-        };
-    }, [search]);
-
     //fetch additional products if we didn't get max available products
     useEffect(() => {
         if (

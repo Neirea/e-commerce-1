@@ -12,10 +12,10 @@ const cache = new InMemoryCache({
     typePolicies: {
         Query: {
             fields: {
-                filteredProducts: offsetLimitPagination(),
-                featuredProducts: offsetLimitPagination(),
-                popularProducts: offsetLimitPagination(),
-                relatedProducts: offsetLimitPagination(),
+                filteredProducts: offsetLimitPagination(["input"]),
+                featuredProducts: offsetLimitPagination(["input"]),
+                popularProducts: offsetLimitPagination(["input"]),
+                relatedProducts: offsetLimitPagination(["input"]),
             },
         },
     },
