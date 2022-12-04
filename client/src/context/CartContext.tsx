@@ -1,11 +1,5 @@
-import { useLazyQuery, useQuery } from "@apollo/client";
-import {
-    createContext,
-    ReactNode,
-    useContext,
-    useEffect,
-    useState,
-} from "react";
+import { useQuery } from "@apollo/client";
+import { createContext, ReactNode, useContext, useState } from "react";
 import { GetProductsByIdQuery } from "../generated/graphql";
 import { QUERY_PRODUCTS_BY_ID } from "../queries/Product";
 

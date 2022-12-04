@@ -1,12 +1,13 @@
 import qs from "query-string";
 import { Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
 
 const OrderPayment = () => {
     const navigate = useNavigate();
+    const { search } = useLocation();
     const { user } = useAppContext();
-    const searchParams = qs.parse(location.search);
+    const searchParams = qs.parse(search);
 
     return (
         <main className="mt-5 p-5 d-flex gap-3 flex-column align-items-center">

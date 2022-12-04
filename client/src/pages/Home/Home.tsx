@@ -28,7 +28,7 @@ const Home = () => {
                                 alt="First img"
                                 className="img-fit-cover"
                                 loading="lazy"
-                                width={740}
+                                width={742}
                                 height={410}
                             />
                         </Col>

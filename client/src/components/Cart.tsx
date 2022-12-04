@@ -3,7 +3,7 @@ import { BsPlus } from "@react-icons/all-files/bs/BsPlus";
 import { FiMinus } from "@react-icons/all-files/fi/FiMinus";
 import { BaseSyntheticEvent } from "react";
 import { Button, Col, FormControl, Image, Modal, Row } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
     CartItem,
     ProductDBType,
@@ -18,6 +18,7 @@ const Cart = ({
     handleClose: () => void;
     show: boolean;
 }) => {
+    const { pathname } = useLocation();
     const navigate = useNavigate();
     const { cart, addProductToCart, removeProductFromCart } = useCartContext();
     const totalPrice = cart.reduce(
@@ -60,7 +61,7 @@ const Cart = ({
     };
 
     const handleCheckout = () => {
-        if (window.location.pathname !== "/checkout") {
+        if (pathname !== "/checkout") {
             navigate("/checkout");
         }
         handleClose();

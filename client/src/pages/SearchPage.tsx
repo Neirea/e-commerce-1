@@ -1,8 +1,8 @@
-import { useQuery } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client";
 import * as qs from "query-string";
-import { ChangeEvent, useEffect } from "react";
+import { ChangeEvent, useEffect, useSyncExternalStore } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import MultiRangeSlider from "../components/MultiRangeSlider";
 import ProductsGrid from "../components/ProductsGrid";
 import {
@@ -19,7 +19,8 @@ type CategoryType = GetSearchDataQuery["searchData"]["categories"][number];
 
 const SearchPage = () => {
     const navigate = useNavigate();
-    const searchParams = qs.parse(location.search);
+    const { search } = useLocation();
+    const searchParams = qs.parse(search);
     const categoryParam = searchParams.c != null ? +searchParams.c : undefined;
     const sortParam =
         searchParams.sort != null ? +searchParams.sort : undefined;
@@ -27,28 +28,26 @@ const SearchPage = () => {
     const minParam = searchParams.min != null ? +searchParams.min : undefined;
     const maxParam = searchParams.max != null ? +searchParams.max : undefined;
 
+    const { cache } = useApolloClient();
+
     //general data about search results
-    const {
-        data: searchData,
-        loading: searchLoading,
-        refetch: refetchData,
-    } = useQuery<GetSearchDataQuery>(QUERY_SEARCH_DATA, {
-        variables: {
-            input: {
-                search_string: searchParams.v,
-                category_id: categoryParam,
-                company_id: companyParam,
-                min_price: minParam,
-                max_price: maxParam,
+    const { data: searchData, loading: searchLoading } =
+        useQuery<GetSearchDataQuery>(QUERY_SEARCH_DATA, {
+            variables: {
+                input: {
+                    search_string: searchParams.v,
+                    category_id: categoryParam,
+                    company_id: companyParam,
+                    min_price: minParam,
+                    max_price: maxParam,
+                },
             },
-        },
-    });
+        });
 
     const {
         data: productData,
         loading: productLoading,
         error: productError,
-        refetch,
         fetchMore,
     } = useQuery<GetFilteredProductsQuery>(QUERY_FILTERED_PRODUCTS, {
         variables: {
@@ -71,40 +70,15 @@ const SearchPage = () => {
         treshold: 1.0,
     });
 
-    //fetching if query string changes
     useEffect(() => {
-        if (productData?.filteredProducts) {
-            (async () => {
-                //refetch if data already exists
-                await refetch({
-                    offset: 0,
-                    limit: FETCH_NUMBER,
-                    input: {
-                        search_string: searchParams.v,
-                        sortMode: sortParam,
-                        category_id: categoryParam,
-                        company_id: companyParam,
-                        min_price: minParam,
-                        max_price: maxParam,
-                    },
-                });
-            })();
-        }
-        if (searchData?.searchData) {
-            //refetch if category changes
-            (async () => {
-                await refetchData({
-                    input: {
-                        search_string: searchParams.v,
-                        category_id: categoryParam,
-                        company_id: companyParam,
-                        min_price: minParam,
-                        max_price: maxParam,
-                    },
-                });
-            })();
-        }
-    }, [location.search]);
+        return () => {
+            //invalidate cache if query string changed
+            cache.evict({
+                id: "ROOT_QUERY",
+                fieldName: "filteredProducts",
+            });
+        };
+    }, [search]);
 
     //fetch additional products if we didn't get max available products
     useEffect(() => {
@@ -239,7 +213,7 @@ const SearchPage = () => {
                     )}
                     {!!searchData?.searchData && !searchLoading && (
                         <MultiRangeSlider
-                            key={location.search}
+                            key={search}
                             max={searchData.searchData.max}
                             min={searchData.searchData.min}
                         />

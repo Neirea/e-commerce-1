@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
 import Cart from "../../components/Cart";
@@ -19,13 +19,6 @@ const Product = () => {
         GET_SINGLE_PRODUCT,
         { variables: { id: +id! } }
     );
-
-    //reset amount when product changes
-    useEffect(() => {
-        if (id) {
-            setAmount(1);
-        }
-    }, [id]);
 
     const handleAmount = (e: ChangeEvent<HTMLInputElement>) => {
         setAmount(+e.target.value);

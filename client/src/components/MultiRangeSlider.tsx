@@ -40,8 +40,8 @@ const MultiRangeSlider = ({ min, max }: { min: number; max: number }) => {
     // Set width of the range to decrease from the right side
     useEffect(() => {
         if (minValRef.current) {
-            const minPercent = getPercent(+minValRef.current.value);
             const maxPercent = getPercent(maxVal);
+            const minPercent = getPercent(+minValRef.current.value);
 
             if (range.current) {
                 range.current.style.width = `${maxPercent - minPercent}%`;

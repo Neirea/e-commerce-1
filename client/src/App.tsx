@@ -13,7 +13,7 @@ import Error from "./pages/Error";
 import Help from "./pages/Help";
 import Home from "./pages/Home/Home";
 import OrderPayment from "./pages/OrderPayment";
-import Product from "./pages/Product/Product";
+import ProductWrapper from "./pages/Product/ProductWrapper";
 import SearchPage from "./pages/SearchPage";
 import Unauthorized from "./pages/Unauthorized";
 const Orders = lazy(() => import("./pages/Orders"));
@@ -40,7 +40,10 @@ function App() {
                         <Route path="/search" element={<SearchPage />} />
                         <Route path="/help" element={<Help />} />
 
-                        <Route path="/product/:id" element={<Product />} />
+                        <Route
+                            path="/product/:id"
+                            element={<ProductWrapper />}
+                        />
                         <Route path="/checkout" element={<Checkout />} />
                         <Route
                             path="/order_payment"

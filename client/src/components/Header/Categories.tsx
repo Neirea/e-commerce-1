@@ -1,5 +1,5 @@
 import { BiChevronRight } from "@react-icons/all-files/bi/BiChevronRight";
-import { forwardRef, useEffect, useLayoutEffect, useState } from "react";
+import { forwardRef, useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
 import { GetAllCategoriesQuery } from "../../generated/graphql";
@@ -23,38 +23,34 @@ const Categories = (
 ) => {
     const [lastHover, setLastHover] = useState<number | null>(null);
     const [modalWrapper, setModalWrapper] = useState<HTMLElement | null>();
-    const [subCategories, setSubCategories] = useState<Map<
-        number,
-        Array<GetAllCategoriesQuery["categories"][0]>
-    > | null>(null);
 
-    useEffect(() => {
+    const subCategories = useMemo(() => {
+        const subMap = new Map<
+            number,
+            Array<GetAllCategoriesQuery["categories"][0]>
+        >();
         if (categories?.length) {
-            const subsMap = new Map<
-                number,
-                Array<GetAllCategoriesQuery["categories"][0]>
-            >();
             categories.forEach((item) => {
                 if (item.parent_id != null) {
-                    const currentSub = subsMap.get(item.parent_id);
+                    const currentSub = subMap.get(item.parent_id);
                     const newInfo =
                         currentSub !== undefined
                             ? [...currentSub, item]
                             : [item];
-                    subsMap.set(item.parent_id, [...new Set(newInfo)]);
+                    subMap.set(item.parent_id, [...new Set(newInfo)]);
                 }
             });
 
-            setSubCategories(subsMap);
+            return subMap;
         }
+        return null;
     }, [categories]);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         let modalRoot = document.getElementById("menu-portal");
         if (!modalRoot) {
             modalRoot = createWrapperAndAppend();
         }
-
         setModalWrapper(modalRoot);
         return () => {
             modalRoot?.parentNode?.removeChild(modalRoot);
@@ -93,23 +89,24 @@ const Categories = (
                         }
                     })}
                 </ul>
-                {lastHover !== null && !!subCategories?.get(lastHover)?.length && (
-                    <ul className="submenu-list">
-                        {subCategories?.get(lastHover)?.map((category) => {
-                            return (
-                                <li
-                                    key={category.id}
-                                    className="menu-item"
-                                    onClick={handleClose}
-                                >
-                                    <Link to={`/search?c=${category.id}`}>
-                                        {category.name}
-                                    </Link>
-                                </li>
-                            );
-                        })}
-                    </ul>
-                )}
+                {lastHover !== null &&
+                    !!subCategories?.get(lastHover)?.length && (
+                        <ul className="submenu-list">
+                            {subCategories?.get(lastHover)?.map((category) => {
+                                return (
+                                    <li
+                                        key={category.id}
+                                        className="menu-item"
+                                        onClick={handleClose}
+                                    >
+                                        <Link to={`/search?c=${category.id}`}>
+                                            {category.name}
+                                        </Link>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    )}
             </div>
         </section>,
         modalWrapper
