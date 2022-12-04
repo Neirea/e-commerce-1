@@ -6,7 +6,10 @@ interface IOptions {
     treshold: number;
 }
 
-const useInView = <T extends HTMLElement>(options: IOptions) => {
+const useInView = <T extends HTMLElement>(
+    options: IOptions,
+    cb: () => void
+) => {
     const containerRef = useRef<T | null>(null);
     const [isVisible, setIsVisible] = useState(false);
 
@@ -24,7 +27,13 @@ const useInView = <T extends HTMLElement>(options: IOptions) => {
         };
     }, [containerRef, options]);
 
-    return { containerRef, isVisible };
+    useEffect(() => {
+        if (isVisible) {
+            cb();
+        }
+    }, [isVisible]);
+
+    return containerRef;
 };
 
 export default useInView;

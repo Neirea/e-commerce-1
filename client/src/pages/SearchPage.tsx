@@ -1,8 +1,9 @@
-import { useApolloClient, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import * as qs from "query-string";
-import { ChangeEvent, useEffect, useSyncExternalStore } from "react";
+import { ChangeEvent } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import Loading from "../components/Loading";
 import MultiRangeSlider from "../components/MultiRangeSlider";
 import ProductsGrid from "../components/ProductsGrid";
 import {
@@ -10,9 +11,8 @@ import {
     GetSearchDataQuery,
 } from "../generated/graphql";
 import { QUERY_FILTERED_PRODUCTS, QUERY_SEARCH_DATA } from "../queries/Product";
-import useInView from "../utils/useInView";
 import sortByParentId from "../utils/sortByParents";
-import Loading from "../components/Loading";
+import useInView from "../utils/useInView";
 
 const FETCH_NUMBER = 12;
 type CategoryType = GetSearchDataQuery["searchData"]["categories"][number];
@@ -27,8 +27,6 @@ const SearchPage = () => {
     const companyParam = searchParams.b != null ? +searchParams.b : undefined;
     const minParam = searchParams.min != null ? +searchParams.min : undefined;
     const maxParam = searchParams.max != null ? +searchParams.max : undefined;
-
-    const { cache } = useApolloClient();
 
     //general data about search results
     const { data: searchData, loading: searchLoading } =
@@ -64,23 +62,20 @@ const SearchPage = () => {
         },
     });
 
-    const { containerRef, isVisible } = useInView<HTMLDivElement>({
-        root: null,
-        rootMargin: "0px",
-        treshold: 1.0,
-    });
-
-    //fetch additional products if we didn't get max available products
-    useEffect(() => {
-        if (
-            isVisible &&
-            productData?.filteredProducts &&
-            productData.filteredProducts.length % FETCH_NUMBER === 0
-        ) {
-            (async () => {
+    const containerRef = useInView<HTMLDivElement>(
+        {
+            root: null,
+            rootMargin: "0px",
+            treshold: 1.0,
+        },
+        async () => {
+            if (
+                productData?.filteredProducts &&
+                productData.filteredProducts.length % FETCH_NUMBER === 0
+            ) {
                 await fetchMore({
                     variables: {
-                        offset: productData.filteredProducts.length,
+                        offset: productData?.filteredProducts.length,
                         limit: FETCH_NUMBER,
                         input: {
                             search_string: searchParams.v,
@@ -92,9 +87,9 @@ const SearchPage = () => {
                         },
                     },
                 });
-            })();
+            }
         }
-    }, [isVisible]);
+    );
 
     const handleSort = async (e: ChangeEvent<HTMLSelectElement>) => {
         navigate({

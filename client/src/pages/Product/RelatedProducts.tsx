@@ -1,5 +1,4 @@
-import { useApolloClient, useQuery } from "@apollo/client";
-import { useEffect } from "react";
+import { useQuery } from "@apollo/client";
 import ProductsGrid from "../../components/ProductsGrid";
 import {
     GetRelatedProductsQuery,
@@ -30,17 +29,18 @@ const RelatedProducts = ({
             },
         },
     });
-    const { cache } = useApolloClient();
 
-    const { containerRef, isVisible } = useInView<HTMLDivElement>({
-        root: null,
-        rootMargin: "0px",
-        treshold: 1.0,
-    });
-
-    useEffect(() => {
-        if (isVisible) {
-            (async () => {
+    const containerRef = useInView<HTMLDivElement>(
+        {
+            root: null,
+            rootMargin: "0px",
+            treshold: 1.0,
+        },
+        async () => {
+            if (
+                relatedProductData?.relatedProducts &&
+                relatedProductData.relatedProducts.length % FETCH_NUMBER === 0
+            ) {
                 await fetchMore({
                     variables: {
                         offset: relatedProductData?.relatedProducts.length,
@@ -52,9 +52,9 @@ const RelatedProducts = ({
                         },
                     },
                 });
-            })();
+            }
         }
-    }, [isVisible]);
+    );
 
     return (
         <>
