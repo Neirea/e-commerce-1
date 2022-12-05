@@ -301,9 +301,14 @@ const productResolvers = {
                 include: {
                     images: true,
                 },
-                orderBy: {
-                    discount: "desc",
-                },
+                orderBy: [
+                    {
+                        discount: "desc",
+                    },
+                    {
+                        id: "asc",
+                    },
+                ],
             });
         },
         relatedProducts: async (
@@ -365,11 +370,16 @@ const productResolvers = {
                         select: { orders: true },
                     },
                 },
-                orderBy: {
-                    orders: {
-                        _count: "desc",
+                orderBy: [
+                    {
+                        orders: {
+                            _count: "desc",
+                        },
                     },
-                },
+                    {
+                        id: "asc",
+                    },
+                ],
             });
         },
     },
