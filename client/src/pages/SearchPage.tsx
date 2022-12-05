@@ -60,6 +60,7 @@ const SearchPage = () => {
                 max_price: maxParam,
             },
         },
+        notifyOnNetworkStatusChange: true,
     });
 
     const containerRef = useInView<HTMLDivElement>(

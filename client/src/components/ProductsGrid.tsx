@@ -19,14 +19,27 @@ const ProductsGrid = ({
     productError: ApolloError | undefined;
     productLoading: boolean;
 }) => {
+    if (productError) {
+        return (
+            <div className="d-flex justify-content-center">
+                <Alert variant="danger">
+                    Error: data was not fetched from the server
+                </Alert>
+            </div>
+        );
+    }
+    if (!products) {
+        return (
+            <div style={{ height: "18.5rem" }}>
+                <Loading />
+            </div>
+        );
+    }
+
     return (
         <>
             <div className="d-grid justify-content-center justify-content-lg-start">
-                {productError ? (
-                    <Alert variant="danger">
-                        Error: data was not fetched from the server
-                    </Alert>
-                ) : products ? (
+                {products &&
                     products.map((product) => {
                         return (
                             <div
@@ -84,15 +97,10 @@ const ProductsGrid = ({
                                 </div>
                             </div>
                         );
-                    })
-                ) : (
-                    <div style={{ height: "18.5rem" }}>
-                        <Loading />
-                    </div>
-                )}
+                    })}
             </div>
             {products && productLoading && (
-                <div>
+                <div style={{ height: "18.5rem" }}>
                     <Loading />
                 </div>
             )}

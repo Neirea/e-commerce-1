@@ -14,6 +14,7 @@ const Featured = () => {
         fetchMore,
     } = useQuery<GetFeaturedProductsQuery>(QUERY_FEATURED_PRODUCTS, {
         variables: { limit: FETCH_NUMBER, offset: 0 },
+        notifyOnNetworkStatusChange: true,
     });
     const [showMore, setShowMore] = useState(true);
 

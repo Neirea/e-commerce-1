@@ -28,6 +28,7 @@ const RelatedProducts = ({
                 category_id: product?.category.id,
             },
         },
+        notifyOnNetworkStatusChange: true,
     });
 
     const containerRef = useInView<HTMLDivElement>(

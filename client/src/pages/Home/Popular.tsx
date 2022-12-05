@@ -14,6 +14,7 @@ const Popular = () => {
         fetchMore,
     } = useQuery<GetPopularProductsQuery>(QUERY_POPULAR_PRODUCTS, {
         variables: { limit: FETCH_NUMBER, offset: 0 },
+        notifyOnNetworkStatusChange: true,
     });
     const [showMore, setShowMore] = useState(true);
 
