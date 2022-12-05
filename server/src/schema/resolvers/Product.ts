@@ -150,6 +150,7 @@ const productResolvers = {
                     allCompanies.push(p.company);
                 }
             });
+            if (min === 2147483647) min = 0;
             //push parent categories
             allCategories.forEach((elem) => {
                 if (elem.parent && elem.parent.id != null) {
@@ -185,10 +186,9 @@ const productResolvers = {
             companies.forEach((elem) => {
                 elem.productCount = compCount[elem.id];
             });
-            if (min === 2147483647) min = 0;
             return {
                 min: Math.floor(min),
-                max: Math.floor(max),
+                max: Math.ceil(max),
                 categories,
                 companies,
             };
