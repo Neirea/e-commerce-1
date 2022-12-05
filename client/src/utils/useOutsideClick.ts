@@ -20,5 +20,5 @@ export const useOutsideClick = (
         return () => {
             document.removeEventListener("click", handleClickOutside);
         };
-    }, [refs, handleClose]);
+    }, []);
 };

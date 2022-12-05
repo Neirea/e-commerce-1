@@ -1,10 +1,11 @@
 import * as qs from "query-string";
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { Button, Form, FormGroup } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const MultiRangeSlider = ({ min, max }: { min: number; max: number }) => {
-    const searchParams = qs.parse(location.search);
+    const { search } = useLocation();
+    const searchParams = qs.parse(search);
     const curL = searchParams.min != null ? +searchParams.min : undefined;
     const curR = searchParams.max != null ? +searchParams.max : undefined;
     //validate parameters
