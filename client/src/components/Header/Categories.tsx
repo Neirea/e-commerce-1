@@ -68,7 +68,6 @@ const Categories = (
                             return (
                                 <li
                                     key={category.id}
-                                    className="menu-item"
                                     onClick={handleClose}
                                     onMouseEnter={() =>
                                         setLastHover(category.id)
@@ -76,9 +75,12 @@ const Categories = (
                                 >
                                     <Link
                                         to={`/search?c=${category.id}`}
-                                        className="d-flex gap-3 align-items-center"
+                                        className="d-flex align-items-center gap-2 text-decoration-none search-link ps-3 pe-3"
                                     >
-                                        {category.name}
+                                        <span className="custom-link">
+                                            {category.name}
+                                        </span>
+
                                         {!!subCategories?.get(category.id)
                                             ?.length && (
                                             <BiChevronRight size={20} />
@@ -94,13 +96,14 @@ const Categories = (
                         <ul className="submenu-list">
                             {subCategories?.get(lastHover)?.map((category) => {
                                 return (
-                                    <li
-                                        key={category.id}
-                                        className="menu-item"
-                                        onClick={handleClose}
-                                    >
-                                        <Link to={`/search?c=${category.id}`}>
-                                            {category.name}
+                                    <li key={category.id} onClick={handleClose}>
+                                        <Link
+                                            className="text-decoration-none search-link ps-3 pe-3"
+                                            to={`/search?c=${category.id}`}
+                                        >
+                                            <span className="custom-link">
+                                                {category.name}
+                                            </span>
                                         </Link>
                                     </li>
                                 );
