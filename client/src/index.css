@@ -62,6 +62,14 @@ td {
     color: black;
     text-decoration: underline;
 }
+.search-link {
+    display: block;
+    padding: 0.5rem 0.5rem;
+    width: 100%;
+}
+.search-link:hover {
+    background-color: rgba(17, 17, 17, 0.1);
+}
 
 /* slider */
 .multi-slider {

@@ -11,6 +11,24 @@ const productTypes = gql`
     type ProductOrdersCount {
         orders: Int!
     }
+    # Search types
+    type SearchProduct {
+        id: Int!
+        name: String!
+    }
+    type SearchCompany {
+        id: Int!
+        name: String!
+    }
+    type SearchCategory {
+        id: Int!
+        name: String!
+    }
+    type QuerySearchBarResult {
+        categories: [SearchCategory!]!
+        companies: [SearchCompany!]!
+        products: [SearchProduct!]!
+    }
 
     type QuerySearchDataResult {
         min: Int!
@@ -44,6 +62,7 @@ const productTypes = gql`
             offset: Int!
             input: QueryProductInput!
         ): [Product!]!
+        searchBarQuery(input: String!): QuerySearchBarResult!
         searchData(input: QuerySearchDataInput!): QuerySearchDataResult!
         featuredProducts(limit: Int!, offset: Int!): [Product!]!
         popularProducts(limit: Int!, offset: Int!): [Product!]!

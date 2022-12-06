@@ -1,5 +1,24 @@
 import { gql } from "@apollo/client";
 
+export const QUERY_SEARCH_BAR = gql`
+    query GetSearchResults($input: String!) {
+        searchBarQuery(input: $input) {
+            categories {
+                id
+                name
+            }
+            companies {
+                id
+                name
+            }
+            products {
+                id
+                name
+            }
+        }
+    }
+`;
+
 export const QUERY_ALL_PRODUCT = gql`
     query GetAllProducts {
         products {

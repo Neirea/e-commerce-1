@@ -7,6 +7,7 @@ import type {
     Category,
     Company,
     CreateProductInput,
+    InputMaybe,
     QueryProductInput,
     QueryRelatedInput,
     QuerySearchDataInput,
@@ -14,6 +15,19 @@ import type {
 } from "../../generated/graphql";
 
 const prisma = new PrismaClient();
+
+const getQueryString = (input: InputMaybe<string> | undefined) => {
+    return input?.length
+        ? input
+              .split(",")
+              .map((s) => s.trim())
+              .filter((s) => s.length > 0)
+              .join("|")
+              .split(" ")
+              .map((s) => s.trim() + ":*")
+              .join("&")
+        : undefined;
+};
 
 const subCategoriesQuery = (
     category_id: number
@@ -73,12 +87,7 @@ const productResolvers = {
             parent: any,
             { input }: { input: QuerySearchDataInput }
         ) => {
-            const searchString = input.search_string
-                ? input.search_string
-                      .split(" ")
-                      .map((s) => s + ":*")
-                      .join(" | ")
-                : undefined;
+            const searchString = getQueryString(input.search_string);
 
             const searchCategoryIds: number[] = [];
             if (input.category_id) {
@@ -201,29 +210,35 @@ const productResolvers = {
                 input,
             }: { offset: number; limit: number; input: QueryProductInput }
         ) => {
-            const searchString = input.search_string
-                ? input.search_string
-                      .split(" ")
-                      .map((s) => s + ":*")
-                      .join(" | ")
-                : undefined;
-            let sortBy: {
-                orders?: { _count: "desc" | "asc" };
-                price?: "desc" | "asc";
-            } = {
-                orders: {
-                    _count: "desc",
+            const searchString = getQueryString(input.search_string);
+
+            type sortByType =
+                | { orders: { _count: "desc" | "asc" } }
+                | { price: "desc" | "asc" }
+                | { inventory: "desc" | "asc" }
+                | { id?: "desc" | "asc" };
+            let sortBy: sortByType[] = [
+                {
+                    orders: {
+                        _count: "desc",
+                    },
                 },
-            };
+                { inventory: "desc" },
+                { id: "asc" },
+            ];
             if (input.sortMode === 1) {
-                sortBy = {
-                    price: "asc",
-                };
+                sortBy = [
+                    { price: "asc" },
+                    { inventory: "desc" },
+                    { id: "asc" },
+                ];
             }
             if (input.sortMode === 2) {
-                sortBy = {
-                    price: "desc",
-                };
+                sortBy = [
+                    { price: "desc" },
+                    { inventory: "desc" },
+                    { id: "asc" },
+                ];
             }
             const searchCategoryIds: number[] = [];
 
@@ -234,6 +249,7 @@ const productResolvers = {
                     res.forEach((i) => searchCategoryIds.push(i.id))
                 );
             }
+
             const data = await prisma.product.findMany({
                 skip: offset,
                 take: limit,
@@ -298,6 +314,9 @@ const productResolvers = {
             return prisma.product.findMany({
                 skip: offset,
                 take: limit,
+                where: {
+                    inventory: { gt: 0 },
+                },
                 include: {
                     images: true,
                 },
@@ -330,6 +349,14 @@ const productResolvers = {
                 include: {
                     images: true,
                 },
+                orderBy: [
+                    {
+                        inventory: "desc",
+                    },
+                    {
+                        id: "asc",
+                    },
+                ],
             });
             if (showFirst.length === limit) return showFirst;
             const count = await prisma.product.count({
@@ -353,6 +380,14 @@ const productResolvers = {
                 include: {
                     images: true,
                 },
+                orderBy: [
+                    {
+                        inventory: "desc",
+                    },
+                    {
+                        id: "asc",
+                    },
+                ],
             });
 
             return showFirst.concat(showSecond);
@@ -370,6 +405,9 @@ const productResolvers = {
                         select: { orders: true },
                     },
                 },
+                where: {
+                    inventory: { gt: 0 },
+                },
                 orderBy: [
                     {
                         orders: {
@@ -381,6 +419,80 @@ const productResolvers = {
                     },
                 ],
             });
+        },
+        searchBarQuery: async (parent: any, { input }: { input: string }) => {
+            const searchString = getQueryString(input);
+
+            const categories = await prisma.category.findMany({
+                take: 3,
+                where: {
+                    name: {
+                        search: searchString,
+                    },
+                },
+                select: {
+                    id: true,
+                    name: true,
+                },
+            });
+            const companies = await prisma.company.findMany({
+                take: 3,
+                where: {
+                    name: {
+                        search: searchString,
+                    },
+                },
+                select: {
+                    id: true,
+                    name: true,
+                },
+            });
+
+            const productAmount = 10 - (categories.length + companies.length);
+            const products = await prisma.product.findMany({
+                take: productAmount,
+                where: {
+                    OR: [
+                        {
+                            name: {
+                                search: searchString,
+                            },
+                        },
+                        {
+                            category: {
+                                name: {
+                                    search: searchString,
+                                },
+                            },
+                        },
+                        {
+                            company: {
+                                name: {
+                                    search: searchString,
+                                },
+                            },
+                        },
+                    ],
+                },
+                select: {
+                    id: true,
+                    name: true,
+                },
+                orderBy: [
+                    {
+                        inventory: "desc",
+                    },
+                    {
+                        orders: {
+                            _count: "desc",
+                        },
+                    },
+                    {
+                        id: "asc",
+                    },
+                ],
+            });
+            return { categories, companies, products };
         },
     },
     Mutation: {

@@ -197,6 +197,7 @@ export type Query = {
   products: Array<Product>;
   productsById: Array<Product>;
   relatedProducts: Array<Product>;
+  searchBarQuery: QuerySearchBarResult;
   searchData: QuerySearchDataResult;
   showMe?: Maybe<User>;
   user?: Maybe<User>;
@@ -240,6 +241,11 @@ export type QueryrelatedProductsArgs = {
 };
 
 
+export type QuerysearchBarQueryArgs = {
+  input: Scalars['String'];
+};
+
+
 export type QuerysearchDataArgs = {
   input: QuerySearchDataInput;
 };
@@ -264,6 +270,13 @@ export type QueryRelatedInput = {
   id: Scalars['Int'];
 };
 
+export type QuerySearchBarResult = {
+  __typename?: 'QuerySearchBarResult';
+  categories: Array<SearchCategory>;
+  companies: Array<SearchCompany>;
+  products: Array<SearchProduct>;
+};
+
 export type QuerySearchDataInput = {
   category_id?: InputMaybe<Scalars['Int']>;
   company_id?: InputMaybe<Scalars['Int']>;
@@ -285,6 +298,24 @@ export enum Role {
   EDITOR = 'EDITOR',
   USER = 'USER'
 }
+
+export type SearchCategory = {
+  __typename?: 'SearchCategory';
+  id: Scalars['Int'];
+  name: Scalars['String'];
+};
+
+export type SearchCompany = {
+  __typename?: 'SearchCompany';
+  id: Scalars['Int'];
+  name: Scalars['String'];
+};
+
+export type SearchProduct = {
+  __typename?: 'SearchProduct';
+  id: Scalars['Int'];
+  name: Scalars['String'];
+};
 
 export type SingleOrderItem = {
   __typename?: 'SingleOrderItem';
@@ -419,6 +450,13 @@ export type CancelOrderMutationVariables = Exact<{
 
 
 export type CancelOrderMutation = { __typename?: 'Mutation', cancelOrder: boolean };
+
+export type GetSearchResultsQueryVariables = Exact<{
+  input: Scalars['String'];
+}>;
+
+
+export type GetSearchResultsQuery = { __typename?: 'Query', searchBarQuery: { __typename?: 'QuerySearchBarResult', categories: Array<{ __typename?: 'SearchCategory', id: number, name: string }>, companies: Array<{ __typename?: 'SearchCompany', id: number, name: string }>, products: Array<{ __typename?: 'SearchProduct', id: number, name: string }> } };
 
 export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -859,6 +897,52 @@ export function useCancelOrderMutation(baseOptions?: Apollo.MutationHookOptions<
 export type CancelOrderMutationHookResult = ReturnType<typeof useCancelOrderMutation>;
 export type CancelOrderMutationResult = Apollo.MutationResult<CancelOrderMutation>;
 export type CancelOrderMutationOptions = Apollo.BaseMutationOptions<CancelOrderMutation, CancelOrderMutationVariables>;
+export const GetSearchResultsDocument = gql`
+    query GetSearchResults($input: String!) {
+  searchBarQuery(input: $input) {
+    categories {
+      id
+      name
+    }
+    companies {
+      id
+      name
+    }
+    products {
+      id
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetSearchResultsQuery__
+ *
+ * To run a query within a React component, call `useGetSearchResultsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSearchResultsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSearchResultsQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useGetSearchResultsQuery(baseOptions: Apollo.QueryHookOptions<GetSearchResultsQuery, GetSearchResultsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSearchResultsQuery, GetSearchResultsQueryVariables>(GetSearchResultsDocument, options);
+      }
+export function useGetSearchResultsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSearchResultsQuery, GetSearchResultsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSearchResultsQuery, GetSearchResultsQueryVariables>(GetSearchResultsDocument, options);
+        }
+export type GetSearchResultsQueryHookResult = ReturnType<typeof useGetSearchResultsQuery>;
+export type GetSearchResultsLazyQueryHookResult = ReturnType<typeof useGetSearchResultsLazyQuery>;
+export type GetSearchResultsQueryResult = Apollo.QueryResult<GetSearchResultsQuery, GetSearchResultsQueryVariables>;
 export const GetAllProductsDocument = gql`
     query GetAllProducts {
   products {
