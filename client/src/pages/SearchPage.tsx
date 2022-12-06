@@ -77,8 +77,8 @@ const SearchPage = () => {
         async () => {
             if (
                 productData?.filteredProducts &&
-                productData?.filteredProducts.length % FETCH_NUMBER === 0 &&
-                hasMore
+                hasMore &&
+                productData.filteredProducts.length % FETCH_NUMBER === 0
             ) {
                 const result = await fetchMore({
                     variables: {
@@ -94,7 +94,10 @@ const SearchPage = () => {
                         },
                     },
                 });
-                if (result.data.filteredProducts.length === 0) {
+                if (
+                    result.data.filteredProducts.length === 0 ||
+                    result.data.filteredProducts.length % FETCH_NUMBER !== 0
+                ) {
                     setHasMore(false);
                 }
             }

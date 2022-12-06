@@ -42,9 +42,8 @@ const RelatedProducts = ({
         async () => {
             if (
                 relatedProductData?.relatedProducts &&
-                relatedProductData.relatedProducts.length % FETCH_NUMBER ===
-                    0 &&
-                hasMore
+                hasMore &&
+                relatedProductData.relatedProducts.length % FETCH_NUMBER === 0
             ) {
                 const result = await fetchMore({
                     variables: {
@@ -57,7 +56,10 @@ const RelatedProducts = ({
                         },
                     },
                 });
-                if (result.data.relatedProducts.length === 0) {
+                if (
+                    result.data.relatedProducts.length === 0 ||
+                    result.data.relatedProducts.length % FETCH_NUMBER !== 0
+                ) {
                     setHasMore(false);
                 }
             }

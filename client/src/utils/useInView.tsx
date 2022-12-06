@@ -31,6 +31,7 @@ const useInView = <T extends HTMLElement>(
     useEffect(() => {
         if (isVisible) {
             cb();
+            setIsVisible(false);
         }
     }, [isVisible]);
 
