@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import * as qs from "query-string";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
@@ -19,6 +19,7 @@ type CategoryType = GetSearchDataQuery["searchData"]["categories"][number];
 
 const SearchPage = () => {
     const navigate = useNavigate();
+    const [hasMore, setHasMore] = useState(true);
     const { search } = useLocation();
     const searchParams = qs.parse(search);
     const categoryParam = searchParams.c != null ? +searchParams.c : undefined;
@@ -41,6 +42,10 @@ const SearchPage = () => {
                 },
             },
         });
+
+    const categoriesData = searchData?.searchData
+        ? sortByParentId<CategoryType>(searchData.searchData.categories)
+        : null;
 
     const {
         data: productData,
@@ -72,9 +77,10 @@ const SearchPage = () => {
         async () => {
             if (
                 productData?.filteredProducts &&
-                productData.filteredProducts.length % FETCH_NUMBER === 0
+                productData?.filteredProducts.length % FETCH_NUMBER === 0 &&
+                hasMore
             ) {
-                await fetchMore({
+                const result = await fetchMore({
                     variables: {
                         offset: productData?.filteredProducts.length,
                         limit: FETCH_NUMBER,
@@ -88,6 +94,9 @@ const SearchPage = () => {
                         },
                     },
                 });
+                if (result.data.filteredProducts.length === 0) {
+                    setHasMore(false);
+                }
             }
         }
     );
@@ -127,9 +136,7 @@ const SearchPage = () => {
                                 <b>Categories:</b>
                             </div>
                             <div className="border-bottom pb-3">
-                                {sortByParentId<CategoryType>(
-                                    searchData.searchData.categories
-                                ).map(({ elem, depth }) => {
+                                {categoriesData?.map(({ elem, depth }) => {
                                     return (
                                         <div
                                             className="mt-2"
@@ -212,11 +219,6 @@ const SearchPage = () => {
                             Couldn't find any products with this search
                         </h2>
                     )}
-                    {searchLoading && !productData?.filteredProducts && (
-                        <div className="mt-5">
-                            <Loading />
-                        </div>
-                    )}
                     {!!productData?.filteredProducts && (
                         <>
                             <ProductsGrid
@@ -226,6 +228,11 @@ const SearchPage = () => {
                             />
                             <div ref={containerRef} />
                         </>
+                    )}
+                    {searchLoading && !productData?.filteredProducts && (
+                        <div className="mt-5">
+                            <Loading />
+                        </div>
                     )}
                 </Col>
             </Row>

@@ -1,4 +1,5 @@
 import { useQuery } from "@apollo/client";
+import { useState } from "react";
 import ProductsGrid from "../../components/ProductsGrid";
 import {
     GetRelatedProductsQuery,
@@ -13,6 +14,7 @@ const RelatedProducts = ({
 }: {
     product: GetSingleProductQuery["product"];
 }) => {
+    const [hasMore, setHasMore] = useState(true);
     const {
         data: relatedProductData,
         loading: relatedProductLoading,
@@ -40,9 +42,11 @@ const RelatedProducts = ({
         async () => {
             if (
                 relatedProductData?.relatedProducts &&
-                relatedProductData.relatedProducts.length % FETCH_NUMBER === 0
+                relatedProductData.relatedProducts.length % FETCH_NUMBER ===
+                    0 &&
+                hasMore
             ) {
-                await fetchMore({
+                const result = await fetchMore({
                     variables: {
                         offset: relatedProductData?.relatedProducts.length,
                         limit: FETCH_NUMBER,
@@ -53,6 +57,9 @@ const RelatedProducts = ({
                         },
                     },
                 });
+                if (result.data.relatedProducts.length === 0) {
+                    setHasMore(false);
+                }
             }
         }
     );
