@@ -1,5 +1,11 @@
 import { useQuery } from "@apollo/client";
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+    createContext,
+    ReactNode,
+    useCallback,
+    useContext,
+    useState,
+} from "react";
 import { GetProductsByIdQuery } from "../generated/graphql";
 import { QUERY_PRODUCTS_BY_ID } from "../queries/Product";
 
@@ -58,60 +64,74 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
 
     //function to add/change cart in local storage
-    const addCartToLocalStorage = (addProducts: typeof products) => {
-        localStorage.setItem(
-            "cart",
-            JSON.stringify(
-                addProducts.map((p) => {
-                    return { product: { id: p.product.id }, amount: p.amount };
-                })
-            )
-        );
-    };
+    const addCartToLocalStorage = useCallback(
+        (addProducts: typeof products) => {
+            localStorage.setItem(
+                "cart",
+                JSON.stringify(
+                    addProducts.map((p) => {
+                        return {
+                            product: { id: p.product.id },
+                            amount: p.amount,
+                        };
+                    })
+                )
+            );
+        },
+        []
+    );
 
-    const addProductToCart = (item: CartItem<ProductDBType>) => {
-        //check for existing product
-        const existingProduct = products.find(
-            (p) => p.product.id === item.product.id
-        );
+    const addProductToCart = useCallback(
+        (item: CartItem<ProductDBType>) => {
+            //check for existing product
+            const existingProduct = products.find(
+                (p) => p.product.id === item.product.id
+            );
 
-        let newState: Array<CartItem<ProductDBType>> = [];
-        if (existingProduct) {
-            newState = products.map((i) => {
-                if (i.product.id === existingProduct.product.id) {
-                    const amount =
-                        i.amount + item.amount > item.product.inventory
-                            ? item.product.inventory
-                            : i.amount + item.amount;
-                    return {
-                        product: i.product,
-                        amount: amount,
-                    };
-                }
-                return i;
+            let newState: Array<CartItem<ProductDBType>> = [];
+            if (existingProduct) {
+                newState = products.map((i) => {
+                    if (i.product.id === existingProduct.product.id) {
+                        const amount =
+                            i.amount + item.amount > item.product.inventory
+                                ? item.product.inventory
+                                : i.amount + item.amount;
+                        return {
+                            product: i.product,
+                            amount: amount,
+                        };
+                    }
+                    return i;
+                });
+
+                setProducts(newState);
+                addCartToLocalStorage(newState);
+                return;
+            }
+            setProducts((old) => {
+                const newState = [...old, item];
+                addCartToLocalStorage(newState);
+                return newState;
             });
+        },
+        [products]
+    );
 
-            setProducts(newState);
-            addCartToLocalStorage(newState);
-            return;
-        }
-        setProducts((old) => {
-            const newState = [...old, item];
-            addCartToLocalStorage(newState);
-            return newState;
-        });
-    };
+    const removeProductFromCart = useCallback(
+        (product: ProductDBType) => {
+            const newProducts = products.filter(
+                (p) => p.product.id !== product.id
+            );
+            setProducts(newProducts);
+            addCartToLocalStorage(newProducts);
+        },
+        [products]
+    );
 
-    const removeProductFromCart = (product: ProductDBType) => {
-        const newProducts = products.filter((p) => p.product.id !== product.id);
-        setProducts(newProducts);
-        addCartToLocalStorage(newProducts);
-    };
-
-    const clearCart = () => {
+    const clearCart = useCallback(() => {
         setProducts([]);
         addCartToLocalStorage([]);
-    };
+    }, []);
 
     const contextValue: CartContext<ProductDBType> = {
         cart: products,
