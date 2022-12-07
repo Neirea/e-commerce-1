@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 
 interface IOptions {
     root: HTMLElement | null;
@@ -8,10 +8,17 @@ interface IOptions {
 
 const useInView = <T extends HTMLElement>(
     options: IOptions,
-    cb: () => void
+    cb: () => void,
+    hasMore: number
 ) => {
     const containerRef = useRef<T | null>(null);
     const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        if (isVisible && hasMore) {
+            cb();
+        }
+    }, [isVisible, hasMore]);
 
     useEffect(() => {
         const makeElementVisible = (
@@ -22,18 +29,13 @@ const useInView = <T extends HTMLElement>(
         };
         const observer = new IntersectionObserver(makeElementVisible, options);
         if (containerRef.current) observer.observe(containerRef.current);
+        if (containerRef.current && !hasMore)
+            observer.unobserve(containerRef.current);
 
         return () => {
             if (containerRef.current) observer.unobserve(containerRef.current);
         };
-    }, [options]);
-
-    useEffect(() => {
-        if (isVisible) {
-            cb();
-            setIsVisible(false);
-        }
-    }, [isVisible]);
+    }, [options, hasMore]);
 
     return containerRef;
 };

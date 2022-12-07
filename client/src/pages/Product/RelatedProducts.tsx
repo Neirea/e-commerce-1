@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import ProductsGrid from "../../components/ProductsGrid";
 import {
     GetRelatedProductsQuery,
@@ -9,14 +9,17 @@ import { QUERY_RELATED_PRODUCTS } from "../../queries/Product";
 import { FETCH_NUMBER } from "../../utils/numbers";
 import useInView from "../../utils/useInView";
 
+const options = { root: null, rootMargin: "0px", treshold: 1.0 };
+
 const RelatedProducts = ({
     product,
 }: {
     product: GetSingleProductQuery["product"];
 }) => {
-    const [hasMore, setHasMore] = useState(true);
+    const [hasMore, setHasMore] = useState(0); //number of pages, 0 - stop fetchingMore
     const {
         data: relatedProductData,
+        previousData,
         loading: relatedProductLoading,
         error: relatedProductError,
         fetchMore,
@@ -31,39 +34,35 @@ const RelatedProducts = ({
             },
         },
         notifyOnNetworkStatusChange: true,
+        onCompleted(data) {
+            if (
+                data.relatedProducts.length % FETCH_NUMBER !== 0 ||
+                previousData?.relatedProducts.length ===
+                    data.relatedProducts.length
+            ) {
+                setHasMore(0);
+                return;
+            }
+            setHasMore((prev) => prev + 1);
+        },
     });
 
     const containerRef = useInView<HTMLDivElement>(
-        {
-            root: null,
-            rootMargin: "0px",
-            treshold: 1.0,
-        },
+        options,
         async () => {
-            if (
-                relatedProductData?.relatedProducts &&
-                hasMore &&
-                relatedProductData.relatedProducts.length % FETCH_NUMBER === 0
-            ) {
-                const result = await fetchMore({
-                    variables: {
-                        offset: relatedProductData?.relatedProducts.length,
-                        limit: FETCH_NUMBER,
-                        input: {
-                            id: product?.id,
-                            company_id: product?.company.id,
-                            category_id: product?.category.id,
-                        },
+            await fetchMore({
+                variables: {
+                    offset: relatedProductData?.relatedProducts.length,
+                    limit: FETCH_NUMBER,
+                    input: {
+                        id: product?.id,
+                        company_id: product?.company.id,
+                        category_id: product?.category.id,
                     },
-                });
-                if (
-                    result.data.relatedProducts.length === 0 ||
-                    result.data.relatedProducts.length % FETCH_NUMBER !== 0
-                ) {
-                    setHasMore(false);
-                }
-            }
-        }
+                },
+            });
+        },
+        hasMore
     );
 
     return (

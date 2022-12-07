@@ -17,9 +17,11 @@ import useInView from "../utils/useInView";
 const FETCH_NUMBER = 12;
 type CategoryType = GetSearchDataQuery["searchData"]["categories"][number];
 
+const options = { root: null, rootMargin: "0px", treshold: 1.0 };
+
 const SearchPage = () => {
     const navigate = useNavigate();
-    const [hasMore, setHasMore] = useState(true);
+    const [hasMore, setHasMore] = useState(0); //number of pages, 0 - stop fetchingMore
     const { search } = useLocation();
     const searchParams = qs.parse(search);
     const categoryParam = searchParams.c != null ? +searchParams.c : undefined;
@@ -49,6 +51,7 @@ const SearchPage = () => {
 
     const {
         data: productData,
+        previousData,
         loading: productLoading,
         error: productError,
         fetchMore,
@@ -66,42 +69,38 @@ const SearchPage = () => {
             },
         },
         notifyOnNetworkStatusChange: true,
+        onCompleted(data) {
+            if (
+                data.filteredProducts.length % FETCH_NUMBER !== 0 ||
+                previousData?.filteredProducts.length ===
+                    data.filteredProducts.length
+            ) {
+                setHasMore(0);
+                return;
+            }
+            setHasMore((prev) => prev + 1);
+        },
     });
 
     const containerRef = useInView<HTMLDivElement>(
-        {
-            root: null,
-            rootMargin: "0px",
-            treshold: 1.0,
-        },
+        options,
         async () => {
-            if (
-                productData?.filteredProducts &&
-                hasMore &&
-                productData.filteredProducts.length % FETCH_NUMBER === 0
-            ) {
-                const result = await fetchMore({
-                    variables: {
-                        offset: productData?.filteredProducts.length,
-                        limit: FETCH_NUMBER,
-                        input: {
-                            search_string: searchParams.v,
-                            sortMode: sortParam,
-                            category_id: categoryParam,
-                            company_id: companyParam,
-                            min_price: minParam,
-                            max_price: maxParam,
-                        },
+            await fetchMore({
+                variables: {
+                    offset: productData?.filteredProducts.length,
+                    limit: FETCH_NUMBER,
+                    input: {
+                        search_string: searchParams.v,
+                        sortMode: sortParam,
+                        category_id: categoryParam,
+                        company_id: companyParam,
+                        min_price: minParam,
+                        max_price: maxParam,
                     },
-                });
-                if (
-                    result.data.filteredProducts.length === 0 ||
-                    result.data.filteredProducts.length % FETCH_NUMBER !== 0
-                ) {
-                    setHasMore(false);
-                }
-            }
-        }
+                },
+            });
+        },
+        hasMore
     );
 
     const handleSort = async (e: ChangeEvent<HTMLSelectElement>) => {
