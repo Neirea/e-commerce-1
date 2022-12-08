@@ -17,6 +17,7 @@ import passport from "passport";
 //user imports
 import apiRouter from "./apiRouter";
 import notFound from "./middleware/not-found";
+import errorHandlerMiddleware from "./middleware/error-handle";
 import { resolvers, typeDefs } from "./schema";
 
 export const app = express();
@@ -119,6 +120,7 @@ export const app = express();
 
     // not found middleware
     app.use(notFound);
+    app.use(errorHandlerMiddleware);
 
     const port = process.env.PORT || 5000;
 

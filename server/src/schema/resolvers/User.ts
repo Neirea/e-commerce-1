@@ -2,7 +2,9 @@ import { PrismaClient, Role } from "@prisma/client";
 import { AuthenticationError } from "apollo-server-express";
 import { Request } from "express";
 import { GraphQLScalarType, Kind } from "graphql";
+import { StatusCodes } from "http-status-codes";
 import { UpdateUserInput } from "../../generated/graphql";
+import CustomError from "../../middleware/custom-error";
 
 const prisma = new PrismaClient();
 
@@ -17,7 +19,10 @@ export const dateScalar = new GraphQLScalarType({
     },
     parseValue(value: any) {
         if (!naiveIsoDateRegex.test(value)) {
-            throw new Error("Invalid date format");
+            throw new CustomError(
+                "Invalid date format",
+                StatusCodes.BAD_REQUEST
+            );
         }
         return new Date(value); // Convert incoming integer to Date
     },

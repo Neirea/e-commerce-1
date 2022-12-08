@@ -1,5 +1,13 @@
 import { ChangeEvent, useState } from "react";
-import { Button, Col, Container, Form, Image, Row } from "react-bootstrap";
+import {
+    Alert,
+    Button,
+    Col,
+    Container,
+    Form,
+    Image,
+    Row,
+} from "react-bootstrap";
 import { useAppContext } from "../context/AppContext";
 import { useCartContext } from "../context/CartContext";
 import { toPriceNumber } from "../utils/numbers";
@@ -9,6 +17,7 @@ const Checkout = () => {
     const { user } = useAppContext();
     const [loading, setLoading] = useState(false);
     const { cart, clearCart } = useCartContext();
+    const [error, setError] = useState("");
 
     const [name, setName] = useState(
         (user?.given_name || "").concat(
@@ -39,6 +48,7 @@ const Checkout = () => {
 
     const handleCheckout = () => {
         setLoading(true);
+        setError("");
         const checkoutItems = cart.map((item) => {
             return { id: item.product.id, amount: item.amount };
         });
@@ -76,14 +86,15 @@ const Checkout = () => {
             .catch((e) => {
                 switch (e.type) {
                     case "StripeCardError":
-                        console.log(`A payment error occurred: ${e.message}`);
+                        setError(`A payment error occurred: ${e.message}`);
                         break;
                     case "StripeInvalidRequestError":
-                        console.log("An invalid request occurred.");
+                        setError("An invalid request occurred.");
                         break;
                     default:
-                        console.log(
-                            "Another problem occurred, maybe unrelated to Stripe."
+                        console.log("Error:", e.message);
+                        setError(
+                            `Another problem occurred, maybe unrelated to Stripe.`
                         );
                         break;
                 }
@@ -189,6 +200,11 @@ const Checkout = () => {
                         </Row>
                     </Col>
                 </Row>
+                {!!error.length && (
+                    <div className="d-flex justify-content-center mt-3">
+                        <Alert variant="danger">{error}</Alert>
+                    </div>
+                )}
                 <div className="d-flex justify-content-center mt-3">
                     <Button
                         variant="success"

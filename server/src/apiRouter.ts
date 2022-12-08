@@ -8,6 +8,7 @@ import passport from "passport";
 import Stripe from "stripe";
 import { app } from ".";
 import { Status } from "./generated/graphql";
+import CustomError from "./middleware/custom-error";
 import { failedLogin, loginCallback } from "./passport";
 
 interface CheckoutBody {
@@ -49,11 +50,24 @@ router.patch("/checkout/:orderId", async (req, res) => {
         },
     });
 
-    if (order == null) throw new Error("Failed to retrieve order data");
-    if (req.session.user?.id != order.user_id)
-        throw new Error("Order does not belong to this user");
+    if (order == null) {
+        throw new CustomError(
+            "Failed to retrieve order data",
+            StatusCodes.BAD_REQUEST
+        );
+    }
+    if (req.session.user?.id !== order.user_id) {
+        throw new CustomError(
+            "Order does not belong to this user",
+            StatusCodes.BAD_REQUEST
+        );
+    }
+
     if (order.status !== Status.PENDING) {
-        throw new Error("This order has been paid already");
+        throw new CustomError(
+            "This order has been paid already",
+            StatusCodes.BAD_REQUEST
+        );
     }
 
     const orderProducts = order.order_items.map((order) => {
@@ -102,7 +116,7 @@ router.patch("/checkout/:orderId", async (req, res) => {
 
 router.post("/checkout", async (req: CustomRequest<CheckoutBody>, res) => {
     if (req.body.items.length === 0) {
-        throw new Error("Your cart is empty");
+        throw new CustomError("Your cart is empty", StatusCodes.BAD_REQUEST);
     }
     const products = await prisma.product.findMany({
         where: {
@@ -125,12 +139,10 @@ router.post("/checkout", async (req: CustomRequest<CheckoutBody>, res) => {
         const productAmount = req.body.items.find(
             (p) => p.id === product.id
         )?.amount;
-        if (!productAmount) {
-            throw new Error("Failed to proceed this order");
-        }
-        if (productAmount > product.inventory) {
-            throw new Error(
-                `We don't have ${product.name} in this amount: ${productAmount}`
+        if (!productAmount || productAmount > product.inventory) {
+            throw new CustomError(
+                `We don't have ${product.name} in this amount: ${productAmount}`,
+                StatusCodes.BAD_REQUEST
             );
         }
         return {
@@ -286,7 +298,7 @@ router.delete("/auth/logout", (req, res) => {
 });
 router.post("/editor/upload-images", async (req, res) => {
     if (!req.session.user?.role.includes(Role.EDITOR)) {
-        res.status(200).json({ message: "OK" });
+        res.status(StatusCodes.OK).json({ message: "OK" });
         return;
     }
     interface UploadedImage {
