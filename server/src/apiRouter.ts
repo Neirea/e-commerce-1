@@ -101,6 +101,9 @@ router.patch("/checkout/:orderId", async (req, res) => {
 });
 
 router.post("/checkout", async (req: CustomRequest<CheckoutBody>, res) => {
+    if (req.body.items.length === 0) {
+        throw new Error("Your cart is empty");
+    }
     const products = await prisma.product.findMany({
         where: {
             id: {
