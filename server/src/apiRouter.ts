@@ -125,6 +125,11 @@ router.post("/checkout", async (req: CustomRequest<CheckoutBody>, res) => {
         if (!productAmount) {
             throw new Error("Failed to proceed this order");
         }
+        if (productAmount > product.inventory) {
+            throw new Error(
+                `We don't have ${product.name} in this amount: ${productAmount}`
+            );
+        }
         return {
             id: product.id,
             name: product.name,

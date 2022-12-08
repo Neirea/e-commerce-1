@@ -40,7 +40,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const localCart: Array<CartItem<CartProductBase>> = JSON.parse(
         localStorage.getItem("cart") || "[]"
     );
-    //load data on change of products in cart
+    //sync data if products change in a cart
     useQuery<GetProductsByIdQuery>(QUERY_PRODUCTS_BY_ID, {
         variables: { ids: localCart.map((i) => i.product.id) },
         skip: !localCart.length,
@@ -51,13 +51,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                         const cartProduct = data.productsById.find(
                             (i) => item.product.id === i.id
                         )!;
+                        const amount =
+                            cartProduct.inventory < item.amount
+                                ? cartProduct.inventory
+                                : item.amount;
                         return {
                             product: cartProduct,
-                            amount: item.amount,
+                            amount: amount,
                         };
                     }
                 );
-
                 setProducts(newState);
             }
         },
