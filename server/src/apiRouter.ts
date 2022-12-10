@@ -70,21 +70,55 @@ router.patch("/checkout/:orderId", async (req, res) => {
         );
     }
 
+    const productIds = order.order_items.map((o) => o.product.id);
+
+    const products = await prisma.product.findMany({
+        where: {
+            id: { in: productIds },
+        },
+        select: {
+            id: true,
+            name: true,
+            price: true,
+            discount: true,
+            inventory: true,
+        },
+    });
+
     const orderProducts = order.order_items.map((order) => {
-        const updatedPrice =
-            ((100 - order.product.discount) / 100) * order.product.price;
-        //update price information for order
-        prisma.singleOrderItem.update({
-            where: {
-                id: order.id,
-            },
-            data: {
-                price: updatedPrice,
-            },
-        });
+        const product = products.find((p) => p.id === order.product.id);
+        if (!product) {
+            throw new CustomError(
+                `We don't have ${order.product.name} in our inventory anymore`,
+                StatusCodes.BAD_REQUEST
+            );
+        }
+        if (product.inventory < order.amount) {
+            throw new CustomError(
+                `We don't have ${product.name} in this amount: ${order.amount}`,
+                StatusCodes.BAD_REQUEST
+            );
+        }
+        let price = order.product.price;
+        //if pricing changed
+        if (
+            product.price !== order.product.price ||
+            product.discount !== order.product.discount
+        ) {
+            price = ((100 - product.discount) / 100) * product.price;
+            //update price information for single order
+            prisma.singleOrderItem.update({
+                where: {
+                    id: order.id,
+                },
+                data: {
+                    price: price,
+                },
+            });
+        }
         return {
             name: order.product.name,
-            price: updatedPrice,
+            price: price,
             amount: order.amount,
         };
     });
