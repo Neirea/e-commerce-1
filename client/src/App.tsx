@@ -34,20 +34,33 @@ const Loading = () => {
 
 function App() {
     const { user, isLoading } = useCurrentUser();
-    const localCart: CartType = JSON.parse(
-        localStorage.getItem("cart") || "[]"
-    );
+
+    let localCart: CartType = [];
+    let ids: number[] = [];
+    try {
+        localCart = JSON.parse(localStorage.getItem("cart") || "[]");
+        ids = localCart.map((i) => i.product.id);
+    } catch (error) {
+        console.log(error);
+        localStorage.setItem("cart", "[]");
+    }
 
     const { loading: syncQueryLoading } = useQuery<GetProductsByIdQuery>(
         QUERY_PRODUCTS_BY_ID,
         {
-            variables: { ids: localCart.map((i) => i.product.id) },
+            variables: { ids: ids },
             onCompleted(data) {
                 const result = getSyncedCart(data, localCart);
+
                 if (result?.newState) {
                     addCartToLocalStorage(result.newState);
                     cartVar(result.newState);
+                    return;
                 }
+                if (result?.errors.length) {
+                    console.log(result.errors.join());
+                }
+                addCartToLocalStorage([]);
             },
         }
     );

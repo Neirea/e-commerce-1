@@ -1,26 +1,17 @@
 import { BiCart } from "@react-icons/all-files/bi/BiCart";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Nav } from "react-bootstrap";
-import useApolloCartStore, {
-    CartType,
-} from "../../../global/useApolloCartStore";
+import useApolloCartStore from "../../../global/useApolloCartStore";
 import CartContent from "./CartContent";
 
 const Cart = () => {
-    const { cart, syncCart } = useApolloCartStore();
+    const { cart } = useApolloCartStore();
     const [showCart, setShowCart] = useState(false);
     // Cart Modal
     const handleShowCart = () => setShowCart(true);
     const handleCloseCart = () => setShowCart(false);
 
     const cartAmount = cart.reduce((prev, curr) => prev + curr.amount, 0);
-
-    useEffect(() => {
-        const localCart: CartType = JSON.parse(
-            localStorage.getItem("cart") || "[]"
-        );
-        syncCart(localCart);
-    }, []);
 
     return (
         <>
