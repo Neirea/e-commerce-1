@@ -1,12 +1,12 @@
 import { Col, Container, Row } from "react-bootstrap";
-import { useAppContext } from "../../context/AppContext";
+import useCurrentUser from "../../hooks/useCurrentUser";
 import { Role } from "../../generated/graphql";
 import Category from "./Category";
 import Company from "./Company";
 import Product from "./Product";
 
 const Editor = () => {
-    const { user } = useAppContext();
+    const { user } = useCurrentUser();
     return (
         <Container as="main">
             <Row>

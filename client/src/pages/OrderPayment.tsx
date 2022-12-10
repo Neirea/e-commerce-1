@@ -1,12 +1,12 @@
 import qs from "query-string";
 import { Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAppContext } from "../context/AppContext";
+import useCurrentUser from "../hooks/useCurrentUser";
 
 const OrderPayment = () => {
     const navigate = useNavigate();
     const { search } = useLocation();
-    const { user } = useAppContext();
+    const { user } = useCurrentUser();
     const searchParams = qs.parse(search);
 
     return (

@@ -5,8 +5,8 @@ import { Button, Form, InputGroup } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { GetSearchResultsQuery } from "../../generated/graphql";
 import { QUERY_SEARCH_BAR } from "../../queries/Product";
-import { useDebounce } from "../../utils/useDebounce";
-import { useOutsideClick } from "../../utils/useOutsideClick";
+import { useDebounce } from "../../hooks/useDebounce";
+import { useOutsideClick } from "../../hooks/useOutsideClick";
 import Loading from "../Loading";
 
 const SearchBar = () => {

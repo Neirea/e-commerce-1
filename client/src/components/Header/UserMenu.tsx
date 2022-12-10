@@ -2,12 +2,12 @@ import { useApolloClient } from "@apollo/client";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import { Link } from "react-router-dom";
-import { useAppContext } from "../../context/AppContext";
+import useCurrentUser from "../../hooks/useCurrentUser";
 import { Role } from "../../generated/graphql";
 import { serverUrl } from "../../utils/server";
 
 const UserMenu = () => {
-    const { user } = useAppContext();
+    const { user } = useCurrentUser();
     const client = useApolloClient();
 
     const isShowEditor =

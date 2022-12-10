@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Nav } from "react-bootstrap";
-import { useAppContext } from "../../context/AppContext";
-import Login from "../Login";
-import UserMenu from "./UserMenu";
+import useCurrentUser from "../../../hooks/useCurrentUser";
+import LoginContent from "./LoginContent";
+import UserMenu from "../UserMenu";
 
-const LoginHeader = () => {
-    const { user, isLoading } = useAppContext();
+const Login = () => {
+    const { user, isLoading } = useCurrentUser();
 
     const [showLogin, setShowLogin] = useState(false);
 
@@ -26,9 +26,9 @@ const LoginHeader = () => {
                     {isLoading ? "" : "Login"}
                 </Nav.Link>
             )}
-            <Login handleClose={handleCloseLogin} show={showLogin} />
+            <LoginContent handleClose={handleCloseLogin} show={showLogin} />
         </>
     );
 };
 
-export default LoginHeader;
+export default Login;

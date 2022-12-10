@@ -1,7 +1,7 @@
 import { ApolloClient, InMemoryCache, makeVar } from "@apollo/client";
 import { offsetLimitPagination } from "@apollo/client/utilities";
-import { serverUrl } from "../utils/server";
 import { CartType } from "./useApolloCartStore";
+import { serverUrl } from "../utils/server";
 
 export const cartVar = makeVar<CartType>([]);
 

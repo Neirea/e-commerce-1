@@ -7,7 +7,7 @@ import {
 } from "../../generated/graphql";
 import { QUERY_RELATED_PRODUCTS } from "../../queries/Product";
 import { FETCH_NUMBER } from "../../utils/numbers";
-import useInView from "../../utils/useInView";
+import useInView from "../../hooks/useInView";
 
 const options = { root: null, rootMargin: "0px", treshold: 1.0 };
 

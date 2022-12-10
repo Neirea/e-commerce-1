@@ -241,6 +241,8 @@ td {
     top: 0;
     right: 0;
     display: flex;
+    font-size: 0.65rem;
+    color: white;
     justify-content: center;
     align-items: center;
     height: 1rem;

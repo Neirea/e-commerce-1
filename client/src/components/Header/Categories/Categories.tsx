@@ -1,12 +1,12 @@
 import { useQuery } from "@apollo/client";
 import React, { useRef, useState } from "react";
 import { Button } from "react-bootstrap";
-import { GetAllCategoriesQuery } from "../../generated/graphql";
-import { QUERY_ALL_CATEGORIES } from "../../queries/Category";
-import { useOutsideClick } from "../../utils/useOutsideClick";
-import Categories from "../Categories";
+import { GetAllCategoriesQuery } from "../../../generated/graphql";
+import { QUERY_ALL_CATEGORIES } from "../../../queries/Category";
+import { useOutsideClick } from "../../../hooks/useOutsideClick";
+import CategoriesContent from "./CategoriesContent";
 
-const CategoriesHeader = () => {
+const Categories = () => {
     const { data } = useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
     const [showCategories, setShowCategories] = useState(false);
     const menuButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -28,7 +28,7 @@ const CategoriesHeader = () => {
                 Сatalog
             </Button>
             {!!showCategories && (
-                <Categories
+                <CategoriesContent
                     categories={data?.categories}
                     handleClose={handleCloseCategories}
                     ref={categoriesRef}
@@ -38,4 +38,4 @@ const CategoriesHeader = () => {
     );
 };
 
-export default CategoriesHeader;
+export default Categories;

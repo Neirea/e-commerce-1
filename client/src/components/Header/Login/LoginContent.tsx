@@ -2,9 +2,9 @@ import { FaFacebook } from "@react-icons/all-files/fa/FaFacebook";
 import { FaGoogle } from "@react-icons/all-files/fa/FaGoogle";
 import { Button, Modal } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
-import { serverUrl } from "../utils/server";
+import { serverUrl } from "../../../utils/server";
 
-const Login = ({
+const LoginContent = ({
     handleClose,
     show,
 }: {
@@ -58,4 +58,4 @@ const Login = ({
     );
 };
 
-export default Login;
+export default LoginContent;

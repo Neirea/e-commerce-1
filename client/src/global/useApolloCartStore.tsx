@@ -1,5 +1,5 @@
 import { useLazyQuery, useReactiveVar } from "@apollo/client";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { GetProductsByIdQuery } from "../generated/graphql";
 import { QUERY_PRODUCTS_BY_ID } from "../queries/Product";
 import { cartVar } from "./apolloClient";

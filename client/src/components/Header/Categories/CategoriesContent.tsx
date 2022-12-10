@@ -2,7 +2,7 @@ import { BiChevronRight } from "@react-icons/all-files/bi/BiChevronRight";
 import { forwardRef, useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
-import { GetAllCategoriesQuery } from "../generated/graphql";
+import { GetAllCategoriesQuery } from "../../../generated/graphql";
 
 const createWrapperAndAppend = () => {
     const modalRoot = document.createElement("div");
@@ -11,7 +11,7 @@ const createWrapperAndAppend = () => {
     return modalRoot;
 };
 
-const Categories = (
+const CategoriesContent = (
     {
         categories,
         handleClose,
@@ -116,4 +116,4 @@ const Categories = (
     );
 };
 
-export default forwardRef(Categories);
+export default forwardRef(CategoriesContent);

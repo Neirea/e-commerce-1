@@ -12,7 +12,7 @@ import {
 } from "../generated/graphql";
 import { QUERY_FILTERED_PRODUCTS, QUERY_SEARCH_DATA } from "../queries/Product";
 import sortByParentId from "../utils/sortByParents";
-import useInView from "../utils/useInView";
+import useInView from "../hooks/useInView";
 
 const FETCH_NUMBER = 12;
 type CategoryType = GetSearchDataQuery["searchData"]["categories"][number];

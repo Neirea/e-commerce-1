@@ -1,9 +1,9 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAppContext } from "../context/AppContext";
+import useCurrentUser from "../hooks/useCurrentUser";
 import { Role } from "../generated/graphql";
 
 const RequireAuth = ({ allowedRoles }: { allowedRoles: Role[] }) => {
-    const { user } = useAppContext();
+    const { user } = useCurrentUser();
     const location = useLocation();
 
     if (user) {

@@ -1,6 +1,6 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import useApolloCartStore from "../../context/useApolloCartStore";
+import useApolloCartStore from "../../global/useApolloCartStore";
 import { GetSingleProductQuery } from "../../generated/graphql";
 import { toPriceNumber } from "../../utils/numbers";
 

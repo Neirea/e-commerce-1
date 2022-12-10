@@ -1,7 +1,7 @@
 import { Container, Nav, Navbar } from "react-bootstrap";
-import CartHeader from "./CartHeader";
-import CategoriesHeader from "./CategoriesHeader";
-import LoginHeader from "./LoginHeader";
+import CartHeader from "./Cart";
+import CategoriesHeader from "./Categories";
+import LoginHeader from "./Login";
 import SearchBar from "./SearchBar";
 
 const Header = () => {

@@ -12,11 +12,11 @@ import {
     Row,
 } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
-import useApolloCartStore from "../context/useApolloCartStore";
-import { CartItem, ProductDBType } from "../context/useApolloCartStore";
-import { toPriceNumber } from "../utils/numbers";
+import useApolloCartStore from "../../../global/useApolloCartStore";
+import { CartItem, ProductDBType } from "../../../global/useApolloCartStore";
+import { toPriceNumber } from "../../../utils/numbers";
 
-const Cart = ({
+const CartContent = ({
     handleClose,
     show,
 }: {
@@ -216,4 +216,4 @@ const Cart = ({
     );
 };
 
-export default Cart;
+export default CartContent;

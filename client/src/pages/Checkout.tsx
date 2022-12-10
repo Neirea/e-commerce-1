@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import {
     Alert,
     Button,
@@ -8,13 +8,13 @@ import {
     Image,
     Row,
 } from "react-bootstrap";
-import { useAppContext } from "../context/AppContext";
-import useApolloCartStore from "../context/useApolloCartStore";
+import useCurrentUser from "../hooks/useCurrentUser";
+import useApolloCartStore from "../global/useApolloCartStore";
 import { toPriceNumber } from "../utils/numbers";
 import { serverUrl } from "../utils/server";
 
 const Checkout = () => {
-    const { user } = useAppContext();
+    const { user } = useCurrentUser();
     const [loading, setLoading] = useState(false);
     const { cart, clearCart, syncCart } = useApolloCartStore();
     const [error, setError] = useState("");
@@ -46,7 +46,8 @@ const Checkout = () => {
     const handlePhone = (e: ChangeEvent<HTMLInputElement>) =>
         setPhone(e.target.value);
 
-    const handleCheckout = async () => {
+    const handleCheckout = async (e: FormEvent) => {
+        e.preventDefault();
         setLoading(true);
         setError("");
         const errorMessage = await syncCart(cart);
@@ -118,6 +119,8 @@ const Checkout = () => {
                                 type="text"
                                 value={name}
                                 onChange={handleName}
+                                pattern="[a-zA-Z ,.'-]+"
+                                minLength={4}
                                 required
                             />
                         </Form.Group>
@@ -127,6 +130,10 @@ const Checkout = () => {
                                 type="text"
                                 value={address}
                                 onChange={handleAddress}
+                                placeholder="Country/State, City, Street, Building number, Appartment number"
+                                title="Country/State, City, Street, Building number, Appartment number"
+                                pattern="[a-zA-Z ]+(,)?( )?[a-zA-Z ]+(,)?( )?[a-zA-Z ]+(,)?( )?[0-9a-zA-Z]+(,)?( )?([0-9]+)?"
+                                minLength={10}
                                 required
                             />
                         </Form.Group>
@@ -217,11 +224,7 @@ const Checkout = () => {
                     </div>
                 )}
                 <div className="d-flex justify-content-center mt-3">
-                    <Button
-                        variant="success"
-                        onClick={handleCheckout}
-                        disabled={loading}
-                    >
+                    <Button variant="success" type="submit" disabled={loading}>
                         Proceed
                     </Button>
                 </div>

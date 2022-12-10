@@ -4,23 +4,23 @@ import { Container } from "react-bootstrap";
 import { Route, Routes } from "react-router-dom";
 import "./bootstrap.theme.css";
 import Footer from "./components/Footer";
-import Header from "./components/Header/Header";
+import Header from "./components/Header";
 import RequireAuth from "./components/RequireAuth";
 import ScrollAndHash from "./components/ScrollAndHash";
-import { cartVar } from "./context/apolloClient";
-import { useAppContext } from "./context/AppContext";
+import { cartVar } from "./global/apolloClient";
+import useCurrentUser from "./hooks/useCurrentUser";
 import {
     addCartToLocalStorage,
     CartType,
     getSyncedCart,
-} from "./context/useApolloCartStore";
+} from "./global/useApolloCartStore";
 import { GetProductsByIdQuery, Role } from "./generated/graphql";
 import Checkout from "./pages/Checkout";
 import Error from "./pages/Error";
 import Help from "./pages/Help";
-import Home from "./pages/Home/Home";
+import Home from "./pages/Home";
 import OrderPayment from "./pages/OrderPayment";
-import ProductWrapper from "./pages/Product/ProductWrapper";
+import ProductWrapper from "./pages/Product";
 import SearchPage from "./pages/SearchPage";
 import Unauthorized from "./pages/Unauthorized";
 import { QUERY_PRODUCTS_BY_ID } from "./queries/Product";
@@ -33,7 +33,7 @@ const Loading = () => {
 };
 
 function App() {
-    const { user, isLoading } = useAppContext();
+    const { user, isLoading } = useCurrentUser();
     const localCart: CartType = JSON.parse(
         localStorage.getItem("cart") || "[]"
     );
