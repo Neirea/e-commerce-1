@@ -1,3 +1,4 @@
+import { useQuery } from "@apollo/client";
 import { lazy, Suspense } from "react";
 import { Container } from "react-bootstrap";
 import { Route, Routes } from "react-router-dom";
@@ -6,8 +7,14 @@ import Footer from "./components/Footer";
 import Header from "./components/Header/Header";
 import RequireAuth from "./components/RequireAuth";
 import ScrollAndHash from "./components/ScrollAndHash";
+import { cartVar } from "./context/apolloClient";
 import { useAppContext } from "./context/AppContext";
-import { Role } from "./generated/graphql";
+import {
+    addCartToLocalStorage,
+    CartType,
+    getSyncedCart,
+} from "./context/useApolloCartStore";
+import { GetProductsByIdQuery, Role } from "./generated/graphql";
 import Checkout from "./pages/Checkout";
 import Error from "./pages/Error";
 import Help from "./pages/Help";
@@ -16,6 +23,7 @@ import OrderPayment from "./pages/OrderPayment";
 import ProductWrapper from "./pages/Product/ProductWrapper";
 import SearchPage from "./pages/SearchPage";
 import Unauthorized from "./pages/Unauthorized";
+import { QUERY_PRODUCTS_BY_ID } from "./queries/Product";
 const Orders = lazy(() => import("./pages/Orders"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 const Editor = lazy(() => import("./pages/Editor/Editor"));
@@ -26,11 +34,30 @@ const Loading = () => {
 
 function App() {
     const { user, isLoading } = useAppContext();
+    const localCart: CartType = JSON.parse(
+        localStorage.getItem("cart") || "[]"
+    );
+
+    const { loading: syncQueryLoading } = useQuery<GetProductsByIdQuery>(
+        QUERY_PRODUCTS_BY_ID,
+        {
+            variables: { ids: localCart.map((i) => i.product.id) },
+            onCompleted(data) {
+                const result = getSyncedCart(data, localCart);
+                if (result?.newState) {
+                    addCartToLocalStorage(result.newState);
+                    cartVar(result.newState);
+                }
+            },
+        }
+    );
+
+    const loading = isLoading || syncQueryLoading;
 
     return (
         <>
             <Header />
-            {isLoading ? (
+            {loading ? (
                 <Loading />
             ) : (
                 <>
