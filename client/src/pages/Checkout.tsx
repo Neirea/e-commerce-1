@@ -9,14 +9,14 @@ import {
     Row,
 } from "react-bootstrap";
 import { useAppContext } from "../context/AppContext";
-import useCartStore from "../context/useStore";
+import useApolloCartStore from "../context/useApolloCartStore";
 import { toPriceNumber } from "../utils/numbers";
 import { serverUrl } from "../utils/server";
 
 const Checkout = () => {
     const { user } = useAppContext();
     const [loading, setLoading] = useState(false);
-    const { cart, clearCart, syncCart } = useCartStore();
+    const { cart, clearCart, syncCart } = useApolloCartStore();
     const [error, setError] = useState("");
 
     const [name, setName] = useState(

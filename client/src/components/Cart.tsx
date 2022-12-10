@@ -12,11 +12,8 @@ import {
     Row,
 } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
-import useCartStore, {
-    CartItem,
-    CartType,
-    ProductDBType,
-} from "../context/useStore";
+import useApolloCartStore from "../context/useApolloCartStore";
+import { CartItem, ProductDBType } from "../context/useApolloCartStore";
 import { toPriceNumber } from "../utils/numbers";
 
 const Cart = ({
@@ -30,7 +27,7 @@ const Cart = ({
     const navigate = useNavigate();
     const [error, setError] = useState("");
     const { cart, addProductToCart, removeProductFromCart, syncCart } =
-        useCartStore();
+        useApolloCartStore();
     const totalPrice = cart.reduce(
         (prev, curr) =>
             prev +
@@ -54,20 +51,19 @@ const Cart = ({
         });
     };
 
-    const handleSetAmount = (
-        e: BaseSyntheticEvent,
-        item: CartItem<ProductDBType>
-    ) => {
-        const setAmount = +e.target.value - item.amount;
-        addProductToCart({
-            product: item.product,
-            amount:
-                setAmount > item.product.inventory
-                    ? item.product.inventory - item.amount
-                    : +e.target.value < 1
-                    ? 1
-                    : setAmount,
-        });
+    const handleSetAmount = (item: CartItem<ProductDBType>) => {
+        return (e: BaseSyntheticEvent) => {
+            const setAmount = +e.target.value - item.amount;
+            addProductToCart({
+                product: item.product,
+                amount:
+                    setAmount > item.product.inventory
+                        ? item.product.inventory - item.amount
+                        : +e.target.value < 1
+                        ? 1
+                        : setAmount,
+            });
+        };
     };
 
     const handleCheckout = async () => {
@@ -143,9 +139,7 @@ const Cart = ({
                                                 type="text"
                                                 className="p-0 ps-2 pe-2 text-center"
                                                 style={{ width: "3rem" }}
-                                                onChange={(e) =>
-                                                    handleSetAmount(e, item)
-                                                }
+                                                onChange={handleSetAmount(item)}
                                                 value={item.amount}
                                             />
                                             <Button

@@ -1,30 +1,10 @@
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
-import { offsetLimitPagination } from "@apollo/client/utilities";
+import { ApolloProvider } from "@apollo/client";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import client from "./context/apolloClient";
 import { AppProvider } from "./context/AppContext";
-import { serverUrl } from "./utils/server";
-
-const cache = new InMemoryCache({
-    typePolicies: {
-        Query: {
-            fields: {
-                filteredProducts: offsetLimitPagination(["input"]),
-                featuredProducts: offsetLimitPagination(["input"]),
-                popularProducts: offsetLimitPagination(["input"]),
-                relatedProducts: offsetLimitPagination(["input"]),
-            },
-        },
-    },
-});
-
-const client = new ApolloClient({
-    cache: cache,
-    uri: `${serverUrl}/graphql`,
-    credentials: "include",
-});
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>

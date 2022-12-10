@@ -1,14 +1,11 @@
 import { BiCart } from "@react-icons/all-files/bi/BiCart";
 import { useEffect, useState } from "react";
 import { Nav } from "react-bootstrap";
-import useCartStore, { CartType } from "../../context/useStore";
+import useApolloCartStore, { CartType } from "../../context/useApolloCartStore";
 import Cart from "../Cart";
 
 const CartHeader = () => {
-    const { cart, syncCart } = useCartStore(({ cart, syncCart }) => ({
-        cart,
-        syncCart,
-    }));
+    const { cart, syncCart } = useApolloCartStore();
     const [showCart, setShowCart] = useState(false);
     // Cart Modal
     const handleShowCart = () => setShowCart(true);
