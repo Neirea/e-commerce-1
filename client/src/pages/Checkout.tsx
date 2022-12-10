@@ -9,14 +9,14 @@ import {
     Row,
 } from "react-bootstrap";
 import { useAppContext } from "../context/AppContext";
-import { useCartContext } from "../context/CartContext";
+import useCartStore from "../context/useStore";
 import { toPriceNumber } from "../utils/numbers";
 import { serverUrl } from "../utils/server";
 
 const Checkout = () => {
     const { user } = useAppContext();
     const [loading, setLoading] = useState(false);
-    const { cart, clearCart } = useCartContext();
+    const { cart, clearCart, syncCart } = useCartStore();
     const [error, setError] = useState("");
 
     const [name, setName] = useState(
@@ -46,9 +46,15 @@ const Checkout = () => {
     const handlePhone = (e: ChangeEvent<HTMLInputElement>) =>
         setPhone(e.target.value);
 
-    const handleCheckout = () => {
+    const handleCheckout = async () => {
         setLoading(true);
         setError("");
+        const errorMessage = await syncCart(cart);
+        if (errorMessage) {
+            setError(errorMessage);
+            return;
+        }
+
         const checkoutItems = cart.map((item) => {
             return { id: item.product.id, amount: item.amount };
         });
@@ -202,7 +208,12 @@ const Checkout = () => {
                 </Row>
                 {!!error.length && (
                     <div className="d-flex justify-content-center mt-3">
-                        <Alert variant="danger">{error}</Alert>
+                        <Alert
+                            variant="danger"
+                            style={{ whiteSpace: "pre-wrap" }}
+                        >
+                            {error}
+                        </Alert>
                     </div>
                 )}
                 <div className="d-flex justify-content-center mt-3">

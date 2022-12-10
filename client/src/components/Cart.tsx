@@ -1,14 +1,22 @@
 import { AiOutlineDelete } from "@react-icons/all-files/ai/AiOutlineDelete";
 import { BsPlus } from "@react-icons/all-files/bs/BsPlus";
 import { FiMinus } from "@react-icons/all-files/fi/FiMinus";
-import { BaseSyntheticEvent } from "react";
-import { Button, Col, FormControl, Image, Modal, Row } from "react-bootstrap";
-import { useLocation, useNavigate } from "react-router-dom";
+import { BaseSyntheticEvent, useState } from "react";
 import {
+    Alert,
+    Button,
+    Col,
+    FormControl,
+    Image,
+    Modal,
+    Row,
+} from "react-bootstrap";
+import { useLocation, useNavigate } from "react-router-dom";
+import useCartStore, {
     CartItem,
+    CartType,
     ProductDBType,
-    useCartContext,
-} from "../context/CartContext";
+} from "../context/useStore";
 import { toPriceNumber } from "../utils/numbers";
 
 const Cart = ({
@@ -20,7 +28,9 @@ const Cart = ({
 }) => {
     const { pathname } = useLocation();
     const navigate = useNavigate();
-    const { cart, addProductToCart, removeProductFromCart } = useCartContext();
+    const [error, setError] = useState("");
+    const { cart, addProductToCart, removeProductFromCart, syncCart } =
+        useCartStore();
     const totalPrice = cart.reduce(
         (prev, curr) =>
             prev +
@@ -60,8 +70,13 @@ const Cart = ({
         });
     };
 
-    const handleCheckout = () => {
+    const handleCheckout = async () => {
         if (pathname !== "/checkout") {
+            const errorMessage = await syncCart(cart);
+            if (errorMessage) {
+                setError(errorMessage);
+                return;
+            }
             navigate("/checkout");
         }
         handleClose();
@@ -172,6 +187,16 @@ const Cart = ({
                                 </Row>
                             );
                         })}
+                        {!!error.length && (
+                            <div className="d-flex justify-content-center mt-3">
+                                <Alert
+                                    variant="danger"
+                                    style={{ whiteSpace: "pre-wrap" }}
+                                >
+                                    {error}
+                                </Alert>
+                            </div>
+                        )}
                         <Row className="align-items-center mt-3">
                             <Col className="fs-4">
                                 Total: {toPriceNumber(totalPrice)} $
@@ -180,7 +205,9 @@ const Cart = ({
                                 <Button
                                     variant="success"
                                     onClick={handleCheckout}
-                                    disabled={!cart.length}
+                                    disabled={
+                                        !cart.length || pathname === "/checkout"
+                                    }
                                 >
                                     Checkout
                                 </Button>

@@ -3,7 +3,7 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
 import Cart from "../../components/Cart";
-import { useCartContext } from "../../context/CartContext";
+import useCartStore from "../../context/useStore";
 import { GetSingleProductQuery } from "../../generated/graphql";
 import { GET_SINGLE_PRODUCT } from "../../queries/Product";
 import { toPriceNumber } from "../../utils/numbers";
@@ -11,7 +11,7 @@ import RelatedProducts from "./RelatedProducts";
 
 const Product = () => {
     const { id } = useParams();
-    const { addProductToCart } = useCartContext();
+    const addProductToCart = useCartStore((state) => state.addProductToCart);
     const [selectedImage, setSelectedImage] = useState(0);
     const [showCart, setShowCart] = useState(false);
     const [amount, setAmount] = useState(1);

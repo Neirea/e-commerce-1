@@ -5,7 +5,6 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { AppProvider } from "./context/AppContext";
-import { CartProvider } from "./context/CartContext";
 import { serverUrl } from "./utils/server";
 
 const cache = new InMemoryCache({
@@ -32,9 +31,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <BrowserRouter>
             <ApolloProvider client={client}>
                 <AppProvider>
-                    <CartProvider>
-                        <App />
-                    </CartProvider>
+                    <App />
                 </AppProvider>
             </ApolloProvider>
         </BrowserRouter>
