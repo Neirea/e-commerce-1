@@ -30,7 +30,7 @@ const Orders = () => {
 
     const handlePayment = (id: number) => {
         setPaymentLoading(true);
-        fetch(`${serverUrl}/api/checkout/${id}`, {
+        fetch(`${serverUrl}/api/payment/checkout/${id}`, {
             method: "PATCH",
             credentials: "include",
         })

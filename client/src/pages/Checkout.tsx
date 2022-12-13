@@ -60,7 +60,7 @@ const Checkout = () => {
             return { id: item.product.id, amount: item.amount };
         });
 
-        fetch(`${serverUrl}/api/checkout`, {
+        fetch(`${serverUrl}/api/payment/checkout`, {
             method: "POST",
             credentials: "include",
             headers: {
@@ -79,8 +79,8 @@ const Checkout = () => {
             .then((res) => {
                 //clear cart on successful request
                 setLoading(false);
-                clearCart();
                 if (res.ok) {
+                    clearCart();
                     return res.json();
                 }
                 //reject promise on failed stripe action

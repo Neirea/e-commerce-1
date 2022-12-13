@@ -15,7 +15,9 @@ import helmet from "helmet";
 import Redis from "ioredis";
 import passport from "passport";
 //user imports
-import apiRouter from "./apiRouter";
+import editorRouter from "./routers/editor";
+import authRouter from "./routers/auth";
+import paymentRouter from "./routers/payment";
 import notFound from "./middleware/not-found";
 import errorHandlerMiddleware from "./middleware/error-handle";
 import { resolvers, typeDefs } from "./schema";
@@ -113,7 +115,9 @@ export const app = express();
     server.applyMiddleware({ app, cors: corsOptions });
 
     //REST API Routes
-    app.use("/api", apiRouter);
+    app.use("/api/auth", authRouter);
+    app.use("/api/editor", editorRouter);
+    app.use("/api/payment", paymentRouter);
     app.use("/", (req, res) => {
         res.send("Welcome to Tech Stop demo server");
     });
