@@ -4,7 +4,7 @@ import { Request } from "express";
 import { GraphQLScalarType, Kind } from "graphql";
 import { StatusCodes } from "http-status-codes";
 import { UpdateUserInput } from "../../generated/graphql";
-import CustomError from "../../errors/bad-request";
+import CustomError from "../../errors/custom-error";
 
 const prisma = new PrismaClient();
 

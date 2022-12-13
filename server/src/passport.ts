@@ -10,7 +10,7 @@ import type {
     VerifyCallback,
 } from "passport-google-oauth20";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import AuthenticationError from "./errors/authentication";
+import CustomError from "./errors/custom-error";
 import { app } from "./index";
 
 const prisma = new PrismaClient();
@@ -25,8 +25,9 @@ export const loginCallback = (req: Request, res: Response) => {
     app.set("redirect", undefined);
 
     if (!req.user) {
-        throw new AuthenticationError(
-            "Authentication error. Something went wrong"
+        throw new CustomError(
+            "Authentication error. Something went wrong",
+            401
         );
     }
     if (req.session) {

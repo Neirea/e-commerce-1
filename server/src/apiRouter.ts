@@ -8,7 +8,7 @@ import passport from "passport";
 import Stripe from "stripe";
 import { app } from ".";
 import { Status } from "./generated/graphql";
-import BadRequestError from "./errors/bad-request";
+import CustomError from "./errors/custom-error";
 import { failedLogin, loginCallback } from "./passport";
 
 interface CheckoutBody {
@@ -51,20 +51,20 @@ router.patch("/checkout/:orderId", async (req, res) => {
     });
 
     if (order == null) {
-        throw new BadRequestError(
+        throw new CustomError(
             "Failed to retrieve order data",
             StatusCodes.BAD_REQUEST
         );
     }
     if (req.session.user?.id !== order.user_id) {
-        throw new BadRequestError(
+        throw new CustomError(
             "Order does not belong to this user",
             StatusCodes.BAD_REQUEST
         );
     }
 
     if (order.status !== Status.PENDING) {
-        throw new BadRequestError(
+        throw new CustomError(
             "This order has been paid already",
             StatusCodes.BAD_REQUEST
         );
@@ -88,13 +88,13 @@ router.patch("/checkout/:orderId", async (req, res) => {
     const orderProducts = order.order_items.map((order) => {
         const product = products.find((p) => p.id === order.product.id);
         if (!product) {
-            throw new BadRequestError(
+            throw new CustomError(
                 `We don't have ${order.product.name} in our inventory anymore`,
                 StatusCodes.BAD_REQUEST
             );
         }
         if (product.inventory < order.amount) {
-            throw new BadRequestError(
+            throw new CustomError(
                 `We don't have ${product.name} in this amount: ${order.amount}`,
                 StatusCodes.BAD_REQUEST
             );
@@ -150,10 +150,7 @@ router.patch("/checkout/:orderId", async (req, res) => {
 
 router.post("/checkout", async (req: CustomRequest<CheckoutBody>, res) => {
     if (req.body.items.length === 0) {
-        throw new BadRequestError(
-            "Your cart is empty",
-            StatusCodes.BAD_REQUEST
-        );
+        throw new CustomError("Your cart is empty", StatusCodes.BAD_REQUEST);
     }
     const products = await prisma.product.findMany({
         where: {
@@ -177,7 +174,7 @@ router.post("/checkout", async (req: CustomRequest<CheckoutBody>, res) => {
             (p) => p.id === product.id
         )?.amount;
         if (!productAmount || productAmount > product.inventory) {
-            throw new BadRequestError(
+            throw new CustomError(
                 `We don't have ${product.name} in this amount: ${productAmount}`,
                 StatusCodes.BAD_REQUEST
             );
