@@ -76,7 +76,7 @@ model Order {
   status OrderStatus @default(PENDING)
   order_items SingleOrderItem[]
   shipping_cost Float @default(0)
-  user User? @relation(fields: [user_id],references: [id])
+  user User? @relation(fields: [user_id],references: [id],onDelete: Cascade)
   user_id Int?
   buyer_name String
   buyer_email String
@@ -88,7 +88,7 @@ model Order {
 
 model SingleOrderItem {
   id Int @default(autoincrement()) @id
-  order Order @relation(fields: [order_id],references: [id])
+  order Order @relation(fields: [order_id],references: [id],onDelete: Cascade)
   order_id Int
   amount Int
   price Float
