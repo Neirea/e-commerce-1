@@ -5,18 +5,17 @@ Techway is a full-stack e-commerce demo website that "sells" computers and phone
 ## Client features:
 
 -   Fully Responsive
--   Authentication with Google/Facebook
 -   Full-text search with filters and sorting
--   Infinite scroll on search
+-   Infinite scroll on search page
+-   Authentication with Google/Facebook
 -   Admin/Editor can manage store content
 
 ## Client technologies:
 
 -   React with Typescript
 -   Initialized with Vite
--   Bootstrap for quick styling
--   Apollo Client GraphQL
--   React Testing Library/Jest for testing
+-   Bootstrap for styling
+-   Apollo Client for state management
 -   Deployed on Netlify
 
 ## Server features:
@@ -25,6 +24,7 @@ Techway is a full-stack e-commerce demo website that "sells" computers and phone
 -   Data is stored in PostgreSQL
 -   "Payments" via Stripe
 -   Apollo Server GraphQL
+-   Used REST API for usage of external services
 -   Cloudinary for image uploading/hosting
 
 ## Server technologies:
