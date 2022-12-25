@@ -8,25 +8,28 @@ import {
     Image,
     Row,
 } from "react-bootstrap";
-import useCurrentUser from "../hooks/useCurrentUser";
-import useApolloCartStore from "../global/useApolloCartStore";
-import { toPriceNumber } from "../utils/numbers";
-import { serverUrl } from "../utils/server";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
+import useApolloCartStore from "../global/useApolloCartStore";
+import useCurrentUser from "../hooks/useCurrentUser";
+import { toPriceNumber } from "../utils/numbers";
+import { serverUrl } from "../utils/server";
 import {
-    addressRegex,
     addressDesc,
-    phoneRegex,
+    addressZod,
+    emailZod,
+    familyNameZod,
+    givenNameZod,
     phoneDesc,
-} from "../utils/regex";
+    phoneZod,
+} from "../utils/zod";
 
 const CheckoutInputSchema = z.object({
-    given_name: z.string().min(2),
-    family_name: z.string().min(2),
-    email: z.string().email(),
-    address: z.string().regex(addressRegex).or(z.string().length(0)),
-    phone: z.string().regex(phoneRegex).or(z.string().length(0)),
+    given_name: givenNameZod,
+    family_name: familyNameZod,
+    email: emailZod,
+    address: addressZod,
+    phone: phoneZod,
 });
 
 type CheckoutInputType = z.infer<typeof CheckoutInputSchema>;
