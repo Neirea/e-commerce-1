@@ -1,4 +1,4 @@
-import { OrderStatus, PrismaClient } from "@prisma/client";
+import { OrderStatus, Prisma, PrismaClient, Product } from "@prisma/client";
 import { Request, Router } from "express";
 import { StatusCodes } from "http-status-codes";
 import Stripe from "stripe";
@@ -253,8 +253,10 @@ router.get("/done/:orderId", async (req, res) => {
             },
         });
         // remove items from inventory
+        const productUpdates: Prisma.Prisma__ProductClient<Product, never>[] =
+            [];
         order.order_items.forEach(async (o) => {
-            await prisma.product.update({
+            const update = prisma.product.update({
                 where: {
                     id: o.product_id,
                 },
@@ -264,7 +266,9 @@ router.get("/done/:orderId", async (req, res) => {
                     },
                 },
             });
+            productUpdates.push(update);
         });
+        await Promise.all(productUpdates);
 
         res.redirect(
             `${clientUrl}/order_payment?order_id=${orderId}&success=true`

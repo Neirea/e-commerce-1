@@ -78,12 +78,8 @@ export const app = express();
 
                             if (vars?.input?.img_id) {
                                 if (Array.isArray(vars.input.img_id)) {
-                                    vars.input.img_id.forEach(
-                                        async (id: string) => {
-                                            await cloudinary.uploader.destroy(
-                                                id
-                                            );
-                                        }
+                                    await cloudinary.api.delete_resources(
+                                        vars.input.img_id
                                     );
                                 } else {
                                     await cloudinary.uploader.destroy(

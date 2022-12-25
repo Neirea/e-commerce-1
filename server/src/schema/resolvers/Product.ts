@@ -15,6 +15,8 @@ import type {
 } from "../../generated/graphql";
 
 const prisma = new PrismaClient();
+type orderByType =
+    Prisma.Enumerable<Prisma.ProductOrderByWithRelationAndSearchRelevanceInput>;
 
 const getQueryString = (input: InputMaybe<string> | undefined) => {
     return input?.length
@@ -39,6 +41,17 @@ UNION ALL
     ON sc.parent_id = subcat.id
 )
 SELECT subcategory.id FROM subcategory;`;
+
+const sortByOrderCount: orderByType = [
+    {
+        orders: {
+            _count: "desc",
+        },
+    },
+    {
+        id: "asc",
+    },
+];
 
 const productResolvers = {
     JSON: GraphQLJSON,
@@ -212,12 +225,7 @@ const productResolvers = {
         ) => {
             const searchString = getQueryString(input.search_string);
 
-            type sortByType =
-                | { orders: { _count: "desc" | "asc" } }
-                | { price: "desc" | "asc" }
-                | { inventory: "desc" | "asc" }
-                | { id?: "desc" | "asc" };
-            let sortBy: sortByType[] = [
+            let sortBy: orderByType = [
                 {
                     orders: {
                         _count: "desc",
@@ -250,7 +258,7 @@ const productResolvers = {
                 );
             }
 
-            const data = await prisma.product.findMany({
+            return prisma.product.findMany({
                 skip: offset,
                 take: limit,
                 where: {
@@ -304,8 +312,6 @@ const productResolvers = {
                 },
                 orderBy: sortBy,
             });
-
-            return data;
         },
         featuredProducts: (
             parent: any,
@@ -338,59 +344,47 @@ const productResolvers = {
                 input,
             }: { limit: number; offset: number; input: QueryRelatedInput }
         ) => {
-            const showFirst = await prisma.product.findMany({
+            const firstProducts = await prisma.product.findMany({
                 where: {
                     NOT: { id: input.id },
                     company_id: input.company_id,
-                    category_id: input.category_id,
+                    inventory: { gt: 0 },
                 },
                 skip: offset,
                 take: limit,
                 include: {
                     images: true,
                 },
-                orderBy: [
-                    {
-                        inventory: "desc",
-                    },
-                    {
-                        id: "asc",
-                    },
-                ],
+                orderBy: sortByOrderCount,
             });
-            if (showFirst.length === limit) return showFirst;
-            const count = await prisma.product.count({
+
+            if (firstProducts.length === limit) return firstProducts;
+
+            const firstProductsCount = await prisma.product.count({
                 where: {
                     NOT: { id: input.id },
                     company_id: input.company_id,
-                    category_id: input.category_id,
+                    inventory: { gt: 0 },
                 },
             });
 
-            const offSet = offset - count < 0 ? 0 : offset - count;
-            const showSecond = await prisma.product.findMany({
+            const secondProducts = await prisma.product.findMany({
                 where: {
                     NOT: {
                         company_id: input.company_id,
                     },
                     category_id: input.category_id,
+                    inventory: { gt: 0 },
                 },
-                skip: offSet,
-                take: limit - showFirst.length,
+                skip: offset + firstProducts.length - firstProductsCount,
+                take: limit - firstProducts.length,
                 include: {
                     images: true,
                 },
-                orderBy: [
-                    {
-                        inventory: "desc",
-                    },
-                    {
-                        id: "asc",
-                    },
-                ],
+                orderBy: sortByOrderCount,
             });
 
-            return showFirst.concat(showSecond);
+            return firstProducts.concat(secondProducts);
         },
         popularProducts: (
             parent: any,
@@ -408,22 +402,13 @@ const productResolvers = {
                 where: {
                     inventory: { gt: 0 },
                 },
-                orderBy: [
-                    {
-                        orders: {
-                            _count: "desc",
-                        },
-                    },
-                    {
-                        id: "asc",
-                    },
-                ],
+                orderBy: sortByOrderCount,
             });
         },
         searchBarQuery: async (parent: any, { input }: { input: string }) => {
             const searchString = getQueryString(input);
 
-            const categories = await prisma.category.findMany({
+            const categoriesPromise = prisma.category.findMany({
                 take: 3,
                 where: {
                     name: {
@@ -435,7 +420,7 @@ const productResolvers = {
                     name: true,
                 },
             });
-            const companies = await prisma.company.findMany({
+            const companiesPromise = prisma.company.findMany({
                 take: 3,
                 where: {
                     name: {
@@ -448,7 +433,16 @@ const productResolvers = {
                 },
             });
 
+            const [categories, companies] = await Promise.all([
+                categoriesPromise,
+                companiesPromise,
+            ]);
+
             const productAmount = 10 - (categories.length + companies.length);
+            const sortByOrderCountAndInventory = [...sortByOrderCount].concat({
+                inventory: "desc",
+            });
+
             const products = await prisma.product.findMany({
                 take: productAmount,
                 where: {
@@ -478,19 +472,7 @@ const productResolvers = {
                     id: true,
                     name: true,
                 },
-                orderBy: [
-                    {
-                        inventory: "desc",
-                    },
-                    {
-                        orders: {
-                            _count: "desc",
-                        },
-                    },
-                    {
-                        id: "asc",
-                    },
-                ],
+                orderBy: sortByOrderCountAndInventory,
             });
             return { categories, companies, products };
         },
@@ -518,7 +500,7 @@ const productResolvers = {
                 return { img_id: img, img_src: img_src[i] };
             });
 
-            await prisma.product.create({
+            const createProduct = prisma.product.create({
                 data: {
                     ...createData,
                     images: {
@@ -534,12 +516,13 @@ const productResolvers = {
             });
 
             //create connection between company and category
-            await prisma.category.update({
+            const updateCategory = prisma.category.update({
                 where: { id: input.category_id },
                 data: {
                     companies: { connect: { id: input.company_id } },
                 },
             });
+            await Promise.all([createProduct, updateCategory]);
             return true;
         },
         updateProduct: async (
@@ -556,49 +539,52 @@ const productResolvers = {
             if (input.name.length < 3)
                 throw new UserInputError("Name is too short");
 
-            //delete old images
-            if (input.img_id.length) {
-                const oldImages = await prisma.productImage.findMany({
-                    where: { product_id: id },
-                });
-                oldImages.forEach(
-                    async (img) => await cloudinary.uploader.destroy(img.img_id)
-                );
-                await prisma.productImage.deleteMany({
-                    where: { product_id: id },
-                });
-            }
-
             //update product, create product images and connection to variants
-            const connectArr = variants?.map((p_id) => {
+            const newVariants = variants?.map((p_id) => {
                 return { id: p_id };
             });
-            const productImages = img_id.map((img, i) => {
+            const newProductImages = img_id.map((img, i) => {
                 return { img_id: img, img_src: img_src[i] };
             });
 
-            await prisma.product.update({
+            const productUpdate = prisma.product.update({
                 where: { id: id },
                 data: {
                     ...updateData,
                     images: {
-                        create: productImages,
+                        create: newProductImages,
                     },
                     variants: {
-                        connect: connectArr,
+                        connect: newVariants,
                     },
                     variantsRelation: {
-                        connect: connectArr,
+                        connect: newVariants,
                     },
                 },
             });
             //update relationbetween company and category
-            await prisma.category.update({
+            const categoryUpdate = prisma.category.update({
                 where: { id: input.category_id },
                 data: {
                     companies: { connect: { id: input.company_id } },
                 },
             });
+
+            //delete old images
+            if (img_id.length) {
+                const oldImages = await prisma.productImage.findMany({
+                    where: { product_id: id },
+                });
+                await prisma.productImage.deleteMany({
+                    where: { product_id: id },
+                });
+                await cloudinary.api.delete_resources(
+                    oldImages.map((i) => i.img_id)
+                );
+            }
+
+            const promiseArray = [productUpdate, categoryUpdate];
+            await Promise.all(promiseArray);
 
             return true;
         },
@@ -619,9 +605,9 @@ const productResolvers = {
             });
 
             if (data) {
-                data.images.forEach(async (img) => {
-                    await cloudinary.uploader.destroy(img.img_id);
-                });
+                await cloudinary.api.delete_resources(
+                    data.images.map((i) => i.img_id)
+                );
                 return true;
             }
             return false;
