@@ -12,6 +12,24 @@ import useCurrentUser from "../hooks/useCurrentUser";
 import useApolloCartStore from "../global/useApolloCartStore";
 import { toPriceNumber } from "../utils/numbers";
 import { serverUrl } from "../utils/server";
+import { z } from "zod";
+import { fromZodError } from "zod-validation-error";
+import {
+    addressRegex,
+    addressDesc,
+    phoneRegex,
+    phoneDesc,
+} from "../utils/regex";
+
+const CheckoutInputSchema = z.object({
+    given_name: z.string().min(2),
+    family_name: z.string().min(2),
+    email: z.string().email(),
+    address: z.string().regex(addressRegex).or(z.string().length(0)),
+    phone: z.string().regex(phoneRegex).or(z.string().length(0)),
+});
+
+type CheckoutInputType = z.infer<typeof CheckoutInputSchema>;
 
 const Checkout = () => {
     const { user } = useCurrentUser();
@@ -19,14 +37,13 @@ const Checkout = () => {
     const { cart, clearCart, syncCart } = useApolloCartStore();
     const [error, setError] = useState("");
 
-    const [name, setName] = useState(
-        (user?.given_name || "").concat(
-            user?.family_name ? ` ${user?.family_name}` : ""
-        )
-    );
-    const [address, setAddress] = useState(user?.address || "");
-    const [email, setEmail] = useState(user?.email || "");
-    const [phone, setPhone] = useState(user?.phone || "");
+    const [values, setValues] = useState<CheckoutInputType>({
+        given_name: user?.given_name || "",
+        family_name: user?.family_name || "",
+        email: user?.email || "",
+        address: user?.address || "",
+        phone: user?.phone || "",
+    });
 
     const totalPrice = cart.reduce(
         (prev, curr) =>
@@ -36,23 +53,21 @@ const Checkout = () => {
                 curr.product.price,
         0
     );
-
-    const handleName = (e: ChangeEvent<HTMLInputElement>) =>
-        setName(e.target.value);
-    const handleAddress = (e: ChangeEvent<HTMLInputElement>) =>
-        setAddress(e.target.value);
-    const handleEmail = (e: ChangeEvent<HTMLInputElement>) =>
-        setEmail(e.target.value);
-    const handlePhone = (e: ChangeEvent<HTMLInputElement>) =>
-        setPhone(e.target.value);
+    const handleData = (e: ChangeEvent<HTMLInputElement>) =>
+        setValues({ ...values, [e.target.name]: e.target.value });
 
     const handleCheckout = async (e: FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        setError("");
-        const errorMessage = await syncCart(cart);
-        if (errorMessage) {
-            setError(errorMessage);
+
+        const parseInput = CheckoutInputSchema.safeParse(values);
+        if (!parseInput.success) {
+            setError(fromZodError(parseInput.error).message);
+            return;
+        }
+        const syncCartError = await syncCart(cart);
+        if (syncCartError) {
+            setError(syncCartError);
             return;
         }
 
@@ -60,6 +75,7 @@ const Checkout = () => {
             return { id: item.product.id, amount: item.amount };
         });
 
+        const { given_name, family_name, email, address, phone } = values;
         fetch(`${serverUrl}/api/payment/checkout`, {
             method: "POST",
             credentials: "include",
@@ -69,7 +85,7 @@ const Checkout = () => {
             body: JSON.stringify({
                 items: checkoutItems,
                 buyer: {
-                    name,
+                    name: given_name + " " + family_name,
                     email,
                     address,
                     phone,
@@ -80,6 +96,7 @@ const Checkout = () => {
                 //clear cart on successful request
                 setLoading(false);
                 if (res.ok) {
+                    setError("");
                     clearCart();
                     return res.json();
                 }
@@ -114,36 +131,40 @@ const Checkout = () => {
                 <Row className="justify-content-around">
                     <Col sm="4">
                         <Form.Group className="mb-3">
-                            <Form.Label>Your name</Form.Label>
+                            <Form.Label>Your given name</Form.Label>
                             <Form.Control
                                 type="text"
-                                value={name}
-                                onChange={handleName}
-                                pattern="[a-zA-Z ,.'-]+"
-                                minLength={4}
-                                required
+                                value={values.given_name}
+                                name="given_name"
+                                onChange={handleData}
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Your familiy name</Form.Label>
+                            <Form.Control
+                                type="text"
+                                value={values.family_name}
+                                name="family_name"
+                                onChange={handleData}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Shipping address</Form.Label>
                             <Form.Control
                                 type="text"
-                                value={address}
-                                onChange={handleAddress}
-                                placeholder="Country/State, City, Street, Building number, Appartment number"
-                                title="Country/State, City, Street, Building number, Appartment number"
-                                pattern="[a-zA-Z ]+(,)?( )?[a-zA-Z ]+(,)?( )?[a-zA-Z ]+(,)?( )?[0-9a-zA-Z]+(,)?( )?([0-9]+)?"
-                                minLength={10}
-                                required
+                                value={values.address}
+                                name="address"
+                                onChange={handleData}
+                                title={addressDesc}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Contact email</Form.Label>
                             <Form.Control
                                 type="email"
-                                value={email}
-                                onChange={handleEmail}
-                                required
+                                value={values.email}
+                                name="email"
+                                onChange={handleData}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
@@ -152,8 +173,10 @@ const Checkout = () => {
                             </Form.Label>
                             <Form.Control
                                 type="tel"
-                                value={phone}
-                                onChange={handlePhone}
+                                value={values.phone}
+                                name="phone"
+                                title={phoneDesc}
+                                onChange={handleData}
                             />
                         </Form.Group>
                     </Col>

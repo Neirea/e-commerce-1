@@ -7,20 +7,41 @@ import {
     UpdateUserMutationVariables,
 } from "../generated/graphql";
 import { MUTATION_UPDATE_USER } from "../queries/User";
+import { z } from "zod";
+import { fromZodError } from "zod-validation-error";
+import {
+    addressRegex,
+    addressDesc,
+    phoneRegex,
+    phoneDesc,
+} from "../utils/regex";
+
+const UserProfileSchema = z.object({
+    given_name: z.string().min(2),
+    family_name: z.string().min(2),
+    email: z.string().email(),
+    address: z.string().regex(addressRegex).or(z.string().length(0)),
+    phone: z.string().regex(phoneRegex).or(z.string().length(0)),
+});
+
+type UserStateType = z.infer<typeof UserProfileSchema>;
 
 const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
     const [success, setSuccess] = useState(false);
-    const [updateUser, { loading, error }] = useMutation<
+    const [errorMessage, setErrorMessage] = useState("");
+    const [updateUser, { loading, error: mutationError }] = useMutation<
         UpdateUserMutation,
         UpdateUserMutationVariables
     >(MUTATION_UPDATE_USER);
-    const [values, setValues] = useState({
+    const [values, setValues] = useState<UserStateType>({
         given_name: user?.given_name || "",
         family_name: user?.family_name || "",
         email: user?.email || "",
         address: user?.address || "",
         phone: user?.phone || "",
     });
+
+    const error = mutationError?.message || errorMessage;
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         setValues({ ...values, [e.target.name]: e.target.value });
@@ -29,6 +50,11 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+        const parseInput = UserProfileSchema.safeParse(values);
+        if (!parseInput.success) {
+            setErrorMessage(fromZodError(parseInput.error).message);
+            return;
+        }
 
         await updateUser({
             variables: {
@@ -38,6 +64,7 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
                 },
             },
         });
+        setErrorMessage("");
         setSuccess(true);
     };
     return (
@@ -53,11 +80,8 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
                     <Form.Control
                         type="text"
                         name="given_name"
-                        placeholder={"Given name"}
                         onChange={handleChange}
                         value={values.given_name}
-                        minLength={2}
-                        required
                     />
                 </Form.Group>
                 <Form.Group className="mt-3 mb-3">
@@ -65,11 +89,8 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
                     <Form.Control
                         type="text"
                         name="family_name"
-                        placeholder={"Family Name"}
                         onChange={handleChange}
                         value={values.family_name}
-                        minLength={2}
-                        required
                     />
                 </Form.Group>
                 <Form.Group className="mt-3 mb-3">
@@ -77,7 +98,6 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
                     <Form.Control
                         type="email"
                         name="email"
-                        placeholder={"Email"}
                         onChange={handleChange}
                         value={values.email}
                     />
@@ -87,7 +107,7 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
                     <Form.Control
                         type="text"
                         name="address"
-                        placeholder={"Address"}
+                        title={addressDesc}
                         onChange={handleChange}
                         value={values.address}
                     />
@@ -97,12 +117,12 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
                     <Form.Control
                         type="tel"
                         name="phone"
-                        placeholder={"Phone number"}
+                        title={phoneDesc}
                         onChange={handleChange}
                         value={values.phone}
                     />
                 </Form.Group>
-                {error && <Alert variant="danger">{error.message}</Alert>}
+                {error.length > 0 && <Alert variant="danger">{error}</Alert>}
                 {success && (
                     <Alert variant="success">Successfully updated</Alert>
                 )}
