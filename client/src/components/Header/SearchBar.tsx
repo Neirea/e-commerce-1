@@ -74,7 +74,7 @@ const SearchBar = () => {
             {showResults && (
                 <div className="position-absolute mt-3 border-bottom border-start border-end border-secondary rounded-bottom bg-white w-100">
                     {searchLoading && (
-                        <div className="d-flex justify-content-start gap-2 p-2 border-bottom">
+                        <div className="d-flex justify-content-start gap-2 p-2">
                             <Loading size={1} />
                             <span>Loading ...</span>
                         </div>
@@ -87,11 +87,9 @@ const SearchBar = () => {
                                         <Link
                                             key={item.id}
                                             to={`/search?c=${item.id}`}
-                                            className="text-decoration-none search-link"
+                                            className="text-decoration-none text-dark search-link"
                                         >
-                                            <span className="custom-link">
-                                                {item.name}
-                                            </span>
+                                            {item.name}
                                             <span className="text-secondary opacity-75">
                                                 {" - Category"}
                                             </span>
@@ -104,11 +102,9 @@ const SearchBar = () => {
                                     <Link
                                         key={item.id}
                                         to={`/search?b=${item.id}`}
-                                        className="text-decoration-none search-link"
+                                        className="text-decoration-none text-dark search-link"
                                     >
-                                        <span className="custom-link">
-                                            {item.name}
-                                        </span>
+                                        {item.name}
                                         <span className="text-secondary opacity-75">
                                             {" - Company"}
                                         </span>
@@ -120,11 +116,9 @@ const SearchBar = () => {
                                     <Link
                                         key={item.id}
                                         to={`/product/${item.id}`}
-                                        className="text-decoration-none search-link"
+                                        className="text-decoration-none text-dark search-link"
                                     >
-                                        <span className="custom-link">
-                                            {item.name}
-                                        </span>
+                                        {item.name}
                                         <span className="text-secondary opacity-75">
                                             {" - Product"}
                                         </span>

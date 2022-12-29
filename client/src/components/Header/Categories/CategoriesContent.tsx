@@ -75,12 +75,9 @@ const CategoriesContent = (
                                 >
                                     <Link
                                         to={`/search?c=${category.id}`}
-                                        className="d-flex align-items-center gap-2 text-decoration-none search-link ps-3 pe-3"
+                                        className="d-flex align-items-center gap-2 text-decoration-none text-dark search-link ps-3 pe-3"
                                     >
-                                        <span className="custom-link">
-                                            {category.name}
-                                        </span>
-
+                                        {category.name}
                                         {!!subCategories?.get(category.id)
                                             ?.length && (
                                             <BiChevronRight size={20} />
@@ -98,12 +95,10 @@ const CategoriesContent = (
                                 return (
                                     <li key={category.id} onClick={handleClose}>
                                         <Link
-                                            className="text-decoration-none search-link ps-3 pe-3"
+                                            className="text-decoration-none text-dark search-link ps-3 pe-3"
                                             to={`/search?c=${category.id}`}
                                         >
-                                            <span className="custom-link">
-                                                {category.name}
-                                            </span>
+                                            {category.name}
                                         </Link>
                                     </li>
                                 );
