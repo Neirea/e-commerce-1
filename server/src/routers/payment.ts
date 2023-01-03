@@ -4,6 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import Stripe from "stripe";
 import CustomError from "../errors/custom-error";
 import { Status } from "../generated/graphql";
+import schedule from "node-schedule";
 
 interface CheckoutBody {
     items: {
@@ -24,7 +25,7 @@ interface CustomRequest<T> extends Request {
 const router = Router();
 const prisma = new PrismaClient();
 const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY!, {
-    apiVersion: "2022-08-01",
+    apiVersion: "2022-11-15",
 });
 const clientUrl = process.env.CLIENT_URL!;
 
@@ -274,6 +275,17 @@ router.get("/done/:orderId", async (req, res) => {
             `${clientUrl}/order_payment?order_id=${orderId}&success=true`
         );
     } else {
+        const dayAfter = new Date();
+        dayAfter.setDate(dayAfter.getDate() + 1);
+
+        schedule.scheduleJob(dayAfter, function () {
+            prisma.order.deleteMany({
+                where: {
+                    id: orderId,
+                    status: "PENDING",
+                },
+            });
+        });
         res.redirect(
             `${clientUrl}/order_payment?order_id=${orderId}&success=false`
         );
