@@ -66,6 +66,7 @@ const Checkout = () => {
         const parseInput = CheckoutInputSchema.safeParse(values);
         if (!parseInput.success) {
             setError(fromZodError(parseInput.error).message);
+            setLoading(false);
             return;
         }
         const syncCartError = await syncCart(cart);

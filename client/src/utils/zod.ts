@@ -8,10 +8,7 @@ export const phoneDesc =
     "+ or 00 for country code; you can use /,(),- for the remaining number";
 export const phoneRegex = /(\+|00)[1-9][0-9 \-\(\)]{7,32}/;
 
-export const addressZod = z
-    .string()
-    .regex(addressRegex)
-    .or(z.string().length(0));
+export const addressZod = z.string().regex(addressRegex);
 
 export const phoneZod = z.string().regex(phoneRegex).or(z.string().length(0));
 export const emailZod = z.string().email();

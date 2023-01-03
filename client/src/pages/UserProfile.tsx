@@ -23,7 +23,7 @@ const UserProfileSchema = z.object({
     given_name: givenNameZod,
     family_name: familyNameZod,
     email: emailZod,
-    address: addressZod,
+    address: addressZod.or(z.string().length(0)),
     phone: phoneZod,
 });
 
