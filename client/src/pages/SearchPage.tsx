@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client";
-import * as qs from "query-string";
+import qs from "query-string";
 import { ChangeEvent, useState } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";

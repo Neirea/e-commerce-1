@@ -1,4 +1,4 @@
-import * as qs from "query-string";
+import qs from "query-string";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Button, Form, FormGroup } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
