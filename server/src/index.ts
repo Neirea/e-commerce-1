@@ -15,14 +15,17 @@ import helmet from "helmet";
 import Redis from "ioredis";
 import passport from "passport";
 //user imports
-import editorRouter from "./routers/editor";
-import authRouter from "./routers/auth";
-import paymentRouter from "./routers/payment";
-import notFound from "./middleware/not-found";
 import errorHandlerMiddleware from "./middleware/error-handle";
+import notFound from "./middleware/not-found";
+import authRouter from "./routers/auth";
+import editorRouter from "./routers/editor";
+import paymentRouter from "./routers/payment";
 import { resolvers, typeDefs } from "./schema";
+import scheduleOrderCron from "./cron/orderCron";
 
 export const app = express();
+
+scheduleOrderCron();
 
 (async () => {
     cloudinary.config({
@@ -63,6 +66,7 @@ export const app = express();
     };
     app.use(cors(corsOptions));
     const server = new ApolloServer({
+        cache: "bounded",
         typeDefs,
         resolvers,
         context: ({ req, res }) => {

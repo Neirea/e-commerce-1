@@ -4,7 +4,6 @@ import { StatusCodes } from "http-status-codes";
 import Stripe from "stripe";
 import CustomError from "../errors/custom-error";
 import { Status } from "../generated/graphql";
-import schedule from "node-schedule";
 
 interface CheckoutBody {
     items: {
@@ -275,17 +274,6 @@ router.get("/done/:orderId", async (req, res) => {
             `${clientUrl}/order_payment?order_id=${orderId}&success=true`
         );
     } else {
-        const dayAfter = new Date();
-        dayAfter.setDate(dayAfter.getDate() + 1);
-
-        schedule.scheduleJob(dayAfter, function () {
-            prisma.order.deleteMany({
-                where: {
-                    id: orderId,
-                    status: "PENDING",
-                },
-            });
-        });
         res.redirect(
             `${clientUrl}/order_payment?order_id=${orderId}&success=false`
         );
