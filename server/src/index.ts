@@ -21,11 +21,8 @@ import authRouter from "./routers/auth";
 import editorRouter from "./routers/editor";
 import paymentRouter from "./routers/payment";
 import { resolvers, typeDefs } from "./schema";
-import scheduleOrderCron from "./cron/orderCron";
 
 export const app = express();
-
-scheduleOrderCron();
 
 (async () => {
     cloudinary.config({
