@@ -611,7 +611,7 @@ const productResolvers = {
                 include: { images: true },
             });
 
-            if (data) {
+            if (data.images.length) {
                 await cloudinary.api.delete_resources(
                     data.images.map((i) => i.img_id)
                 );
