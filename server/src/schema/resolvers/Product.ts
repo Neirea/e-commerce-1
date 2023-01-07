@@ -19,16 +19,23 @@ type orderByType =
     Prisma.Enumerable<Prisma.ProductOrderByWithRelationAndSearchRelevanceInput>;
 
 const getQueryString = (input: InputMaybe<string> | undefined) => {
-    return input?.length
+    const resultStr = input?.length
         ? input
+              .replace(/[\!\:\*\<\(\)\@\&\|]/g, "")
               .split(",")
               .map((s) => s.trim())
               .filter((s) => s.length > 0)
               .join("|")
               .split(" ")
-              .map((s) => s.trim() + ":*")
+              .map((s) => s.trim())
+              .filter((s) => s.length > 0)
+              .map((s) => s + ":*")
               .join("&")
         : undefined;
+
+    console.log(resultStr);
+
+    return resultStr;
 };
 
 const subCategoriesQuery = (

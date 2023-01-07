@@ -2,6 +2,7 @@ import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
 import passport from "passport";
 import { app } from "..";
+import isAuthenticated from "../middleware/isAuthenticated";
 import { failedLogin, loginCallback } from "../passport";
 
 const router = Router();
@@ -40,7 +41,7 @@ router.get(
     }),
     loginCallback
 );
-router.delete("/logout", (req, res) => {
+router.delete("/logout", isAuthenticated, (req, res) => {
     if (req.session) {
         //deletes from session from Redis too
         req.session.destroy((err: any) => {

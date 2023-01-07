@@ -63,6 +63,7 @@ export const app = express();
     };
     app.use(cors(corsOptions));
     const server = new ApolloServer({
+        csrfPrevention: true,
         cache: "bounded",
         typeDefs,
         resolvers,
