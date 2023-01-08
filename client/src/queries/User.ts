@@ -11,6 +11,7 @@ export const QUERY_SHOW_ME = gql`
             phone
             avatar
             role
+            csrfToken
         }
     }
 `;

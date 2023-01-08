@@ -13,6 +13,7 @@ import {
     UpdateProductMutation,
     UpdateProductMutationVariables,
 } from "../../generated/graphql";
+import useCurrentUser from "../../hooks/useCurrentUser";
 import { QUERY_ALL_CATEGORIES } from "../../queries/Category";
 import { QUERY_ALL_COMPANIES } from "../../queries/Company";
 import {
@@ -36,6 +37,7 @@ const defaultValues = {
 };
 
 const Product = () => {
+    const { user } = useCurrentUser();
     const {
         data: productData,
         loading: productLoading,
@@ -195,6 +197,9 @@ const Product = () => {
                     method: "POST",
                     credentials: "include",
                     body: formData,
+                    headers: {
+                        "csrf-token": user?.csrfToken || "",
+                    },
                 }
             )
                 .then((res) => res.json())

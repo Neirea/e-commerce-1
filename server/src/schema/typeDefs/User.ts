@@ -24,6 +24,7 @@ const userTypeDefs = gql`
         role: [Role!]!
         created_at: DateTime!
         avatar: String!
+        csrfToken: String
     }
 
     type Query {

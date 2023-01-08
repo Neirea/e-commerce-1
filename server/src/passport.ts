@@ -1,4 +1,5 @@
 import { Platform, PrismaClient, Role } from "@prisma/client";
+import crypto from "crypto";
 import type { Request, Response } from "express";
 import passport from "passport";
 import {
@@ -32,7 +33,7 @@ export const loginCallback = (req: Request, res: Response) => {
     }
     if (req.session) {
         req.session.user = req.user.user;
-        req.session.accessToken = req.user.accessToken;
+        req.session.csrfToken = crypto.randomUUID();
     }
 
     // Successful authentication, redirect to page where user specifies username
@@ -69,7 +70,7 @@ const loginGoogle = async (
         user = await prisma.user.create({ data: userData });
     }
 
-    done(null, { user, accessToken });
+    done(null, { user });
 };
 
 const loginFacebook = async (
@@ -100,7 +101,7 @@ const loginFacebook = async (
         user = await prisma.user.create({ data: userData });
     }
 
-    done(null, { user, accessToken });
+    done(null, { user });
 };
 
 passport.use(

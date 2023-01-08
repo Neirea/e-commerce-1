@@ -377,6 +377,7 @@ export type User = {
   address?: Maybe<Scalars['String']>;
   avatar: Scalars['String'];
   created_at: Scalars['Date'];
+  csrfToken?: Maybe<Scalars['String']>;
   email?: Maybe<Scalars['String']>;
   family_name: Scalars['String'];
   given_name: Scalars['String'];
@@ -542,7 +543,7 @@ export type DeleteProductMutation = { __typename?: 'Mutation', deleteProduct: bo
 export type ShowCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ShowCurrentUserQuery = { __typename?: 'Query', showMe?: { __typename?: 'User', id: number, given_name: string, family_name: string, email?: string | null, address?: string | null, phone?: string | null, avatar: string, role: Array<Role> } | null };
+export type ShowCurrentUserQuery = { __typename?: 'Query', showMe?: { __typename?: 'User', id: number, given_name: string, family_name: string, email?: string | null, address?: string | null, phone?: string | null, avatar: string, role: Array<Role>, csrfToken?: string | null } | null };
 
 export type UpdateUserMutationVariables = Exact<{
   input: UpdateUserInput;
@@ -1433,6 +1434,7 @@ export const ShowCurrentUserDocument = gql`
     phone
     avatar
     role
+    csrfToken
   }
 }
     `;

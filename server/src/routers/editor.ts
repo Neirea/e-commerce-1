@@ -5,6 +5,7 @@ import { UploadedFile } from "express-fileupload";
 import fs from "fs";
 import { StatusCodes } from "http-status-codes";
 import authorizePermissions from "../middleware/authorizePermissions";
+import checkCsrf from "../middleware/checkCsrf";
 import isAuthenticated from "../middleware/isAuthenticated";
 
 const router = Router();
@@ -18,6 +19,7 @@ router.post(
     "/upload-images",
     isAuthenticated,
     authorizePermissions([Role.EDITOR]),
+    checkCsrf,
     async (req, res) => {
         const imageFiles = req.files?.images as
             | Array<UploadedFile>

@@ -3,8 +3,8 @@ import { AuthenticationError } from "apollo-server-express";
 import { Request } from "express";
 import { GraphQLScalarType, Kind } from "graphql";
 import { StatusCodes } from "http-status-codes";
-import { UpdateUserInput } from "../../generated/graphql";
 import CustomError from "../../errors/custom-error";
+import { UpdateUserInput } from "../../generated/graphql";
 
 const prisma = new PrismaClient();
 
@@ -61,7 +61,7 @@ const userResolvers = {
             if (!req.session.user) {
                 return undefined;
             }
-            return req.session.user;
+            return { ...req.session.user, csrfToken: req.session.csrfToken };
         },
     },
     Mutation: {

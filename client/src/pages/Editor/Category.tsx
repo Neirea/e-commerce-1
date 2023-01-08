@@ -11,6 +11,7 @@ import type {
     UpdateCategoryMutation,
     UpdateCategoryMutationVariables,
 } from "../../generated/graphql";
+import useCurrentUser from "../../hooks/useCurrentUser";
 import {
     MUTATION_CREATE_CATEGORY,
     MUTATION_DELETE_CATEGORY,
@@ -25,6 +26,7 @@ const Category = () => {
     const [name, setName] = useState<string>("");
     const [parentId, setParentId] = useState<number>(0);
     const [selectedImage, setSelectedImage] = useState<File | undefined>();
+    const { user } = useCurrentUser();
     const {
         data,
         loading: categoryLoading,
@@ -129,6 +131,9 @@ const Category = () => {
                     method: "POST",
                     credentials: "include",
                     body: formData,
+                    headers: {
+                        "csrf-token": user?.csrfToken || "",
+                    },
                 }
             )
                 .then((res) => res.json())
