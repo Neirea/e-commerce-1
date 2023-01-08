@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import Stripe from "stripe";
 import CustomError from "../errors/custom-error";
 import { Status } from "../generated/graphql";
-import staleOrdersQueue from "../jobs/staleOrders";
+import addOrderToQueue from "../jobs/staleOrders";
 
 interface CheckoutBody {
     items: {
@@ -91,12 +91,7 @@ router.post("/checkout", async (req: CustomRequest<CheckoutBody>, res) => {
             },
         },
     });
-
-    //queue of stale pending orders - delete after 24hours
-    staleOrdersQueue.add(
-        { id: order.id },
-        { delay: 24 * 60 * 60 * 1000, removeOnComplete: true }
-    );
+    addOrderToQueue(order.id);
 
     //start payment session
     try {

@@ -33,8 +33,6 @@ const getQueryString = (input: InputMaybe<string> | undefined) => {
               .join("&")
         : undefined;
 
-    console.log(resultStr);
-
     return resultStr;
 };
 
@@ -111,11 +109,9 @@ const productResolvers = {
 
             const searchCategoryIds: number[] = [];
             if (input.category_id) {
-                await prisma.$queryRaw<{ id: number }[]>`
-                    ${subCategoriesQuery(input.category_id)}
-                    `.then((res) =>
-                    res.forEach((i) => searchCategoryIds.push(i.id))
-                );
+                const res = await prisma.$queryRaw<{ id: number }[]>`
+                    ${subCategoriesQuery(input.category_id)}`;
+                res.forEach((i) => searchCategoryIds.push(i.id));
             }
 
             const data = await prisma.product.findMany({
@@ -258,11 +254,10 @@ const productResolvers = {
             const searchCategoryIds: number[] = [];
 
             if (input.category_id) {
-                await prisma.$queryRaw<{ id: number }[]>`
+                const res = await prisma.$queryRaw<{ id: number }[]>`
                     ${subCategoriesQuery(input.category_id)}
-                    `.then((res) =>
-                    res.forEach((i) => searchCategoryIds.push(i.id))
-                );
+                    `;
+                res.forEach((i) => searchCategoryIds.push(i.id));
             }
 
             return prisma.product.findMany({
