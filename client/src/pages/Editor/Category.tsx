@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { ApolloError, useMutation, useQuery } from "@apollo/client";
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
 import { ImageResult } from "../../commonTypes";
@@ -22,6 +22,7 @@ import { serverUrl } from "../../utils/server";
 
 const Category = () => {
     const [uploadLoading, setUploadLoading] = useState(false);
+    const [uploadError, setUploadError] = useState<ApolloError | null>(null);
     const [categoryId, setCategoryId] = useState<number>(0);
     const [name, setName] = useState<string>("");
     const [parentId, setParentId] = useState<number>(0);
@@ -61,7 +62,10 @@ const Category = () => {
         !data;
 
     const mutationError =
-        createCategoryError || updateCategoryError || deleteCategoryError;
+        createCategoryError ||
+        updateCategoryError ||
+        deleteCategoryError ||
+        uploadError;
 
     const resetForm = () => {
         setName("");
@@ -116,6 +120,7 @@ const Category = () => {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+        setUploadError(null);
 
         let img_src;
         let img_id;
@@ -125,7 +130,7 @@ const Category = () => {
             const formData = new FormData();
             formData.append("images", selectedImage);
 
-            const imageResult = await fetch(
+            const response = await fetch(
                 `${serverUrl}/api/editor/upload-images`,
                 {
                     method: "POST",
@@ -135,12 +140,16 @@ const Category = () => {
                         "csrf-token": user?.csrfToken || "",
                     },
                 }
-            )
-                .then((res) => res.json())
-                .then((res: ImageResult) => res);
-
-            img_id = imageResult.images[0].img_id;
-            img_src = imageResult.images[0].img_src;
+            );
+            if (!response.ok) {
+                const error: Error = await response.json();
+                setUploadError(error as ApolloError);
+                setUploadLoading(false);
+                return;
+            }
+            const res: ImageResult = await response.json();
+            img_id = res.images[0].img_id;
+            img_src = res.images[0].img_src;
             setUploadLoading(false);
         }
 

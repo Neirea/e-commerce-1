@@ -134,9 +134,11 @@ function useApolloCartStore() {
         [cart]
     );
 
-    const clearCart = useCallback(() => {
+    const clearCart = useCallback((clearVar?: boolean) => {
         addCartToLocalStorage([]);
-        cartVar([]);
+        if (clearVar) {
+            cartVar([]);
+        }
     }, []);
 
     return {

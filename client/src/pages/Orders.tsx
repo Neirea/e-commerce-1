@@ -28,39 +28,35 @@ const Orders = () => {
         ? [...data.orders].sort((a, b) => b.created_at - a.created_at)
         : undefined;
 
-    const handlePayment = (id: number) => {
+    const handlePayment = async (id: number) => {
         setPaymentLoading(true);
-        fetch(`${serverUrl}/api/payment/checkout/${id}`, {
-            method: "PATCH",
-            credentials: "include",
-        })
-            .then((res) => {
-                setPaymentLoading(false);
-                if (res.ok) {
-                    return res.json();
-                }
-                //reject promise on failed stripe action
-                return res.json().then((json) => Promise.reject(json));
-            })
-            .then(({ url }) => {
-                //open stripe window
-                window.open(url, "_self");
-            })
-            .catch((e) => {
-                switch (e.type) {
-                    case "StripeCardError":
-                        console.log(`A payment error occurred: ${e.message}`);
-                        break;
-                    case "StripeInvalidRequestError":
-                        console.log("An invalid request occurred.");
-                        break;
-                    default:
-                        console.log(
-                            "Another problem occurred, maybe unrelated to Stripe."
-                        );
-                        break;
-                }
-            });
+        const response = await fetch(
+            `${serverUrl}/api/payment/checkout/${id}`,
+            {
+                method: "PATCH",
+                credentials: "include",
+            }
+        );
+        const res = await response.json();
+        setPaymentLoading(false);
+
+        if (response.ok) {
+            window.open(res.url, "_self");
+            return;
+        }
+        switch (res.type) {
+            case "StripeCardError":
+                console.log(`A payment error occurred: ${res.message}`);
+                break;
+            case "StripeInvalidRequestError":
+                console.log("An invalid request occurred.");
+                break;
+            default:
+                console.log(
+                    "Another problem occurred, maybe unrelated to Stripe."
+                );
+                break;
+        }
     };
 
     if (error) {

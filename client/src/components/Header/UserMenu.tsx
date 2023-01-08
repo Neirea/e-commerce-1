@@ -48,11 +48,10 @@ const UserMenu = () => {
                             await fetch(`${serverUrl}/api/auth/logout`, {
                                 method: "DELETE",
                                 credentials: "include",
-                            }).then(() =>
-                                client.refetchQueries({
-                                    include: ["ShowCurrentUser"],
-                                })
-                            );
+                            });
+                            await client.refetchQueries({
+                                include: ["ShowCurrentUser"],
+                            });
                         }}
                     >
                         Logout

@@ -77,6 +77,7 @@ const Product = () => {
     const [selectedVariants, setSelectedVariants] = useState<string[]>([]);
     const [values, setValues] = useState(defaultValues);
     const [inputError, setInputError] = useState(0);
+    const [uploadingError, setUploadingError] = useState<string | null>(null);
     const [uploadLoading, setUploadLoading] = useState(false);
     const filesRef = useRef<HTMLInputElement>(null);
 
@@ -191,7 +192,7 @@ const Product = () => {
             selectedImages.forEach((image) => {
                 formData.append("images", image);
             });
-            const imageResult = await fetch(
+            const response = await fetch(
                 `${serverUrl}/api/editor/upload-images`,
                 {
                     method: "POST",
@@ -201,11 +202,15 @@ const Product = () => {
                         "csrf-token": user?.csrfToken || "",
                     },
                 }
-            )
-                .then((res) => res.json())
-                .then((res: ImageResult) => res);
-            newProduct.img_id = imageResult.images.map((i) => i.img_id);
-            newProduct.img_src = imageResult.images.map((i) => i.img_src);
+            );
+            if (!response.ok) {
+                const error: Error = await response.json();
+                setUploadingError(error.message);
+                return;
+            }
+            const res: ImageResult = await response.json();
+            newProduct.img_id = res.images.map((i) => i.img_id);
+            newProduct.img_src = res.images.map((i) => i.img_src);
             setUploadLoading(false);
         }
 
@@ -415,6 +420,9 @@ const Product = () => {
                     </Form.Select>
                 </Form.Group>
                 <Form.Group className="mb-3">
+                    {uploadingError && (
+                        <Alert variant="danger">{uploadingError}</Alert>
+                    )}
                     <Form.Label>
                         Images (for updating: doesn't update if no images
                         selected)

@@ -80,7 +80,7 @@ const Checkout = () => {
         });
 
         const { given_name, family_name, email, address, phone } = values;
-        fetch(`${serverUrl}/api/payment/checkout`, {
+        const response = await fetch(`${serverUrl}/api/payment/checkout`, {
             method: "POST",
             credentials: "include",
             headers: {
@@ -95,38 +95,32 @@ const Checkout = () => {
                     phone,
                 },
             }),
-        })
-            .then((res) => {
-                //clear cart on successful request
-                setLoading(false);
-                if (res.ok) {
-                    setError("");
-                    clearCart();
-                    return res.json();
-                }
-                //reject promise on failed stripe action
-                return res.json().then((json) => Promise.reject(json));
-            })
-            .then(({ url }) => {
-                //open stripe window
-                window.open(url, "_self");
-            })
-            .catch((e) => {
-                switch (e.type) {
-                    case "StripeCardError":
-                        setError(`A payment error occurred: ${e.message}`);
-                        break;
-                    case "StripeInvalidRequestError":
-                        setError("An invalid request occurred.");
-                        break;
-                    default:
-                        console.log("Error:", e.message);
-                        setError(
-                            `Another problem occurred, maybe unrelated to Stripe.`
-                        );
-                        break;
-                }
-            });
+        });
+        const res = await response.json();
+        setLoading(false);
+
+        if (response.ok) {
+            setError("");
+            clearCart();
+            //open stripe window
+            window.open(res.url, "_self");
+            return;
+        }
+
+        switch (res.type) {
+            case "StripeCardError":
+                setError(`A payment error occurred: ${res.message}`);
+                break;
+            case "StripeInvalidRequestError":
+                setError("An invalid request occurred.");
+                break;
+            default:
+                console.log("Error:", res.message);
+                setError(
+                    `Another problem occurred, maybe unrelated to Stripe.`
+                );
+                break;
+        }
     };
 
     return (
