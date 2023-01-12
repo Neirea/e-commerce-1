@@ -163,9 +163,8 @@ export enum Platform {
 
 export type Product = {
   __typename?: 'Product';
-  _count: ProductOrdersCount;
-  category: Category;
-  company: Company;
+  category_id: Scalars['Int'];
+  company_id: Scalars['Int'];
   created_at: Scalars['Date'];
   description: Scalars['JSON'];
   discount: Scalars['Int'];
@@ -177,11 +176,6 @@ export type Product = {
   shipping_cost: Scalars['Float'];
   updated_at: Scalars['Date'];
   variants: Array<Product>;
-};
-
-export type ProductOrdersCount = {
-  __typename?: 'ProductOrdersCount';
-  orders: Scalars['Int'];
 };
 
 export type Query = {
@@ -453,7 +447,6 @@ export type ResolversTypes = {
   Order: ResolverTypeWrapper<Order>;
   Platform: Platform;
   Product: ResolverTypeWrapper<Product>;
-  ProductOrdersCount: ResolverTypeWrapper<ProductOrdersCount>;
   Query: ResolverTypeWrapper<{}>;
   QueryProductInput: QueryProductInput;
   QueryRelatedInput: QueryRelatedInput;
@@ -487,7 +480,6 @@ export type ResolversParentTypes = {
   Mutation: {};
   Order: Order;
   Product: Product;
-  ProductOrdersCount: ProductOrdersCount;
   Query: {};
   QueryProductInput: QueryProductInput;
   QueryRelatedInput: QueryRelatedInput;
@@ -566,9 +558,8 @@ export type OrderResolvers<ContextType = any, ParentType extends ResolversParent
 };
 
 export type ProductResolvers<ContextType = any, ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']> = {
-  _count?: Resolver<ResolversTypes['ProductOrdersCount'], ParentType, ContextType>;
-  category?: Resolver<ResolversTypes['Category'], ParentType, ContextType>;
-  company?: Resolver<ResolversTypes['Company'], ParentType, ContextType>;
+  category_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  company_id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   created_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   discount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -580,11 +571,6 @@ export type ProductResolvers<ContextType = any, ParentType extends ResolversPare
   shipping_cost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   updated_at?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   variants?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type ProductOrdersCountResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProductOrdersCount'] = ResolversParentTypes['ProductOrdersCount']> = {
-  orders?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -656,7 +642,6 @@ export type Resolvers<ContextType = any> = {
   Mutation?: MutationResolvers<ContextType>;
   Order?: OrderResolvers<ContextType>;
   Product?: ProductResolvers<ContextType>;
-  ProductOrdersCount?: ProductOrdersCountResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   QuerySearchDataResult?: QuerySearchDataResultResolvers<ContextType>;
   SearchResult?: SearchResultResolvers<ContextType>;

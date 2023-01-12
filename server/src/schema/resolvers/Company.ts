@@ -1,12 +1,11 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { Role } from "@prisma/client";
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { Request } from "express";
 import {
     CreateCompanyInput,
     UpdateCompanyInput,
 } from "../../generated/graphql";
-
-const prisma = new PrismaClient();
+import prisma from "../../prisma";
 
 const companyResolvers = {
     Query: {

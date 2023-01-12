@@ -1,7 +1,5 @@
 import Bull from "bull";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../prisma";
 
 const queue: Bull.Queue<{ id: number }> = new Bull(
     "stale_order",

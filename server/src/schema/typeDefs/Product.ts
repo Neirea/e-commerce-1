@@ -8,9 +8,6 @@ const productTypes = gql`
         img_src: String!
     }
 
-    type ProductOrdersCount {
-        orders: Int!
-    }
     # Search types
     type SearchResult {
         id: Int!
@@ -30,14 +27,13 @@ const productTypes = gql`
         name: String!
         price: Float!
         description: JSON!
-        company: Company!
-        category: Category!
+        company_id: Int!
+        category_id: Int!
         inventory: Int!
         shipping_cost: Float!
         discount: Int!
         created_at: DateTime!
         updated_at: DateTime!
-        _count: ProductOrdersCount!
         images: [Image!]!
         variants: [Product!]!
     }

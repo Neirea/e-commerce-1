@@ -1,10 +1,11 @@
-import { OrderStatus, Prisma, PrismaClient, Product } from "@prisma/client";
+import { OrderStatus, Prisma, Product } from "@prisma/client";
 import { Request, Router } from "express";
 import { StatusCodes } from "http-status-codes";
 import Stripe from "stripe";
 import CustomError from "../errors/custom-error";
 import { Status } from "../generated/graphql";
 import addOrderToQueue from "../jobs/staleOrders";
+import prisma from "../prisma";
 
 interface CheckoutBody {
     items: {
@@ -23,7 +24,6 @@ interface CustomRequest<T> extends Request {
 }
 
 const router = Router();
-const prisma = new PrismaClient();
 const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY!, {
     apiVersion: "2022-11-15",
 });

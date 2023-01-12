@@ -1,9 +1,7 @@
-import { PrismaClient } from "@prisma/client";
 import { AuthenticationError } from "apollo-server-express";
 import { Request } from "express";
 import { Status } from "../../generated/graphql";
-
-const prisma = new PrismaClient();
+import prisma from "../../prisma";
 
 const orderResolvers = {
     Query: {

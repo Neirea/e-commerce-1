@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { Role } from "@prisma/client";
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { v2 as cloudinary } from "cloudinary";
 import { Request } from "express";
@@ -6,8 +6,7 @@ import {
     CreateCategoryInput,
     UpdateCategoryInput,
 } from "../../generated/graphql";
-
-const prisma = new PrismaClient();
+import prisma from "../../prisma";
 
 const categoryResolvers = {
     Query: {

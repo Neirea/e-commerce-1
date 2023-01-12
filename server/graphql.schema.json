@@ -1191,15 +1191,15 @@
         "description": null,
         "fields": [
           {
-            "name": "_count",
+            "name": "category_id",
             "description": null,
             "args": [],
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "OBJECT",
-                "name": "ProductOrdersCount",
+                "kind": "SCALAR",
+                "name": "Int",
                 "ofType": null
               }
             },
@@ -1207,31 +1207,15 @@
             "deprecationReason": null
           },
           {
-            "name": "category",
+            "name": "company_id",
             "description": null,
             "args": [],
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
-                "kind": "OBJECT",
-                "name": "Category",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "company",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Company",
+                "kind": "SCALAR",
+                "name": "Int",
                 "ofType": null
               }
             },
@@ -1425,33 +1409,6 @@
                     "ofType": null
                   }
                 }
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
-        "name": "ProductOrdersCount",
-        "description": null,
-        "fields": [
-          {
-            "name": "orders",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Int",
-                "ofType": null
               }
             },
             "isDeprecated": false,

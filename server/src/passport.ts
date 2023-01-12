@@ -1,4 +1,4 @@
-import { Platform, PrismaClient, Role } from "@prisma/client";
+import { Platform, Role } from "@prisma/client";
 import crypto from "crypto";
 import type { Request, Response } from "express";
 import passport from "passport";
@@ -11,10 +11,10 @@ import type {
     VerifyCallback,
 } from "passport-google-oauth20";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import prisma from "./prisma";
 import CustomError from "./errors/custom-error";
 import { app } from "./index";
 
-const prisma = new PrismaClient();
 const clientUrl = process.env.CLIENT_URL!;
 
 export const failedLogin = (req: Request, res: Response) => {
