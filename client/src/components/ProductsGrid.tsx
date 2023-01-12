@@ -44,7 +44,12 @@ const ProductsGrid = ({
                         return (
                             <div
                                 key={product.id}
-                                className="d-flex justify-content-center mb-4"
+                                className={
+                                    "d-flex justify-content-center mb-4" +
+                                    (product.inventory == 0
+                                        ? " opacity-50"
+                                        : "")
+                                }
                             >
                                 <div className="d-flex flex-column justify-content-between">
                                     <Link
