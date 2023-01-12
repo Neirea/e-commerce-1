@@ -99,7 +99,7 @@ const ProductContent = () => {
                                     );
                                 }
                             )}
-                            {!!data.product.variants.length && (
+                            {data.product.variants.length > 0 && (
                                 <>
                                     <h4 className="mt-2">Other variants:</h4>
 

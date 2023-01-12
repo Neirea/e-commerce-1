@@ -126,8 +126,8 @@ const Product = () => {
                 description: JSON.stringify(product.description),
                 price: product.price,
                 inventory: product.inventory,
-                company_id: product.company.id,
-                category_id: product.category.id,
+                company_id: product.company_id,
+                category_id: product.category_id,
                 shipping_cost: product.shipping_cost,
                 discount: product.discount,
             });

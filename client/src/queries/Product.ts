@@ -17,21 +17,11 @@ export const QUERY_ALL_PRODUCT = gql`
             name
             price
             description
-            company {
-                id
-                name
-            }
-            category {
-                id
-                name
-                parent_id
-            }
+            company_id
+            category_id
             inventory
             shipping_cost
             discount
-            images {
-                img_src
-            }
             variants {
                 id
             }
@@ -69,13 +59,6 @@ export const QUERY_FILTERED_PRODUCTS = gql`
             discount
             images {
                 img_src
-            }
-            company {
-                id
-                name
-            }
-            _count {
-                orders
             }
         }
     }
@@ -157,14 +140,6 @@ export const GET_SINGLE_PRODUCT = gql`
             name
             price
             description
-            company {
-                id
-                name
-            }
-            category {
-                id
-                name
-            }
             inventory
             shipping_cost
             discount

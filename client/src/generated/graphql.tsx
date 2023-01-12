@@ -164,9 +164,8 @@ export enum Platform {
 
 export type Product = {
   __typename?: 'Product';
-  _count: ProductOrdersCount;
-  category: Category;
-  company: Company;
+  category_id: Scalars['Int'];
+  company_id: Scalars['Int'];
   created_at: Scalars['Date'];
   description: Scalars['JSON'];
   discount: Scalars['Int'];
@@ -178,11 +177,6 @@ export type Product = {
   shipping_cost: Scalars['Float'];
   updated_at: Scalars['Date'];
   variants: Array<Product>;
-};
-
-export type ProductOrdersCount = {
-  __typename?: 'ProductOrdersCount';
-  orders: Scalars['Int'];
 };
 
 export type Query = {
@@ -444,7 +438,7 @@ export type GetSearchResultsQuery = { __typename?: 'Query', searchBarQuery: Arra
 export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllProductsQuery = { __typename?: 'Query', products: Array<{ __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string, parent_id?: number | null }, images: Array<{ __typename?: 'Image', img_src: string }>, variants: Array<{ __typename?: 'Product', id: number }> }> };
+export type GetAllProductsQuery = { __typename?: 'Query', products: Array<{ __typename?: 'Product', id: number, name: string, price: number, description: any, company_id: number, category_id: number, inventory: number, shipping_cost: number, discount: number, variants: Array<{ __typename?: 'Product', id: number }> }> };
 
 export type GetProductsByIdQueryVariables = Exact<{
   ids: Array<Scalars['Int']> | Scalars['Int'];
@@ -460,7 +454,7 @@ export type GetFilteredProductsQueryVariables = Exact<{
 }>;
 
 
-export type GetFilteredProductsQuery = { __typename?: 'Query', filteredProducts: Array<{ __typename?: 'Product', id: number, name: string, price: number, inventory: number, discount: number, images: Array<{ __typename?: 'Image', img_src: string }>, company: { __typename?: 'Company', id: number, name: string }, _count: { __typename?: 'ProductOrdersCount', orders: number } }> };
+export type GetFilteredProductsQuery = { __typename?: 'Query', filteredProducts: Array<{ __typename?: 'Product', id: number, name: string, price: number, inventory: number, discount: number, images: Array<{ __typename?: 'Image', img_src: string }> }> };
 
 export type GetSearchDataQueryVariables = Exact<{
   input: QuerySearchDataInput;
@@ -499,7 +493,7 @@ export type GetSingleProductQueryVariables = Exact<{
 }>;
 
 
-export type GetSingleProductQuery = { __typename?: 'Query', product?: { __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, company: { __typename?: 'Company', id: number, name: string }, category: { __typename?: 'Category', id: number, name: string }, images: Array<{ __typename?: 'Image', img_id: string, img_src: string }>, variants: Array<{ __typename?: 'Product', id: number, name: string, images: Array<{ __typename?: 'Image', img_src: string }> }> } | null };
+export type GetSingleProductQuery = { __typename?: 'Query', product?: { __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, images: Array<{ __typename?: 'Image', img_id: string, img_src: string }>, variants: Array<{ __typename?: 'Product', id: number, name: string, images: Array<{ __typename?: 'Image', img_src: string }> }> } | null };
 
 export type CreateProductMutationVariables = Exact<{
   input: CreateProductInput;
@@ -924,21 +918,11 @@ export const GetAllProductsDocument = gql`
     name
     price
     description
-    company {
-      id
-      name
-    }
-    category {
-      id
-      name
-      parent_id
-    }
+    company_id
+    category_id
     inventory
     shipping_cost
     discount
-    images {
-      img_src
-    }
     variants {
       id
     }
@@ -1025,13 +1009,6 @@ export const GetFilteredProductsDocument = gql`
     discount
     images {
       img_src
-    }
-    company {
-      id
-      name
-    }
-    _count {
-      orders
     }
   }
 }
@@ -1250,14 +1227,6 @@ export const GetSingleProductDocument = gql`
     name
     price
     description
-    company {
-      id
-      name
-    }
-    category {
-      id
-      name
-    }
     inventory
     shipping_cost
     discount

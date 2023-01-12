@@ -179,7 +179,7 @@ const Checkout = () => {
                         </Form.Group>
                     </Col>
                     <Col sm="4">
-                        {!!cart.length &&
+                        {cart.length > 0 &&
                             cart.map((item) => {
                                 return (
                                     <Row
@@ -234,7 +234,7 @@ const Checkout = () => {
                         </Row>
                     </Col>
                 </Row>
-                {!!error.length && (
+                {error.length > 0 && (
                     <div className="d-flex justify-content-center mt-3">
                         <Alert
                             variant="danger"

@@ -21,7 +21,7 @@ const Cart = () => {
                 className="position-relative"
             >
                 <BiCart size={24} />
-                {!!cartAmount && (
+                {cartAmount > 0 && (
                     <div className="cart-amount">{cartAmount}</div>
                 )}
             </Nav.Link>

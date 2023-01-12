@@ -168,8 +168,8 @@ const SearchPage = () => {
                                 })}
                                 {!!categoryParam && (
                                     <div className="pb-3 mt-2">
-                                        {!!searchData.searchData.companies
-                                            .length && (
+                                        {searchData.searchData.companies
+                                            .length > 0 && (
                                             <div>
                                                 <b>Companies:</b>
                                             </div>

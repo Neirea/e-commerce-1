@@ -91,7 +91,7 @@ const CartContent = ({
             </Modal.Header>
 
             <Modal.Body>
-                {!!cart.length ? (
+                {cart.length > 0 ? (
                     <>
                         {cart.map((item) => {
                             return (
@@ -154,7 +154,7 @@ const CartContent = ({
                                         </Col>
                                         <Col sm={"4"}>
                                             <div>
-                                                {!!item.product.discount && (
+                                                {item.product.discount > 0 && (
                                                     <s className="text-muted fs-5">{`${toPriceNumber(
                                                         item.amount *
                                                             item.product.price
@@ -181,7 +181,7 @@ const CartContent = ({
                                 </Row>
                             );
                         })}
-                        {!!error.length && (
+                        {error.length > 0 && (
                             <div className="d-flex justify-content-center mt-3">
                                 <Alert
                                     variant="danger"
