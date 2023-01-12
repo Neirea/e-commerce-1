@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import qs from "query-string";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
@@ -23,6 +23,7 @@ const SearchPage = () => {
     const navigate = useNavigate();
     const [hasMore, setHasMore] = useState(0); //number of pages, 0 - stop fetchingMore
     const { search } = useLocation();
+    const sortRef = useRef<HTMLSelectElement | null>(null);
     const searchParams = qs.parse(search);
     const categoryParam = searchParams.c != null ? +searchParams.c : undefined;
     const sortParam =
@@ -70,6 +71,9 @@ const SearchPage = () => {
         },
         notifyOnNetworkStatusChange: true,
         onCompleted(data) {
+            if (sortRef.current) {
+                sortRef.current.value = sortParam?.toString() || "0";
+            }
             if (
                 data.filteredProducts.length % FETCH_NUMBER !== 0 ||
                 previousData?.filteredProducts.length ===
@@ -123,6 +127,7 @@ const SearchPage = () => {
                     className="w-auto"
                     aria-label="Sort by"
                     onChange={handleSort}
+                    ref={sortRef}
                 >
                     <option value={0}>Most popular</option>
                     <option value={1}>Price, low to high</option>
