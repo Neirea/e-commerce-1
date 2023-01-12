@@ -20,6 +20,9 @@ const cache = new InMemoryCache({
                 },
             },
         },
+        SearchResult: {
+            keyFields: ["id", "source"],
+        },
     },
 });
 

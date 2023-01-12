@@ -36,16 +36,24 @@ const getQueryString = (input: InputMaybe<string> | undefined) => {
     return resultStr;
 };
 
-const subCategoriesQuery = (
-    category_id: number
-) => Prisma.sql`WITH RECURSIVE subcategory AS (
-    SELECT ctg.id,ctg.name,ctg.parent_id FROM public."Category" AS ctg WHERE parent_id IS NULL AND id = ${category_id}
-UNION ALL
-    SELECT sc.id,sc.name,sc.parent_id FROM public."Category" sc
-    JOIN subcategory subcat
-    ON sc.parent_id = subcat.id
-)
-SELECT subcategory.id FROM subcategory;`;
+const subCategoriesQuery = (category_id: number) => Prisma.sql`
+    WITH RECURSIVE subcategory AS (
+        SELECT ctg.id,ctg.name,ctg.parent_id FROM public."Category" AS ctg WHERE parent_id IS NULL AND id = ${category_id}
+    UNION ALL
+        SELECT sc.id,sc.name,sc.parent_id FROM public."Category" sc
+        JOIN subcategory subcat
+        ON sc.parent_id = subcat.id
+    )
+    SELECT subcategory.id FROM subcategory;
+`;
+
+const productsByOrderCount = Prisma.sql`
+    SELECT p.*,COUNT(CASE o.status WHEN 'ACCEPTED' THEN 1 ELSE NULL END) as _count
+    FROM public."Product" as p
+    LEFT JOIN public."SingleOrderItem" as s ON p.id = s.product_id
+    LEFT JOIN public."Order" as o ON s.order_id = o.id
+    GROUP BY p.id
+`;
 
 const sortByOrderCount: orderByType = [
     {
@@ -388,95 +396,63 @@ const productResolvers = {
 
             return firstProducts.concat(secondProducts);
         },
-        popularProducts: (
+        popularProducts: async (
             parent: any,
             { limit, offset }: { limit: number; offset: number }
         ) => {
-            return prisma.product.findMany({
-                skip: offset,
-                take: limit,
-                include: {
-                    images: true,
-                    _count: {
-                        select: { orders: true },
-                    },
-                },
-                where: {
-                    inventory: { gt: 0 },
-                },
-                orderBy: sortByOrderCount,
-            });
+            // const products = await prisma.product.findMany({
+            //     skip: offset,
+            //     take: limit,
+            //     include: {
+            //         images: true,
+            //         _count: {
+            //             select: {
+            //                 orders: true,
+            //             },
+            //         },
+            //     },
+            //     where: {
+            //         inventory: { gt: 0 },
+            //     },
+            //     orderBy: sortByOrderCount,
+            // });
+            return prisma.$queryRaw`
+                SELECT pi.*,po.* FROM
+                    (${productsByOrderCount}
+                    ) as po
+                INNER JOIN
+                    (SELECT product_id,jsonb_agg(jsonb_build_object('img_id',img_id,'img_src',img_src)) as images
+                      FROM public."ProductImage" GROUP BY product_id) as pi ON po.id = pi.product_id
+                ORDER BY po._count DESC,po.inventory DESC,po.id ASC
+                LIMIT ${limit} OFFSET ${offset}
+            `;
         },
         searchBarQuery: async (parent: any, { input }: { input: string }) => {
             const searchString = getQueryString(input);
 
-            const categoriesPromise = prisma.category.findMany({
-                take: 3,
-                where: {
-                    name: {
-                        search: searchString,
-                    },
-                },
-                select: {
-                    id: true,
-                    name: true,
-                },
-            });
-            const companiesPromise = prisma.company.findMany({
-                take: 3,
-                where: {
-                    name: {
-                        search: searchString,
-                    },
-                },
-                select: {
-                    id: true,
-                    name: true,
-                },
-            });
-
-            const [categories, companies] = await Promise.all([
-                categoriesPromise,
-                companiesPromise,
-            ]);
-
-            const productAmount = 10 - (categories.length + companies.length);
-            const sortByOrderCountAndInventory = [...sortByOrderCount].concat({
-                inventory: "desc",
-            });
-
-            const products = await prisma.product.findMany({
-                take: productAmount,
-                where: {
-                    OR: [
-                        {
-                            name: {
-                                search: searchString,
-                            },
-                        },
-                        {
-                            category: {
-                                name: {
-                                    search: searchString,
-                                },
-                            },
-                        },
-                        {
-                            company: {
-                                name: {
-                                    search: searchString,
-                                },
-                            },
-                        },
-                    ],
-                },
-                select: {
-                    id: true,
-                    name: true,
-                },
-                orderBy: sortByOrderCountAndInventory,
-            });
-            return { categories, companies, products };
+            return prisma.$queryRaw`
+                    (SELECT c.id,c.name,'Category' as source
+                    FROM public."Category" as c
+                    WHERE to_tsvector(c.name) @@ to_tsquery('english',${searchString})
+                    ORDER BY c.id
+                    LIMIT 3)
+                UNION ALL
+                    (SELECT c.id,c.name,'Company' as source
+                    FROM public."Company" as c
+                    WHERE to_tsvector(c.name) @@ to_tsquery('english',${searchString})
+                    ORDER BY c.id
+                    LIMIT 3)
+                UNION ALL
+                    (SELECT prod.id,prod.name,'Product' as source
+                    FROM public."Product" as prod
+                    INNER JOIN
+                        (${productsByOrderCount}) as op
+                    ON prod.id = op.id
+                    WHERE prod.name @@ to_tsquery('english',${searchString})
+                    ORDER BY op._count DESC,prod.inventory DESC,op.id ASC
+                    LIMIT ${10})
+                LIMIT ${10}
+            `;
         },
     },
     Mutation: {

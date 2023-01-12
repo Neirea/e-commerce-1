@@ -197,7 +197,7 @@ export type Query = {
   products: Array<Product>;
   productsById: Array<Product>;
   relatedProducts: Array<Product>;
-  searchBarQuery: QuerySearchBarResult;
+  searchBarQuery: Array<SearchResult>;
   searchData: QuerySearchDataResult;
   showMe?: Maybe<User>;
   user?: Maybe<User>;
@@ -270,13 +270,6 @@ export type QueryRelatedInput = {
   id: Scalars['Int'];
 };
 
-export type QuerySearchBarResult = {
-  __typename?: 'QuerySearchBarResult';
-  categories: Array<SearchCategory>;
-  companies: Array<SearchCompany>;
-  products: Array<SearchProduct>;
-};
-
 export type QuerySearchDataInput = {
   category_id?: InputMaybe<Scalars['Int']>;
   company_id?: InputMaybe<Scalars['Int']>;
@@ -299,22 +292,11 @@ export enum Role {
   USER = 'USER'
 }
 
-export type SearchCategory = {
-  __typename?: 'SearchCategory';
+export type SearchResult = {
+  __typename?: 'SearchResult';
   id: Scalars['Int'];
   name: Scalars['String'];
-};
-
-export type SearchCompany = {
-  __typename?: 'SearchCompany';
-  id: Scalars['Int'];
-  name: Scalars['String'];
-};
-
-export type SearchProduct = {
-  __typename?: 'SearchProduct';
-  id: Scalars['Int'];
-  name: Scalars['String'];
+  source: Scalars['String'];
 };
 
 export type SingleOrderItem = {
@@ -457,7 +439,7 @@ export type GetSearchResultsQueryVariables = Exact<{
 }>;
 
 
-export type GetSearchResultsQuery = { __typename?: 'Query', searchBarQuery: { __typename?: 'QuerySearchBarResult', categories: Array<{ __typename?: 'SearchCategory', id: number, name: string }>, companies: Array<{ __typename?: 'SearchCompany', id: number, name: string }>, products: Array<{ __typename?: 'SearchProduct', id: number, name: string }> } };
+export type GetSearchResultsQuery = { __typename?: 'Query', searchBarQuery: Array<{ __typename?: 'SearchResult', id: number, name: string, source: string }> };
 
 export type GetAllProductsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -901,18 +883,9 @@ export type CancelOrderMutationOptions = Apollo.BaseMutationOptions<CancelOrderM
 export const GetSearchResultsDocument = gql`
     query GetSearchResults($input: String!) {
   searchBarQuery(input: $input) {
-    categories {
-      id
-      name
-    }
-    companies {
-      id
-      name
-    }
-    products {
-      id
-      name
-    }
+    id
+    name
+    source
   }
 }
     `;

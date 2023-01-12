@@ -23,12 +23,7 @@ const SearchBar = () => {
     const searchData = data ?? previousData;
     const searchLoading = loading || searchText !== debouncedText;
 
-    const showSearchData =
-        searchData &&
-        searchData.searchBarQuery.categories.length +
-            searchData.searchBarQuery.companies.length +
-            searchData.searchBarQuery.products.length >
-            0;
+    const showSearchData = searchData && searchData.searchBarQuery.length > 0;
 
     useOutsideClick([searchBarRef], () => setShowResults(false));
 
@@ -81,46 +76,16 @@ const SearchBar = () => {
                     )}
                     {showSearchData && (
                         <>
-                            {searchData.searchBarQuery.categories.map(
-                                (item) => {
-                                    return (
-                                        <Link
-                                            key={item.id}
-                                            to={`/search?c=${item.id}`}
-                                            className="text-decoration-none text-dark search-link"
-                                        >
-                                            {item.name}
-                                            <span className="text-secondary opacity-75">
-                                                {" - Category"}
-                                            </span>
-                                        </Link>
-                                    );
-                                }
-                            )}
-                            {searchData.searchBarQuery.companies.map((item) => {
+                            {searchData.searchBarQuery.map((item) => {
                                 return (
                                     <Link
-                                        key={item.id}
-                                        to={`/search?b=${item.id}`}
+                                        key={`${item.source}-${item.id}`}
+                                        to={`/search?c=${item.id}`}
                                         className="text-decoration-none text-dark search-link"
                                     >
                                         {item.name}
                                         <span className="text-secondary opacity-75">
-                                            {" - Company"}
-                                        </span>
-                                    </Link>
-                                );
-                            })}
-                            {searchData.searchBarQuery.products.map((item) => {
-                                return (
-                                    <Link
-                                        key={item.id}
-                                        to={`/product/${item.id}`}
-                                        className="text-decoration-none text-dark search-link"
-                                    >
-                                        {item.name}
-                                        <span className="text-secondary opacity-75">
-                                            {" - Product"}
+                                            {` - ${item.source}`}
                                         </span>
                                     </Link>
                                 );

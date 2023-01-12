@@ -196,7 +196,7 @@ export type Query = {
   products: Array<Product>;
   productsById: Array<Product>;
   relatedProducts: Array<Product>;
-  searchBarQuery: QuerySearchBarResult;
+  searchBarQuery: Array<SearchResult>;
   searchData: QuerySearchDataResult;
   showMe?: Maybe<User>;
   user?: Maybe<User>;
@@ -269,13 +269,6 @@ export type QueryRelatedInput = {
   id: Scalars['Int'];
 };
 
-export type QuerySearchBarResult = {
-  __typename?: 'QuerySearchBarResult';
-  categories: Array<SearchCategory>;
-  companies: Array<SearchCompany>;
-  products: Array<SearchProduct>;
-};
-
 export type QuerySearchDataInput = {
   category_id?: InputMaybe<Scalars['Int']>;
   company_id?: InputMaybe<Scalars['Int']>;
@@ -298,22 +291,11 @@ export enum Role {
   USER = 'USER'
 }
 
-export type SearchCategory = {
-  __typename?: 'SearchCategory';
+export type SearchResult = {
+  __typename?: 'SearchResult';
   id: Scalars['Int'];
   name: Scalars['String'];
-};
-
-export type SearchCompany = {
-  __typename?: 'SearchCompany';
-  id: Scalars['Int'];
-  name: Scalars['String'];
-};
-
-export type SearchProduct = {
-  __typename?: 'SearchProduct';
-  id: Scalars['Int'];
-  name: Scalars['String'];
+  source: Scalars['String'];
 };
 
 export type SingleOrderItem = {
@@ -475,13 +457,10 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   QueryProductInput: QueryProductInput;
   QueryRelatedInput: QueryRelatedInput;
-  QuerySearchBarResult: ResolverTypeWrapper<QuerySearchBarResult>;
   QuerySearchDataInput: QuerySearchDataInput;
   QuerySearchDataResult: ResolverTypeWrapper<QuerySearchDataResult>;
   Role: Role;
-  SearchCategory: ResolverTypeWrapper<SearchCategory>;
-  SearchCompany: ResolverTypeWrapper<SearchCompany>;
-  SearchProduct: ResolverTypeWrapper<SearchProduct>;
+  SearchResult: ResolverTypeWrapper<SearchResult>;
   SingleOrderItem: ResolverTypeWrapper<SingleOrderItem>;
   Status: Status;
   String: ResolverTypeWrapper<Scalars['String']>;
@@ -512,12 +491,9 @@ export type ResolversParentTypes = {
   Query: {};
   QueryProductInput: QueryProductInput;
   QueryRelatedInput: QueryRelatedInput;
-  QuerySearchBarResult: QuerySearchBarResult;
   QuerySearchDataInput: QuerySearchDataInput;
   QuerySearchDataResult: QuerySearchDataResult;
-  SearchCategory: SearchCategory;
-  SearchCompany: SearchCompany;
-  SearchProduct: SearchProduct;
+  SearchResult: SearchResult;
   SingleOrderItem: SingleOrderItem;
   String: Scalars['String'];
   UpdateCategoryInput: UpdateCategoryInput;
@@ -623,18 +599,11 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   products?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType>;
   productsById?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryproductsByIdArgs, 'ids'>>;
   relatedProducts?: Resolver<Array<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<QueryrelatedProductsArgs, 'input' | 'limit' | 'offset'>>;
-  searchBarQuery?: Resolver<ResolversTypes['QuerySearchBarResult'], ParentType, ContextType, RequireFields<QuerysearchBarQueryArgs, 'input'>>;
+  searchBarQuery?: Resolver<Array<ResolversTypes['SearchResult']>, ParentType, ContextType, RequireFields<QuerysearchBarQueryArgs, 'input'>>;
   searchData?: Resolver<ResolversTypes['QuerySearchDataResult'], ParentType, ContextType, RequireFields<QuerysearchDataArgs, 'input'>>;
   showMe?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryuserArgs, 'id'>>;
   users?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
-};
-
-export type QuerySearchBarResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['QuerySearchBarResult'] = ResolversParentTypes['QuerySearchBarResult']> = {
-  categories?: Resolver<Array<ResolversTypes['SearchCategory']>, ParentType, ContextType>;
-  companies?: Resolver<Array<ResolversTypes['SearchCompany']>, ParentType, ContextType>;
-  products?: Resolver<Array<ResolversTypes['SearchProduct']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type QuerySearchDataResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['QuerySearchDataResult'] = ResolversParentTypes['QuerySearchDataResult']> = {
@@ -645,21 +614,10 @@ export type QuerySearchDataResultResolvers<ContextType = any, ParentType extends
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SearchCategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['SearchCategory'] = ResolversParentTypes['SearchCategory']> = {
+export type SearchResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['SearchResult'] = ResolversParentTypes['SearchResult']> = {
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type SearchCompanyResolvers<ContextType = any, ParentType extends ResolversParentTypes['SearchCompany'] = ResolversParentTypes['SearchCompany']> = {
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type SearchProductResolvers<ContextType = any, ParentType extends ResolversParentTypes['SearchProduct'] = ResolversParentTypes['SearchProduct']> = {
-  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  source?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -700,11 +658,8 @@ export type Resolvers<ContextType = any> = {
   Product?: ProductResolvers<ContextType>;
   ProductOrdersCount?: ProductOrdersCountResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
-  QuerySearchBarResult?: QuerySearchBarResultResolvers<ContextType>;
   QuerySearchDataResult?: QuerySearchDataResultResolvers<ContextType>;
-  SearchCategory?: SearchCategoryResolvers<ContextType>;
-  SearchCompany?: SearchCompanyResolvers<ContextType>;
-  SearchProduct?: SearchProductResolvers<ContextType>;
+  SearchResult?: SearchResultResolvers<ContextType>;
   SingleOrderItem?: SingleOrderItemResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };

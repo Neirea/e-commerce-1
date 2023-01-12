@@ -12,22 +12,10 @@ const productTypes = gql`
         orders: Int!
     }
     # Search types
-    type SearchProduct {
+    type SearchResult {
         id: Int!
         name: String!
-    }
-    type SearchCompany {
-        id: Int!
-        name: String!
-    }
-    type SearchCategory {
-        id: Int!
-        name: String!
-    }
-    type QuerySearchBarResult {
-        categories: [SearchCategory!]!
-        companies: [SearchCompany!]!
-        products: [SearchProduct!]!
+        source: String!
     }
 
     type QuerySearchDataResult {
@@ -62,7 +50,7 @@ const productTypes = gql`
             offset: Int!
             input: QueryProductInput!
         ): [Product!]!
-        searchBarQuery(input: String!): QuerySearchBarResult!
+        searchBarQuery(input: String!): [SearchResult!]!
         searchData(input: QuerySearchDataInput!): QuerySearchDataResult!
         featuredProducts(limit: Int!, offset: Int!): [Product!]!
         popularProducts(limit: Int!, offset: Int!): [Product!]!
