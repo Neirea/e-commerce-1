@@ -59,14 +59,14 @@ model ProductImage{
 
 model Company{
   id Int @id @default(autoincrement())
-  name String
+  name String @unique
   products Product[]
   categories Category[]
 }
 
 model Category {
   id Int @id @default(autoincrement())
-  name String
+  name String @unique
   img_id String?
   img_src String?
   parent_id Int?
@@ -101,7 +101,7 @@ model SingleOrderItem {
   order_id Int
   amount Int
   price Float
-  product Product @relation(fields: [product_id],references: [id])
+  product Product @relation(fields: [product_id],references: [id],onDelete: Cascade)
   product_id Int
   @@index([order_id],type: Hash)
   @@index([product_id],type: Hash)
