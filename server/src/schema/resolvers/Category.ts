@@ -57,12 +57,15 @@ const categoryResolvers = {
                 WHERE id = ${category_id}
             `;
 
+            const imgSQL = img_id
+                ? Prisma.sql`,img_id = ${img_id},img_src=${img_src}`
+                : Prisma.empty;
+
             await prisma.$queryRaw`
                 UPDATE public."Category"
                 SET parent_id = ${parent_id},
-                    "name" = ${name},
-                    img_id = ${img_id},
-                    img_src = ${img_src}
+                    "name" = ${name}
+                    ${imgSQL}
                 WHERE id = ${category_id}
             `;
 
@@ -81,9 +84,14 @@ const categoryResolvers = {
                     "You don't have permissions for this action"
                 );
             }
-            const data = await prisma.category.delete({ where: { id: id } });
-            if (data.img_id) {
-                cloudinary.uploader.destroy(data.img_id);
+            const data = await prisma.$queryRaw<[Category]>`
+                DELETE FROM public."Category"
+                WHERE id = ${id}
+                RETURNING *
+            `;
+
+            if (data[0].img_id) {
+                cloudinary.uploader.destroy(data[0].img_id);
             }
             return true;
         },

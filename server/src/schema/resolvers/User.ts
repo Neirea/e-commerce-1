@@ -75,14 +75,22 @@ const userResolvers = {
             { input }: { input: UpdateUserInput },
             { req }: { req: Request }
         ) => {
-            const { given_name, family_name, email, address, phone } = input;
+            const { id, given_name, family_name, email, address, phone } =
+                input;
 
-            const user = await prisma.user.update({
-                where: { id: input.id },
-                data: { given_name, family_name, email, address, phone },
-            });
-            if (user) {
-                req.session.user = user;
+            const data = await prisma.$queryRaw<[User]>`
+                UPDATE public."User"
+                SET "given_name" = ${given_name},
+                    "family_name" = ${family_name},
+                    "email" = ${email},
+                    "address" = ${address},
+                    "phone" = ${phone}
+                WHERE id = ${id}
+                RETURNING *
+            `;
+
+            if (data[0]) {
+                req.session.user = data[0];
                 return true;
             }
             return false;
