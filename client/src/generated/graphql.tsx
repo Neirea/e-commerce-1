@@ -493,7 +493,7 @@ export type GetSingleProductQueryVariables = Exact<{
 }>;
 
 
-export type GetSingleProductQuery = { __typename?: 'Query', product?: { __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, images: Array<{ __typename?: 'Image', img_id: string, img_src: string }>, variants: Array<{ __typename?: 'Product', id: number, name: string, images: Array<{ __typename?: 'Image', img_src: string }> }> } | null };
+export type GetSingleProductQuery = { __typename?: 'Query', product?: { __typename?: 'Product', id: number, name: string, price: number, description: any, inventory: number, shipping_cost: number, discount: number, company_id: number, category_id: number, images: Array<{ __typename?: 'Image', img_id: string, img_src: string }>, variants: Array<{ __typename?: 'Product', id: number, name: string, images: Array<{ __typename?: 'Image', img_src: string }> }> } | null };
 
 export type CreateProductMutationVariables = Exact<{
   input: CreateProductInput;
@@ -1230,6 +1230,8 @@ export const GetSingleProductDocument = gql`
     inventory
     shipping_cost
     discount
+    company_id
+    category_id
     images {
       img_id
       img_src

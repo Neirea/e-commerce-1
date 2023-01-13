@@ -29,8 +29,8 @@ const RelatedProducts = ({
             limit: FETCH_NUMBER,
             input: {
                 id: product?.id,
-                company_id: product?.company.id,
-                category_id: product?.category.id,
+                company_id: product?.company_id,
+                category_id: product?.category_id,
             },
         },
         notifyOnNetworkStatusChange: true,
@@ -56,8 +56,8 @@ const RelatedProducts = ({
                     limit: FETCH_NUMBER,
                     input: {
                         id: product?.id,
-                        company_id: product?.company.id,
-                        category_id: product?.category.id,
+                        company_id: product?.company_id,
+                        category_id: product?.category_id,
                     },
                 },
             });

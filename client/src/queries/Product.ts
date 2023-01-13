@@ -143,6 +143,8 @@ export const GET_SINGLE_PRODUCT = gql`
             inventory
             shipping_cost
             discount
+            company_id
+            category_id
             images {
                 img_id
                 img_src

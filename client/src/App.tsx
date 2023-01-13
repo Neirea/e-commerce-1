@@ -7,15 +7,14 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import RequireAuth from "./components/RequireAuth";
 import ScrollAndHash from "./components/ScrollAndHash";
+import { GetProductsByIdQuery, Role } from "./generated/graphql";
 import { cartVar } from "./global/apolloClient";
-import useCurrentUser from "./hooks/useCurrentUser";
 import {
     addCartToLocalStorage,
     CartType,
     getSyncedCart,
 } from "./global/useApolloCartStore";
-import { GetProductsByIdQuery, Role } from "./generated/graphql";
-import Checkout from "./pages/Checkout";
+import useCurrentUser from "./hooks/useCurrentUser";
 import Error from "./pages/Error";
 import Help from "./pages/Help";
 import Home from "./pages/Home";
@@ -27,6 +26,7 @@ import { QUERY_PRODUCTS_BY_ID } from "./queries/Product";
 const Orders = lazy(() => import("./pages/Orders"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 const Editor = lazy(() => import("./pages/Editor/Editor"));
+const Checkout = lazy(() => import("./pages/Checkout"));
 
 const Loading = () => {
     return <Container as="main" className="main-loading" />;
@@ -84,7 +84,14 @@ function App() {
                             path="/product/:id"
                             element={<ProductWrapper />}
                         />
-                        <Route path="/checkout" element={<Checkout />} />
+                        <Route
+                            path="/checkout"
+                            element={
+                                <Suspense fallback={<Loading />}>
+                                    <Checkout />
+                                </Suspense>
+                            }
+                        />
                         <Route
                             path="/order_payment"
                             element={<OrderPayment />}
