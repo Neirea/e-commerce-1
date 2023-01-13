@@ -132,7 +132,7 @@ async function getUserById(platform_id: string) {
 
 async function userCount() {
     const query = await prisma.$queryRaw<[{ count: number }]>`
-        SELECT COUNT(*) FROM public."User"
+        SELECT COUNT(*)::int FROM public."User"
     `;
     return query[0].count;
 }

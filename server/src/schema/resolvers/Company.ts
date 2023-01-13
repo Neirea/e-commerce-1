@@ -30,9 +30,9 @@ const companyResolvers = {
                     "You don't have permissions for this action"
                 );
             }
-            if (input.name.length < 3)
+            if (input.name.length < 3) {
                 throw new UserInputError("Name is too short");
-
+            }
             await prisma.$queryRaw`
                 INSERT INTO public."Company"("name")
                 VALUES (${input.name})
@@ -49,6 +49,9 @@ const companyResolvers = {
                 throw new AuthenticationError(
                     "You don't have permissions for this action"
                 );
+            }
+            if (input.name.length < 3) {
+                throw new UserInputError("Name is too short");
             }
             await prisma.$queryRaw`
                 UPDATE public."Company"

@@ -31,8 +31,9 @@ const categoryResolvers = {
                     "You don't have permissions for this action"
                 );
             }
-            if (input.name.length < 3)
+            if (input.name.length < 3) {
                 throw new UserInputError("Name is too short");
+            }
 
             await prisma.$queryRaw`
                 INSERT INTO public."Category"("name","img_id","img_src","parent_id")
@@ -51,6 +52,12 @@ const categoryResolvers = {
                 );
             }
             const { id: category_id, parent_id, name, img_id, img_src } = input;
+            if (input.name.length < 3) {
+                throw new UserInputError("Name is too short");
+            }
+            if (category_id === parent_id) {
+                throw new UserInputError("Can not assign itself as a parent");
+            }
 
             const oldCategory = await prisma.$queryRaw<[Category]>`
                 SELECT * FROM public."Category"

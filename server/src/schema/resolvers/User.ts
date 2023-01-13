@@ -1,5 +1,5 @@
 import { Role, User } from "@prisma/client";
-import { AuthenticationError } from "apollo-server-express";
+import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { Request } from "express";
 import { GraphQLScalarType, Kind } from "graphql";
 import { StatusCodes } from "http-status-codes";
@@ -78,6 +78,12 @@ const userResolvers = {
             const { id, given_name, family_name, email, address, phone } =
                 input;
 
+            if (given_name.length < 2 || family_name.length < 2) {
+                throw new UserInputError("Name is too short");
+            }
+            if (email && !email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
+                throw new UserInputError("Bad email format");
+            }
             const data = await prisma.$queryRaw<[User]>`
                 UPDATE public."User"
                 SET "given_name" = ${given_name},
