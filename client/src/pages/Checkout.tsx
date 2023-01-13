@@ -97,7 +97,6 @@ const Checkout = () => {
             }),
         });
         const res = await response.json();
-        setLoading(false);
 
         if (response.ok) {
             setError("");
@@ -106,7 +105,7 @@ const Checkout = () => {
             window.open(res.url, "_self");
             return;
         }
-
+        setLoading(false);
         switch (res.type) {
             case "StripeCardError":
                 setError(`A payment error occurred: ${res.message}`);

@@ -67,6 +67,7 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
                     ...values,
                 },
             },
+            refetchQueries: ["ShowCurrentUser"],
         });
         setErrorMessage("");
         setSuccess(true);

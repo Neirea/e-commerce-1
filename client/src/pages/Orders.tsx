@@ -38,12 +38,12 @@ const Orders = () => {
             }
         );
         const res = await response.json();
-        setPaymentLoading(false);
 
         if (response.ok) {
             window.open(res.url, "_self");
             return;
         }
+        setPaymentLoading(false);
         switch (res.type) {
             case "StripeCardError":
                 console.log(`A payment error occurred: ${res.message}`);
