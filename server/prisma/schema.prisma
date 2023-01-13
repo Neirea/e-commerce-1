@@ -42,6 +42,11 @@ model Product {
   category Category @relation(fields: [category_id],references: [id],onDelete: Cascade)
   orders SingleOrderItem[]
   images ProductImage[]
+  @@index([inventory],type: BTree)
+  @@index([price],type: BTree)
+  @@index([discount],type: BTree)
+  @@index([company_id],type: Hash)
+  @@index([category_id],type: Hash)
 }
 
 model ProductImage{
@@ -49,6 +54,7 @@ model ProductImage{
   img_src String
   product_id Int
   product Product @relation(fields: [product_id],references: [id],onDelete: Cascade)
+  @@index([product_id],type: Hash)
 }
 
 model Company{
@@ -68,6 +74,7 @@ model Category {
   children Category[] @relation("subCategory")
   companies Company[]
   products Product[]
+  @@index([parent_id],type: Hash)
 }
 
 
@@ -84,6 +91,8 @@ model Order {
   delivery_address String
   created_at DateTime @default(now())
   payment_time DateTime?
+  @@index([user_id],type:Hash)
+  @@index([status],type:BTree)
 }
 
 model SingleOrderItem {
@@ -94,6 +103,8 @@ model SingleOrderItem {
   price Float
   product Product @relation(fields: [product_id],references: [id])
   product_id Int
+  @@index([order_id],type: Hash)
+  @@index([product_id],type: Hash)
 }
 
 enum OrderStatus {
