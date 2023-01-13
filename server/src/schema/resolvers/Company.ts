@@ -32,7 +32,12 @@ const companyResolvers = {
             }
             if (input.name.length < 3)
                 throw new UserInputError("Name is too short");
-            await prisma.company.create({ data: input });
+
+            await prisma.$queryRaw`
+                INSERT INTO public."Company"("name")
+                VALUES (${input.name})
+            `;
+
             return true;
         },
         updateCompany: async (
@@ -45,11 +50,11 @@ const companyResolvers = {
                     "You don't have permissions for this action"
                 );
             }
-            const { id, name } = input;
-            await prisma.company.update({
-                where: { id: id },
-                data: { name },
-            });
+            await prisma.$queryRaw`
+                UPDATE public."Company"
+                SET "name" = ${input.name}
+                WHERE id = ${input.id}
+            `;
             return true;
         },
         deleteCompany: async (
@@ -62,7 +67,10 @@ const companyResolvers = {
                     "You don't have permissions for this action"
                 );
             }
-            await prisma.company.delete({ where: { id: id } });
+            await prisma.$queryRaw`
+                DELETE FROM public."Company"
+                WHERE id = ${id}
+            `;
             return true;
         },
     },

@@ -1,4 +1,4 @@
-import { Prisma, Role } from "@prisma/client";
+import { Prisma, ProductImage, Role } from "@prisma/client";
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { v2 as cloudinary } from "cloudinary";
 import { Request } from "express";
@@ -116,6 +116,7 @@ const productResolvers = {
                 return { img_id: img, img_src: img_src[i] };
             });
 
+            // connects variants many-to-many on creation
             const createProduct = prisma.product.create({
                 data: {
                     ...createData,
@@ -130,14 +131,13 @@ const productResolvers = {
                     },
                 },
             });
-
             //create connection between company and category
-            const updateCategory = prisma.category.update({
-                where: { id: input.category_id },
-                data: {
-                    companies: { connect: { id: input.company_id } },
-                },
-            });
+            const updateCategory = prisma.$queryRaw`
+                INSERT INTO public."_CategoryToCompany" ("A","B")
+                VALUES (${input.category_id},${input.company_id})
+                ON CONFLICT DO NOTHING
+            `;
+
             await Promise.all([createProduct, updateCategory]);
             return true;
         },
@@ -178,25 +178,25 @@ const productResolvers = {
                     },
                 },
             });
+
             //update relationbetween company and category
-            const categoryUpdate = prisma.category.update({
-                where: { id: input.category_id },
-                data: {
-                    companies: { connect: { id: input.company_id } },
-                },
-            });
+            const categoryUpdate = prisma.$queryRaw`
+                INSERT INTO public."_CategoryToCompany" ("A","B")
+                VALUES (${input.category_id},${input.company_id})
+                ON CONFLICT DO NOTHING
+            `;
 
             //delete old images
             if (img_id.length) {
-                const oldImages = await prisma.productImage.findMany({
-                    where: { product_id: id },
-                });
-                await prisma.productImage.deleteMany({
-                    where: { product_id: id },
-                });
-                await cloudinary.api.delete_resources(
-                    oldImages.map((i) => i.img_id)
-                );
+                const oldImages = await prisma.$queryRaw<ProductImage[]>`
+                    SELECT * FROM public."ProductImage"
+                    WHERE product_id = ${id}
+                `;
+                prisma.$queryRaw`
+                    DELETE FROM public."ProductImage"
+                    WHERE product_id = ${id}
+                `;
+                cloudinary.api.delete_resources(oldImages.map((i) => i.img_id));
             }
 
             const promiseArray = [productUpdate, categoryUpdate];
@@ -221,12 +221,11 @@ const productResolvers = {
             });
 
             if (data.images.length) {
-                await cloudinary.api.delete_resources(
+                cloudinary.api.delete_resources(
                     data.images.map((i) => i.img_id)
                 );
-                return true;
             }
-            return false;
+            return true;
         },
     },
 };

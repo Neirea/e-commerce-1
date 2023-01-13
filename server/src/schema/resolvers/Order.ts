@@ -1,6 +1,5 @@
 import { AuthenticationError } from "apollo-server-express";
 import { Request } from "express";
-import { Status } from "../../generated/graphql";
 import prisma from "../../prisma";
 
 const orderResolvers = {
@@ -26,16 +25,18 @@ const orderResolvers = {
     },
     Mutation: {
         cancelOrder: async (parent: any, { id }: { id: number }) => {
-            await prisma.order.updateMany({
-                where: { id: id, status: Status.PENDING },
-                data: { status: Status.CANCELLED },
-            });
+            await prisma.$queryRaw`
+                UPDATE public."Order"
+                SET "status" = 'CANCELLED'
+                WHERE id = ${id} AND "status" = 'PENDING'
+            `;
             return true;
         },
         deleteOrder: async (parent: any, { id }: { id: number }) => {
-            await prisma.order.delete({
-                where: { id: id },
-            });
+            await prisma.$queryRaw`
+                DELETE FROM public."Order"
+                WHERE id = ${id}
+            `;
             return true;
         },
     },

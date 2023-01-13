@@ -1,4 +1,10 @@
-import { OrderStatus, Prisma, Product } from "@prisma/client";
+import {
+    Order,
+    OrderStatus,
+    Prisma,
+    PrismaPromise,
+    Product,
+} from "@prisma/client";
 import { Request, Router } from "express";
 import { StatusCodes } from "http-status-codes";
 import Stripe from "stripe";
@@ -34,21 +40,10 @@ router.post("/checkout", async (req: CustomRequest<CheckoutBody>, res) => {
     if (req.body.items.length === 0) {
         throw new CustomError("Your cart is empty", StatusCodes.BAD_REQUEST);
     }
-    const products = await prisma.product.findMany({
-        where: {
-            id: {
-                in: req.body.items.map((item) => item.id),
-            },
-        },
-        select: {
-            id: true,
-            name: true,
-            price: true,
-            discount: true,
-            inventory: true,
-            shipping_cost: true,
-        },
-    });
+    const products = await prisma.$queryRaw<Product[]>`
+        SELECT p.* FROM public."Product" as p
+        WHERE id IN (${Prisma.join(req.body.items.map((item) => item.id))})
+    `;
 
     //products info for order
     const orderProducts = products.map((product) => {
@@ -116,27 +111,39 @@ router.post("/checkout", async (req: CustomRequest<CheckoutBody>, res) => {
         });
         res.json({ url: session.url });
     } catch (error: any) {
-        await prisma.order.delete({ where: { id: order.id } });
+        await prisma.$queryRaw`
+            DELETE FROM public."Order"
+            WHERE id = ${order.id}
+        `;
         throw new CustomError("Stripe error: Incorrect data", 400);
     }
 });
 
 //existing order
-router.patch("/checkout/:orderId", async (req, res) => {
-    const order = await prisma.order.findUnique({
-        where: {
-            id: +req.params.orderId,
-        },
-        include: {
+router.post("/checkout/:orderId", async (req, res) => {
+    type OrderType = [
+        Order & {
             order_items: {
-                select: {
-                    id: true,
-                    amount: true,
-                    product: true,
-                },
-            },
-        },
-    });
+                id: number;
+                amount: number;
+                order_id: number;
+                product: Product;
+            }[];
+        }
+    ];
+    const orderQuery = await prisma.$queryRaw<OrderType>`
+        SELECT o.*,json_agg(s.*) as order_items
+        FROM public."Order" as o
+        INNER JOIN
+            (SELECT s.id,s.amount,s.order_id,to_json(p.*) as product
+            FROM public."SingleOrderItem" as s
+            INNER JOIN public."Product" as p
+            ON s.product_id = p.id) as s
+        ON s.order_id = o.id
+        WHERE o.id = ${+req.params.orderId}
+        GROUP BY o.id
+    `;
+    const order = orderQuery[0];
 
     if (order == null) {
         throw new CustomError(
@@ -158,55 +165,16 @@ router.patch("/checkout/:orderId", async (req, res) => {
         );
     }
 
-    const productIds = order.order_items.map((o) => o.product.id);
-
-    const products = await prisma.product.findMany({
-        where: {
-            id: { in: productIds },
-        },
-        select: {
-            id: true,
-            name: true,
-            price: true,
-            discount: true,
-            inventory: true,
-        },
-    });
-
     const orderProducts = order.order_items.map((order) => {
-        const product = products.find((p) => p.id === order.product.id);
-        if (!product) {
+        if (order.product.inventory < order.amount) {
             throw new CustomError(
-                `We don't have ${order.product.name} in our inventory anymore`,
+                `We don't have ${order.product.name} in this amount: ${order.amount}`,
                 StatusCodes.BAD_REQUEST
             );
-        }
-        if (product.inventory < order.amount) {
-            throw new CustomError(
-                `We don't have ${product.name} in this amount: ${order.amount}`,
-                StatusCodes.BAD_REQUEST
-            );
-        }
-        let price = order.product.price;
-        //if pricing changed
-        if (
-            product.price !== order.product.price ||
-            product.discount !== order.product.discount
-        ) {
-            price = ((100 - product.discount) / 100) * product.price;
-            //update price information for single order
-            prisma.singleOrderItem.update({
-                where: {
-                    id: order.id,
-                },
-                data: {
-                    price: price,
-                },
-            });
         }
         return {
             name: order.product.name,
-            price: price,
+            price: order.product.price,
             amount: order.amount,
         };
     });
@@ -255,21 +223,16 @@ router.get("/done/:orderId", async (req, res) => {
             },
         });
         // remove items from inventory
-        const productUpdates: Prisma.Prisma__ProductClient<Product, never>[] =
-            [];
+        const productUpdates: PrismaPromise<unknown>[] = [];
         order.order_items.forEach(async (o) => {
-            const update = prisma.product.update({
-                where: {
-                    id: o.product_id,
-                },
-                data: {
-                    inventory: {
-                        decrement: o.amount,
-                    },
-                },
-            });
+            const update = prisma.$queryRaw`
+                UPDATE public."Product"
+                SET inventory = inventory - ${o.amount}
+                WHERE id = ${o.product_id}
+            `;
             productUpdates.push(update);
         });
+
         await Promise.all(productUpdates);
 
         res.redirect(

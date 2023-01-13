@@ -1,4 +1,4 @@
-import { Platform, Role } from "@prisma/client";
+import { Platform, Role, User } from "@prisma/client";
 import crypto from "crypto";
 import type { Request, Response } from "express";
 import passport from "passport";
@@ -50,12 +50,10 @@ const loginGoogle = async (
 ) => {
     const { id, name, _json } = profile;
 
-    let user = await prisma.user.findFirst({
-        where: { platform_id: id },
-    });
+    let user = await getUserById(id);
     if (!user) {
         //update profile if different
-        const isFirstAccount = (await prisma.user.count()) === 0;
+        const isFirstAccount = (await userCount()) === 0;
 
         const userData = {
             given_name: name?.givenName || "",
@@ -81,12 +79,9 @@ const loginFacebook = async (
 ) => {
     const { id, name, photos, emails } = profile;
 
-    let user = await prisma.user.findFirst({
-        where: { platform_id: id },
-    });
-
+    let user = await getUserById(id);
     if (!user) {
-        const isFirstAccount = (await prisma.user.count()) === 0;
+        const isFirstAccount = (await userCount()) === 0;
 
         const userData = {
             given_name: name?.givenName || "",
@@ -126,3 +121,18 @@ passport.use(
         loginFacebook
     )
 );
+
+async function getUserById(platform_id: string) {
+    const userQuery = await prisma.$queryRaw<[User]>`
+        SELECT * FROM public."User"
+        WHERE platform_id = ${platform_id}
+    `;
+    return userQuery[0];
+}
+
+async function userCount() {
+    const query = await prisma.$queryRaw<[{ count: number }]>`
+        SELECT COUNT(*) FROM public."User"
+    `;
+    return query[0].count;
+}

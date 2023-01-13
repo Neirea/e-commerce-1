@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { Category, Prisma, Role } from "@prisma/client";
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { v2 as cloudinary } from "cloudinary";
 import { Request } from "express";
@@ -33,7 +33,11 @@ const categoryResolvers = {
             }
             if (input.name.length < 3)
                 throw new UserInputError("Name is too short");
-            await prisma.category.create({ data: input });
+
+            await prisma.$queryRaw`
+                INSERT INTO public."Category"("name","img_id","img_src","parent_id")
+                VALUES (${input.name},${input.img_id},${input.img_src},${input.parent_id})
+            `;
             return true;
         },
         updateCategory: async (
@@ -48,17 +52,22 @@ const categoryResolvers = {
             }
             const { id: category_id, parent_id, name, img_id, img_src } = input;
 
-            const oldCategory = await prisma.category.findUnique({
-                where: { id: category_id },
-            });
+            const oldCategory = await prisma.$queryRaw<[Category]>`
+                SELECT * FROM public."Category"
+                WHERE id = ${category_id}
+            `;
 
-            await prisma.category.update({
-                where: { id: category_id },
-                data: { parent_id, name, img_id, img_src },
-            });
+            await prisma.$queryRaw`
+                UPDATE public."Category"
+                SET parent_id = ${parent_id},
+                    "name" = ${name},
+                    img_id = ${img_id},
+                    img_src = ${img_src}
+                WHERE id = ${category_id}
+            `;
 
-            if (oldCategory?.img_id && img_id) {
-                await cloudinary.uploader.destroy(oldCategory?.img_id);
+            if (oldCategory[0].img_id && img_id) {
+                cloudinary.uploader.destroy(oldCategory[0].img_id);
             }
             return true;
         },
@@ -74,10 +83,9 @@ const categoryResolvers = {
             }
             const data = await prisma.category.delete({ where: { id: id } });
             if (data.img_id) {
-                await cloudinary.uploader.destroy(data.img_id);
-                return true;
+                cloudinary.uploader.destroy(data.img_id);
             }
-            return false;
+            return true;
         },
     },
 };

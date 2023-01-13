@@ -13,6 +13,8 @@ const errorHandlerMiddleware = (
         message: err.message || "Something went wrong try again later",
     };
 
+    console.log(customError.message);
+
     return res
         .status(customError.statusCode)
         .json({ message: customError.message });
