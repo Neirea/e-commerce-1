@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import qs from "query-string";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
@@ -71,9 +71,6 @@ const SearchPage = () => {
         },
         notifyOnNetworkStatusChange: true,
         onCompleted(data) {
-            if (sortRef.current) {
-                sortRef.current.value = sortParam?.toString() || "0";
-            }
             if (
                 data.filteredProducts.length % FETCH_NUMBER !== 0 ||
                 previousData?.filteredProducts.length ===
@@ -85,6 +82,12 @@ const SearchPage = () => {
             setHasMore((prev) => prev + 1);
         },
     });
+
+    useEffect(() => {
+        if (sortRef.current) {
+            sortRef.current.value = sortParam?.toString() || "0";
+        }
+    }, [search]);
 
     const containerRef = useInView<HTMLDivElement>(
         options,

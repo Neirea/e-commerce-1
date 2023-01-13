@@ -33,7 +33,7 @@ const Orders = () => {
         const response = await fetch(
             `${serverUrl}/api/payment/checkout/${id}`,
             {
-                method: "PATCH",
+                method: "POST",
                 credentials: "include",
             }
         );
@@ -89,7 +89,7 @@ const Orders = () => {
         <Container as="main" className="pt-3">
             <h2 className="text-center">Your Orders:</h2>
             {loading && (
-                <div>
+                <div className="mt-5">
                     <Loading />
                 </div>
             )}

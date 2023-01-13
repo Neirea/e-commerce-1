@@ -53,12 +53,13 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+        setSuccess(false);
         const parseInput = UserProfileSchema.safeParse(values);
         if (!parseInput.success) {
             setErrorMessage(fromZodError(parseInput.error).message);
+
             return;
         }
-
         await updateUser({
             variables: {
                 input: {
