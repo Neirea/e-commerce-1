@@ -9,12 +9,10 @@ const queue: Bull.Queue<{ id: number }> = new Bull(
 function addOrderToQueue(orderId: number) {
     const jobId = `order-${orderId}`;
     queue.process(jobId, async (job) => {
-        await prisma.order.deleteMany({
-            where: {
-                id: job.data.id,
-                status: "PENDING",
-            },
-        });
+        await prisma.$queryRaw`
+            DELETE FROM public."Order"
+            WHERE id = ${job.data.id} AND "status" = 'PENDING'
+        `;
     });
     queue.add(
         jobId,
