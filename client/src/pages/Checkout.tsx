@@ -125,8 +125,8 @@ const Checkout = () => {
     return (
         <Container as="main" className="mt-3">
             <Form onSubmit={handleCheckout}>
-                <Row className="justify-content-around">
-                    <Col sm="4">
+                <Row className="flex-column justify-content-around flex-sm-row">
+                    <Col md="4">
                         <Form.Group className="mb-3">
                             <Form.Label>Your given name</Form.Label>
                             <Form.Control
@@ -147,6 +147,14 @@ const Checkout = () => {
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Shipping address</Form.Label>
+                            <Form.Label
+                                style={{
+                                    fontSize: "0.75rem",
+                                    fontWeight: "700",
+                                }}
+                            >
+                                ({addressDesc})
+                            </Form.Label>
                             <Form.Control
                                 type="text"
                                 value={values.address}
@@ -177,7 +185,7 @@ const Checkout = () => {
                             />
                         </Form.Group>
                     </Col>
-                    <Col sm="4">
+                    <Col md="4">
                         {cart.length > 0 &&
                             cart.map((item) => {
                                 return (

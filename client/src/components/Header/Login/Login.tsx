@@ -13,19 +13,21 @@ const Login = () => {
     const handleShowLogin = () => setShowLogin(true);
     const handleCloseLogin = () => setShowLogin(false);
 
+    if (isLoading) {
+        return <div style={{ minWidth: "5rem" }} />;
+    }
+    if (user) {
+        return <UserMenu />;
+    }
     return (
         <>
-            {user ? (
-                <UserMenu />
-            ) : (
-                <Nav.Link
-                    onClick={handleShowLogin}
-                    style={{ minWidth: "5rem" }}
-                    className="d-flex justify-content-end"
-                >
-                    {isLoading ? "" : "Login"}
-                </Nav.Link>
-            )}
+            <Nav.Link
+                onClick={handleShowLogin}
+                style={{ minWidth: "5rem" }}
+                className="d-flex justify-content-end"
+            >
+                {isLoading ? "" : "Login"}
+            </Nav.Link>
             <LoginContent handleClose={handleCloseLogin} show={showLogin} />
         </>
     );

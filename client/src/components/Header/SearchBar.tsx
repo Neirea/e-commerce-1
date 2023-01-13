@@ -12,7 +12,7 @@ import Loading from "../Loading";
 const SearchBar = () => {
     const [searchText, setSearchText] = useState("");
     const debouncedText = useDebounce(searchText, 300);
-    const [showResults, setShowResults] = useState(true);
+    const [showResults, setShowResults] = useState(false);
     const navigate = useNavigate();
     const [getSearchResults, { data, loading, previousData }] =
         useLazyQuery<GetSearchResultsQuery>(QUERY_SEARCH_BAR, {
@@ -67,7 +67,7 @@ const SearchBar = () => {
             </Form>
             {/* Search Results */}
             {showResults && (
-                <div className="position-absolute mt-3 border-bottom border-start border-end border-secondary rounded-bottom bg-white w-100">
+                <div className="d-none d-sm-block position-absolute mt-3 border-bottom border-start border-end border-secondary rounded-bottom bg-white w-100">
                     {searchLoading && (
                         <div className="d-flex justify-content-start gap-2 p-2">
                             <Loading size={1} />

@@ -21,6 +21,7 @@ const Categories = () => {
     return (
         <>
             <Button
+                className="d-none d-sm-inline-block"
                 variant="success"
                 onClick={toggleCategories}
                 ref={menuButtonRef}

@@ -79,7 +79,7 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
                 Enter your information to automatically set information required
                 for purchasing
             </p>
-            <Form className="w-50" onSubmit={handleSubmit}>
+            <Form className="col-12 col-md-6" onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
                     <Form.Label>Your given name</Form.Label>
                     <Form.Control
