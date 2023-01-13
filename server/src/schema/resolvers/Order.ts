@@ -11,16 +11,17 @@ const orderResolvers = {
                     "You must login to access this route"
                 );
             }
-            return prisma.order.findMany({
-                where: { user_id: req.session.user?.id },
-                include: {
-                    order_items: {
-                        include: {
-                            product: true,
-                        },
-                    },
-                },
-            });
+            return prisma.$queryRaw`
+                SELECT o.*,json_agg(sp.*) as order_items
+                FROM public."Order" as o
+                INNER JOIN
+                    (SELECT so.*,to_json(p.*) as product
+                    FROM public."SingleOrderItem" as so
+                    INNER JOIN public."Product" as p ON so.product_id = p.id) as sp
+                ON o.id = sp.order_id
+                WHERE o.user_id = ${req.session.user.id}
+                GROUP BY o.id
+            `;
         },
     },
     Mutation: {

@@ -7,11 +7,11 @@ export default async (parent: any, { id }: { id: number }) => {
         SELECT p.id,json_agg(json_build_object('id',vrn.id,'name',p.name,'images',vrn.images)) as variants
         FROM public."Product" as p
         INNER JOIN
-            (SELECT DISTINCT v."A" as prod_id, v."B" as id,i.images 
+            (SELECT DISTINCT v."A" as product_id, v."B" as id,i.images 
             FROM public."_variants" as v
             INNER JOIN (${imagesJSON}) as i
             ON v."B" = i.product_id) as vrn
-        ON p.id = vrn.prod_id
+        ON p.id = vrn.product_id
         WHERE p.id = ${id}
         GROUP BY p.id
     `;

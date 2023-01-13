@@ -9,8 +9,14 @@ import prisma from "../../prisma";
 
 const companyResolvers = {
     Query: {
-        companies: (parent: any, args: unknown, { req }: { req: Request }) => {
-            return prisma.company.findMany({ include: { categories: true } });
+        companies: () => {
+            return prisma.$queryRaw`
+                SELECT com.*,COALESCE(json_agg(cat.*) FILTER (WHERE cat.id IS NOT NULL),'[]') as categories
+                FROM public."Company" as com
+                LEFT JOIN public."_CategoryToCompany" as catcom ON com.id = catcom."B"
+                LEFT JOIN public."Category" as cat ON catcom."A" = cat.id
+                GROUP BY com.id
+            `;
         },
     },
     Mutation: {

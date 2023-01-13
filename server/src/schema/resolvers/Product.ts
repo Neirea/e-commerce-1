@@ -19,9 +19,9 @@ import { imagesJSON, productsByOrderCount } from "./sql/Product";
 const productResolvers = {
     JSON: GraphQLJSON,
     Query: {
-        products: async () => {
+        products: () => {
             return prisma.$queryRaw<Product[]>`
-                SELECT p.*, 
+                SELECT p.*,
                     COALESCE(json_agg(json_build_object('id',v."B"))
                     FILTER (WHERE v."B" IS NOT NULL),'[]') as variants
                 FROM public."Product" as p
@@ -31,7 +31,7 @@ const productResolvers = {
             `;
         },
         product: productQuery,
-        productsById: async (parent: any, { ids }: { ids: Array<number> }) => {
+        productsById: (parent: any, { ids }: { ids: Array<number> }) => {
             if (!ids.length || !ids) return [];
 
             return prisma.$queryRaw`
@@ -44,7 +44,7 @@ const productResolvers = {
         },
         searchData: searchDataQuery,
         filteredProducts: filteredProductsQuery,
-        featuredProducts: async (
+        featuredProducts: (
             parent: any,
             { limit, offset }: { limit: number; offset: number }
         ) => {
@@ -67,7 +67,8 @@ const productResolvers = {
         ) => {
             //get products with same company(ordered first) and same category
             return prisma.$queryRaw`
-                SELECT po.*,pi.images FROM (${productsByOrderCount}) as po
+                SELECT po.*,pi.images
+                FROM (${productsByOrderCount}) as po
                 INNER JOIN (${imagesJSON}) as pi
                 ON po.id = pi.product_id
                 WHERE NOT po.id = ${input.id} AND (po.company_id = ${input.company_id} OR po.category_id = ${input.category_id})

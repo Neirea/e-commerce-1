@@ -1,4 +1,4 @@
-import { Role } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 import { AuthenticationError } from "apollo-server-express";
 import { Request } from "express";
 import { GraphQLScalarType, Kind } from "graphql";
@@ -42,9 +42,11 @@ const userResolvers = {
                     "You don't have permissions for this action"
                 );
             }
-            return prisma.user.findMany();
+            return prisma.$queryRaw`
+                SELECT * FROM public."User";
+            `;
         },
-        user: (
+        user: async (
             parent: any,
             { id }: { id: number },
             { req }: { req: Request }
@@ -54,7 +56,11 @@ const userResolvers = {
                     "You don't have permissions for this action"
                 );
             }
-            return prisma.user.findUnique({ where: { id: id } });
+            const user = await prisma.$queryRaw<[User]>`
+                SELECT * FROM public."User"
+                WHERE id = ${id}
+            `;
+            return user[0];
         },
         showMe: (parent: any, args: undefined, { req }: { req: Request }) => {
             if (!req.session.user) {

@@ -2,7 +2,7 @@ import prisma from "../../../prisma";
 import { productsByOrderCount } from "../sql/Product";
 import { getQueryString } from "./utils";
 
-export default async (parent: any, { input }: { input: string }) => {
+export default (parent: any, { input }: { input: string }) => {
     const searchString = getQueryString(input);
 
     return prisma.$queryRaw`

@@ -11,11 +11,13 @@ import prisma from "../../prisma";
 const categoryResolvers = {
     Query: {
         categories: () => {
-            return prisma.category.findMany({
-                include: {
-                    companies: true,
-                },
-            });
+            return prisma.$queryRaw`
+                SELECT cat.*,COALESCE(json_agg(com.*) FILTER (WHERE com.id IS NOT NULL),'[]') as companies
+                FROM public."Category" as cat
+                LEFT JOIN public."_CategoryToCompany" as catcom ON cat.id = catcom."A"
+                LEFT JOIN public."Company" as com ON catcom."B" = com.id
+                GROUP BY cat.id
+            `;
         },
     },
     Mutation: {
