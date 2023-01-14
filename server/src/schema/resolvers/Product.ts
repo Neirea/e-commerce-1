@@ -1,14 +1,9 @@
-import { Prisma, ProductImage, Role } from "@prisma/client";
-import { AuthenticationError, UserInputError } from "apollo-server-express";
+import { Prisma, Role } from "@prisma/client";
+import { AuthenticationError } from "apollo-server-express";
 import { v2 as cloudinary } from "cloudinary";
 import { Request } from "express";
 import GraphQLJSON from "graphql-type-json";
-import type {
-    CreateProductInput,
-    Product,
-    QueryRelatedInput,
-    UpdateProductInput,
-} from "../../generated/graphql";
+import type { Product, QueryRelatedInput } from "../../generated/graphql";
 import prisma from "../../prisma";
 import createProduct from "./queryFunctions/createProduct";
 import filteredProductsQuery from "./queryFunctions/filteredProductsQuery";
