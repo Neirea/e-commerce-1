@@ -26,9 +26,9 @@ export const imagesJSON = Prisma.sql`
 
 export const getSearchCondition = (searchString: string | undefined) =>
     searchString
-        ? Prisma.sql`(p.name @@ to_tsquery('english',${searchString})
-OR com.name @@ to_tsquery('english',${searchString})
-OR cat.name @@ to_tsquery('english',${searchString}))`
+        ? Prisma.sql`(to_tsvector('simple',p.name) @@ to_tsquery('simple',${searchString})
+OR to_tsvector('simple',com.name) @@ to_tsquery('simple',${searchString})
+OR to_tsvector('simple',cat.name) @@ to_tsquery('simple',${searchString}))`
         : Prisma.sql`TRUE`;
 
 export const getCompanyCondition = (id: number | null | undefined) =>

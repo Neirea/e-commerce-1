@@ -6,24 +6,24 @@ export default (parent: any, { input }: { input: string }) => {
     const searchString = getQueryString(input);
 
     return prisma.$queryRaw`
-            (SELECT c.id,c.name,'Category' as source
-            FROM public."Category" as c
-            WHERE to_tsvector(c.name) @@ to_tsquery('english',${searchString})
-            ORDER BY c.id
+            (SELECT cat.id,cat.name,'Category' as source
+            FROM public."Category" as cat
+            WHERE to_tsvector('simple',cat.name) @@ to_tsquery('simple',${searchString})
+            ORDER BY cat.id
             LIMIT 3)
         UNION ALL
-            (SELECT c.id,c.name,'Company' as source
-            FROM public."Company" as c
-            WHERE to_tsvector(c.name) @@ to_tsquery('english',${searchString})
-            ORDER BY c.id
+            (SELECT com.id,com.name,'Company' as source
+            FROM public."Company" as com
+            WHERE to_tsvector('simple',com.name) @@ to_tsquery('simple',${searchString})
+            ORDER BY com.id
             LIMIT 3)
         UNION ALL
-            (SELECT prod.id,prod.name,'Product' as source
-            FROM public."Product" as prod
+            (SELECT p.id,p.name,'Product' as source
+            FROM public."Product" as p
             INNER JOIN
                 (${productsByOrderCount}) as po
-            ON prod.id = po.id
-            WHERE prod.name @@ to_tsquery('english',${searchString})
+            ON p.id = po.id
+            WHERE to_tsvector('simple',p.name) @@ to_tsquery('simple',${searchString})
             ORDER BY po.inventory != 0 DESC, po._count DESC,po.id ASC)
         LIMIT ${10}
     `;
