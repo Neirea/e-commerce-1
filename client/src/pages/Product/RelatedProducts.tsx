@@ -1,13 +1,13 @@
 import { useQuery } from "@apollo/client";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import ProductsGrid from "../../components/ProductsGrid";
 import {
     GetRelatedProductsQuery,
     GetSingleProductQuery,
 } from "../../generated/graphql";
+import useInView from "../../hooks/useInView";
 import { QUERY_RELATED_PRODUCTS } from "../../queries/Product";
 import { FETCH_NUMBER } from "../../utils/numbers";
-import useInView from "../../hooks/useInView";
 
 const options = { root: null, rootMargin: "0px", treshold: 1.0 };
 

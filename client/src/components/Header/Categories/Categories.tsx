@@ -1,9 +1,9 @@
 import { useQuery } from "@apollo/client";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "react-bootstrap";
 import { GetAllCategoriesQuery } from "../../../generated/graphql";
-import { QUERY_ALL_CATEGORIES } from "../../../queries/Category";
 import { useOutsideClick } from "../../../hooks/useOutsideClick";
+import { QUERY_ALL_CATEGORIES } from "../../../queries/Category";
 import CategoriesContent from "./CategoriesContent";
 
 const Categories = () => {

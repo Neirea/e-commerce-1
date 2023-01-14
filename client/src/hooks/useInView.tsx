@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface IOptions {
     root: HTMLElement | null;
