@@ -4,8 +4,8 @@ on:
         branches:
             - main
         paths-ignore:
-            - 'client/**'
-            - 'README.md'
+            - "client/**"
+            - "README.md"
 defaults:
     run:
         working-directory: ./server
@@ -20,6 +20,7 @@ jobs:
                   node-version: 16
             - run: npm ci
             - run: npm i -g @railway/cli
-            - run: railway up
-            env:
-              RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+            - name: Deploy
+              run: railway up
+              env:
+                  RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
