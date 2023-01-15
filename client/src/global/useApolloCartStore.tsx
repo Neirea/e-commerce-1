@@ -30,7 +30,7 @@ export const getSyncedCart = (
                 );
                 return result;
             }
-            if (cartProduct.inventory === 0) {
+            if (cartProduct.inventory <= 0) {
                 errors.push(`${cartProduct.name} is out of stock.`);
                 return result;
             }
