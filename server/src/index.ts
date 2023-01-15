@@ -14,6 +14,7 @@ import { buildCheckFunction } from "express-validator";
 import helmet from "helmet";
 import Redis from "ioredis";
 import passport from "passport";
+import Stripe from "stripe";
 //user imports
 import errorHandlerMiddleware from "./middleware/error-handle";
 import notFound from "./middleware/not-found";
@@ -23,6 +24,10 @@ import paymentRouter from "./routers/payment";
 import { resolvers, typeDefs } from "./schema";
 
 export const app = express();
+
+export const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY!, {
+    apiVersion: "2022-11-15",
+});
 
 (async () => {
     cloudinary.config({
@@ -34,7 +39,13 @@ export const app = express();
     app.use(helmet());
     app.use(buildCheckFunction(["body", "query", "params"])());
     app.use(fileUpload({ useTempFiles: true }));
-    app.use(express.json());
+    app.use((req, res, next) => {
+        if (req.originalUrl == "/api/payment/webhook") {
+            next();
+        } else {
+            express.json()(req, res, next);
+        }
+    });
 
     //session store and middleware
     const RedisStore = connectRedis(session);

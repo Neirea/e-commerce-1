@@ -4,14 +4,17 @@ import {
     Prisma,
     PrismaPromise,
     Product,
+    ProductImage,
 } from "@prisma/client";
-import { Request, Router } from "express";
+import express, { Request, Router } from "express";
 import { StatusCodes } from "http-status-codes";
 import Stripe from "stripe";
 import CustomError from "../errors/custom-error";
 import { Status } from "../generated/graphql";
+import { stripe } from "../index";
 import addOrderToQueue from "../jobs/staleOrders";
 import prisma from "../prisma";
+import { imagesJSON } from "../schema/resolvers/sql/Product";
 
 interface CheckoutBody {
     items: {
@@ -30,9 +33,6 @@ interface CustomRequest<T> extends Request {
 }
 
 const router = Router();
-const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY!, {
-    apiVersion: "2022-11-15",
-});
 const clientUrl = process.env.CLIENT_URL!;
 
 //new order
@@ -40,8 +40,10 @@ router.post("/checkout", async (req: CustomRequest<CheckoutBody>, res) => {
     if (req.body.items.length === 0) {
         throw new CustomError("Your cart is empty", StatusCodes.BAD_REQUEST);
     }
-    const products = await prisma.$queryRaw<Product[]>`
-        SELECT p.* FROM public."Product" as p
+    type ProductsType = Array<Product & { images: ProductImage[] }>;
+    const products = await prisma.$queryRaw<ProductsType>`
+        SELECT p.*,i.* FROM public."Product" as p
+        INNER JOIN (${imagesJSON}) as i ON p.id = i.product_id
         WHERE id IN (${Prisma.join(req.body.items.map((item) => item.id))})
     `;
 
@@ -60,6 +62,7 @@ router.post("/checkout", async (req: CustomRequest<CheckoutBody>, res) => {
             id: product.id,
             name: product.name,
             amount: productAmount,
+            image: product.images[0].img_src,
             price: ((100 - product.discount) / 100) * product.price, // in dollars
         };
     });
@@ -93,6 +96,7 @@ router.post("/checkout", async (req: CustomRequest<CheckoutBody>, res) => {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             mode: "payment",
+            metadata: { orderId: order.id },
             customer_email: req.body.buyer.email,
             line_items: orderProducts.map((item) => {
                 return {
@@ -100,14 +104,15 @@ router.post("/checkout", async (req: CustomRequest<CheckoutBody>, res) => {
                         currency: "usd",
                         product_data: {
                             name: item.name,
+                            images: [item.image],
                         },
                         unit_amount: item.price * 100, // in cents
                     },
                     quantity: item.amount || 0,
                 };
             }),
-            success_url: `${process.env.SERVER_URL}/api/payment/done/${order.id}?success=true`,
-            cancel_url: `${process.env.SERVER_URL}/api/payment/done/${order.id}?success=false`,
+            success_url: `${clientUrl}/order_payment?order_id=${order.id}&success=true`,
+            cancel_url: `${clientUrl}/order_payment?order_id=${order.id}&success=false`,
         });
         res.json({ url: session.url });
     } catch (error: any) {
@@ -183,7 +188,7 @@ router.post("/checkout/:orderId", async (req, res) => {
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         mode: "payment",
-
+        metadata: { orderId: order.id },
         customer_email: order.buyer_email,
         line_items: orderProducts.map((item) => {
             return {
@@ -197,52 +202,66 @@ router.post("/checkout/:orderId", async (req, res) => {
                 quantity: item.amount || 0,
             };
         }),
-        success_url: `${process.env.SERVER_URL}/api/payment/done/${order.id}?success=true`,
-        cancel_url: `${process.env.SERVER_URL}/api/payment/done/${order.id}?success=false`,
+        success_url: `${clientUrl}/order_payment?order_id=${order.id}&success=true`,
+        cancel_url: `${clientUrl}/order_payment?order_id=${order.id}&success=false`,
     });
 
     res.json({ url: session.url });
 });
 
 //update DB after payment
-router.get("/done/:orderId", async (req, res) => {
-    const isSuccess = req.query.success === "true" ? true : false;
-    const orderId = +req.params.orderId;
-    if (isSuccess) {
-        //update status
-        const order = await prisma.order.update({
-            where: {
-                id: orderId,
-            },
-            data: {
-                status: OrderStatus.ACCEPTED,
-                payment_time: new Date(),
-            },
-            include: {
-                order_items: true,
-            },
-        });
-        // remove items from inventory
-        const productUpdates: PrismaPromise<unknown>[] = [];
-        order.order_items.forEach(async (o) => {
-            const update = prisma.$queryRaw`
-                UPDATE public."Product"
-                SET inventory = inventory - ${o.amount}
-                WHERE id = ${o.product_id}
-            `;
-            productUpdates.push(update);
-        });
+router.post(
+    "/webhook",
+    express.raw({ type: "application/json" }),
+    async (req, res) => {
+        const sig = req.headers["stripe-signature"]!;
+        const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
-        await Promise.all(productUpdates);
+        let event: Stripe.Event;
+        try {
+            event = stripe.webhooks.constructEvent(
+                req.body,
+                sig,
+                webhookSecret
+            );
 
-        res.redirect(
-            `${clientUrl}/order_payment?order_id=${orderId}&success=true`
-        );
-    } else {
-        res.redirect(
-            `${clientUrl}/order_payment?order_id=${orderId}&success=false`
-        );
+            if (event.type === "checkout.session.completed") {
+                const orderId = (event.data.object as Stripe.Charge).metadata
+                    .orderId;
+                //update status
+                const order = await prisma.order.update({
+                    where: {
+                        id: +orderId,
+                    },
+                    data: {
+                        status: OrderStatus.ACCEPTED,
+                        payment_time: new Date(),
+                    },
+                    include: {
+                        order_items: true,
+                    },
+                });
+                // remove items from inventory
+                const productUpdates: PrismaPromise<unknown>[] = [];
+                order.order_items.forEach(async (o) => {
+                    const update = prisma.$queryRaw`
+                        UPDATE public."Product"
+                        SET inventory = inventory - ${o.amount}
+                        WHERE id = ${o.product_id}
+                    `;
+                    productUpdates.push(update);
+                });
+                await Promise.all(productUpdates);
+            }
+        } catch (err) {
+            // On error, log and return the error message
+            console.log(`❌ Error message: ${(err as Error).message}`);
+            res.status(400).send(`Webhook Error: ${(err as Error).message}`);
+            return;
+        }
+        // Successfully constructed event
+        res.json({ received: "true" });
     }
-});
+);
 
 export default router;
