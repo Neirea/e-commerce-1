@@ -1,7 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { Alert, Button, Col, Container, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import Loading from "../../components/Loading";
 import { GetAllCategoriesQuery } from "../../generated/graphql";
 import { QUERY_ALL_CATEGORIES } from "../../queries/Category";
 import Featured from "./Featured";
@@ -84,9 +83,7 @@ const Home = () => {
                                 }
                             })
                         ) : (
-                            <div style={{ height: "18.5rem" }}>
-                                <Loading />
-                            </div>
+                            <div style={{ height: "18.5rem" }} />
                         )}
                     </Row>
                 </Container>

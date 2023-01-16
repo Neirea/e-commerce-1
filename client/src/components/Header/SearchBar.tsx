@@ -1,16 +1,19 @@
 import { useLazyQuery } from "@apollo/client";
 import { BsSearch } from "@react-icons/all-files/bs/BsSearch";
+import qs from "query-string";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { Button, Form, InputGroup } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { GetSearchResultsQuery } from "../../generated/graphql";
-import { QUERY_SEARCH_BAR } from "../../queries/Product";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
-import Loading from "../Loading";
+import { QUERY_SEARCH_BAR } from "../../queries/Product";
+import LoadingSpinner from "../LoadingSpinner";
 
 const SearchBar = () => {
-    const [searchText, setSearchText] = useState("");
+    const { search: searchParams } = useLocation();
+    const query = qs.parse(searchParams).v as string | null;
+    const [searchText, setSearchText] = useState(query || "");
     const debouncedText = useDebounce(searchText, 300);
     const [showResults, setShowResults] = useState(false);
     const navigate = useNavigate();
@@ -49,6 +52,7 @@ const SearchBar = () => {
                     <Form.Control
                         className="flex-grow-1"
                         placeholder="Search..."
+                        value={searchText}
                         onChange={handleSearchText}
                         aria-label="Search"
                         aria-describedby="btn-search"
@@ -70,7 +74,7 @@ const SearchBar = () => {
                 <div className="d-none d-sm-block position-absolute mt-3 border-bottom border-start border-end border-secondary rounded-bottom bg-white w-100">
                     {searchLoading && (
                         <div className="d-flex justify-content-start gap-2 p-2">
-                            <Loading size={1} />
+                            <LoadingSpinner />
                             <span>Loading ...</span>
                         </div>
                     )}

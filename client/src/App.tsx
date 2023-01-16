@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import "./bootstrap.theme.css";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
+import LoadingProgress from "./components/LoadingProgress";
 import RequireAuth from "./components/RequireAuth";
 import ScrollAndHash from "./components/ScrollAndHash";
 import { GetProductsByIdQuery, Role } from "./generated/graphql";
@@ -70,88 +71,75 @@ function App() {
     return (
         <>
             <Header />
-            {loading ? (
-                <Loading />
-            ) : (
-                <>
-                    <ScrollAndHash />
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/search" element={<SearchPage />} />
-                        <Route path="/help" element={<Help />} />
+            <LoadingProgress isLoading={loading} />
+            <>
+                <ScrollAndHash />
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/search" element={<SearchPage />} />
+                    <Route path="/help" element={<Help />} />
 
+                    <Route path="/product/:id" element={<ProductWrapper />} />
+                    <Route
+                        path="/checkout"
+                        element={
+                            <Suspense fallback={<Loading />}>
+                                <Checkout />
+                            </Suspense>
+                        }
+                    />
+                    <Route path="/order_payment" element={<OrderPayment />} />
+                    {/* editor routes */}
+                    <Route
+                        element={
+                            <RequireAuth
+                                allowedRoles={[Role.ADMIN, Role.EDITOR]}
+                            />
+                        }
+                    >
                         <Route
-                            path="/product/:id"
-                            element={<ProductWrapper />}
-                        />
-                        <Route
-                            path="/checkout"
+                            path="/editor"
                             element={
                                 <Suspense fallback={<Loading />}>
-                                    <Checkout />
+                                    <Editor />
+                                </Suspense>
+                            }
+                        />
+                    </Route>
+                    {/* user routes */}
+                    <Route
+                        element={
+                            <RequireAuth
+                                allowedRoles={[
+                                    Role.ADMIN,
+                                    Role.EDITOR,
+                                    Role.USER,
+                                ]}
+                            />
+                        }
+                    >
+                        <Route
+                            path="/profile"
+                            element={
+                                <Suspense fallback={<Loading />}>
+                                    <UserProfile user={user} />
                                 </Suspense>
                             }
                         />
                         <Route
-                            path="/order_payment"
-                            element={<OrderPayment />}
-                        />
-                        {/* editor routes */}
-                        <Route
+                            path="/orders"
                             element={
-                                <RequireAuth
-                                    allowedRoles={[Role.ADMIN, Role.EDITOR]}
-                                />
+                                <Suspense fallback={<Loading />}>
+                                    <Orders />
+                                </Suspense>
                             }
-                        >
-                            <Route
-                                path="/editor"
-                                element={
-                                    <Suspense fallback={<Loading />}>
-                                        <Editor />
-                                    </Suspense>
-                                }
-                            />
-                        </Route>
-                        {/* user routes */}
-                        <Route
-                            element={
-                                <RequireAuth
-                                    allowedRoles={[
-                                        Role.ADMIN,
-                                        Role.EDITOR,
-                                        Role.USER,
-                                    ]}
-                                />
-                            }
-                        >
-                            <Route
-                                path="/profile"
-                                element={
-                                    <Suspense fallback={<Loading />}>
-                                        <UserProfile user={user} />
-                                    </Suspense>
-                                }
-                            />
-                            <Route
-                                path="/orders"
-                                element={
-                                    <Suspense fallback={<Loading />}>
-                                        <Orders />
-                                    </Suspense>
-                                }
-                            />
-                        </Route>
-                        {/* error routes */}
-                        <Route
-                            path="/unauthorized"
-                            element={<Unauthorized />}
                         />
-                        <Route path="*" element={<Error />} />
-                    </Routes>
-                </>
-            )}
-
+                    </Route>
+                    {/* error routes */}
+                    <Route path="/unauthorized" element={<Unauthorized />} />
+                    <Route path="*" element={<Error />} />
+                </Routes>
+            </>
             <Footer />
         </>
     );

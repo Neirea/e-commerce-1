@@ -3,7 +3,6 @@ import { Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Product } from "../generated/graphql";
 import { toPriceNumber } from "../utils/numbers";
-import Loading from "./Loading";
 
 type ProductType = Pick<
     Product,
@@ -25,13 +24,6 @@ const ProductsGrid = ({
                 <Alert variant="danger">
                     Error: data was not fetched from the server
                 </Alert>
-            </div>
-        );
-    }
-    if (!products) {
-        return (
-            <div style={{ height: "18.5rem" }}>
-                <Loading />
             </div>
         );
     }
@@ -105,9 +97,7 @@ const ProductsGrid = ({
                     })}
             </div>
             {products && productLoading && (
-                <div style={{ height: "18.5rem" }}>
-                    <Loading />
-                </div>
+                <div style={{ height: "18.5rem" }} />
             )}
         </>
     );

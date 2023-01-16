@@ -3,16 +3,16 @@ import qs from "query-string";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import Loading from "../components/Loading";
+import LoadingProgress from "../components/LoadingProgress";
 import MultiRangeSlider from "../components/MultiRangeSlider";
 import ProductsGrid from "../components/ProductsGrid";
 import {
     GetFilteredProductsQuery,
     GetSearchDataQuery,
 } from "../generated/graphql";
+import useInView from "../hooks/useInView";
 import { QUERY_FILTERED_PRODUCTS, QUERY_SEARCH_DATA } from "../queries/Product";
 import sortByParentId from "../utils/sortByParents";
-import useInView from "../hooks/useInView";
 
 const FETCH_NUMBER = 12;
 type CategoryType = GetSearchDataQuery["searchData"]["categories"][number];
@@ -33,7 +33,7 @@ const SearchPage = () => {
     const maxParam = searchParams.max != null ? +searchParams.max : undefined;
 
     //general data about search results
-    const { data: searchData, loading: searchLoading } =
+    const { data: currenntSearchData, previousData: prevSearchData } =
         useQuery<GetSearchDataQuery>(QUERY_SEARCH_DATA, {
             variables: {
                 input: {
@@ -46,13 +46,9 @@ const SearchPage = () => {
             },
         });
 
-    const categoriesData = searchData?.searchData
-        ? sortByParentId<CategoryType>(searchData.searchData.categories)
-        : null;
-
     const {
-        data: productData,
-        previousData,
+        data: currentProductData,
+        previousData: prevProductData,
         loading: productLoading,
         error: productError,
         fetchMore,
@@ -73,7 +69,7 @@ const SearchPage = () => {
         onCompleted(data) {
             if (
                 data.filteredProducts.length % FETCH_NUMBER !== 0 ||
-                previousData?.filteredProducts.length ===
+                prevProductData?.filteredProducts.length ===
                     data.filteredProducts.length
             ) {
                 setHasMore(0);
@@ -82,6 +78,15 @@ const SearchPage = () => {
             setHasMore((prev) => prev + 1);
         },
     });
+
+    const searchData = currenntSearchData ?? prevSearchData;
+    const productData = currentProductData ?? prevProductData;
+    const isCurrentLoaded =
+        currenntSearchData && currentProductData ? false : true;
+
+    const categoriesData = searchData?.searchData
+        ? sortByParentId<CategoryType>(searchData.searchData.categories)
+        : null;
 
     useEffect(() => {
         if (sortRef.current) {
@@ -119,6 +124,7 @@ const SearchPage = () => {
 
     return (
         <Container as="main">
+            <LoadingProgress isLoading={isCurrentLoaded} />
             <h4 className="mb-3 mt-3">
                 {searchParams.v
                     ? `Results for «${searchParams.v}»`
@@ -214,9 +220,9 @@ const SearchPage = () => {
                             </div>
                         </>
                     )}
-                    {!!searchData?.searchData && !searchLoading && (
+                    {!!searchData?.searchData && (
                         <MultiRangeSlider
-                            key={search}
+                            key={`${searchData.searchData.min}-${searchData.searchData.max}`}
                             max={searchData.searchData.max}
                             min={searchData.searchData.min}
                         />
@@ -238,11 +244,6 @@ const SearchPage = () => {
                             />
                             <div ref={containerRef} />
                         </>
-                    )}
-                    {searchLoading && !productData?.filteredProducts && (
-                        <div className="mt-5">
-                            <Loading />
-                        </div>
                     )}
                 </Col>
             </Row>

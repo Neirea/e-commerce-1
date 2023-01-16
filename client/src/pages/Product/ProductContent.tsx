@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
 import Cart from "../../components/Header/Cart/CartContent";
+import LoadingProgress from "../../components/LoadingProgress";
 import { GetSingleProductQuery } from "../../generated/graphql";
 import { GET_SINGLE_PRODUCT } from "../../queries/Product";
 import AddProductForm from "./AddProductForm";
@@ -39,6 +40,7 @@ const ProductContent = () => {
 
     return (
         <Container as="main">
+            <LoadingProgress isLoading={loading} />
             <Row className="mt-5 mb-5">
                 {!data?.product || loading ? (
                     <div style={{ height: "36.5rem" }} />

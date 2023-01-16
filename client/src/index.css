@@ -4,7 +4,6 @@
     flex-direction: column;
     --thumb-size: 24px;
     --green: #7da740;
-    --loading-scale: 4;
 }
 main {
     flex: 1;
@@ -153,17 +152,17 @@ td {
 .lds-ring {
     display: inline-block;
     position: relative;
-    width: calc(var(--loading-scale) * 20px);
-    height: calc(var(--loading-scale) * 20px);
+    width: 20px;
+    height: 20px;
 }
 .lds-ring div {
     box-sizing: border-box;
     display: block;
     position: absolute;
-    width: calc(var(--loading-scale) * 16px);
-    height: calc(var(--loading-scale) * 16px);
-    margin: calc(var(--loading-scale) * 2px);
-    border: calc(var(--loading-scale) * 2px) solid #fff;
+    width: 16px;
+    height: 16px;
+    margin: 2px;
+    border: 2px solid #fff;
     border-radius: 50%;
     animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
     border-color: var(--green) transparent transparent transparent;

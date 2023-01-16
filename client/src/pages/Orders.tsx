@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useState } from "react";
 import { Button, Container, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import Loading from "../components/Loading";
+import LoadingProgress from "../components/LoadingProgress";
 import {
     CancelOrderMutation,
     CancelOrderMutationVariables,
@@ -88,11 +88,7 @@ const Orders = () => {
     return (
         <Container as="main" className="pt-3">
             <h2 className="text-center">Your Orders:</h2>
-            {loading && (
-                <div className="mt-5">
-                    <Loading />
-                </div>
-            )}
+            <LoadingProgress isLoading={loading} />
             {!!sortedOrders?.length && (
                 <Table>
                     <thead>
