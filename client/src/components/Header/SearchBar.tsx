@@ -11,27 +11,27 @@ import { QUERY_SEARCH_BAR } from "../../queries/Product";
 import LoadingSpinner from "../LoadingSpinner";
 
 const SearchBar = () => {
-    const { search: searchParams } = useLocation();
-    const query = qs.parse(searchParams).v as string | null;
+    const { search } = useLocation();
+    const query = qs.parse(search).v as string | null;
     const [searchText, setSearchText] = useState(query || "");
     const debouncedText = useDebounce(searchText, 300);
     const [showResults, setShowResults] = useState(false);
     const navigate = useNavigate();
     const [getSearchResults, { data, loading, previousData }] =
-        useLazyQuery<GetSearchResultsQuery>(QUERY_SEARCH_BAR, {
-            variables: { input: searchText },
-        });
+        useLazyQuery<GetSearchResultsQuery>(QUERY_SEARCH_BAR);
     const searchBarRef = useRef<HTMLInputElement>(null);
 
     const searchData = data ?? previousData;
-    const searchLoading = loading || searchText !== debouncedText;
+    const searchLoading =
+        searchText && (loading || searchText !== debouncedText);
 
-    const showSearchData = searchData && searchData.searchBarQuery.length > 0;
+    const showSearchData =
+        searchText && searchData && searchData.searchBarQuery.length > 0;
 
     useOutsideClick([searchBarRef], () => setShowResults(false));
 
     useEffect(() => {
-        if (debouncedText.length && debouncedText === searchText) {
+        if (debouncedText && debouncedText === searchText) {
             getSearchResults({ variables: { input: debouncedText } });
         }
     }, [debouncedText]);
@@ -40,16 +40,17 @@ const SearchBar = () => {
         setShowResults(true);
         setSearchText(e.target.value);
     };
-    const search = (e: FormEvent) => {
+    const handleSearch = (e: FormEvent) => {
         e.preventDefault();
         if (!searchText) return;
         navigate(`/search?v=${searchText}`);
     };
     return (
         <section style={{ position: "relative", width: "40rem" }}>
-            <Form onSubmit={search}>
+            <Form onSubmit={handleSearch}>
                 <InputGroup>
                     <Form.Control
+                        type="search"
                         className="flex-grow-1"
                         placeholder="Search..."
                         value={searchText}
