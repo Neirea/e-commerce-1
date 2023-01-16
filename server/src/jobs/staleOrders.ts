@@ -6,19 +6,18 @@ const queue: Bull.Queue<{ id: number }> = new Bull(
     process.env.REDIS_URL!
 );
 
+queue.process(async (job) => {
+    await prisma.$queryRaw`
+        DELETE FROM public."Order"
+        WHERE id = ${job.data.id} AND "status" = 'PENDING'
+    `;
+});
+
 function addOrderToQueue(orderId: number) {
-    const jobId = `order-${orderId}`;
-    queue.process(jobId, async (job) => {
-        await prisma.$queryRaw`
-            DELETE FROM public."Order"
-            WHERE id = ${job.data.id} AND "status" = 'PENDING'
-        `;
-    });
     queue.add(
-        jobId,
         { id: orderId },
         {
-            delay: 24 * 60 * 60 * 1000, //1day
+            delay: 24 * 60 * 60 * 1000, //24 hours
             removeOnComplete: true,
             attempts: 3, // If job fails it will retry 3 timess
             backoff: {
