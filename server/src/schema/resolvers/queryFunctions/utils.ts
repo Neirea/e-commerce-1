@@ -3,14 +3,15 @@ export const getQueryString = (input: string | null | undefined) => {
         ? input
               .replace(/[\!\:\*\<\(\)\@\&\|]/g, "")
               .split(",")
-              .map((s) => s.trim())
-              .filter((s) => s.length > 0)
+              .reduce<string[]>((filtered, s) => {
+                  const trimmed = s.trim();
+                  if (trimmed.length > 0) {
+                      filtered.push(trimmed + ":*");
+                  }
+                  return filtered;
+              }, [])
               .join("|")
-              .split(" ")
-              .map((s) => s.trim())
-              .filter((s) => s.length > 0)
-              .map((s) => s + ":*")
-              .join("&")
+              .replace(/( )+/g, ":*&")
         : undefined;
 
     return resultStr;
