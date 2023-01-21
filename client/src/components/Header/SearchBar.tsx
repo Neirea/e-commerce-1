@@ -82,10 +82,16 @@ const SearchBar = () => {
                     {showSearchData && (
                         <>
                             {searchData.searchBarQuery.map((item) => {
+                                const link =
+                                    item.source === "Category"
+                                        ? `/search?c=${item.id}`
+                                        : item.source === "Company"
+                                        ? `/search?b=${item.id}`
+                                        : `/product/${item.id}`;
                                 return (
                                     <Link
                                         key={`${item.source}-${item.id}`}
-                                        to={`/search?c=${item.id}`}
+                                        to={link}
                                         className="text-decoration-none text-dark search-link"
                                     >
                                         {item.name}
