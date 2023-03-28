@@ -1,5 +1,5 @@
 import { ProductImage } from "@prisma/client";
-import { AuthenticationError, UserInputError } from "apollo-server-express";
+import { AuthenticationError, UserInputError } from "../../errors";
 import { v2 as cloudinary } from "cloudinary";
 import { Request } from "express";
 import { Role, UpdateProductInput } from "../../../generated/graphql";

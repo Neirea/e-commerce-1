@@ -1,5 +1,5 @@
 import { Prisma, Role } from "@prisma/client";
-import { AuthenticationError } from "apollo-server-express";
+import { AuthenticationError } from "../errors";
 import { v2 as cloudinary } from "cloudinary";
 import { Request } from "express";
 import GraphQLJSON from "graphql-type-json";

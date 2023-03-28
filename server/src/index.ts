@@ -2,12 +2,14 @@
 import "dotenv/config";
 import "express-async-errors";
 //packages
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
-import { ApolloServer } from "apollo-server-express";
+import { Prisma } from "@prisma/client";
+import { ApolloServer } from "@apollo/server";
+import { expressMiddleware } from "@apollo/server/express4";
+import { unwrapResolverError } from "@apollo/server/errors";
 import { v2 as cloudinary } from "cloudinary";
 import connectRedis from "connect-redis";
 import cors from "cors";
-import express from "express";
+import express, { Request, Response } from "express";
 import fileUpload from "express-fileupload";
 import session from "express-session";
 import { buildCheckFunction } from "express-validator";
@@ -22,6 +24,7 @@ import authRouter from "./routers/auth";
 import editorRouter from "./routers/editor";
 import paymentRouter from "./routers/payment";
 import { resolvers, typeDefs } from "./schema";
+import { Session } from "inspector";
 
 export const app = express();
 
@@ -50,11 +53,14 @@ export const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY!, {
     //session store and middleware
     const RedisStore = connectRedis(session);
     const redisClient = new Redis(process.env.REDIS_URL!);
+    const redisStore = new RedisStore({
+        client: redisClient,
+    });
 
     app.use(
         session({
             name: "sid",
-            store: new RedisStore({ client: redisClient }),
+            store: redisStore,
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET!,
             resave: false,
@@ -68,19 +74,13 @@ export const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY!, {
         })
     );
 
-    const corsOptions = {
-        origin: [process.env.CLIENT_URL!],
-        credentials: true,
-    };
-    app.use(cors(corsOptions));
-    const server = new ApolloServer({
-        csrfPrevention: true,
-        cache: "bounded",
+    interface GQLContext {
+        req: Request;
+        res: Response;
+    }
+    const server = new ApolloServer<GQLContext>({
         typeDefs,
         resolvers,
-        context: ({ req, res }) => {
-            return { req, res };
-        },
         plugins: [
             {
                 async requestDidStart(initialRequestContext) {
@@ -105,23 +105,36 @@ export const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY!, {
                 },
             },
         ],
-        formatError: (err) => {
-            console.log("Log error:", err);
+        formatError: (formattedError, err) => {
+            console.log("Log error:", formattedError);
 
             // Don't show DB Errors to user
-            if (err.originalError instanceof PrismaClientKnownRequestError) {
-                return new Error("Internal server error");
+            if (
+                unwrapResolverError(err) instanceof
+                Prisma.PrismaClientKnownRequestError
+            ) {
+                return { ...formattedError, message: "Database Error" };
             }
-            return err;
+            return formattedError;
         },
     });
     await server.start();
 
+    const corsOptions = {
+        origin: [process.env.CLIENT_URL!],
+        credentials: true,
+    };
+    //graphql cors middleware
+    app.use(
+        "/graphql",
+        cors(corsOptions),
+        expressMiddleware(server, {
+            context: async ({ req, res }) => ({ req, res }),
+        })
+    );
+    app.use(cors(corsOptions));
     //init passport
     app.use(passport.initialize());
-
-    //graphql cors middleware
-    server.applyMiddleware({ app, cors: corsOptions });
 
     //REST API Routes
     app.use("/api/auth", authRouter);

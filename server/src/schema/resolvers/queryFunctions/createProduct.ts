@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { AuthenticationError, UserInputError } from "apollo-server-express";
+import { AuthenticationError, UserInputError } from "../../errors";
 import { CreateProductInput, Role } from "../../../generated/graphql";
 import prisma from "../../../prisma";
 

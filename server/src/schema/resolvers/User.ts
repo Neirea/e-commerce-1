@@ -1,5 +1,5 @@
 import { Role, User } from "@prisma/client";
-import { AuthenticationError, UserInputError } from "apollo-server-express";
+import { AuthenticationError, UserInputError } from "../errors";
 import { Request } from "express";
 import { GraphQLScalarType, Kind } from "graphql";
 import { StatusCodes } from "http-status-codes";

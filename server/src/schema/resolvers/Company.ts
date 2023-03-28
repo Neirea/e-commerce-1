@@ -1,5 +1,5 @@
 import { Role } from "@prisma/client";
-import { AuthenticationError, UserInputError } from "apollo-server-express";
+import { AuthenticationError, UserInputError } from "../errors";
 import { Request } from "express";
 import {
     CreateCompanyInput,

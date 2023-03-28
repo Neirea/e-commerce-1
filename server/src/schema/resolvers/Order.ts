@@ -1,4 +1,4 @@
-import { AuthenticationError } from "apollo-server-express";
+import { AuthenticationError } from "../errors";
 import { Request } from "express";
 import prisma from "../../prisma";
 
