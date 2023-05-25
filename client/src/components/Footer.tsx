@@ -47,7 +47,7 @@ const Footer = () => {
                             </div>
                             <div>
                                 <a
-                                    href="https://www.linkedin.com/in/yevhenii-shumilin-2ab431188/"
+                                    href="https://www.linkedin.com/in/eugene-shumilin/"
                                     aria-label="Linkedin"
                                 >
                                     <FaLinkedin size={24} />
