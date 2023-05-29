@@ -1,5 +1,6 @@
 import Bull from "bull";
 import prisma from "../prisma";
+import logger from "../logger";
 
 const queue: Bull.Queue<{ id: number }> = new Bull(
     "stale_order",
@@ -29,7 +30,7 @@ function addOrderToQueue(orderId: number) {
 }
 
 queue.on("failed", (job, err) => {
-    console.log("Error at job.id:", job.id, err);
+    logger.error("Job " + job.id + " error:", err.message);
 });
 
 export default addOrderToQueue;

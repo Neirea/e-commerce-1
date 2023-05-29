@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import logger from "../logger";
 
 const errorHandlerMiddleware = (
     err: any,
@@ -13,7 +14,7 @@ const errorHandlerMiddleware = (
         message: err.message || "Something went wrong try again later",
     };
 
-    console.log(customError.message);
+    logger.error(customError.message);
 
     return res
         .status(customError.statusCode)

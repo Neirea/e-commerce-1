@@ -15,6 +15,7 @@ import { stripe } from "../index";
 import addOrderToQueue from "../jobs/staleOrders";
 import prisma from "../prisma";
 import { imagesJSON } from "../schema/resolvers/sql/Product";
+import logger from "../logger";
 
 interface CheckoutBody {
     items: {
@@ -255,7 +256,7 @@ router.post(
             }
         } catch (err) {
             // On error, log and return the error message
-            console.log(`❌ Error message: ${(err as Error).message}`);
+            logger.error(`Payment webhook error: ${(err as Error).message}`);
             res.status(400).send(`Webhook Error: ${(err as Error).message}`);
             return;
         }

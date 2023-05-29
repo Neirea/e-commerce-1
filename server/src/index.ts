@@ -25,6 +25,7 @@ import editorRouter from "./routers/editor";
 import paymentRouter from "./routers/payment";
 import { resolvers, typeDefs } from "./schema";
 import { Session } from "inspector";
+import logger from "./logger";
 
 export const app = express();
 
@@ -106,7 +107,7 @@ export const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY!, {
             },
         ],
         formatError: (formattedError, err) => {
-            console.log("Log error:", formattedError);
+            logger.error(formattedError);
 
             // Don't show DB Errors to user
             if (
@@ -151,6 +152,6 @@ export const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY!, {
     const port = process.env.PORT || 5000;
 
     app.listen(port, () => {
-        console.log(`Server is running on port ${port}...`);
+        logger.info(`Server is running on port ${port}...`);
     });
 })();
