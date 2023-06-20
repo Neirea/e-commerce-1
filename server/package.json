@@ -30,7 +30,7 @@
         "typescript": "^5.0.2"
     },
     "dependencies": {
-        "@apollo/server": "^4.5.0",
+        "@apollo/server": "^4.7.4",
         "@prisma/client": "^4.12.0",
         "@types/connect-redis": "^0.0.20",
         "bull": "^4.10.4",
