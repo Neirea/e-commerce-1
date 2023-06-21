@@ -3,9 +3,8 @@ on:
     push:
         branches:
             - main
-        paths-ignore:
-            - "client/**"
-            - "README.md"
+        paths:
+            - "server/**"
 defaults:
     run:
         working-directory: ./server
