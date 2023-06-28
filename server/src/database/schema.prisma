@@ -1,0 +1,132 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  given_name  String
+  family_name String
+  email       String?
+  platform_id String   @unique
+  platform    Platform
+  address     String?
+  phone       String?
+  role        Role[]
+  created_at  DateTime @default(now())
+  avatar      String
+  orders      Order[]
+}
+
+// add payment info for users accounts -> any
+
+model Product {
+  id               Int               @id @default(autoincrement())
+  name             String
+  price            Float             @default(0)
+  description      Json
+  inventory        Int
+  company_id       Int
+  category_id      Int
+  shipping_cost    Float             @default(0)
+  discount         Int               @default(0)
+  created_at       DateTime          @default(now())
+  updated_at       DateTime          @default(now())
+  variants         Product[]         @relation("variants")
+  variantsRelation Product[]         @relation("variants")
+  company          Company           @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  category         Category          @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  orders           SingleOrderItem[]
+  images           ProductImage[]
+
+  @@index([inventory], type: BTree)
+  @@index([price], type: BTree)
+  @@index([discount], type: BTree)
+  @@index([company_id], type: Hash)
+  @@index([category_id], type: Hash)
+}
+
+model ProductImage {
+  img_id     String  @id
+  img_src    String
+  product_id Int
+  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
+  @@index([product_id], type: Hash)
+}
+
+model Company {
+  id         Int        @id @default(autoincrement())
+  name       String     @unique
+  products   Product[]
+  categories Category[]
+}
+
+model Category {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  img_id    String?
+  img_src   String?
+  parent_id Int?
+  parent    Category?  @relation("subCategory", fields: [parent_id], references: [id])
+  children  Category[] @relation("subCategory")
+  companies Company[]
+  products  Product[]
+
+  @@index([parent_id], type: Hash)
+}
+
+model Order {
+  id               Int               @id @default(autoincrement())
+  status           OrderStatus       @default(PENDING)
+  order_items      SingleOrderItem[]
+  shipping_cost    Float             @default(0)
+  user             User?             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id          Int?
+  buyer_name       String
+  buyer_email      String
+  buyer_phone      String?
+  delivery_address String
+  created_at       DateTime          @default(now())
+  payment_time     DateTime?
+
+  @@index([user_id], type: Hash)
+  @@index([status], type: BTree)
+}
+
+model SingleOrderItem {
+  id         Int     @id @default(autoincrement())
+  order      Order   @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  order_id   Int
+  amount     Int
+  price      Float
+  product    Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id Int
+
+  @@index([order_id], type: Hash)
+  @@index([product_id], type: Hash)
+}
+
+enum OrderStatus {
+  PENDING
+  ACCEPTED
+  PROCESSING
+  DELIVERED
+  CANCELLED
+}
+
+enum Platform {
+  GOOGLE
+  FACEBOOK
+}
+
+enum Role {
+  USER
+  ADMIN
+  EDITOR
+}
