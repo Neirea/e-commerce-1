@@ -5,7 +5,7 @@ import {
     getSearchCondition,
     imagesJSON,
     productsByOrderCount,
-} from "./queries/utils";
+} from "./utils/sql";
 import { ProductsByIdsDto } from "./dto/products-by-ids.dto";
 import { parseQueryString } from "src/common/parse-querystring";
 import { SearchDataDto } from "./dto/search-data.dto";
@@ -200,4 +200,14 @@ export const updateProductCategoryQuery = (
     INSERT INTO public."_CategoryToCompany" ("A","B")
     VALUES (${input.category_id},${input.company_id})
     ON CONFLICT DO NOTHING
+`;
+
+export const getOldImagesQuery = (id: number) => Prisma.sql`
+    SELECT * FROM public."ProductImage"
+    WHERE product_id = ${id}
+`;
+
+export const deleteOldImagesQuery = (id: number) => Prisma.sql`
+    DELETE FROM public."ProductImage"
+    WHERE product_id = ${id}
 `;
