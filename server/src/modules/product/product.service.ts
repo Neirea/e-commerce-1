@@ -42,13 +42,14 @@ export class ProductService {
     }
     getProductsByIds(ids: ProductId[]) {
         if (!ids.length || !ids) return [];
-        return this.prisma.$queryRaw`${getProductsByIdsQuery(ids)}`;
+        return this.prisma.$queryRaw(getProductsByIdsQuery(ids));
     }
     async getSearchData(input: SearchDataDto) {
         const searchCategoryIds: ProductId[] = [];
         if (input.category_id) {
-            const res = await this.prisma.$queryRaw<{ id: ProductId }[]>`
-                ${subCategoriesQuery(input.category_id)}`;
+            const res = await this.prisma.$queryRaw<{ id: ProductId }[]>(
+                subCategoriesQuery(input.category_id),
+            );
             res.forEach((i) => searchCategoryIds.push(i.id));
         }
 
@@ -139,25 +140,23 @@ export class ProductService {
             res.forEach((i) => searchCategoryIds.push(i.id));
         }
 
-        return this.prisma.$queryRaw`${filteredProductsQuery(
-            input,
-            searchCategoryIds,
-        )}
-        `;
+        return this.prisma.$queryRaw(
+            filteredProductsQuery(input, searchCategoryIds),
+        );
     }
 
     getFeaturedProducts(input: FeaturedProductsDto) {
-        return this.prisma.$queryRaw`${featuredProductsQuery(input)}`;
+        return this.prisma.$queryRaw(featuredProductsQuery(input));
     }
     getRelatedProducts(input: RelatedProductsDto) {
         //get products with same company(ordered first) and same category
-        return this.prisma.$queryRaw`${relatedProductsQuery(input)}`;
+        return this.prisma.$queryRaw(relatedProductsQuery(input));
     }
     getPopularProducts(input: PopularProductsDto) {
-        return this.prisma.$queryRaw`${popularProductsQuery(input)}`;
+        return this.prisma.$queryRaw(popularProductsQuery(input));
     }
     getSearchBarData(input: string) {
-        return this.prisma.$queryRaw`${searchBarDataQuery(input)}`;
+        return this.prisma.$queryRaw(searchBarDataQuery(input));
     }
 
     async createProduct(input: CreateProductDto) {
@@ -193,8 +192,9 @@ export class ProductService {
             },
         });
         //create connection between company and category
-        const updateCategory = this.prisma
-            .$queryRaw`${updateProductCategoryQuery(input)}`;
+        const updateCategory = this.prisma.$queryRaw(
+            updateProductCategoryQuery(input),
+        );
 
         await Promise.all([createProduct, updateCategory]);
         return true;
@@ -232,15 +232,16 @@ export class ProductService {
         });
 
         //update relation between company and category
-        const categoryUpdate = this.prisma
-            .$queryRaw`${updateProductCategoryQuery(input)}`;
+        const categoryUpdate = this.prisma.$queryRaw(
+            updateProductCategoryQuery(input),
+        );
 
         //delete old images
         if (img_id.length) {
             const oldImages = await this.prisma.$queryRaw<
                 ProductImage[]
             >`${getOldImagesQuery(id)}`;
-            this.prisma.$queryRaw`${deleteOldImagesQuery(id)}`;
+            this.prisma.$queryRaw(deleteOldImagesQuery(id));
             cloudinary.api.delete_resources(oldImages.map((i) => i.img_id));
         }
 

@@ -40,14 +40,14 @@ export class OrderService {
         // }
 
         const sessionUserId = req.session.passport.user.id;
-        return this.prisma.$queryRaw`${getOrdersQuery(sessionUserId)}`;
+        return this.prisma.$queryRaw(getOrdersQuery(sessionUserId));
     }
     async cancelOrder(id: OrderId) {
-        await this.prisma.$queryRaw`${cancelOrderQuery(id)}`;
+        await this.prisma.$queryRaw(cancelOrderQuery(id));
         return true;
     }
     async deleteOrder(id: OrderId) {
-        await this.prisma.$queryRaw`${deleteOrderQuery(id)}`;
+        await this.prisma.$queryRaw(deleteOrderQuery(id));
         return true;
     }
 }

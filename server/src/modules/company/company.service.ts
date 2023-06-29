@@ -15,7 +15,7 @@ export class CompanyService {
     constructor(private prisma: PrismaService) {}
 
     getCompanies() {
-        return this.prisma.$queryRaw`${getCompaniesQuery}`;
+        return this.prisma.$queryRaw(getCompaniesQuery);
     }
 
     async createCompany(input: CreateCompanyDto) {
@@ -24,7 +24,7 @@ export class CompanyService {
         //         "You don't have permissions for this action"
         //     );
         // }
-        await this.prisma.$queryRaw`${createCompanyQuery(input)}`;
+        await this.prisma.$queryRaw(createCompanyQuery(input));
 
         return true;
     }
@@ -35,7 +35,7 @@ export class CompanyService {
         //         "You don't have permissions for this action"
         //     );
         // }
-        await this.prisma.$queryRaw`${updateCompanyQuery(id, input)}`;
+        await this.prisma.$queryRaw(updateCompanyQuery(id, input));
         return true;
     }
     async deleteCompany(id: CompanyId) {
@@ -44,7 +44,7 @@ export class CompanyService {
         //         "You don't have permissions for this action"
         //     );
         // }
-        await this.prisma.$queryRaw`${deleteCompanyQuery(id)}`;
+        await this.prisma.$queryRaw(deleteCompanyQuery(id));
         return true;
     }
 }

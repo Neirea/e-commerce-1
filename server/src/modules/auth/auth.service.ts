@@ -17,9 +17,9 @@ export class AuthService {
         profile: GoogleProfile | FacebookProfile,
         platform: Platform,
     ): Promise<User> {
-        const userResult = await this.prisma.$queryRaw<
-            [User]
-        >`${userByPlatformIdQuery(profile.id)}`;
+        const userResult = await this.prisma.$queryRaw<[User]>(
+            userByPlatformIdQuery(profile.id),
+        );
         let user = userResult[0];
 
         if (!user) {
@@ -32,7 +32,7 @@ export class AuthService {
         platform: Platform,
     ) {
         const { id, name, photos, emails, displayName } = profile;
-        const userCountResult = await this.prisma.$queryRaw`${userCountQuery}`;
+        const userCountResult = await this.prisma.$queryRaw(userCountQuery);
         const userCount = userCountResult[0].count;
         const isFirstAccount = userCount === 0;
 

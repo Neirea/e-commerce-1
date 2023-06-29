@@ -18,7 +18,7 @@ export class CategoryService {
     constructor(private prisma: PrismaService) {}
 
     getCategories() {
-        return this.prisma.$queryRaw`${categoriesQuery}`;
+        return this.prisma.$queryRaw(categoriesQuery);
     }
 
     async createCategory(input: createCategoryDto) {
@@ -28,7 +28,7 @@ export class CategoryService {
         //         "You don't have permissions for this action"
         //     );
         // }
-        await this.prisma.$queryRaw`${createCategoryQuery(input)}`;
+        await this.prisma.$queryRaw(createCategoryQuery(input));
         return true;
     }
 
@@ -46,7 +46,7 @@ export class CategoryService {
             [Category]
         >`${categoryByIdQuery(id)}`;
 
-        await this.prisma.$queryRaw`${updateCategoryQuery(id, input)}`;
+        await this.prisma.$queryRaw(updateCategoryQuery(id, input));
         if (oldCategory[0].img_id && input.img_id) {
             cloudinary.uploader.destroy(oldCategory[0].img_id);
         }
@@ -58,9 +58,9 @@ export class CategoryService {
         //         "You don't have permissions for this action"
         //     );
         // }
-        const data = await this.prisma.$queryRaw<
-            [Category]
-        >`${deleteCategoryQuery(id)}`;
+        const data = await this.prisma.$queryRaw<[Category]>(
+            deleteCategoryQuery(id),
+        );
         if (data[0].img_id) {
             cloudinary.uploader.destroy(data[0].img_id);
         }

@@ -13,6 +13,11 @@ export class UserController {
         return this.userService.getUsers();
     }
 
+    @Get("me")
+    showMe(@Req() req: Request) {
+        return this.userService.showMe(req);
+    }
+
     @Get(":id")
     getUserById(@Param("id") id: UserId) {
         return this.userService.getUser(id);
