@@ -160,12 +160,6 @@ export class ProductService {
     }
 
     async createProduct(input: CreateProductDto) {
-        //any
-        // if (!req.session.user?.role.includes(Role.EDITOR)) {
-        //     throw new AuthenticationError(
-        //         "You don't have permissions for this action"
-        //     );
-        // }
         const { variants, img_id, img_src, ...createData } = input;
 
         //create product, create product images and connection to variants
@@ -201,11 +195,6 @@ export class ProductService {
     }
     async updateProduct(id: ProductId, input: UpdateProductDto) {
         const { variants, img_id, img_src, ...updateData } = input;
-        // if (!req.session.user?.role.includes(Role.EDITOR)) {
-        //     throw new AuthenticationError(
-        //         "You don't have permissions for this action",
-        //     );
-        // }
 
         //update product, create product images and connection to variants
         const newVariants = variants?.map((p_id) => {
@@ -251,11 +240,6 @@ export class ProductService {
         return true;
     }
     async deleteproduct(id: ProductId) {
-        // if (!req.session.user?.role.includes(Role.EDITOR)) {
-        //     throw new AuthenticationError(
-        //         "You don't have permissions for this action"
-        //     );
-        // }
         const data = await this.prisma.product.delete({
             where: { id: id },
             include: { images: true },

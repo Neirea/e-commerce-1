@@ -37,12 +37,13 @@ export class UserService {
     }
 
     async updateUser(req: Request, input: UpdateUserDto) {
+        const user = req.session.passport.user;
         const data = await this.prisma.$queryRaw<[User]>(
-            updateUserQuery(input),
+            updateUserQuery(user.id, input),
         );
 
         // change session data if self update
-        if (input.id === req.session.passport.user.id && data[0]) {
+        if (data[0]) {
             req.session.passport.user = data[0];
             return true;
         }

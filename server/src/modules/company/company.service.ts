@@ -19,31 +19,15 @@ export class CompanyService {
     }
 
     async createCompany(input: CreateCompanyDto) {
-        // if (!req.session.user?.role.includes(Role.ADMIN)) {
-        //     throw new AuthenticationError(
-        //         "You don't have permissions for this action"
-        //     );
-        // }
         await this.prisma.$queryRaw(createCompanyQuery(input));
-
         return true;
     }
 
     async updateCompany(id: CompanyId, input: UpdateCompanyDto) {
-        // if (!req.session.user?.role.includes(Role.ADMIN)) {
-        //     throw new AuthenticationError(
-        //         "You don't have permissions for this action"
-        //     );
-        // }
         await this.prisma.$queryRaw(updateCompanyQuery(id, input));
         return true;
     }
     async deleteCompany(id: CompanyId) {
-        // if (!req.session.user?.role.includes(Role.ADMIN)) {
-        //     throw new AuthenticationError(
-        //         "You don't have permissions for this action"
-        //     );
-        // }
         await this.prisma.$queryRaw(deleteCompanyQuery(id));
         return true;
     }

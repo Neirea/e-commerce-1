@@ -7,6 +7,7 @@ import {
     Patch,
     Post,
     Query,
+    UseGuards,
 } from "@nestjs/common";
 import { ProductService } from "./product.service";
 import { SearchDataDto } from "./dto/search-data.dto";
@@ -18,6 +19,9 @@ import { CreateProductDto } from "./dto/create-propduct.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import { ProductId } from "./product.types";
 import { parseArrayQuery } from "src/pipes/parseArrayQuery";
+import { Roles } from "src/common/roles/roles.decorator";
+import { Role } from "@prisma/client";
+import { RolesGuard } from "src/common/roles/roles.guard";
 
 @Controller("product")
 export class ProductController {
@@ -66,22 +70,28 @@ export class ProductController {
         return this.productService.getSearchBarData(query);
     }
 
-    @Post()
-    createProduct(@Body() body: CreateProductDto) {
-        return this.productService.createProduct(body);
-    }
-
     @Get(":id")
     getProductById(@Param("id") id: ProductId) {
         return this.productService.getProductById(id);
     }
 
+    @Post()
+    @Roles(Role.EDITOR)
+    @UseGuards(RolesGuard)
+    createProduct(@Body() body: CreateProductDto) {
+        return this.productService.createProduct(body);
+    }
+
     @Patch(":id")
+    @Roles(Role.EDITOR)
+    @UseGuards(RolesGuard)
     updateProduct(@Param("id") id: ProductId, body: UpdateProductDto) {
         return this.productService.updateProduct(id, body);
     }
 
     @Delete(":id")
+    @Roles(Role.EDITOR)
+    @UseGuards(RolesGuard)
     deleteProduct(@Param("id") id: ProductId) {
         return this.productService.deleteproduct(id);
     }

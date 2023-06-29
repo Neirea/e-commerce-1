@@ -33,12 +33,6 @@ export class OrderService {
     }
 
     getOrders(req: Request) {
-        // if (req.session.user == null) {
-        //     throw new AuthenticationError(
-        //         "You must login to access this route"
-        //     );
-        // }
-
         const sessionUserId = req.session.passport.user.id;
         return this.prisma.$queryRaw(getOrdersQuery(sessionUserId));
     }

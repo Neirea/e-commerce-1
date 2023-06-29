@@ -22,29 +22,18 @@ export class CategoryService {
     }
 
     async createCategory(input: createCategoryDto) {
-        // Authorization
-        // if (!req.session.user?.role.includes(Role.ADMIN)) {
-        //     throw new AuthenticationError(
-        //         "You don't have permissions for this action"
-        //     );
-        // }
         await this.prisma.$queryRaw(createCategoryQuery(input));
         return true;
     }
 
     async updateCategory(id: CateogoryId, input: UpdateCategoryDto) {
-        // if (!req.session.user?.role.includes(Role.ADMIN)) {
-        //     throw new AuthenticationError(
-        //         "You don't have permissions for this action",
-        //     );
-        // }
         if (id === input.parent_id) {
             throw new BadRequestException("Can not assign itself as a parent");
         }
 
-        const oldCategory = await this.prisma.$queryRaw<
-            [Category]
-        >`${categoryByIdQuery(id)}`;
+        const oldCategory = await this.prisma.$queryRaw<[Category]>(
+            categoryByIdQuery(id),
+        );
 
         await this.prisma.$queryRaw(updateCategoryQuery(id, input));
         if (oldCategory[0].img_id && input.img_id) {
@@ -53,11 +42,6 @@ export class CategoryService {
         return true;
     }
     async deleteCategory(id: CateogoryId) {
-        // if (!req.session.user?.role.includes(Role.ADMIN)) {
-        //     throw new AuthenticationError(
-        //         "You don't have permissions for this action"
-        //     );
-        // }
         const data = await this.prisma.$queryRaw<[Category]>(
             deleteCategoryQuery(id),
         );
