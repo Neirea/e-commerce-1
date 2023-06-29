@@ -21,12 +21,11 @@ export class FacebookStrategy extends PassportStrategy(Strategy, "facebook") {
         profile: Profile,
         done: any,
     ) {
-        console.log(profile);
         const user = await this.authService.validateUser(
             profile,
             Platform.FACEBOOK,
         );
 
-        done(null, { user });
+        done(null, user);
     }
 }

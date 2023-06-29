@@ -3,6 +3,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { User } from "@prisma/client";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { updateUserQuery } from "./user.queries";
+import { Request } from "express";
 
 @Injectable()
 export class UserService {
@@ -39,26 +40,16 @@ export class UserService {
         // return { ...req.session.user, csrfToken: req.session.csrfToken };
     }
 
-    async updateUser(input: UpdateUserDto) {
-        // const { id, given_name, family_name, email, address, phone } = input;
-
-        // check if id === req.session.user.id
-
-        // if (given_name.length < 2 || family_name.length < 2) {
-        //     throw new UserInputError("Name is too short");
-        // }
-        // if (email && !email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g)) {
-        //     throw new UserInputError("Bad email format");
-        // }
+    async updateUser(req: Request, input: UpdateUserDto) {
         const data = await this.prisma.$queryRaw<[User]>`${updateUserQuery(
             input,
         )}`;
 
-        // why this? any
-        // if (data[0]) {
-        //     req.session.user = data[0];
-        //     return true;
-        // }
+        // change session data if self update
+        if (input.id === req.session.passport.user.id && data[0]) {
+            req.session.passport.user = data[0];
+            return true;
+        }
         return false;
     }
 }

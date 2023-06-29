@@ -8,6 +8,7 @@ import {
     getOrdersQuery,
 } from "./order.queries";
 import { OrderId } from "./order.types";
+import { Request } from "express";
 
 @Injectable()
 export class OrderService {
@@ -38,8 +39,7 @@ export class OrderService {
         //     );
         // }
 
-        //any user id
-        const sessionUserId = 1;
+        const sessionUserId = req.session.passport.user.id;
         return this.prisma.$queryRaw`${getOrdersQuery(sessionUserId)}`;
     }
     async cancelOrder(id: OrderId) {

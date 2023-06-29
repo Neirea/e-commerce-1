@@ -21,12 +21,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy, "google") {
         profile: Profile,
         done: VerifyCallback,
     ) {
-        console.log(profile);
         const user = await this.authService.validateUser(
             profile,
             Platform.GOOGLE,
         );
 
-        done(null, { user });
+        done(null, user);
     }
 }
