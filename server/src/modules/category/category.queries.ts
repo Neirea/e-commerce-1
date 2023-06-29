@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { createCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
-import { DeleteCategoryDto } from "./dto/delete-category.dto";
+import { CateogoryId } from "./category.types";
 
 export const categoriesQuery = Prisma.sql`
     SELECT cat.*,COALESCE(json_agg(com.*) FILTER (WHERE com.id IS NOT NULL),'[]') as companies
@@ -16,17 +16,15 @@ export const createCategoryQuery = (input: createCategoryDto) => Prisma.sql`
     VALUES (${input.name},${input.img_id},${input.img_src},${input.parent_id})
 `;
 
-export const categoryByIdQuery = (id: number) => Prisma.sql`
+export const categoryByIdQuery = (id: CateogoryId) => Prisma.sql`
     SELECT * FROM public."Category"
     WHERE id = ${id}
 `;
 
-export const updateCategoryQuery = ({
-    img_id,
-    img_src,
-    parent_id,
-    id,
-}: UpdateCategoryDto) => {
+export const updateCategoryQuery = (
+    id: CateogoryId,
+    { img_id, img_src, parent_id }: UpdateCategoryDto,
+) => {
     const imgSQL = img_id
         ? Prisma.sql`,img_id = ${img_id},img_src=${img_src}`
         : Prisma.empty;
@@ -40,8 +38,8 @@ export const updateCategoryQuery = ({
     `;
 };
 
-export const deleteCategoryQuery = (input: DeleteCategoryDto) => Prisma.sql`
+export const deleteCategoryQuery = (id: CateogoryId) => Prisma.sql`
     DELETE FROM public."Category"
-    WHERE id = ${input.id}
+    WHERE id = ${id}
     RETURNING *
 `;

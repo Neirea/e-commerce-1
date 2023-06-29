@@ -1,7 +1,3 @@
-export class UpdateCategoryDto {
-    id: number;
-    parent_id: number;
-    name: string;
-    img_id: string;
-    img_src: string;
-}
+import { createCategoryDto } from "./create-category.dto";
+
+export class UpdateCategoryDto extends createCategoryDto {}

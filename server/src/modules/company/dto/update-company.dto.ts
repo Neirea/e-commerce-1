@@ -1,4 +1,4 @@
-export class UpdateCompanyDto {
-    id: number;
-    name: string;
-}
+import { CreateCompanyDto } from "./create-company.dto";
+
+// validation inherits too
+export class UpdateCompanyDto extends CreateCompanyDto {}

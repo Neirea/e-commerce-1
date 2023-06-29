@@ -1,4 +1,3 @@
-export class PopularProductsDto {
-    limit: number;
-    offset: number;
-}
+import { FeaturedProductsDto } from "./featured-products.dto";
+
+export class PopularProductsDto extends FeaturedProductsDto {}

@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Patch } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Req } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { UserId } from "./user.types";
 
 @Controller("user")
 export class UserController {
@@ -12,7 +13,7 @@ export class UserController {
     }
 
     @Get(":id")
-    getUserById(@Param("id") id: number) {
+    getUserById(@Param("id") id: UserId) {
         return this.userService.getUser(id);
     }
 

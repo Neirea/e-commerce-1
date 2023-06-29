@@ -1,7 +1,8 @@
 import { Prisma } from "@prisma/client";
-import { RemoveOrderDto } from "./dto/remove-order.dto";
+import { OrderId } from "./order.types";
+import { UserId } from "../user/user.types";
 
-export const getOrdersQuery = (userId: number) => Prisma.sql`
+export const getOrdersQuery = (userId: UserId) => Prisma.sql`
     SELECT o.*,json_agg(sp.*) as order_items
     FROM public."Order" as o
     INNER JOIN
@@ -13,13 +14,13 @@ export const getOrdersQuery = (userId: number) => Prisma.sql`
     GROUP BY o.id
 `;
 
-export const cancelOrderQuery = (input: RemoveOrderDto) => Prisma.sql`
+export const cancelOrderQuery = (id: OrderId) => Prisma.sql`
     UPDATE public."Order"
     SET "status" = 'CANCELLED'
-    WHERE id = ${input.id} AND "status" = 'PENDING'
+    WHERE id = ${id} AND "status" = 'PENDING'
 `;
 
-export const deleteOrderQuery = (input: RemoveOrderDto) => Prisma.sql`
+export const deleteOrderQuery = (id: OrderId) => Prisma.sql`
     DELETE FROM public."Order"
-    WHERE id = ${input.id}
+    WHERE id = ${id}
 `;

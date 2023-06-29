@@ -6,7 +6,6 @@ import { CreateProductDto } from "./dto/create-propduct.dto";
 import { FeaturedProductsDto } from "./dto/featured-products.dto";
 import { FilteredProductsDto } from "./dto/filtered-products.dto";
 import { PopularProductsDto } from "./dto/popular-products.dto";
-import { ProductsByIdsDto } from "./dto/products-by-ids.dto";
 import { RelatedProductsDto } from "./dto/related-products.dto";
 import { SearchDataDto } from "./dto/search-data.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
@@ -25,6 +24,7 @@ import {
     updateProductCategoryQuery,
 } from "./product.queries";
 import { subCategoriesQuery } from "./utils/sql";
+import { ProductId } from "./product.types";
 
 @Injectable()
 export class ProductService {
@@ -34,21 +34,20 @@ export class ProductService {
         return this.prisma.$queryRaw<Product[]>`${getProducts}`;
     }
 
-    async getProductById(id: number) {
+    async getProductById(id: ProductId) {
         const product = await this.prisma.$queryRaw<
             [Product]
         >`${getProductByIdQuery(id)}`;
         return product[0];
     }
-    getProductsByIds(input: ProductsByIdsDto) {
-        //any
-        // if (!input.ids.length || !input.ids) return [];
-        return this.prisma.$queryRaw`${getProductsByIdsQuery(input)}`;
+    getProductsByIds(ids: ProductId[]) {
+        if (!ids.length || !ids) return [];
+        return this.prisma.$queryRaw`${getProductsByIdsQuery(ids)}`;
     }
     async getSearchData(input: SearchDataDto) {
-        const searchCategoryIds: number[] = [];
+        const searchCategoryIds: ProductId[] = [];
         if (input.category_id) {
-            const res = await this.prisma.$queryRaw<{ id: number }[]>`
+            const res = await this.prisma.$queryRaw<{ id: ProductId }[]>`
                 ${subCategoriesQuery(input.category_id)}`;
             res.forEach((i) => searchCategoryIds.push(i.id));
         }
@@ -131,12 +130,11 @@ export class ProductService {
         };
     }
     async getFilteredProducts(input: FilteredProductsDto) {
-        //any
-        const { product } = input;
-        const searchCategoryIds: number[] = [];
-        if (product.category_id) {
-            const res = await this.prisma.$queryRaw<{ id: number }[]>`
-                ${subCategoriesQuery(product.category_id)}
+        const { category_id } = input;
+        const searchCategoryIds: ProductId[] = [];
+        if (category_id) {
+            const res = await this.prisma.$queryRaw<{ id: ProductId }[]>`
+                ${subCategoriesQuery(category_id)}
                 `;
             res.forEach((i) => searchCategoryIds.push(i.id));
         }
@@ -170,7 +168,6 @@ export class ProductService {
         //     );
         // }
         const { variants, img_id, img_src, ...createData } = input;
-        // if (input.name.length < 3) throw new UserInputError("Name is too short");
 
         //create product, create product images and connection to variants
         const connectArr = variants?.map((p_id) => {
@@ -202,14 +199,13 @@ export class ProductService {
         await Promise.all([createProduct, updateCategory]);
         return true;
     }
-    async updateProduct(id: number, input: UpdateProductDto) {
+    async updateProduct(id: ProductId, input: UpdateProductDto) {
         const { variants, img_id, img_src, ...updateData } = input;
         // if (!req.session.user?.role.includes(Role.EDITOR)) {
         //     throw new AuthenticationError(
         //         "You don't have permissions for this action",
         //     );
         // }
-        // if (input.name.length < 3) throw new UserInputError("Name is too short");
 
         //update product, create product images and connection to variants
         const newVariants = variants?.map((p_id) => {
@@ -235,7 +231,7 @@ export class ProductService {
             },
         });
 
-        //update relationbetween company and category
+        //update relation between company and category
         const categoryUpdate = this.prisma
             .$queryRaw`${updateProductCategoryQuery(input)}`;
 
@@ -253,14 +249,14 @@ export class ProductService {
 
         return true;
     }
-    async deleteproduct(input: number) {
+    async deleteproduct(id: ProductId) {
         // if (!req.session.user?.role.includes(Role.EDITOR)) {
         //     throw new AuthenticationError(
         //         "You don't have permissions for this action"
         //     );
         // }
         const data = await this.prisma.product.delete({
-            where: { id: input },
+            where: { id: id },
             include: { images: true },
         });
 

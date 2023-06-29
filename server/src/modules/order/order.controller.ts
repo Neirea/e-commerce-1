@@ -1,27 +1,23 @@
-import { Body, Controller, Delete, Get, Patch } from "@nestjs/common";
+import { Controller, Delete, Get, Param, Patch, Req } from "@nestjs/common";
 import { OrderService } from "./order.service";
-import { RemoveOrderDto } from "./dto/remove-order.dto";
+import { OrderId } from "./order.types";
+import { Request } from "express";
 
 @Controller("order")
 export class OrderController {
     constructor(private readonly orderService: OrderService) {}
 
-    // @Get()
-    // testQueue() {
-    //     return this.orderService.addOrderToQueue(13376);
-    // }
-
     @Get()
-    getOrders() {
-        return this.orderService.getOrders();
+    getOrders(@Req() req: Request) {
+        return this.orderService.getOrders(req);
     }
 
-    @Patch()
-    cancelOrder(@Body() body: RemoveOrderDto) {
-        return this.orderService.cancelOrder(body);
+    @Patch(":id")
+    cancelOrder(@Param("id") id: OrderId) {
+        return this.orderService.cancelOrder(id);
     }
-    @Delete()
-    deleteOrder(@Body() body: RemoveOrderDto) {
-        return this.orderService.deleteOrder(body);
+    @Delete(":id")
+    deleteOrder(@Param("id") id: OrderId) {
+        return this.orderService.deleteOrder(id);
     }
 }

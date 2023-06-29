@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { Category } from "@prisma/client";
 import { v2 as cloudinary } from "cloudinary";
 import { PrismaService } from "../prisma/prisma.service";
@@ -11,7 +11,7 @@ import {
     deleteCategoryQuery,
     updateCategoryQuery,
 } from "./category.queries";
-import { DeleteCategoryDto } from "./dto/delete-category.dto";
+import { CateogoryId } from "./category.types";
 
 @Injectable()
 export class CategoryService {
@@ -28,39 +28,31 @@ export class CategoryService {
         //         "You don't have permissions for this action"
         //     );
         // }
-        // Validation
-        // if (input.name.length < 3) {
-        //     throw new UserInputError("Name is too short");
-        // }
-
         await this.prisma.$queryRaw`${createCategoryQuery(input)}`;
         return true;
     }
 
-    async updateCategory(input: UpdateCategoryDto) {
+    async updateCategory(id: CateogoryId, input: UpdateCategoryDto) {
         // if (!req.session.user?.role.includes(Role.ADMIN)) {
         //     throw new AuthenticationError(
         //         "You don't have permissions for this action",
         //     );
         // }
-        // if (input.name.length < 3) {
-        //     throw new UserInputError("Name is too short");
-        // }
-        // if (category_id === parent_id) {
-        //     throw new UserInputError("Can not assign itself as a parent");
-        // }
+        if (id === input.parent_id) {
+            throw new BadRequestException("Can not assign itself as a parent");
+        }
 
         const oldCategory = await this.prisma.$queryRaw<
             [Category]
-        >`${categoryByIdQuery(input.id)}`;
+        >`${categoryByIdQuery(id)}`;
 
-        await this.prisma.$queryRaw`${updateCategoryQuery(input)}`;
+        await this.prisma.$queryRaw`${updateCategoryQuery(id, input)}`;
         if (oldCategory[0].img_id && input.img_id) {
             cloudinary.uploader.destroy(oldCategory[0].img_id);
         }
         return true;
     }
-    async deleteCategory(input: DeleteCategoryDto) {
+    async deleteCategory(id: CateogoryId) {
         // if (!req.session.user?.role.includes(Role.ADMIN)) {
         //     throw new AuthenticationError(
         //         "You don't have permissions for this action"
@@ -68,7 +60,7 @@ export class CategoryService {
         // }
         const data = await this.prisma.$queryRaw<
             [Category]
-        >`${deleteCategoryQuery(input)}`;
+        >`${deleteCategoryQuery(id)}`;
         if (data[0].img_id) {
             cloudinary.uploader.destroy(data[0].img_id);
         }

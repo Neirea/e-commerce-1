@@ -2,12 +2,12 @@ import { InjectQueue } from "@nestjs/bull";
 import { Injectable } from "@nestjs/common";
 import { Queue } from "bull";
 import { PrismaService } from "../prisma/prisma.service";
-import { RemoveOrderDto } from "./dto/remove-order.dto";
 import {
     cancelOrderQuery,
     deleteOrderQuery,
     getOrdersQuery,
 } from "./order.queries";
+import { OrderId } from "./order.types";
 
 @Injectable()
 export class OrderService {
@@ -16,7 +16,7 @@ export class OrderService {
         private prisma: PrismaService,
     ) {}
 
-    addOrderToQueue(orderId: number) {
+    addOrderToQueue(orderId: OrderId) {
         this.staleOrderQueue.add(
             { id: orderId },
             {
@@ -31,7 +31,7 @@ export class OrderService {
         );
     }
 
-    getOrders() {
+    getOrders(req: Request) {
         // if (req.session.user == null) {
         //     throw new AuthenticationError(
         //         "You must login to access this route"
@@ -42,12 +42,12 @@ export class OrderService {
         const sessionUserId = 1;
         return this.prisma.$queryRaw`${getOrdersQuery(sessionUserId)}`;
     }
-    async cancelOrder(input: RemoveOrderDto) {
-        await this.prisma.$queryRaw`${cancelOrderQuery(input)}`;
+    async cancelOrder(id: OrderId) {
+        await this.prisma.$queryRaw`${cancelOrderQuery(id)}`;
         return true;
     }
-    async deleteOrder(input: RemoveOrderDto) {
-        await this.prisma.$queryRaw`${deleteOrderQuery(input)}`;
+    async deleteOrder(id: OrderId) {
+        await this.prisma.$queryRaw`${deleteOrderQuery(id)}`;
         return true;
     }
 }

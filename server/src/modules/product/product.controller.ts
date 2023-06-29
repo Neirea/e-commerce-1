@@ -9,7 +9,6 @@ import {
     Query,
 } from "@nestjs/common";
 import { ProductService } from "./product.service";
-import { ProductsByIdsDto } from "./dto/products-by-ids.dto";
 import { SearchDataDto } from "./dto/search-data.dto";
 import { FilteredProductsDto } from "./dto/filtered-products.dto";
 import { FeaturedProductsDto } from "./dto/featured-products.dto";
@@ -17,6 +16,8 @@ import { RelatedProductsDto } from "./dto/related-products.dto";
 import { PopularProductsDto } from "./dto/popular-products.dto";
 import { CreateProductDto } from "./dto/create-propduct.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
+import { ProductId } from "./product.types";
+import { parseArrayQuery } from "src/pipes/parseArrayQuery";
 
 @Controller("product")
 export class ProductController {
@@ -27,14 +28,12 @@ export class ProductController {
         return this.productService.getProducts();
     }
 
-    @Get(":id")
-    getProductById(@Param("id") id: number) {
-        return this.productService.getProductById(id);
-    }
-
     @Get("some")
-    getProductsByIds(@Query() query: ProductsByIdsDto) {
-        return this.productService.getProductsByIds(query);
+    getProductsByIds(
+        @Query("ids", parseArrayQuery)
+        ids: ProductId[],
+    ) {
+        return this.productService.getProductsByIds(ids);
     }
 
     @Get("data")
@@ -42,7 +41,7 @@ export class ProductController {
         return this.productService.getSearchData(query);
     }
 
-    @Get("filtered")
+    @Get("filter")
     getFilteredProducts(@Query() query: FilteredProductsDto) {
         return this.productService.getFilteredProducts(query);
     }
@@ -63,7 +62,7 @@ export class ProductController {
     }
 
     @Get("search")
-    getSearch(@Query() query: string) {
+    getSearch(@Query("v") query: string) {
         return this.productService.getSearchBarData(query);
     }
 
@@ -72,13 +71,18 @@ export class ProductController {
         return this.productService.createProduct(body);
     }
 
+    @Get(":id")
+    getProductById(@Param("id") id: ProductId) {
+        return this.productService.getProductById(id);
+    }
+
     @Patch(":id")
-    updateProduct(@Param("id") id: number, body: UpdateProductDto) {
+    updateProduct(@Param("id") id: ProductId, body: UpdateProductDto) {
         return this.productService.updateProduct(id, body);
     }
 
     @Delete(":id")
-    deleteProduct(@Param("id") id: number) {
+    deleteProduct(@Param("id") id: ProductId) {
         return this.productService.deleteproduct(id);
     }
 }

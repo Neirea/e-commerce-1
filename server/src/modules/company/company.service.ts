@@ -8,6 +8,7 @@ import {
     getCompaniesQuery,
     updateCompanyQuery,
 } from "./company.queries";
+import { CompanyId } from "./company.types";
 
 @Injectable()
 export class CompanyService {
@@ -23,27 +24,21 @@ export class CompanyService {
         //         "You don't have permissions for this action"
         //     );
         // }
-        // if (input.name.length < 3) {
-        //     throw new UserInputError("Name is too short");
-        // }
         await this.prisma.$queryRaw`${createCompanyQuery(input)}`;
 
         return true;
     }
 
-    async updateCompany(input: UpdateCompanyDto) {
+    async updateCompany(id: CompanyId, input: UpdateCompanyDto) {
         // if (!req.session.user?.role.includes(Role.ADMIN)) {
         //     throw new AuthenticationError(
         //         "You don't have permissions for this action"
         //     );
         // }
-        // if (input.name.length < 3) {
-        //     throw new UserInputError("Name is too short");
-        // }
-        await this.prisma.$queryRaw`${updateCompanyQuery(input)}`;
+        await this.prisma.$queryRaw`${updateCompanyQuery(id, input)}`;
         return true;
     }
-    async deleteCompany(id: number) {
+    async deleteCompany(id: CompanyId) {
         // if (!req.session.user?.role.includes(Role.ADMIN)) {
         //     throw new AuthenticationError(
         //         "You don't have permissions for this action"

@@ -1,13 +1,38 @@
+import { CateogoryId } from "src/modules/category/category.types";
+import { CompanyId } from "src/modules/company/company.types";
+import {
+    ProductDescription,
+    ProductDiscount,
+    ProductInventory,
+    ProductName,
+    ProductPrice,
+    ProductShippingCost,
+    ProductId,
+    PropductImgId,
+    PropductImgSrc,
+} from "../product.types";
+import { IsOptional, Length, Max, Min } from "class-validator";
+import { SameLength } from "../validators/same-length";
+
 export class CreateProductDto {
-    name: string;
-    price: number;
-    description: Record<string, string>;
-    inventory: number;
-    shipping_cost: number;
-    discount: number;
-    img_id: string[];
-    img_src: string[];
-    company_id: number;
-    category_id: number;
-    variants: number[];
+    @Length(3, 20)
+    name: ProductName;
+    @Min(0)
+    price: ProductPrice;
+    description: ProductDescription;
+    @Min(0)
+    inventory: ProductInventory;
+    @Min(0)
+    shipping_cost: ProductShippingCost;
+    @Min(0)
+    @Max(100)
+    discount: ProductDiscount;
+    @IsOptional()
+    img_id: PropductImgId[];
+    @IsOptional()
+    @SameLength("img_id")
+    img_src: PropductImgSrc[];
+    company_id: CompanyId;
+    category_id: CateogoryId;
+    variants: ProductId[];
 }

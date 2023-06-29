@@ -6,13 +6,15 @@ import {
     imagesJSON,
     productsByOrderCount,
 } from "./utils/sql";
-import { ProductsByIdsDto } from "./dto/products-by-ids.dto";
 import { parseQueryString } from "src/common/parse-querystring";
 import { SearchDataDto } from "./dto/search-data.dto";
 import { FeaturedProductsDto } from "./dto/featured-products.dto";
 import { RelatedProductsDto } from "./dto/related-products.dto";
 import { PopularProductsDto } from "./dto/popular-products.dto";
 import { CreateProductDto } from "./dto/create-propduct.dto";
+import { ProductId } from "./product.types";
+import { CateogoryId } from "../category/category.types";
+import { FilteredProductsDto } from "./dto/filtered-products.dto";
 
 export const getProducts = Prisma.sql`
     SELECT p.*,
@@ -24,7 +26,7 @@ export const getProducts = Prisma.sql`
     ORDER BY p.id
 `;
 
-export const getProductByIdQuery = (id: number) => {
+export const getProductByIdQuery = (id: ProductId) => {
     const variantsJSON = Prisma.sql`
         SELECT p.id,json_agg(json_build_object('id',vrn.id,'name',p.name,'images',vrn.images)) as variants
         FROM public."Product" as p
@@ -51,17 +53,17 @@ export const getProductByIdQuery = (id: number) => {
     `;
 };
 
-export const getProductsByIdsQuery = (input: ProductsByIdsDto) => Prisma.sql`
+export const getProductsByIdsQuery = (ids: ProductId[]) => Prisma.sql`
     SELECT p.*,i.images
     FROM public."Product" as p
     INNER JOIN (${imagesJSON}) as i
     ON p.id = i.product_id
-    WHERE p.id IN (${Prisma.join(input.ids)})
+    WHERE p.id IN (${Prisma.join(ids)})
 `;
 
 export const getSearchDataQuery = (
     input: SearchDataDto,
-    categoryIds: number[],
+    categoryIds: CateogoryId[],
 ) => {
     const searchString = parseQueryString(input.search_string);
     const searchCondition = getSearchCondition(searchString);
@@ -93,29 +95,38 @@ export const getSearchDataQuery = (
         `;
 };
 
-export const filteredProductsQuery = (input: any, categoryIds: number[]) => {
-    const { offset, limit, product } = input;
+export const filteredProductsQuery = (
+    input: FilteredProductsDto,
+    categoryIds: CateogoryId[],
+) => {
+    const {
+        offset,
+        limit,
+        search_string,
+        company_id,
+        category_id,
+        sort_mode,
+        min_price,
+        max_price,
+    } = input;
     const orderCondition =
-        product.sort_mode === 1
+        sort_mode === 1
             ? Prisma.sql`p.inventory != 0 DESC, p.price ASC,p._count DESC, p.id ASC`
-            : product.sort_mode === 2
+            : sort_mode === 2
             ? Prisma.sql`p.inventory != 0 DESC, p.price DESC,p._count DESC, p.id ASC`
             : Prisma.sql`p.inventory != 0 DESC, p._count DESC,p.discount DESC, p.id ASC`;
 
-    const searchString = parseQueryString(product.search_string);
+    const searchString = parseQueryString(search_string);
     const searchCondition = getSearchCondition(searchString);
-    const companyCondition = getCompanyCondition(product.company_id);
-    const categoryCondition = getCategoryCondition(
-        categoryIds,
-        product.category_id,
-    );
+    const companyCondition = getCompanyCondition(company_id);
+    const categoryCondition = getCategoryCondition(categoryIds, category_id);
 
-    const minPriceCondition = product.min_price
-        ? Prisma.sql`AND p.price >= ${product.min_price}`
+    const minPriceCondition = min_price
+        ? Prisma.sql`AND p.price >= ${min_price}`
         : Prisma.empty;
 
-    const maxPriceCondition = product.max_price
-        ? Prisma.sql`AND p.price <= ${product.max_price}`
+    const maxPriceCondition = max_price
+        ? Prisma.sql`AND p.price <= ${max_price}`
         : Prisma.empty;
 
     return Prisma.sql`
@@ -151,9 +162,9 @@ export const relatedProductsQuery = (input: RelatedProductsDto) => Prisma.sql`
     FROM (${productsByOrderCount}) as po
     INNER JOIN (${imagesJSON}) as pi
     ON po.id = pi.product_id
-    WHERE NOT po.id = ${input.product.id} AND (po.company_id = ${input.product.company_id} OR po.category_id = ${input.product.category_id})
+    WHERE NOT po.id = ${input.id} AND (po.company_id = ${input.company_id} OR po.category_id = ${input.category_id})
     ORDER BY po.inventory != 0 DESC, 
-    CASE WHEN po.company_id = ${input.product.company_id} THEN 1 ELSE 2 END ASC,
+    CASE WHEN po.company_id = ${input.company_id} THEN 1 ELSE 2 END ASC,
     po._count DESC, po.id ASC
     LIMIT ${input.limit} OFFSET ${input.offset}
 `;
@@ -202,12 +213,12 @@ export const updateProductCategoryQuery = (
     ON CONFLICT DO NOTHING
 `;
 
-export const getOldImagesQuery = (id: number) => Prisma.sql`
+export const getOldImagesQuery = (id: ProductId) => Prisma.sql`
     SELECT * FROM public."ProductImage"
     WHERE product_id = ${id}
 `;
 
-export const deleteOldImagesQuery = (id: number) => Prisma.sql`
+export const deleteOldImagesQuery = (id: ProductId) => Prisma.sql`
     DELETE FROM public."ProductImage"
     WHERE product_id = ${id}
 `;

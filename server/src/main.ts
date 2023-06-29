@@ -4,16 +4,20 @@ import * as passport from "passport";
 import * as session from "express-session";
 import RedisStore from "connect-redis";
 import Redis from "ioredis";
+import { ValidationPipe } from "@nestjs/common";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
+    app.setGlobalPrefix("api");
+    app.enableCors({ credentials: true, origin: [process.env.CLIENT_URL] });
+    app.useGlobalPipes(
+        new ValidationPipe({ whitelist: true, transform: true }),
+    );
 
-    // Initialize redis client.
     const redisClient = new Redis();
     const redisStore = new RedisStore({
         client: redisClient,
     });
-
     app.use(
         session({
             name: "sid",
