@@ -11,7 +11,7 @@ import {
 import { CategoryService } from "./category.service";
 import { createCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
-import { CateogoryId } from "./category.types";
+import { CategoryWithCompanies, CateogoryId } from "./category.types";
 import { RolesGuard } from "src/common/roles/roles.guard";
 import { Roles } from "src/common/roles/roles.decorator";
 import { Role } from "@prisma/client";
@@ -21,14 +21,14 @@ export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}
 
     @Get()
-    getCategories() {
+    getCategories(): Promise<CategoryWithCompanies[]> {
         return this.categoryService.getCategories();
     }
 
     @Post()
     @Roles(Role.ADMIN)
     @UseGuards(RolesGuard)
-    createCategory(@Body() body: createCategoryDto) {
+    createCategory(@Body() body: createCategoryDto): Promise<void> {
         return this.categoryService.createCategory(body);
     }
 
@@ -38,14 +38,14 @@ export class CategoryController {
     updateCategory(
         @Param("id") id: CateogoryId,
         @Body() body: UpdateCategoryDto,
-    ) {
+    ): Promise<void> {
         return this.categoryService.updateCategory(id, body);
     }
 
     @Delete(":id")
     @Roles(Role.ADMIN)
     @UseGuards(RolesGuard)
-    deleteCategory(@Param("id") id: CateogoryId) {
+    deleteCategory(@Param("id") id: CateogoryId): Promise<void> {
         return this.categoryService.deleteCategory(id);
     }
 }

@@ -17,10 +17,17 @@ import { RelatedProductsDto } from "./dto/related-products.dto";
 import { PopularProductsDto } from "./dto/popular-products.dto";
 import { CreateProductDto } from "./dto/create-propduct.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
-import { ProductId } from "./product.types";
+import {
+    ProductId,
+    ProductWithCatCom,
+    ProductWithImages,
+    ProductWithImgVariants,
+    SearchDataResponse,
+    SearchResult,
+} from "./product.types";
 import { parseArrayQuery } from "src/pipes/parseArrayQuery";
 import { Roles } from "src/common/roles/roles.decorator";
-import { Role } from "@prisma/client";
+import { Product, Role } from "@prisma/client";
 import { RolesGuard } from "src/common/roles/roles.guard";
 
 @Controller("product")
@@ -28,7 +35,7 @@ export class ProductController {
     constructor(private readonly productService: ProductService) {}
 
     @Get()
-    getProducts() {
+    getProducts(): Promise<Product[]> {
         return this.productService.getProducts();
     }
 
@@ -36,63 +43,76 @@ export class ProductController {
     getProductsByIds(
         @Query("ids", parseArrayQuery)
         ids: ProductId[],
-    ) {
+    ): Promise<ProductWithImages[]> {
         return this.productService.getProductsByIds(ids);
     }
 
     @Get("data")
-    getSeachData(@Query() query: SearchDataDto) {
+    getSeachData(@Query() query: SearchDataDto): SearchDataResponse {
         return this.productService.getSearchData(query);
     }
 
     @Get("filter")
-    getFilteredProducts(@Query() query: FilteredProductsDto) {
+    getFilteredProducts(
+        @Query() query: FilteredProductsDto,
+    ): Promise<ProductWithCatCom[]> {
         return this.productService.getFilteredProducts(query);
     }
 
     @Get("featured")
-    getFeaturedProducts(@Query() query: FeaturedProductsDto) {
+    getFeaturedProducts(
+        @Query() query: FeaturedProductsDto,
+    ): Promise<ProductWithImages[]> {
         return this.productService.getFeaturedProducts(query);
     }
 
     @Get("related")
-    getRelatedProducts(@Query() query: RelatedProductsDto) {
+    getRelatedProducts(
+        @Query() query: RelatedProductsDto,
+    ): Promise<ProductWithImages[]> {
         return this.productService.getRelatedProducts(query);
     }
 
     @Get("popular")
-    getPopularProducts(@Query() query: PopularProductsDto) {
+    getPopularProducts(
+        @Query() query: PopularProductsDto,
+    ): Promise<ProductWithImages[]> {
         return this.productService.getPopularProducts(query);
     }
 
     @Get("search")
-    getSearch(@Query("v") query: string) {
+    getSearch(@Query("v") query: string): SearchResult {
         return this.productService.getSearchBarData(query);
     }
 
     @Get(":id")
-    getProductById(@Param("id") id: ProductId) {
+    getProductById(
+        @Param("id") id: ProductId,
+    ): Promise<ProductWithImgVariants> {
         return this.productService.getProductById(id);
     }
 
     @Post()
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
-    createProduct(@Body() body: CreateProductDto) {
+    createProduct(@Body() body: CreateProductDto): Promise<void> {
         return this.productService.createProduct(body);
     }
 
     @Patch(":id")
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
-    updateProduct(@Param("id") id: ProductId, body: UpdateProductDto) {
+    updateProduct(
+        @Param("id") id: ProductId,
+        body: UpdateProductDto,
+    ): Promise<void> {
         return this.productService.updateProduct(id, body);
     }
 
     @Delete(":id")
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
-    deleteProduct(@Param("id") id: ProductId) {
+    deleteProduct(@Param("id") id: ProductId): Promise<void> {
         return this.productService.deleteproduct(id);
     }
 }

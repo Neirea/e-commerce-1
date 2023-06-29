@@ -130,22 +130,22 @@ export const filteredProductsQuery = (
         : Prisma.empty;
 
     return Prisma.sql`
-            SELECT p.*,pi.images
-            FROM (${productsByOrderCount}) as p
-            INNER JOIN (${imagesJSON}) as pi
-            ON p.id = pi.product_id
-            INNER JOIN public."Company" as com
-            ON p.company_id = com.id
-            INNER JOIN public."Category" as cat
-            ON p.category_id = cat.id
-            WHERE (${searchCondition})
-                ${companyCondition}
-                ${categoryCondition}
-                ${minPriceCondition}
-                ${maxPriceCondition}
-            ORDER BY ${orderCondition}
-            LIMIT ${limit} OFFSET ${offset}
-        `;
+        SELECT p.*,pi.images
+        FROM (${productsByOrderCount}) as p
+        INNER JOIN (${imagesJSON}) as pi
+        ON p.id = pi.product_id
+        INNER JOIN public."Company" as com
+        ON p.company_id = com.id
+        INNER JOIN public."Category" as cat
+        ON p.category_id = cat.id
+        WHERE (${searchCondition})
+            ${companyCondition}
+            ${categoryCondition}
+            ${minPriceCondition}
+            ${maxPriceCondition}
+        ORDER BY ${orderCondition}
+        LIMIT ${limit} OFFSET ${offset}
+    `;
 };
 
 export const featuredProductsQuery = (input: FeaturedProductsDto) => Prisma.sql`
@@ -170,7 +170,7 @@ export const relatedProductsQuery = (input: RelatedProductsDto) => Prisma.sql`
 `;
 
 export const popularProductsQuery = (input: PopularProductsDto) => Prisma.sql`
-    SELECT pi.images,po.*
+    SELECT po.*,pi.images
     FROM (${productsByOrderCount}) as po
     INNER JOIN (${imagesJSON}) as pi
     ON po.id = pi.product_id

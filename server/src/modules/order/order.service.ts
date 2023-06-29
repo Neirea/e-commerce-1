@@ -7,7 +7,7 @@ import {
     deleteOrderQuery,
     getOrdersQuery,
 } from "./order.queries";
-import { OrderId } from "./order.types";
+import { OrderId, OrderWithItems } from "./order.types";
 import { Request } from "express";
 
 @Injectable()
@@ -31,17 +31,16 @@ export class OrderService {
             },
         );
     }
-
-    getOrders(req: Request) {
+    getOrders(req: Request): Promise<OrderWithItems[]> {
         const sessionUserId = req.session.passport.user.id;
-        return this.prisma.$queryRaw(getOrdersQuery(sessionUserId));
+        return this.prisma.$queryRaw<OrderWithItems[]>(
+            getOrdersQuery(sessionUserId),
+        );
     }
-    async cancelOrder(id: OrderId) {
+    async cancelOrder(id: OrderId): Promise<void> {
         await this.prisma.$queryRaw(cancelOrderQuery(id));
-        return true;
     }
-    async deleteOrder(id: OrderId) {
+    async deleteOrder(id: OrderId): Promise<void> {
         await this.prisma.$queryRaw(deleteOrderQuery(id));
-        return true;
     }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Category, Company, Product, ProductImage } from "@prisma/client";
+import { ProductImage } from "@prisma/client";
 import { v2 as cloudinary } from "cloudinary";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateProductDto } from "./dto/create-propduct.dto";
@@ -24,27 +24,37 @@ import {
     updateProductCategoryQuery,
 } from "./product.queries";
 import { subCategoriesQuery } from "./utils/sql";
-import { ProductId } from "./product.types";
+import {
+    CategoryType,
+    CompanyType,
+    ProductId,
+    ProductWithCatCom,
+    ProductWithImages,
+    ProductWithImgVariants,
+    ProductWithVariants,
+    SearchDataResponse,
+    SearchDataType,
+    SearchResult,
+} from "./product.types";
 
 @Injectable()
 export class ProductService {
     constructor(private prisma: PrismaService) {}
 
-    getProducts() {
-        return this.prisma.$queryRaw<Product[]>`${getProducts}`;
+    getProducts(): Promise<ProductWithVariants[]> {
+        return this.prisma.$queryRaw<ProductWithVariants[]>(getProducts);
     }
 
-    async getProductById(id: ProductId) {
-        const product = await this.prisma.$queryRaw<
-            [Product]
-        >`${getProductByIdQuery(id)}`;
+    async getProductById(id: ProductId): Promise<ProductWithImgVariants> {
+        const product = await this.prisma.$queryRaw<[ProductWithImgVariants]>(
+            getProductByIdQuery(id),
+        );
         return product[0];
     }
-    getProductsByIds(ids: ProductId[]) {
-        if (!ids.length || !ids) return [];
+    getProductsByIds(ids: ProductId[]): Promise<ProductWithImages[]> {
         return this.prisma.$queryRaw(getProductsByIdsQuery(ids));
     }
-    async getSearchData(input: SearchDataDto) {
+    async getSearchData(input: SearchDataDto): SearchDataResponse {
         const searchCategoryIds: ProductId[] = [];
         if (input.category_id) {
             const res = await this.prisma.$queryRaw<{ id: ProductId }[]>(
@@ -53,25 +63,12 @@ export class ProductService {
             res.forEach((i) => searchCategoryIds.push(i.id));
         }
 
-        type SearchDataType = {
-            company: Company;
-            category: Category;
-            price: number;
-            discount: number;
-        }[];
-
-        const data = await this.prisma
-            .$queryRaw<SearchDataType>`${getSearchDataQuery(
-            input,
-            searchCategoryIds,
-        )}`;
+        const data = await this.prisma.$queryRaw<SearchDataType>(
+            getSearchDataQuery(input, searchCategoryIds),
+        );
 
         let min = Infinity; //2147483647
         let max = 0;
-        type CategoryType = Category & { productCount?: number } & {
-            parent?: Category | null;
-        };
-        type CompanyType = Company & { productCount?: number };
         const allCategories: CategoryType[] = [];
         const allCompanies: CompanyType[] = [];
         const maxPrice = input.max_price ?? Infinity;
@@ -130,7 +127,9 @@ export class ProductService {
             companies,
         };
     }
-    async getFilteredProducts(input: FilteredProductsDto) {
+    async getFilteredProducts(
+        input: FilteredProductsDto,
+    ): Promise<ProductWithCatCom[]> {
         const { category_id } = input;
         const searchCategoryIds: ProductId[] = [];
         if (category_id) {
@@ -145,21 +144,33 @@ export class ProductService {
         );
     }
 
-    getFeaturedProducts(input: FeaturedProductsDto) {
-        return this.prisma.$queryRaw(featuredProductsQuery(input));
+    getFeaturedProducts(
+        input: FeaturedProductsDto,
+    ): Promise<ProductWithImages[]> {
+        return this.prisma.$queryRaw<ProductWithImages[]>(
+            featuredProductsQuery(input),
+        );
     }
-    getRelatedProducts(input: RelatedProductsDto) {
+    getRelatedProducts(
+        input: RelatedProductsDto,
+    ): Promise<ProductWithImages[]> {
         //get products with same company(ordered first) and same category
-        return this.prisma.$queryRaw(relatedProductsQuery(input));
+        return this.prisma.$queryRaw<ProductWithImages[]>(
+            relatedProductsQuery(input),
+        );
     }
-    getPopularProducts(input: PopularProductsDto) {
-        return this.prisma.$queryRaw(popularProductsQuery(input));
+    getPopularProducts(
+        input: PopularProductsDto,
+    ): Promise<ProductWithImages[]> {
+        return this.prisma.$queryRaw<ProductWithImages[]>(
+            popularProductsQuery(input),
+        );
     }
-    getSearchBarData(input: string) {
+    getSearchBarData(input: string): SearchResult {
         return this.prisma.$queryRaw(searchBarDataQuery(input));
     }
 
-    async createProduct(input: CreateProductDto) {
+    async createProduct(input: CreateProductDto): Promise<void> {
         const { variants, img_id, img_src, ...createData } = input;
 
         //create product, create product images and connection to variants
@@ -171,7 +182,7 @@ export class ProductService {
         });
 
         // connects variants many-to-many on creation
-        const createProduct = this.prisma.product.create({
+        const createdProduct = this.prisma.product.create({
             data: {
                 ...createData,
                 images: {
@@ -190,10 +201,9 @@ export class ProductService {
             updateProductCategoryQuery(input),
         );
 
-        await Promise.all([createProduct, updateCategory]);
-        return true;
+        await Promise.all([createdProduct, updateCategory]);
     }
-    async updateProduct(id: ProductId, input: UpdateProductDto) {
+    async updateProduct(id: ProductId, input: UpdateProductDto): Promise<void> {
         const { variants, img_id, img_src, ...updateData } = input;
 
         //update product, create product images and connection to variants
@@ -227,19 +237,17 @@ export class ProductService {
 
         //delete old images
         if (img_id.length) {
-            const oldImages = await this.prisma.$queryRaw<
-                ProductImage[]
-            >`${getOldImagesQuery(id)}`;
+            const oldImages = await this.prisma.$queryRaw<ProductImage[]>(
+                getOldImagesQuery(id),
+            );
             this.prisma.$queryRaw(deleteOldImagesQuery(id));
             cloudinary.api.delete_resources(oldImages.map((i) => i.img_id));
         }
 
         const promiseArray = [productUpdate, categoryUpdate];
         await Promise.all(promiseArray);
-
-        return true;
     }
-    async deleteproduct(id: ProductId) {
+    async deleteproduct(id: ProductId): Promise<void> {
         const data = await this.prisma.product.delete({
             where: { id: id },
             include: { images: true },
@@ -248,6 +256,5 @@ export class ProductService {
         if (data.images.length) {
             cloudinary.api.delete_resources(data.images.map((i) => i.img_id));
         }
-        return true;
     }
 }

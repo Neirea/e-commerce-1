@@ -9,34 +9,21 @@ import { Request } from "express";
 export class UserService {
     constructor(private prisma: PrismaService) {}
 
-    getUsers() {
-        // if (!req.session.user?.role.includes(Role.ADMIN)) {
-        //     throw new AuthenticationError(
-        //         "You don't have permissions for this action"
-        //     );
-        // }
+    getUsers(): Promise<User[]> {
         return this.prisma.$queryRaw(allUsersQuery);
     }
 
-    async getUser(id: number) {
-        // if (!req.session.user?.role.includes(Role.ADMIN)) {
-        //     throw new AuthenticationError(
-        //         "You don't have permissions for this action"
-        //     );
-        // }
+    async getUser(id: number): Promise<User> {
         const user = await this.prisma.$queryRaw<[User]>(UserByIdQuery(id));
         return user[0];
     }
 
-    showMe(req: Request) {
-        if (!req.session.passport.user) {
-            return undefined;
-        }
+    showMe(req: Request): User {
         // return { ...req.session.passport.user, csrfToken: req.session.csrfToken };
         return { ...req.session.passport.user };
     }
 
-    async updateUser(req: Request, input: UpdateUserDto) {
+    async updateUser(req: Request, input: UpdateUserDto): Promise<User> {
         const user = req.session.passport.user;
         const data = await this.prisma.$queryRaw<[User]>(
             updateUserQuery(user.id, input),
@@ -45,8 +32,8 @@ export class UserService {
         // change session data if self update
         if (data[0]) {
             req.session.passport.user = data[0];
-            return true;
+            return data[0];
         }
-        return false;
+        return user;
     }
 }

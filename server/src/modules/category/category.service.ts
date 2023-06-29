@@ -11,22 +11,24 @@ import {
     deleteCategoryQuery,
     updateCategoryQuery,
 } from "./category.queries";
-import { CateogoryId } from "./category.types";
+import { CategoryWithCompanies, CateogoryId } from "./category.types";
 
 @Injectable()
 export class CategoryService {
     constructor(private prisma: PrismaService) {}
 
-    getCategories() {
-        return this.prisma.$queryRaw(categoriesQuery);
+    getCategories(): Promise<CategoryWithCompanies[]> {
+        return this.prisma.$queryRaw<CategoryWithCompanies[]>(categoriesQuery);
     }
 
-    async createCategory(input: createCategoryDto) {
+    async createCategory(input: createCategoryDto): Promise<void> {
         await this.prisma.$queryRaw(createCategoryQuery(input));
-        return true;
     }
 
-    async updateCategory(id: CateogoryId, input: UpdateCategoryDto) {
+    async updateCategory(
+        id: CateogoryId,
+        input: UpdateCategoryDto,
+    ): Promise<void> {
         if (id === input.parent_id) {
             throw new BadRequestException("Can not assign itself as a parent");
         }
@@ -39,15 +41,13 @@ export class CategoryService {
         if (oldCategory[0].img_id && input.img_id) {
             cloudinary.uploader.destroy(oldCategory[0].img_id);
         }
-        return true;
     }
-    async deleteCategory(id: CateogoryId) {
+    async deleteCategory(id: CateogoryId): Promise<void> {
         const data = await this.prisma.$queryRaw<[Category]>(
             deleteCategoryQuery(id),
         );
         if (data[0].img_id) {
             cloudinary.uploader.destroy(data[0].img_id);
         }
-        return true;
     }
 }

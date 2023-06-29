@@ -8,27 +8,26 @@ import {
     getCompaniesQuery,
     updateCompanyQuery,
 } from "./company.queries";
-import { CompanyId } from "./company.types";
+import { CompanyId, CompanyWithCategories } from "./company.types";
 
 @Injectable()
 export class CompanyService {
     constructor(private prisma: PrismaService) {}
 
-    getCompanies() {
-        return this.prisma.$queryRaw(getCompaniesQuery);
+    getCompanies(): Promise<CompanyWithCategories[]> {
+        return this.prisma.$queryRaw<CompanyWithCategories[]>(
+            getCompaniesQuery,
+        );
     }
 
-    async createCompany(input: CreateCompanyDto) {
+    async createCompany(input: CreateCompanyDto): Promise<void> {
         await this.prisma.$queryRaw(createCompanyQuery(input));
-        return true;
     }
 
-    async updateCompany(id: CompanyId, input: UpdateCompanyDto) {
+    async updateCompany(id: CompanyId, input: UpdateCompanyDto): Promise<void> {
         await this.prisma.$queryRaw(updateCompanyQuery(id, input));
-        return true;
     }
-    async deleteCompany(id: CompanyId) {
+    async deleteCompany(id: CompanyId): Promise<void> {
         await this.prisma.$queryRaw(deleteCompanyQuery(id));
-        return true;
     }
 }
