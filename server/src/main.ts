@@ -1,10 +1,11 @@
-import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
-import * as passport from "passport";
-import * as session from "express-session";
-import RedisStore from "connect-redis";
 import { ValidationPipe } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+import { v2 as cloudinary } from "cloudinary";
+import RedisStore from "connect-redis";
+import * as session from "express-session";
+import * as passport from "passport";
 import { createClient } from "redis";
+import { AppModule } from "./app.module";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -13,6 +14,12 @@ async function bootstrap() {
     app.useGlobalPipes(
         new ValidationPipe({ whitelist: true, transform: true }),
     );
+
+    cloudinary.config({
+        cloud_name: process.env.CLDNRY_NAME,
+        api_key: process.env.CLDNRY_API_KEY,
+        api_secret: process.env.CLDNRY_API_SECRET,
+    });
 
     const redisClient = createClient();
     redisClient.connect().catch(console.error);
