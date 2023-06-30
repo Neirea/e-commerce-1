@@ -3,8 +3,8 @@ import { AppModule } from "./app.module";
 import * as passport from "passport";
 import * as session from "express-session";
 import RedisStore from "connect-redis";
-import Redis from "ioredis";
 import { ValidationPipe } from "@nestjs/common";
+import { createClient } from "redis";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -14,7 +14,9 @@ async function bootstrap() {
         new ValidationPipe({ whitelist: true, transform: true }),
     );
 
-    const redisClient = new Redis();
+    const redisClient = createClient();
+    redisClient.connect().catch(console.error);
+
     const redisStore = new RedisStore({
         client: redisClient,
     });
