@@ -1,4 +1,12 @@
-import { Controller, Delete, Get, Req, Res, UseGuards } from "@nestjs/common";
+import {
+    Controller,
+    Delete,
+    Get,
+    Redirect,
+    Req,
+    Res,
+    UseGuards,
+} from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { GoogleAuthGuard } from "./guards/google.guard";
 import { FacebookAuthGuard } from "./guards/facebook.guard";
@@ -17,8 +25,9 @@ export class AuthController {
 
     @Get("google/callback")
     @UseGuards(GoogleAuthGuard)
+    @Redirect(process.env.CLIENT_URL, 301)
     handleGoogleCallback() {
-        return { msg: "Callback" };
+        return { msg: "Success" };
     }
 
     @Get("facebook/login")

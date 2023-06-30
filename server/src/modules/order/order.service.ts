@@ -32,6 +32,7 @@ export class OrderService {
         );
     }
     getOrders(req: Request): Promise<OrderWithItems[]> {
+        console.log("user=", req.user);
         const sessionUserId = req.session.passport.user.id;
         return this.prisma.$queryRaw<OrderWithItems[]>(
             getOrdersQuery(sessionUserId),
