@@ -7,19 +7,19 @@ export class SearchDataDto {
     @Transform(({ value }: TransformFnParams) => Number(value))
     @IsOptional()
     @Min(0)
-    min_price?: number;
+    min_price: number;
 
     @Transform(({ value }: TransformFnParams) => Number(value))
     @IsOptional()
     @Min(0)
-    max_price?: number;
+    max_price: number;
 
     @IsOptional()
-    search_string?: string;
+    search_string: string;
 
     @Transform(({ value }: TransformFnParams) => Number(value))
     @IsOptional()
-    category_id?: CateogoryId;
+    category_id: CateogoryId;
     @IsOptional()
     @Transform(({ value }: TransformFnParams) => Number(value))
     company_id?: CompanyId;

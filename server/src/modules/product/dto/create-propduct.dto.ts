@@ -11,7 +11,15 @@ import {
     PropductImgId,
     PropductImgSrc,
 } from "../product.types";
-import { IsOptional, Length, Max, Min } from "class-validator";
+import {
+    IsArray,
+    IsNumber,
+    IsObject,
+    IsOptional,
+    Length,
+    Max,
+    Min,
+} from "class-validator";
 import { SameLength } from "../validators/same-length";
 
 export class CreateProductDto {
@@ -19,6 +27,7 @@ export class CreateProductDto {
     name: ProductName;
     @Min(0)
     price: ProductPrice;
+    @IsObject()
     description: ProductDescription;
     @Min(0)
     inventory: ProductInventory;
@@ -32,7 +41,10 @@ export class CreateProductDto {
     @IsOptional()
     @SameLength("img_id")
     img_src: PropductImgSrc[];
+    @IsNumber()
     company_id: CompanyId;
+    @IsNumber()
     category_id: CateogoryId;
+    @IsArray()
     variants: ProductId[];
 }

@@ -1,11 +1,11 @@
 import { Transform, TransformFnParams } from "class-transformer";
-import { IsOptional } from "class-validator";
+import { IsNumber } from "class-validator";
 
 export class FeaturedProductsDto {
     @Transform(({ value }: TransformFnParams) => Number(value))
-    @IsOptional()
+    @IsNumber()
     limit: number;
     @Transform(({ value }: TransformFnParams) => Number(value))
-    @IsOptional()
+    @IsNumber()
     offset: number;
 }

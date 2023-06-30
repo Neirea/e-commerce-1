@@ -52,6 +52,7 @@ export class ProductService {
         return product[0];
     }
     getProductsByIds(ids: ProductId[]): Promise<ProductWithImages[]> {
+        if (!ids) return Promise.resolve([]);
         return this.prisma.$queryRaw(getProductsByIdsQuery(ids));
     }
     async getSearchData(input: SearchDataDto): SearchDataResponse {
@@ -67,11 +68,11 @@ export class ProductService {
             getSearchDataQuery(input, searchCategoryIds),
         );
 
-        let min = Infinity; //2147483647
+        let min = 2147483647; // Infinity?
         let max = 0;
         const allCategories: CategoryType[] = [];
         const allCompanies: CompanyType[] = [];
-        const maxPrice = input.max_price ?? Infinity;
+        const maxPrice = input.max_price ?? 2147483647;
         const minPrice = input.min_price ?? 0;
         data.forEach((p) => {
             const price = ((100 - p.discount) / 100) * p.price;

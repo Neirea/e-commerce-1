@@ -14,7 +14,7 @@ export const subCategoriesQuery = (category_id: CateogoryId) => Prisma.sql`
 `;
 
 export const productsByOrderCount = Prisma.sql`
-    SELECT p.*,COUNT(CASE o.status WHEN 'ACCEPTED' THEN 1 ELSE NULL END) as _count
+    SELECT p.*,CAST(COUNT(CASE o.status WHEN 'ACCEPTED' THEN 1 ELSE NULL END) as INTEGER) as _count
     FROM public."Product" as p
     LEFT JOIN public."SingleOrderItem" as s ON p.id = s.product_id
     LEFT JOIN public."Order" as o ON s.order_id = o.id

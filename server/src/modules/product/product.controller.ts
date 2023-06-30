@@ -42,7 +42,7 @@ export class ProductController {
     @Get("some")
     getProductsByIds(
         @Query("ids", parseArrayQuery)
-        ids: ProductId[],
+        ids: ProductId[] | undefined,
     ): Promise<ProductWithImages[]> {
         return this.productService.getProductsByIds(ids);
     }
@@ -104,7 +104,7 @@ export class ProductController {
     @UseGuards(RolesGuard)
     updateProduct(
         @Param("id") id: ProductId,
-        body: UpdateProductDto,
+        @Body() body: UpdateProductDto,
     ): Promise<void> {
         return this.productService.updateProduct(id, body);
     }

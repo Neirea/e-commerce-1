@@ -20,7 +20,7 @@ export type ProductWithCatCom = ProductWithImages & {
     category: Category;
 };
 export type ProductWithVariants = Product & { variants: Product[] };
-export type ProductWithImgVariants = Product & {
+export type ProductWithImgVariants = ProductWithImages & {
     variants: ProductWithImages[];
     company: Company;
     category: Category;
