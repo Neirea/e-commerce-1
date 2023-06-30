@@ -1,27 +1,15 @@
-import { gql } from "@apollo/client";
+import axios from "axios";
+import { ICompany } from "../types/Company";
 
-export const QUERY_ALL_COMPANIES = gql`
-    query GetAllCompanies {
-        companies {
-            id
-            name
-        }
-    }
-`;
+export const getAllCompanies = () => axios.get<ICompany[]>("/company");
 
-export const MUTATION_CREATE_COMPANY = gql`
-    mutation CreateCompany($input: CreateCompanyInput!) {
-        createCompany(input: $input)
-    }
-`;
-export const MUTATION_UPDATE_COMPANY = gql`
-    mutation UpdateCompany($input: UpdateCompanyInput!) {
-        updateCompany(input: $input)
-    }
-`;
+export const createCompany = async (input: Omit<ICompany, "id">) =>
+    axios.post<void>("/company", input);
 
-export const MUTATION_DELETE_COMPANY = gql`
-    mutation DeleteCompany($id: Int!) {
-        deleteCompany(id: $id)
-    }
-`;
+export const updateCompany = async (input: ICompany) => {
+    const { id, ...data } = input;
+    return axios.patch<void>(`/company/${id}`, data);
+};
+
+export const deleteCompany = async (id: Pick<ICompany, "id">["id"]) =>
+    axios.delete<void>(`/company/${id}`);

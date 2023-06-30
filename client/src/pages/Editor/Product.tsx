@@ -1,29 +1,17 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { ChangeEvent, FormEvent, useMemo, useRef, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
-import { ImageResult } from "../../commonTypes";
+import { getAllCategories } from "../../queries/Category";
+import { getAllCompanies } from "../../queries/Company";
 import {
-    CreateProductMutation,
-    CreateProductMutationVariables,
-    DeleteProductMutation,
-    DeleteProductMutationVariables,
-    GetAllCategoriesQuery,
-    GetAllCompaniesQuery,
-    GetAllProductsQuery,
-    UpdateProductMutation,
-    UpdateProductMutationVariables,
-} from "../../generated/graphql";
-import useCurrentUser from "../../hooks/useCurrentUser";
-import { QUERY_ALL_CATEGORIES } from "../../queries/Category";
-import { QUERY_ALL_COMPANIES } from "../../queries/Company";
-import {
-    MUTATION_CREATE_PRODUCT,
-    MUTATION_DELETE_PRODUCT,
-    MUTATION_UPDATE_PRODUCT,
-    QUERY_ALL_PRODUCT,
+    createProduct,
+    deleteProduct,
+    getAllProducts,
+    updateProduct,
+    uploadImages,
 } from "../../queries/Product";
 import isJSON from "../../utils/isJSON";
-import { serverUrl } from "../../utils/server";
 
 const defaultValues = {
     name: "",
@@ -37,40 +25,38 @@ const defaultValues = {
 };
 
 const Product = () => {
-    const { user } = useCurrentUser();
-    const {
-        data: productData,
-        loading: productLoading,
-        error: productError,
-    } = useQuery<GetAllProductsQuery>(QUERY_ALL_PRODUCT);
-    const {
-        data: companyData,
-        loading: companyLoading,
-        error: companyError,
-    } = useQuery<GetAllCompaniesQuery>(QUERY_ALL_COMPANIES);
-    const {
-        data: categoryData,
-        loading: categoryLoading,
-        error: categoryError,
-    } = useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
-    const [
-        createProduct,
-        { loading: createProductLoading, error: createProductError },
-    ] = useMutation<CreateProductMutation, CreateProductMutationVariables>(
-        MUTATION_CREATE_PRODUCT
-    );
-    const [
-        updateProduct,
-        { loading: updateProductLoading, error: updateProductError },
-    ] = useMutation<UpdateProductMutation, UpdateProductMutationVariables>(
-        MUTATION_UPDATE_PRODUCT
-    );
-    const [
-        deleteProduct,
-        { loading: deleteProductLoading, error: deleteProductError },
-    ] = useMutation<DeleteProductMutation, DeleteProductMutationVariables>(
-        MUTATION_DELETE_PRODUCT
-    );
+    const queryClient = useQueryClient();
+    const productQuery = useQuery({
+        queryKey: ["product"],
+        queryFn: getAllProducts,
+    });
+    const companyQuery = useQuery({
+        queryKey: ["company"],
+        queryFn: getAllCompanies,
+    });
+
+    const categoryQuery = useQuery({
+        queryKey: ["category"],
+        queryFn: getAllCategories,
+    });
+    const createProductMutation = useMutation({
+        mutationFn: createProduct,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["product"] });
+        },
+    });
+    const updateProductMutation = useMutation({
+        mutationFn: updateProduct,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["product"] });
+        },
+    });
+    const deleteProductMutation = useMutation({
+        mutationFn: deleteProduct,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["product"] });
+        },
+    });
 
     const [productId, setProductId] = useState<number>(0);
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
@@ -81,20 +67,30 @@ const Product = () => {
     const [uploadLoading, setUploadLoading] = useState(false);
     const filesRef = useRef<HTMLInputElement>(null);
 
+    const products = productQuery.data?.data;
+    const companies = companyQuery.data?.data;
+    const categories = categoryQuery.data?.data;
+
+    // const productError = productQuery.error as AxiosError;
+    const companyError = companyQuery.error as AxiosError;
+    const categoryError = categoryQuery.error as AxiosError;
+
     const loading =
         uploadLoading ||
-        companyLoading ||
-        categoryLoading ||
-        productLoading ||
-        createProductLoading ||
-        updateProductLoading ||
-        deleteProductLoading ||
-        !productData ||
-        !companyData ||
-        !categoryData;
+        companyQuery.isLoading ||
+        categoryQuery.isLoading ||
+        productQuery.isLoading ||
+        createProductMutation.isLoading ||
+        updateProductMutation.isLoading ||
+        deleteProductMutation.isLoading ||
+        !productQuery.data ||
+        !companyQuery.data ||
+        !categoryQuery.data;
 
-    const dataError = productError || deleteProductError;
-    const upsertError = createProductError || updateProductError;
+    const dataError = (productQuery.error ||
+        deleteProductMutation.error) as AxiosError;
+    const upsertError = (createProductMutation.error ||
+        updateProductMutation.error) as AxiosError;
 
     const isJson = useMemo(
         () => isJSON(values.description),
@@ -115,10 +111,8 @@ const Product = () => {
             return;
         }
 
-        if (productData?.products) {
-            const product = productData.products.find(
-                (item) => item.id === idx
-            )!;
+        if (products) {
+            const product = products.find((item) => item.id === idx)!;
             setProductId(idx);
             setSelectedVariants(product.variants.map((i) => i.id.toString()));
             setValues({
@@ -190,43 +184,29 @@ const Product = () => {
             const formData = new FormData();
 
             selectedImages.forEach((image) => {
-                formData.append("images", image);
+                formData.append("files", image);
             });
-            const response = await fetch(
-                `${serverUrl}/api/editor/upload-images`,
-                {
-                    method: "POST",
-                    credentials: "include",
-                    body: formData,
-                    headers: {
-                        "csrf-token": user?.csrfToken || "",
-                    },
-                }
-            );
-            if (!response.ok) {
-                const error: Error = await response.json();
-                setUploadingError(error.message);
+            try {
+                const { data } = await uploadImages(formData);
+                newProduct.img_id = data.images.map((i) => i.img_id);
+                newProduct.img_src = data.images.map((i) => i.img_src);
+                setUploadLoading(false);
+            } catch (error) {
+                setUploadLoading(false);
+                setUploadingError((error as AxiosError).message);
                 return;
             }
-            const res: ImageResult = await response.json();
-            newProduct.img_id = res.images.map((i) => i.img_id);
-            newProduct.img_src = res.images.map((i) => i.img_src);
-            setUploadLoading(false);
         }
 
         if (productId) {
-            await updateProduct({
-                variables: {
-                    input: { ...newProduct, id: productId },
-                },
-                refetchQueries: ["GetAllProducts"],
+            await updateProductMutation.mutateAsync({
+                ...newProduct,
+                id: productId,
             });
         } else {
-            await createProduct({
-                variables: { input: newProduct },
-                refetchQueries: ["GetAllProducts"],
-            });
+            await createProductMutation.mutateAsync(newProduct);
         }
+
         resetForm();
         setInputError(0);
         setSelectedImages([]);
@@ -234,12 +214,7 @@ const Product = () => {
 
     const handleDelete = async () => {
         if (!productId) return;
-        await deleteProduct({
-            variables: {
-                id: productId,
-            },
-            refetchQueries: ["GetAllProducts"],
-        });
+        await deleteProductMutation.mutateAsync(productId);
         resetForm();
     };
 
@@ -261,12 +236,11 @@ const Product = () => {
                             onChange={handleProductSelect}
                         >
                             <option value={0}>{"Create new Product"}</option>
-                            {productData &&
-                                productData.products?.map((elem) => (
-                                    <option key={elem.id} value={elem.id}>
-                                        {elem.name}
-                                    </option>
-                                ))}
+                            {products?.map((elem) => (
+                                <option key={elem.id} value={elem.id}>
+                                    {elem.name}
+                                </option>
+                            ))}
                         </Form.Select>
                         <Button
                             disabled={loading || !productId}
@@ -365,12 +339,11 @@ const Product = () => {
                     <option disabled hidden value={0}>
                         {"Choose company"}
                     </option>
-                    {companyData &&
-                        companyData.companies?.map((elem) => (
-                            <option key={elem.id} value={elem.id}>
-                                {elem.name}
-                            </option>
-                        ))}
+                    {companies?.map((elem) => (
+                        <option key={elem.id} value={elem.id}>
+                            {elem.name}
+                        </option>
+                    ))}
                 </Form.Select>
                 <Form.Group className="mt-3 mb-3">
                     {categoryError && (
@@ -388,12 +361,11 @@ const Product = () => {
                         <option disabled hidden value={0}>
                             {"Choose category"}
                         </option>
-                        {categoryData &&
-                            categoryData.categories?.map((elem) => (
-                                <option key={elem.id} value={elem.id}>
-                                    {elem.name}
-                                </option>
-                            ))}
+                        {categories?.map((elem) => (
+                            <option key={elem.id} value={elem.id}>
+                                {elem.name}
+                            </option>
+                        ))}
                     </Form.Select>
                 </Form.Group>
                 <Form.Group className="mb-3">
@@ -411,12 +383,11 @@ const Product = () => {
                         size="sm"
                         multiple
                     >
-                        {productData &&
-                            productData.products?.map((elem) => (
-                                <option key={elem.id} value={elem.id}>
-                                    {elem.name}
-                                </option>
-                            ))}
+                        {products?.map((elem) => (
+                            <option key={elem.id} value={elem.id}>
+                                {elem.name}
+                            </option>
+                        ))}
                     </Form.Select>
                 </Form.Group>
                 <Form.Group className="mb-3">

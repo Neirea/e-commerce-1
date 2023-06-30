@@ -12,5 +12,5 @@ export const addressZod = z.string().regex(addressRegex);
 
 export const phoneZod = z.string().regex(phoneRegex).or(z.string().length(0));
 export const emailZod = z.string().email();
-export const givenNameZod = z.string().min(2);
-export const familyNameZod = z.string().min(2);
+export const givenNameZod = z.string().min(2).max(30);
+export const familyNameZod = z.string().min(2).max(30);

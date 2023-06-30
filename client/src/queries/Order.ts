@@ -1,33 +1,29 @@
-import { gql } from "@apollo/client";
+export type IOrderStatus =
+    | "PENDING"
+    | "ACCEPTED"
+    | "PROCESSING"
+    | "DELIVERED"
+    | "CANCELLED";
 
-export const QUERY_ALL_ORDERS = gql`
-    query GetAllOrders {
-        orders {
-            id
-            status
-            user_id
-            buyer_name
-            buyer_email
-            buyer_phone
-            delivery_address
-            shipping_cost
-            created_at
-            order_items {
-                amount
-                price
-                product {
-                    id
-                    name
-                    price
-                    discount
-                }
-            }
-        }
-    }
-`;
+export type IOrder = {
+    id: number;
+    status: IOrderStatus;
+    shipping_cost: number;
+    user_id: number;
+    buyer_name: string;
+    buyer_email: string;
+    buyer_phone: string;
+    delivery_address: string;
+    created_at: Date;
+    payment_time: Date;
+};
 
-export const MUTATION_CANCEL_ORDER = gql`
-    mutation CancelOrder($id: Int!) {
-        cancelOrder(id: $id)
-    }
-`;
+export type ISingleOrderItem = {
+    id: number;
+    order_id: number;
+    amount: number;
+    price: number;
+    product_id: number;
+};
+
+export type IOrderWithItems = IOrder & { order_items: ISingleOrderItem[] };

@@ -10,10 +10,9 @@ import {
 } from "react-bootstrap";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
-import useApolloCartStore from "../global/useApolloCartStore";
+import useCartStore from "../global/useCartStore";
 import useCurrentUser from "../hooks/useCurrentUser";
 import { toPriceNumber } from "../utils/numbers";
-import { serverUrl } from "../utils/server";
 import {
     addressDesc,
     addressZod,
@@ -23,6 +22,8 @@ import {
     phoneDesc,
     phoneZod,
 } from "../utils/zod";
+import { checkout } from "../queries/Checkout";
+import { AxiosError } from "axios";
 
 const CheckoutInputSchema = z.object({
     given_name: givenNameZod,
@@ -37,7 +38,7 @@ type CheckoutInputType = z.infer<typeof CheckoutInputSchema>;
 const Checkout = () => {
     const { user } = useCurrentUser();
     const [loading, setLoading] = useState(false);
-    const { cart, clearCart, syncCart } = useApolloCartStore();
+    const { cart, clearCart, syncCart } = useCartStore();
     const [error, setError] = useState("");
 
     const [values, setValues] = useState<CheckoutInputType>({
@@ -80,13 +81,9 @@ const Checkout = () => {
         });
 
         const { given_name, family_name, email, address, phone } = values;
-        const response = await fetch(`${serverUrl}/api/payment/checkout`, {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
+
+        try {
+            const { data } = await checkout({
                 items: checkoutItems,
                 buyer: {
                     name: given_name + " " + family_name,
@@ -94,32 +91,72 @@ const Checkout = () => {
                     address,
                     phone,
                 },
-            }),
-        });
-        const res = await response.json();
-
-        if (response.ok) {
+            });
             setError("");
             clearCart();
             //open stripe window
-            window.open(res.url, "_self");
-            return;
+            window.open(data.url, "_self");
+        } catch (error) {
+            setLoading(false);
+            setError(
+                `A payment error occurred: ${(error as AxiosError).message}`
+            );
+            // switch (error.type) {
+            //     case "StripeCardError":
+            //         setError(`A payment error occurred: ${res.message}`);
+            //         break;
+            //     case "StripeInvalidRequestError":
+            //         setError("An invalid request occurred.");
+            //         break;
+            //     default:
+            //         console.log("Error:", res.message);
+            //         setError(
+            //             `Another problem occurred, maybe unrelated to Stripe.`
+            //         );
+            //         break;
+            // }
         }
-        setLoading(false);
-        switch (res.type) {
-            case "StripeCardError":
-                setError(`A payment error occurred: ${res.message}`);
-                break;
-            case "StripeInvalidRequestError":
-                setError("An invalid request occurred.");
-                break;
-            default:
-                console.log("Error:", res.message);
-                setError(
-                    `Another problem occurred, maybe unrelated to Stripe.`
-                );
-                break;
-        }
+
+        // const response = await fetch(`${serverUrl}/api/payment/checkout`, {
+        //     method: "POST",
+        //     credentials: "include",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({
+        //         items: checkoutItems,
+        //         buyer: {
+        //             name: given_name + " " + family_name,
+        //             email,
+        //             address,
+        //             phone,
+        //         },
+        //     }),
+        // });
+        // const res = await response.json();
+
+        // if (response.ok) {
+        //     setError("");
+        //     clearCart();
+        //     //open stripe window
+        //     window.open(res.url, "_self");
+        //     return;
+        // }
+        // setLoading(false);
+        // switch (res.type) {
+        //     case "StripeCardError":
+        //         setError(`A payment error occurred: ${res.message}`);
+        //         break;
+        //     case "StripeInvalidRequestError":
+        //         setError("An invalid request occurred.");
+        //         break;
+        //     default:
+        //         console.log("Error:", res.message);
+        //         setError(
+        //             `Another problem occurred, maybe unrelated to Stripe.`
+        //         );
+        //         break;
+        // }
     };
 
     return (

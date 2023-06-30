@@ -1,71 +1,65 @@
-import { ApolloError, useMutation, useQuery } from "@apollo/client";
+// import { ApolloError, useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
-import { ImageResult } from "../../commonTypes";
-import type {
-    CreateCategoryMutation,
-    CreateCategoryMutationVariables,
-    DeleteCategoryMutation,
-    DeleteCategoryMutationVariables,
-    GetAllCategoriesQuery,
-    UpdateCategoryMutation,
-    UpdateCategoryMutationVariables,
-} from "../../generated/graphql";
-import useCurrentUser from "../../hooks/useCurrentUser";
 import {
-    MUTATION_CREATE_CATEGORY,
-    MUTATION_DELETE_CATEGORY,
-    MUTATION_UPDATE_CATEGORY,
-    QUERY_ALL_CATEGORIES,
+    createCategory,
+    deleteCategory,
+    getAllCategories,
+    updateCategory,
+    uploadImage,
 } from "../../queries/Category";
-import { serverUrl } from "../../utils/server";
 
 const Category = () => {
+    const queryClient = useQueryClient();
     const [uploadLoading, setUploadLoading] = useState(false);
-    const [uploadError, setUploadError] = useState<ApolloError | null>(null);
+    const [uploadError, setUploadError] = useState<unknown>(null);
     const [categoryId, setCategoryId] = useState<number>(0);
     const [name, setName] = useState<string>("");
     const [parentId, setParentId] = useState<number>(0);
     const [selectedImage, setSelectedImage] = useState<File | undefined>();
-    const { user } = useCurrentUser();
-    const {
-        data,
-        loading: categoryLoading,
-        error: categoryError,
-    } = useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
-    const [
-        createCategory,
-        { loading: createCategoryLoading, error: createCategoryError },
-    ] = useMutation<CreateCategoryMutation, CreateCategoryMutationVariables>(
-        MUTATION_CREATE_CATEGORY
-    );
-    const [
-        updateCategory,
-        { loading: updateCategoryLoading, error: updateCategoryError },
-    ] = useMutation<UpdateCategoryMutation, UpdateCategoryMutationVariables>(
-        MUTATION_UPDATE_CATEGORY
-    );
-    const [
-        deleteCategory,
-        { loading: deleteCategoryLoading, error: deleteCategoryError },
-    ] = useMutation<DeleteCategoryMutation, DeleteCategoryMutationVariables>(
-        MUTATION_DELETE_CATEGORY
-    );
+    // const { user } = useCurrentUser();
+
+    const categoryQuery = useQuery({
+        queryKey: ["category"],
+        queryFn: getAllCategories,
+    });
+    const createCategoryMutation = useMutation({
+        mutationFn: createCategory,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["category"] });
+        },
+    });
+    const updateCategoryMutation = useMutation({
+        mutationFn: updateCategory,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["category"] });
+        },
+    });
+    const deleteCategoryMutation = useMutation({
+        mutationFn: deleteCategory,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["category"] });
+        },
+    });
     const filesRef = useRef<HTMLInputElement>(null);
+
+    const categories = categoryQuery.data?.data;
+    const categoryError = categoryQuery.error as AxiosError;
 
     const loading =
         uploadLoading ||
-        categoryLoading ||
-        createCategoryLoading ||
-        updateCategoryLoading ||
-        deleteCategoryLoading ||
-        !data;
+        categoryQuery.isLoading ||
+        createCategoryMutation.isLoading ||
+        updateCategoryMutation.isLoading ||
+        deleteCategoryMutation.isLoading ||
+        !categoryQuery.data;
 
-    const mutationError =
-        createCategoryError ||
-        updateCategoryError ||
-        deleteCategoryError ||
-        uploadError;
+    const mutationError = (createCategoryMutation.error ||
+        updateCategoryMutation.error ||
+        deleteCategoryMutation.error ||
+        uploadError) as AxiosError;
 
     const resetForm = () => {
         setName("");
@@ -89,8 +83,8 @@ const Category = () => {
             resetForm();
             return;
         }
-        if (data?.categories) {
-            const category = data.categories.find((item) => item.id === idx)!;
+        if (categories) {
+            const category = categories.find((item) => item.id === idx)!;
             if (category.parent_id) {
                 setParentId(category.parent_id);
             }
@@ -109,12 +103,7 @@ const Category = () => {
 
     const handleDelete = async () => {
         if (!categoryId) return;
-        await deleteCategory({
-            variables: {
-                id: categoryId,
-            },
-            refetchQueries: ["GetAllCategories"],
-        });
+        await deleteCategoryMutation.mutateAsync(categoryId);
         resetForm();
     };
 
@@ -128,55 +117,34 @@ const Category = () => {
         if (selectedImage) {
             setUploadLoading(true);
             const formData = new FormData();
-            formData.append("images", selectedImage);
+            formData.append("files", selectedImage);
 
-            const response = await fetch(
-                `${serverUrl}/api/editor/upload-images`,
-                {
-                    method: "POST",
-                    credentials: "include",
-                    body: formData,
-                    headers: {
-                        "csrf-token": user?.csrfToken || "",
-                    },
-                }
-            );
-            if (!response.ok) {
-                const error: Error = await response.json();
-                setUploadError(error as ApolloError);
+            try {
+                const { data } = await uploadImage(formData);
+                img_id = data.image.img_id;
+                img_src = data.image.img_src;
                 setUploadLoading(false);
+            } catch (error) {
+                setUploadLoading(false);
+                setUploadError(error as AxiosError);
                 return;
             }
-            const res: ImageResult = await response.json();
-            img_id = res.images[0].img_id;
-            img_src = res.images[0].img_src;
-            setUploadLoading(false);
         }
 
         if (categoryId) {
-            await updateCategory({
-                variables: {
-                    input: {
-                        id: categoryId,
-                        name: name,
-                        parent_id: parentId === 0 ? undefined : parentId,
-                        img_id,
-                        img_src,
-                    },
-                },
-                refetchQueries: ["GetAllCategories"],
+            await updateCategoryMutation.mutateAsync({
+                id: categoryId,
+                name: name,
+                parent_id: parentId === 0 ? undefined : parentId,
+                img_id,
+                img_src,
             });
         } else {
-            await createCategory({
-                variables: {
-                    input: {
-                        name: name,
-                        parent_id: parentId === 0 ? undefined : parentId,
-                        img_id,
-                        img_src,
-                    },
-                },
-                refetchQueries: ["GetAllCategories"],
+            await createCategoryMutation.mutateAsync({
+                name: name,
+                parent_id: parentId === 0 ? undefined : parentId,
+                img_id,
+                img_src,
             });
         }
         resetForm();
@@ -201,12 +169,11 @@ const Category = () => {
                             onChange={handleCategorySelect}
                         >
                             <option value={0}>{"Create new category"}</option>
-                            {data &&
-                                data.categories?.map((elem) => (
-                                    <option key={elem.id} value={elem.id}>
-                                        {elem.name}
-                                    </option>
-                                ))}
+                            {categories?.map((elem) => (
+                                <option key={elem.id} value={elem.id}>
+                                    {elem.name}
+                                </option>
+                            ))}
                         </Form.Select>
                         <Button
                             onClick={handleDelete}
@@ -233,12 +200,11 @@ const Category = () => {
                         onChange={handleParentSelect}
                     >
                         <option value={0}>{"Choose Parent"}</option>
-                        {data &&
-                            data.categories?.map((elem) => (
-                                <option key={elem.id} value={elem.id}>
-                                    {elem.name}
-                                </option>
-                            ))}
+                        {categories?.map((elem) => (
+                            <option key={elem.id} value={elem.id}>
+                                {elem.name}
+                            </option>
+                        ))}
                     </Form.Select>
                 </Form.Group>
                 <Form.Group className="mb-3">

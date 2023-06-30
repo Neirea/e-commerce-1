@@ -9,7 +9,7 @@ interface IOptions {
 const useInView = <T extends HTMLElement>(
     options: IOptions,
     cb: () => void,
-    hasMore: number
+    hasMore: boolean | undefined
 ) => {
     const containerRef = useRef<T | null>(null);
     const [isVisible, setIsVisible] = useState(false);

@@ -2,7 +2,8 @@ import { BiChevronRight } from "@react-icons/all-files/bi/BiChevronRight";
 import { forwardRef, useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
-import { GetAllCategoriesQuery } from "../../../generated/graphql";
+import { ICategory } from "../../../types/Category";
+// import { GetAllCategoriesQuery } from "../../../generated/graphql";
 
 const createWrapperAndAppend = () => {
     const modalRoot = document.createElement("div");
@@ -16,7 +17,7 @@ const CategoriesContent = (
         categories,
         handleClose,
     }: {
-        categories: GetAllCategoriesQuery["categories"] | undefined;
+        categories: ICategory[];
         handleClose: () => void;
     },
     ref: React.Ref<HTMLDivElement>
@@ -25,10 +26,7 @@ const CategoriesContent = (
     const [modalWrapper, setModalWrapper] = useState<HTMLElement | null>();
 
     const subCategories = useMemo(() => {
-        const subMap = new Map<
-            number,
-            Array<GetAllCategoriesQuery["categories"][0]>
-        >();
+        const subMap = new Map<number, any>();
         if (categories?.length) {
             categories.forEach((item) => {
                 if (item.parent_id != null) {
@@ -91,18 +89,23 @@ const CategoriesContent = (
                 {lastHover !== null &&
                     !!subCategories?.get(lastHover)?.length && (
                         <ul className="submenu-list">
-                            {subCategories?.get(lastHover)?.map((category) => {
-                                return (
-                                    <li key={category.id} onClick={handleClose}>
-                                        <Link
-                                            className="text-decoration-none text-dark search-link ps-3 pe-3"
-                                            to={`/search?c=${category.id}`}
+                            {subCategories
+                                ?.get(lastHover)
+                                ?.map((category: any) => {
+                                    return (
+                                        <li
+                                            key={category.id}
+                                            onClick={handleClose}
                                         >
-                                            {category.name}
-                                        </Link>
-                                    </li>
-                                );
-                            })}
+                                            <Link
+                                                className="text-decoration-none text-dark search-link ps-3 pe-3"
+                                                to={`/search?c=${category.id}`}
+                                            >
+                                                {category.name}
+                                            </Link>
+                                        </li>
+                                    );
+                                })}
                         </ul>
                     )}
             </div>

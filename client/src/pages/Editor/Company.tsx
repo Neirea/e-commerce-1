@@ -1,57 +1,77 @@
-import { useMutation, useQuery } from "@apollo/client";
+// import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
 import {
-    CreateCompanyMutation,
-    CreateCompanyMutationVariables,
-    DeleteCompanyMutation,
-    DeleteCompanyMutationVariables,
-    GetAllCompaniesQuery,
-    UpdateCompanyMutation,
-    UpdateCompanyMutationVariables,
-} from "../../generated/graphql";
-import {
-    MUTATION_CREATE_COMPANY,
-    MUTATION_DELETE_COMPANY,
-    MUTATION_UPDATE_COMPANY,
-    QUERY_ALL_COMPANIES,
+    createCompany,
+    deleteCompany,
+    getAllCompanies,
+    updateCompany,
 } from "../../queries/Company";
 
 const Company = () => {
+    const queryClient = useQueryClient();
     const [companyId, setCompanyId] = useState<number>(0);
     const [name, setName] = useState<string>("");
-    const {
-        data,
-        loading: companyLoading,
-        error: companyError,
-    } = useQuery<GetAllCompaniesQuery>(QUERY_ALL_COMPANIES);
-    const [
-        createCompany,
-        { error: createCompanyError, loading: createCompanyLoading },
-    ] = useMutation<CreateCompanyMutation, CreateCompanyMutationVariables>(
-        MUTATION_CREATE_COMPANY
-    );
-    const [
-        updateCompany,
-        { error: updateCompanyError, loading: updateCompanyLoading },
-    ] = useMutation<UpdateCompanyMutation, UpdateCompanyMutationVariables>(
-        MUTATION_UPDATE_COMPANY
-    );
-    const [
-        deleteCompany,
-        { error: deleteCompanyError, loading: deleteCompanyLoading },
-    ] = useMutation<DeleteCompanyMutation, DeleteCompanyMutationVariables>(
-        MUTATION_DELETE_COMPANY
-    );
-    const loading =
-        companyLoading ||
-        createCompanyLoading ||
-        updateCompanyLoading ||
-        deleteCompanyLoading ||
-        !data;
 
-    const mutationError =
-        createCompanyError || updateCompanyError || deleteCompanyError;
+    const companyQuery = useQuery({
+        queryKey: ["company"],
+        queryFn: getAllCompanies,
+    });
+    // const {
+    //     data,
+    //     loading: companyLoading,
+    //     error: companyError,
+    // } = useQuery<GetAllCompaniesQuery>(QUERY_ALL_COMPANIES);
+    const createCompanyMutation = useMutation({
+        mutationFn: createCompany,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["company"] });
+        },
+    });
+    // const [
+    //     createCompany,
+    //     { error: createCompanyError, loading: createCompanyLoading },
+    // ] = useMutation<CreateCompanyMutation, CreateCompanyMutationVariables>(
+    //     MUTATION_CREATE_COMPANY
+    // );
+    const updateCompanyMutation = useMutation({
+        mutationFn: updateCompany,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["company"] });
+        },
+    });
+    // const [
+    //     updateCompany,
+    //     { error: updateCompanyError, loading: updateCompanyLoading },
+    // ] = useMutation<UpdateCompanyMutation, UpdateCompanyMutationVariables>(
+    //     MUTATION_UPDATE_COMPANY
+    // );
+    const deleteCompanyMutation = useMutation({
+        mutationFn: deleteCompany,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["company"] });
+        },
+    });
+    // const [
+    //     deleteCompany,
+    //     { error: deleteCompanyError, loading: deleteCompanyLoading },
+    // ] = useMutation<DeleteCompanyMutation, DeleteCompanyMutationVariables>(
+    //     MUTATION_DELETE_COMPANY
+    // );
+    const companies = companyQuery.data?.data;
+    const companyError = companyQuery.error as AxiosError;
+    const loading =
+        companyQuery.isLoading ||
+        createCompanyMutation.isLoading ||
+        updateCompanyMutation.isLoading ||
+        deleteCompanyMutation.isLoading ||
+        !companyQuery.data;
+
+    const mutationError = (createCompanyMutation.error ||
+        updateCompanyMutation.error ||
+        deleteCompanyMutation.error) as AxiosError;
 
     const handleSelect = (e: ChangeEvent<HTMLSelectElement>) => {
         const idx = +e.target.value;
@@ -59,8 +79,8 @@ const Company = () => {
             setName("");
             return;
         }
-        if (data?.companies) {
-            const company = data.companies.find((item) => item.id === idx)!;
+        if (companies) {
+            const company = companies.find((item) => item.id === idx)!;
             setName(company.name);
             setCompanyId(idx);
         }
@@ -71,12 +91,13 @@ const Company = () => {
 
     const handleDelete = async () => {
         if (!companyId) return;
-        await deleteCompany({
-            variables: {
-                id: companyId,
-            },
-            refetchQueries: ["GetAllCompanies"],
-        });
+        await deleteCompanyMutation.mutateAsync(companyId);
+        // await deleteCompany({
+        //     variables: {
+        //         id: companyId,
+        //     },
+        //     refetchQueries: ["GetAllCompanies"],
+        // });
         setName("");
         setCompanyId(0);
     };
@@ -85,24 +106,31 @@ const Company = () => {
         e.preventDefault();
         if (companyId) {
             //update
-            await updateCompany({
-                variables: {
-                    input: {
-                        id: companyId,
-                        name: name,
-                    },
-                },
-                refetchQueries: ["GetAllCompanies"],
+            await updateCompanyMutation.mutateAsync({
+                id: companyId,
+                name: name,
             });
+            // await updateCompany({
+            //     variables: {
+            //         input: {
+            //             id: companyId,
+            //             name: name,
+            //         },
+            //     },
+            //     refetchQueries: ["GetAllCompanies"],
+            // });
         } else {
-            await createCompany({
-                variables: {
-                    input: {
-                        name: name,
-                    },
-                },
-                refetchQueries: ["GetAllCompanies"],
+            await createCompanyMutation.mutateAsync({
+                name: name,
             });
+            // await createCompany({
+            //     variables: {
+            //         input: {
+            //             name: name,
+            //         },
+            //     },
+            //     refetchQueries: ["GetAllCompanies"],
+            // });
         }
 
         setName("");
@@ -127,12 +155,11 @@ const Company = () => {
                             value={companyId.toString()}
                         >
                             <option value={0}>{"Create new company"}</option>
-                            {data &&
-                                data.companies?.map((elem) => (
-                                    <option key={elem.id} value={elem.id}>
-                                        {elem.name}
-                                    </option>
-                                ))}
+                            {companies?.map((elem) => (
+                                <option key={elem.id} value={elem.id}>
+                                    {elem.name}
+                                </option>
+                            ))}
                         </Form.Select>
                         <Button
                             disabled={loading || !companyId}

@@ -1,21 +1,22 @@
-import { ApolloError } from "@apollo/client";
+import { AxiosError } from "axios";
 import { Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { Product } from "../generated/graphql";
+// import { Product } from "../generated/graphql";
 import { toPriceNumber } from "../utils/numbers";
+import { IProductWithImages } from "../types/Product";
 
-type ProductType = Pick<
-    Product,
-    "id" | "name" | "price" | "inventory" | "discount"
-> & { images: Array<Pick<Product["images"][number], "img_src">> };
+// type ProductType = Pick<
+//     IProduct,
+//     "id" | "name" | "price" | "inventory" | "discount"
+// > & { images: Array<Pick<Product["images"][number], "img_src">> };
 
 const ProductsGrid = ({
     products,
     productError,
     productLoading,
 }: {
-    products: Array<ProductType> | undefined;
-    productError: ApolloError | undefined;
+    products: IProductWithImages[] | undefined;
+    productError: AxiosError | undefined;
     productLoading: boolean;
 }) => {
     if (productError) {

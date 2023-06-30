@@ -1,8 +1,7 @@
-import { useLazyQuery, useReactiveVar } from "@apollo/client";
 import { useCallback } from "react";
-import { GetProductsByIdQuery } from "../generated/graphql";
-import { QUERY_PRODUCTS_BY_ID } from "../queries/Product";
-import { cartVar } from "./apolloClient";
+import { IProductWithImages } from "../types/Product";
+import { getProductsById } from "../queries/Product";
+import { useCart } from "./CartProvider";
 
 export interface CartProductBase {
     id: number;
@@ -11,19 +10,16 @@ export interface CartItem<ProductType extends CartProductBase> {
     product: ProductType;
     amount: number;
 }
-export type ProductDBType = GetProductsByIdQuery["productsById"][number];
-export type CartType = Array<CartItem<ProductDBType>>;
+export type CartType = CartItem<IProductWithImages>[];
 
 export const getSyncedCart = (
-    data: GetProductsByIdQuery | undefined,
+    data: IProductWithImages[] | undefined,
     source: CartType
 ): { newState: CartType; errors: string[] } | undefined => {
-    if (data?.productsById.length && source.length) {
+    if (data?.length && source.length) {
         let errors: string[] = [];
         const newState: CartType = source.reduce<CartType>((result, item) => {
-            const cartProduct = data.productsById.find(
-                (i) => item.product.id === i.id
-            );
+            const cartProduct = data.find((i) => item.product.id === i.id);
             if (!cartProduct) {
                 errors.push(
                     `Product with id:${item.product.id} no longer exists.`
@@ -69,31 +65,26 @@ export const addCartToLocalStorage = (products: CartType) => {
     );
 };
 
-function useApolloCartStore() {
-    const cart = useReactiveVar(cartVar);
-    const [getSyncProducts] = useLazyQuery<GetProductsByIdQuery>(
-        QUERY_PRODUCTS_BY_ID,
-        {
-            fetchPolicy: "network-only",
-        }
+function useCartStore() {
+    const { cart, changeCart } = useCart();
+
+    const syncCart = useCallback(
+        (data: IProductWithImages[], source: CartType) => {
+            const result = getSyncedCart(data, source);
+            if (result?.errors.length) {
+                addCartToLocalStorage([]);
+                return result.errors.join("\n");
+            }
+            if (result?.newState) {
+                addCartToLocalStorage(result.newState);
+                changeCart(result.newState);
+            }
+        },
+        []
     );
 
-    const syncCart = useCallback(async (source: CartType) => {
-        const { data } = await getSyncProducts({
-            variables: { ids: source.map((i) => i.product.id) },
-        });
-        const result = getSyncedCart(data, source);
-        if (result?.newState) {
-            addCartToLocalStorage(result.newState);
-            cartVar(result.newState);
-        }
-        if (result?.errors.length) {
-            return result.errors.join("\n");
-        }
-    }, []);
-
     const addProductToCart = useCallback(
-        (item: CartItem<ProductDBType>) => {
+        (item: CartItem<IProductWithImages>) => {
             const existingProduct = cart.find(
                 (p) => p.product.id === item.product.id
             );
@@ -115,21 +106,21 @@ function useApolloCartStore() {
                 });
 
                 addCartToLocalStorage(newCart);
-                cartVar(newCart);
+                changeCart(newCart);
                 return;
             }
             newCart = [...cart, item];
             addCartToLocalStorage(newCart);
-            cartVar(newCart);
+            changeCart(newCart);
         },
         [cart]
     );
 
     const removeProductFromCart = useCallback(
-        (product: ProductDBType) => {
+        (product: IProductWithImages) => {
             const newCart = cart.filter((p) => p.product.id !== product.id);
             addCartToLocalStorage(newCart);
-            cartVar(newCart);
+            changeCart(newCart);
         },
         [cart]
     );
@@ -137,12 +128,13 @@ function useApolloCartStore() {
     const clearCart = useCallback((clearVar?: boolean) => {
         addCartToLocalStorage([]);
         if (clearVar) {
-            cartVar([]);
+            changeCart([]);
         }
     }, []);
 
     return {
         cart,
+        changeCart,
         addProductToCart,
         removeProductFromCart,
         clearCart,
@@ -150,4 +142,4 @@ function useApolloCartStore() {
     };
 }
 
-export default useApolloCartStore;
+export default useCartStore;

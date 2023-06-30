@@ -12,9 +12,11 @@ import {
     Row,
 } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
-import useApolloCartStore from "../../../global/useApolloCartStore";
-import { CartItem, ProductDBType } from "../../../global/useApolloCartStore";
+import useCartStore from "../../../global/useCartStore";
+import { CartItem } from "../../../global/useCartStore";
 import { toPriceNumber } from "../../../utils/numbers";
+import { IProductWithImages } from "../../../types/Product";
+import { getProductsById } from "../../../queries/Product";
 
 const CartContent = ({
     handleClose,
@@ -27,7 +29,7 @@ const CartContent = ({
     const navigate = useNavigate();
     const [error, setError] = useState("");
     const { cart, addProductToCart, removeProductFromCart, syncCart } =
-        useApolloCartStore();
+        useCartStore();
     const totalPrice = cart.reduce(
         (prev, curr) =>
             prev +
@@ -37,21 +39,21 @@ const CartContent = ({
         0
     );
 
-    const handleDecrease = (item: CartItem<ProductDBType>) => {
+    const handleDecrease = (item: CartItem<IProductWithImages>) => {
         addProductToCart({
             product: item.product,
             amount: item.amount === 1 ? 0 : -1,
         });
     };
 
-    const handleIncrease = (item: CartItem<ProductDBType>) => {
+    const handleIncrease = (item: CartItem<IProductWithImages>) => {
         addProductToCart({
             product: item.product,
             amount: item.amount === item.product.inventory ? 0 : 1,
         });
     };
 
-    const handleSetAmount = (item: CartItem<ProductDBType>) => {
+    const handleSetAmount = (item: CartItem<IProductWithImages>) => {
         return (e: BaseSyntheticEvent) => {
             const setAmount = +e.target.value - item.amount;
             addProductToCart({
@@ -68,7 +70,10 @@ const CartContent = ({
 
     const handleCheckout = async () => {
         if (pathname !== "/checkout") {
-            const errorMessage = await syncCart(cart);
+            const { data } = await getProductsById(
+                cart.map((i) => i.product.id)
+            );
+            const errorMessage = syncCart(data, cart);
             if (errorMessage) {
                 setError(errorMessage);
                 return;

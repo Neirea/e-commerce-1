@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+// import { useQuery } from "@apollo/client";
 import { lazy, Suspense } from "react";
 import { Container } from "react-bootstrap";
 import { Route, Routes } from "react-router-dom";
@@ -8,13 +8,13 @@ import Header from "./components/Header";
 import LoadingProgress from "./components/LoadingProgress";
 import RequireAuth from "./components/RequireAuth";
 import ScrollAndHash from "./components/ScrollAndHash";
-import { GetProductsByIdQuery, Role } from "./generated/graphql";
-import { cartVar } from "./global/apolloClient";
-import {
+// import { GetProductsByIdQuery, Role } from "./generated/graphql";
+// import { cartVar } from "./global/apolloClient";
+import useCartStore, {
     addCartToLocalStorage,
     CartType,
     getSyncedCart,
-} from "./global/useApolloCartStore";
+} from "./global/useCartStore";
 import useCurrentUser from "./hooks/useCurrentUser";
 import Error from "./pages/Error";
 import Help from "./pages/Help";
@@ -23,7 +23,8 @@ import OrderPayment from "./pages/OrderPayment";
 import ProductWrapper from "./pages/Product";
 import SearchPage from "./pages/SearchPage";
 import Unauthorized from "./pages/Unauthorized";
-import { QUERY_PRODUCTS_BY_ID } from "./queries/Product";
+import { useQuery } from "@tanstack/react-query";
+import { getProductsById } from "./queries/Product";
 const Orders = lazy(() => import("./pages/Orders"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 const Editor = lazy(() => import("./pages/Editor/Editor"));
@@ -34,6 +35,7 @@ const Loading = () => {
 };
 
 function App() {
+    const { syncCart } = useCartStore();
     const { user, isLoading } = useCurrentUser();
 
     let localCart: CartType = [];
@@ -45,28 +47,43 @@ function App() {
         console.log(error);
         localStorage.setItem("cart", "[]");
     }
+    const { isLoading: syncQueryLoading } = useQuery({
+        queryKey: ["cart"],
+        queryFn: () => getProductsById(ids),
+        onSuccess: (data) => {
+            syncCart(data.data, localCart);
+        },
+    });
 
-    const { loading: syncQueryLoading } = useQuery<GetProductsByIdQuery>(
-        QUERY_PRODUCTS_BY_ID,
-        {
-            variables: { ids: ids },
-            onCompleted(data) {
-                const result = getSyncedCart(data, localCart);
+    // const { loading: syncQueryLoading } = useQuery<GetProductsByIdQuery>(
+    //     QUERY_PRODUCTS_BY_ID,
+    //     {
+    //         variables: { ids: ids },
+    //         onCompleted(data) {
+    //             const result = getSyncedCart(data, localCart);
 
-                if (result?.newState) {
-                    addCartToLocalStorage(result.newState);
-                    cartVar(result.newState);
-                    return;
-                }
-                if (result?.errors.length) {
-                    console.log(result.errors.join());
-                }
-                addCartToLocalStorage([]);
-            },
-        }
-    );
+    //             if (result?.newState) {
+    //                 addCartToLocalStorage(result.newState);
+    //                 cartVar(result.newState);
+    //                 return;
+    //             }
+    //             if (result?.errors.length) {
+    //                 console.log(result.errors.join());
+    //             }
+    //             addCartToLocalStorage([]);
+    //         },
+    //     }
+    // );
 
     const loading = isLoading || syncQueryLoading;
+
+    if (isLoading)
+        return (
+            <>
+                <Header />
+                <LoadingProgress isLoading={loading} />
+            </>
+        );
 
     return (
         <>
@@ -92,9 +109,7 @@ function App() {
                     {/* editor routes */}
                     <Route
                         element={
-                            <RequireAuth
-                                allowedRoles={[Role.ADMIN, Role.EDITOR]}
-                            />
+                            <RequireAuth allowedRoles={["ADMIN", "EDITOR"]} />
                         }
                     >
                         <Route
@@ -110,11 +125,7 @@ function App() {
                     <Route
                         element={
                             <RequireAuth
-                                allowedRoles={[
-                                    Role.ADMIN,
-                                    Role.EDITOR,
-                                    Role.USER,
-                                ]}
+                                allowedRoles={["ADMIN", "EDITOR", "USER"]}
                             />
                         }
                     >
