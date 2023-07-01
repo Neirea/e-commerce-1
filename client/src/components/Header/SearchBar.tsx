@@ -4,15 +4,14 @@ import qs from "query-string";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { Button, Form, InputGroup } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-// import { GetSearchResultsQuery } from "../../generated/graphql";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
-import { QUERY_SEARCH_BAR } from "../../queries1/Product";
 import LoadingSpinner from "../LoadingSpinner";
 import { getSearchBarData } from "../../queries/Product";
 import { ISearchResult } from "../../types/Product";
 
 const SearchBar = () => {
+    const navigate = useNavigate();
     const { search } = useLocation();
     const query = qs.parse(search).v as string | null;
     const [searchText, setSearchText] = useState(query || "");
@@ -20,19 +19,8 @@ const SearchBar = () => {
     const [searchData, setSearchData] = useState<ISearchResult[]>();
     const [searchLoading, setSearchLoading] = useState(false);
     const [showResults, setShowResults] = useState(false);
-    const navigate = useNavigate();
-
-    // const [getSearchResults, { data, loading, previousData }] =
-    //     useLazyQuery<GetSearchResultsQuery>(QUERY_SEARCH_BAR);
     const searchBarRef = useRef<HTMLInputElement>(null);
-
-    // const searchData = data ?? previousData;
-    // const searchLoading =
-    // searchText && (loading || searchText !== debouncedText);
-
     const showSearchData = searchText && searchData && searchData.length > 0;
-    // const showSearchData =
-    // searchText && searchData && searchData.searchBarQuery.length > 0;
 
     useOutsideClick([searchBarRef], () => setShowResults(false));
 
@@ -43,7 +31,6 @@ const SearchBar = () => {
                 const { data } = await getSearchBarData(debouncedText);
                 setSearchData(data);
                 setSearchLoading(false);
-                // getSearchResults({ variables: { input: debouncedText } });
             }
         })();
     }, [debouncedText]);

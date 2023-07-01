@@ -1,3 +1,5 @@
+import { ICompany } from "./Company";
+
 export type ICategory = {
     id: number;
     name: string;
@@ -9,4 +11,8 @@ export type ICategory = {
 export type IUploadedImage = {
     img_id: string;
     img_src: string;
+};
+
+export type ICategoryType = ICategory & { productCount?: number } & {
+    parent?: ICategory | null;
 };

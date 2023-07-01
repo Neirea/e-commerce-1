@@ -1,14 +1,19 @@
 import axios from "axios";
 import { IUploadedImage } from "../types/Category";
 import {
+    IFilteredProductsParams,
     IProduct,
+    IProductCatCom,
     IProductMutate,
     IProductWithImages,
     IRelatedProductFetchParams,
+    ISearchDataParams,
+    ISearchDataResponse,
     ISearchResult,
     ProductWithImgVariants,
 } from "../types/Product";
-import { FETCH_NUMBER } from "../utils/numbers";
+import { FETCH_NUMBER, SEARCH_NUMBER } from "../utils/numbers";
+import { objectToQueryString } from "../utils/objectQueryString";
 
 export const getAllProducts = () => axios.get<IProduct[]>("/product");
 
@@ -51,12 +56,11 @@ export const getRelatedProducts = ({
     fetchParams: IRelatedProductFetchParams;
     pageParam: number;
 }) => {
+    const queryString = objectToQueryString(fetchParams);
     return axios.get<IProductWithImages[]>(
         `/product/related?limit=${FETCH_NUMBER}&offset=${
             pageParam * FETCH_NUMBER
-        }&id=${fetchParams.id}&company_id=${
-            fetchParams.company_id
-        }&category_id=${fetchParams.category_id}`
+        }&${queryString}`
     );
 };
 
@@ -78,3 +82,23 @@ export const getSingleProductById = (id: Pick<IProduct, "id">["id"]) =>
 
 export const getSearchBarData = (query: string) =>
     axios.get<ISearchResult[]>(`/product/search?v=${query}`);
+
+export const getSearchData = (input: ISearchDataParams) => {
+    const queryString = objectToQueryString(input);
+    return axios.get<ISearchDataResponse>(`/product/data?${queryString}`);
+};
+
+export const getFilteredProducts = ({
+    fetchParams,
+    pageParam,
+}: {
+    fetchParams: IFilteredProductsParams;
+    pageParam: number;
+}) => {
+    const queryString = objectToQueryString(fetchParams);
+    return axios.get<IProductCatCom[]>(
+        `/product/filter?limit=${SEARCH_NUMBER}&offset=${
+            pageParam * SEARCH_NUMBER
+        }&${queryString}`
+    );
+};
