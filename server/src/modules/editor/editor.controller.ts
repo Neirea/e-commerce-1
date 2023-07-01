@@ -19,7 +19,6 @@ export class EditorController {
     uploadImages(
         @UploadedFiles() files: Express.Multer.File[],
     ): Promise<{ images: UploadedImage[] }> {
-        console.log(files);
         return this.editorService.uploadImages(files);
     }
 

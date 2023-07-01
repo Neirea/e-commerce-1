@@ -1,11 +1,11 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import { Button, Container, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import LoadingProgress from "../components/LoadingProgress";
-import { toPriceNumber } from "../utils/numbers";
-import { serverUrl } from "../utils/server";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { cancelOrder, getAllOrders } from "../queries/Order";
+import { toPriceNumber } from "../utils/numbers";
 
 const Orders = () => {
     const queryClient = useQueryClient();
@@ -33,32 +33,18 @@ const Orders = () => {
 
     const handlePayment = async (id: number) => {
         setPaymentLoading(true);
-        const response = await fetch(
-            `${serverUrl}/api/payment/checkout/${id}`,
-            {
-                method: "POST",
-                credentials: "include",
-            }
-        );
-        const res = await response.json();
 
-        if (response.ok) {
-            window.open(res.url, "_self");
-            return;
-        }
-        setPaymentLoading(false);
-        switch (res.type) {
-            case "StripeCardError":
-                console.log(`A payment error occurred: ${res.message}`);
-                break;
-            case "StripeInvalidRequestError":
-                console.log("An invalid request occurred.");
-                break;
-            default:
-                console.log(
-                    "Another problem occurred, maybe unrelated to Stripe."
-                );
-                break;
+        try {
+            const { data } = await axios.post<{
+                url: string;
+            }>(`/payment/checkout/${id}`);
+
+            window.open(data.url, "_self");
+        } catch (error) {
+            setPaymentLoading(false);
+            console.error(
+                `A payment error occurred: ${(error as AxiosError).message}`
+            );
         }
     };
 

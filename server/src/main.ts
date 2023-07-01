@@ -11,6 +11,7 @@ import { AppModule } from "./app.module";
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+        logger: ["error", "warn"],
         rawBody: true,
     });
     app.set("truxt proxy", true);

@@ -22,7 +22,6 @@ export const createProduct = (input: Omit<IProductMutate, "id">) =>
 
 export const updateProduct = (input: IProductMutate) => {
     const { id, ...data } = input;
-    console.log(data);
     return axios.patch<void>(`/product/${id}`, data);
 };
 

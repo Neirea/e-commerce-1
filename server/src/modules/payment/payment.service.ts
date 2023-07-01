@@ -135,7 +135,6 @@ export class PaymentService {
             );
 
             if (event.type === "checkout.session.completed") {
-                console.log("finished");
                 const orderId = (event.data.object as Stripe.Charge).metadata
                     .orderId;
                 // update status

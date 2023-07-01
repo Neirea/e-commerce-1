@@ -23,7 +23,6 @@ export class PaymentController {
         @Body() body: CheckoutBodyDto,
     ): Promise<CheckoutReturnType> {
         const user = req.user;
-        console.log(body);
         return this.paymentService.initializePayment(user, body);
     }
 

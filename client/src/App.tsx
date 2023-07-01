@@ -37,7 +37,7 @@ function App() {
         localCart = JSON.parse(localStorage.getItem("cart") || "[]");
         ids = localCart.map((i) => i.product.id);
     } catch (error) {
-        console.log(error);
+        console.error(error);
         localStorage.setItem("cart", "[]");
     }
     const { isLoading: syncQueryLoading } = useQuery({
