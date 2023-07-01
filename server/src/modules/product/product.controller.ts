@@ -81,7 +81,7 @@ export class ProductController {
     }
 
     @Get("search")
-    getSearch(@Query("v") query: string): SearchResult {
+    getSearch(@Query("v") query: string): Promise<SearchResult> {
         return this.productService.getSearchBarData(query);
     }
 

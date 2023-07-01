@@ -167,8 +167,8 @@ export class ProductService {
             popularProductsQuery(input),
         );
     }
-    getSearchBarData(input: string): SearchResult {
-        return this.prisma.$queryRaw(searchBarDataQuery(input));
+    getSearchBarData(input: string): Promise<SearchResult> {
+        return this.prisma.$queryRaw<SearchResult>(searchBarDataQuery(input));
     }
 
     async createProduct(input: CreateProductDto): Promise<void> {

@@ -39,7 +39,7 @@ export class UserController {
         return this.userService.getUser(id);
     }
 
-    @Patch()
+    @Patch("me")
     @UseGuards(AuthenticatedGuard)
     updateCurrentUser(
         @Req() req: Request,
