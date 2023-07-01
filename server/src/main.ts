@@ -1,5 +1,6 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
+import { NestExpressApplication } from "@nestjs/platform-express";
 import { v2 as cloudinary } from "cloudinary";
 import RedisStore from "connect-redis";
 import * as session from "express-session";
@@ -8,9 +9,12 @@ import { createClient } from "redis";
 import { AppModule } from "./app.module";
 
 async function bootstrap(): Promise<void> {
-    const app = await NestFactory.create(AppModule, { rawBody: true });
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+        rawBody: true,
+    });
+    app.set("trust proxy", true);
+    app.enableCors({ credentials: true, origin: [process.env.CLIENT_URL] });
     app.setGlobalPrefix("api");
-    app.enableCors({ credentials: true, origin: process.env.CLIENT_URL });
     app.useGlobalPipes(
         new ValidationPipe({ whitelist: true, transform: true }),
     );
