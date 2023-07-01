@@ -24,7 +24,9 @@ async function bootstrap(): Promise<void> {
         api_secret: process.env.CLDNRY_API_SECRET,
     });
 
-    const redisClient = createClient();
+    const redisClient = createClient({
+        url: process.env.REDIS_URL,
+    });
     redisClient.connect().catch(console.error);
 
     const redisStore = new RedisStore({
