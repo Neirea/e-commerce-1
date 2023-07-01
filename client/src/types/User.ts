@@ -14,3 +14,11 @@ export type IUser = {
     created_at: Date;
     avatar: string;
 };
+
+export type IUpdateUserParams = {
+    given_name: string;
+    family_name: string;
+    email: string;
+    address: string;
+    phone: string;
+};
