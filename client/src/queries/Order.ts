@@ -1,29 +1,10 @@
-export type IOrderStatus =
-    | "PENDING"
-    | "ACCEPTED"
-    | "PROCESSING"
-    | "DELIVERED"
-    | "CANCELLED";
+import axios from "axios";
+import { IOrderWithItems } from "../types/Order";
 
-export type IOrder = {
-    id: number;
-    status: IOrderStatus;
-    shipping_cost: number;
-    user_id: number;
-    buyer_name: string;
-    buyer_email: string;
-    buyer_phone: string;
-    delivery_address: string;
-    created_at: Date;
-    payment_time: Date;
-};
+export const getAllOrders = () => axios.get<IOrderWithItems[]>("/order");
 
-export type ISingleOrderItem = {
-    id: number;
-    order_id: number;
-    amount: number;
-    price: number;
-    product_id: number;
-};
+export const cancelOrder = (id: Pick<IOrderWithItems, "id">["id"]) =>
+    axios.patch(`/order/:$${id}`);
 
-export type IOrderWithItems = IOrder & { order_items: ISingleOrderItem[] };
+export const deleteOrder = (id: Pick<IOrderWithItems, "id">["id"]) =>
+    axios.delete(`/order/:$${id}`);
