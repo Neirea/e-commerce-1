@@ -33,6 +33,7 @@
         "cloudinary": "^1.37.3",
         "connect-redis": "^7.1.0",
         "express-session": "^1.17.3",
+        "helmet": "^7.0.0",
         "passport-facebook": "^3.0.0",
         "passport-google-oauth20": "^2.0.0",
         "redis": "^4.6.7",

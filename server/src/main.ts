@@ -5,15 +5,18 @@ import { v2 as cloudinary } from "cloudinary";
 import RedisStore from "connect-redis";
 import * as session from "express-session";
 import * as passport from "passport";
+import helmet from "helmet";
 import { createClient } from "redis";
 import { AppModule } from "./app.module";
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         rawBody: true,
+        cors: true,
     });
-    app.set("truxt proxy", true);
-    app.enableCors({ credentials: true, origin: "*" });
+    // app.set("truxt proxy", true);
+    // app.enableCors({ credentials: true, origin: "*" });
+    app.use(helmet());
     app.setGlobalPrefix("api");
     app.useGlobalPipes(
         new ValidationPipe({ whitelist: true, transform: true }),
