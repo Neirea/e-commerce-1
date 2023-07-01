@@ -26,7 +26,7 @@ const UserProfileSchema = z.object({
 
 type UserStateType = z.infer<typeof UserProfileSchema>;
 
-const UserProfile = ({ user }: { user: IUser }) => {
+const UserProfile = ({ user }: { user: IUser | undefined }) => {
     const queryClient = useQueryClient();
     const [success, setSuccess] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");

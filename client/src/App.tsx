@@ -1,4 +1,3 @@
-// import { useQuery } from "@apollo/client";
 import { lazy, Suspense } from "react";
 import { Container } from "react-bootstrap";
 import { Route, Routes } from "react-router-dom";
@@ -8,8 +7,6 @@ import Header from "./components/Header";
 import LoadingProgress from "./components/LoadingProgress";
 import RequireAuth from "./components/RequireAuth";
 import ScrollAndHash from "./components/ScrollAndHash";
-// import { GetProductsByIdQuery, Role } from "./generated/graphql";
-// import { cartVar } from "./global/apolloClient";
 import useCartStore, {
     addCartToLocalStorage,
     CartType,
@@ -54,26 +51,6 @@ function App() {
             syncCart(data.data, localCart);
         },
     });
-
-    // const { loading: syncQueryLoading } = useQuery<GetProductsByIdQuery>(
-    //     QUERY_PRODUCTS_BY_ID,
-    //     {
-    //         variables: { ids: ids },
-    //         onCompleted(data) {
-    //             const result = getSyncedCart(data, localCart);
-
-    //             if (result?.newState) {
-    //                 addCartToLocalStorage(result.newState);
-    //                 cartVar(result.newState);
-    //                 return;
-    //             }
-    //             if (result?.errors.length) {
-    //                 console.log(result.errors.join());
-    //             }
-    //             addCartToLocalStorage([]);
-    //         },
-    //     }
-    // );
 
     const loading = isLoading || syncQueryLoading;
 

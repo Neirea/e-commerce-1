@@ -24,6 +24,7 @@ import {
 } from "../utils/zod";
 import { checkout } from "../queries/Checkout";
 import { AxiosError } from "axios";
+import { getProductsById } from "../queries/Product";
 
 const CheckoutInputSchema = z.object({
     given_name: givenNameZod,
@@ -70,7 +71,8 @@ const Checkout = () => {
             setLoading(false);
             return;
         }
-        const syncCartError = await syncCart(cart);
+        const { data } = await getProductsById(cart.map((i) => i.product.id));
+        const syncCartError = syncCart(data, cart);
         if (syncCartError) {
             setError(syncCartError);
             return;
@@ -101,62 +103,7 @@ const Checkout = () => {
             setError(
                 `A payment error occurred: ${(error as AxiosError).message}`
             );
-            // switch (error.type) {
-            //     case "StripeCardError":
-            //         setError(`A payment error occurred: ${res.message}`);
-            //         break;
-            //     case "StripeInvalidRequestError":
-            //         setError("An invalid request occurred.");
-            //         break;
-            //     default:
-            //         console.log("Error:", res.message);
-            //         setError(
-            //             `Another problem occurred, maybe unrelated to Stripe.`
-            //         );
-            //         break;
-            // }
         }
-
-        // const response = await fetch(`${serverUrl}/api/payment/checkout`, {
-        //     method: "POST",
-        //     credentials: "include",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({
-        //         items: checkoutItems,
-        //         buyer: {
-        //             name: given_name + " " + family_name,
-        //             email,
-        //             address,
-        //             phone,
-        //         },
-        //     }),
-        // });
-        // const res = await response.json();
-
-        // if (response.ok) {
-        //     setError("");
-        //     clearCart();
-        //     //open stripe window
-        //     window.open(res.url, "_self");
-        //     return;
-        // }
-        // setLoading(false);
-        // switch (res.type) {
-        //     case "StripeCardError":
-        //         setError(`A payment error occurred: ${res.message}`);
-        //         break;
-        //     case "StripeInvalidRequestError":
-        //         setError("An invalid request occurred.");
-        //         break;
-        //     default:
-        //         console.log("Error:", res.message);
-        //         setError(
-        //             `Another problem occurred, maybe unrelated to Stripe.`
-        //         );
-        //         break;
-        // }
     };
 
     return (
