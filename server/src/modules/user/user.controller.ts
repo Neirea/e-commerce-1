@@ -28,7 +28,6 @@ export class UserController {
     }
 
     @Get("me")
-    @UseGuards(AuthenticatedGuard)
     showMe(@Req() req: Request): User {
         return this.userService.showMe(req);
     }

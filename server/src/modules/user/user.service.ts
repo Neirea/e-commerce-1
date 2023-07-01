@@ -18,9 +18,9 @@ export class UserService {
         return user[0];
     }
 
-    showMe(req: Request): User {
+    showMe(req: Request): User | undefined {
         // return { ...req.session.passport.user, csrfToken: req.session.csrfToken };
-        return { ...req.session.passport.user };
+        if (req.session.passport?.user) return { ...req.session.passport.user };
     }
 
     async updateUser(req: Request, input: UpdateUserDto): Promise<User> {
