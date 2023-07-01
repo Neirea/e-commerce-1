@@ -1,7 +1,7 @@
 import { BiCart } from "@react-icons/all-files/bi/BiCart";
 import { useState } from "react";
 import { Nav } from "react-bootstrap";
-import useCartStore from "../../../global/useCartStore";
+import useCartStore from "../../../store/useCartStore";
 import CartContent from "./CartContent";
 
 const Cart = () => {

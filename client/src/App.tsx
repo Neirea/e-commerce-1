@@ -14,7 +14,7 @@ import useCartStore, {
     addCartToLocalStorage,
     CartType,
     getSyncedCart,
-} from "./global/useCartStore";
+} from "./store/useCartStore";
 import useCurrentUser from "./hooks/useCurrentUser";
 import Error from "./pages/Error";
 import Help from "./pages/Help";

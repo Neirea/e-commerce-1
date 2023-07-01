@@ -10,7 +10,7 @@ import {
 } from "react-bootstrap";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
-import useCartStore from "../global/useCartStore";
+import useCartStore from "../store/useCartStore";
 import useCurrentUser from "../hooks/useCurrentUser";
 import { toPriceNumber } from "../utils/numbers";
 import {

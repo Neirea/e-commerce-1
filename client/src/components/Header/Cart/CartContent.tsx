@@ -12,8 +12,8 @@ import {
     Row,
 } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
-import useCartStore from "../../../global/useCartStore";
-import { CartItem } from "../../../global/useCartStore";
+import useCartStore from "../../../store/useCartStore";
+import { CartItem } from "../../../store/useCartStore";
 import { toPriceNumber } from "../../../utils/numbers";
 import { IProductWithImages } from "../../../types/Product";
 import { getProductsById } from "../../../queries/Product";
