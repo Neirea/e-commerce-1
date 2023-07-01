@@ -8,7 +8,7 @@ import { createClient } from "redis";
 import { AppModule } from "./app.module";
 
 async function bootstrap(): Promise<void> {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, { rawBody: true });
     app.setGlobalPrefix("api");
     app.enableCors({ credentials: true, origin: [process.env.CLIENT_URL] });
     app.useGlobalPipes(

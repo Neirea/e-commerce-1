@@ -1,8 +1,9 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, SingleOrderItem } from "@prisma/client";
 import { OrderId } from "./order.types";
 import { UserId } from "../user/user.types";
+import { imagesJSON } from "../product/utils/sql";
 
-export const getOrdersQuery = (userId: UserId) => Prisma.sql`
+export const getOrdersByUserQuery = (userId: UserId) => Prisma.sql`
     SELECT o.*,json_agg(sp.*) as order_items
     FROM public."Order" as o
     INNER JOIN
@@ -23,4 +24,24 @@ export const cancelOrderQuery = (id: OrderId) => Prisma.sql`
 export const deleteOrderQuery = (id: OrderId) => Prisma.sql`
     DELETE FROM public."Order"
     WHERE id = ${id}
+`;
+
+export const getOrdersByOrderIdQuery = (orderId: OrderId) => Prisma.sql`
+    SELECT o.*,json_agg(s.*) as order_items
+    FROM public."Order" as o
+    INNER JOIN
+        (SELECT s.id,s.amount,s.order_id,to_json(p.*) as product,i.images
+        FROM public."SingleOrderItem" as s
+        INNER JOIN (${imagesJSON}) as i ON s.product_id = i.product_id
+        INNER JOIN public."Product" as p
+        ON s.product_id = p.id) as s
+    ON s.order_id = o.id
+    WHERE o.id = ${orderId}
+    GROUP BY o.id
+`;
+
+export const updateOrderItemQuery = (order: SingleOrderItem) => Prisma.sql`
+    UPDATE public."Product"
+    SET inventory = inventory - ${order.amount}
+    WHERE id = ${order.product_id}
 `;
