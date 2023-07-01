@@ -5,14 +5,17 @@ import {
     Post,
     UploadedFile,
     UploadedFiles,
+    UseFilters,
     UseInterceptors,
 } from "@nestjs/common";
 import { EditorService } from "./editor.service";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { UploadedImage } from "./editor.types";
 import { imgMulterOptions } from "src/config/multer";
+import { ValidationExceptionFilter } from "./validation-exception.filter";
 
 @Controller("editor")
+@UseFilters(new ValidationExceptionFilter())
 export class EditorController {
     constructor(private readonly editorService: EditorService) {}
 

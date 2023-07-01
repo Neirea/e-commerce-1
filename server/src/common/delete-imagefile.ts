@@ -1,7 +1,10 @@
 import * as fs from "node:fs/promises";
 import { v2 as cloudinary } from "cloudinary";
 
-export const deleteImageFile = async (path: string, img_id: string) => {
+export const deleteImageFile = async (
+    path: string,
+    img_id: string,
+): Promise<void> => {
     try {
         await fs.unlink(path);
     } catch (error) {
