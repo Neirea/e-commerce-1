@@ -12,8 +12,7 @@ async function bootstrap(): Promise<void> {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         rawBody: true,
     });
-    app.set("trust proxy", true);
-    app.enableCors({ credentials: true, origin: [process.env.CLIENT_URL] });
+    app.enableCors({ credentials: true, origin: true });
     app.setGlobalPrefix("api");
     app.useGlobalPipes(
         new ValidationPipe({ whitelist: true, transform: true }),
@@ -50,6 +49,6 @@ async function bootstrap(): Promise<void> {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    await app.listen(5000);
+    await app.listen(5000, "0.0.0.0");
 }
 bootstrap();
