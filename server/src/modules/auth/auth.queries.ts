@@ -1,6 +1,8 @@
 import { Prisma } from "@prisma/client";
 
-export const userByPlatformIdQuery = (platform_id: string) => Prisma.sql`
+export const userByPlatformIdQuery = (
+    platform_id: string,
+): Prisma.Sql => Prisma.sql`
     SELECT * FROM public."User"
     WHERE platform_id = ${platform_id}
 `;

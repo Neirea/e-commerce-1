@@ -3,7 +3,7 @@ import { OrderId } from "./order.types";
 import { UserId } from "../user/user.types";
 import { imagesJSON } from "../product/utils/sql";
 
-export const getOrdersByUserQuery = (userId: UserId) => Prisma.sql`
+export const getOrdersByUserQuery = (userId: UserId): Prisma.Sql => Prisma.sql`
     SELECT o.*,json_agg(sp.*) as order_items
     FROM public."Order" as o
     INNER JOIN
@@ -15,18 +15,20 @@ export const getOrdersByUserQuery = (userId: UserId) => Prisma.sql`
     GROUP BY o.id
 `;
 
-export const cancelOrderQuery = (id: OrderId) => Prisma.sql`
+export const cancelOrderQuery = (id: OrderId): Prisma.Sql => Prisma.sql`
     UPDATE public."Order"
     SET "status" = 'CANCELLED'
     WHERE id = ${id} AND "status" = 'PENDING'
 `;
 
-export const deleteOrderQuery = (id: OrderId) => Prisma.sql`
+export const deleteOrderQuery = (id: OrderId): Prisma.Sql => Prisma.sql`
     DELETE FROM public."Order"
     WHERE id = ${id}
 `;
 
-export const getOrdersByOrderIdQuery = (orderId: OrderId) => Prisma.sql`
+export const getOrdersByOrderIdQuery = (
+    orderId: OrderId,
+): Prisma.Sql => Prisma.sql`
     SELECT o.*,json_agg(s.*) as order_items
     FROM public."Order" as o
     INNER JOIN
@@ -40,8 +42,16 @@ export const getOrdersByOrderIdQuery = (orderId: OrderId) => Prisma.sql`
     GROUP BY o.id
 `;
 
-export const updateOrderItemQuery = (order: SingleOrderItem) => Prisma.sql`
+export const updateOrderItemQuery = (
+    order: SingleOrderItem,
+): Prisma.Sql => Prisma.sql`
     UPDATE public."Product"
     SET inventory = inventory - ${order.amount}
     WHERE id = ${order.product_id}
+`;
+
+export const deletePendingOrdersQuery = Prisma.sql`
+    DELETE FROM public."Order" as o
+    WHERE o.status = 'PENDING'
+    AND o.created_at < NOW() - INTERVAL '1 day'
 `;

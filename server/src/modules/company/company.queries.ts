@@ -11,7 +11,9 @@ export const getCompaniesQuery = Prisma.sql`
     GROUP BY com.id
 `;
 
-export const createCompanyQuery = (input: CreateCompanyDto) => Prisma.sql`
+export const createCompanyQuery = (
+    input: CreateCompanyDto,
+): Prisma.Sql => Prisma.sql`
     INSERT INTO public."Company"("name")
     VALUES (${input.name})
 `;
@@ -19,13 +21,13 @@ export const createCompanyQuery = (input: CreateCompanyDto) => Prisma.sql`
 export const updateCompanyQuery = (
     id: CompanyId,
     input: UpdateCompanyDto,
-) => Prisma.sql`
+): Prisma.Sql => Prisma.sql`
     UPDATE public."Company"
     SET "name" = ${input.name}
     WHERE id = ${id}
 `;
 
-export const deleteCompanyQuery = (id: CompanyId) => Prisma.sql`
+export const deleteCompanyQuery = (id: CompanyId): Prisma.Sql => Prisma.sql`
     DELETE FROM public."Company"
     WHERE id = ${id}
 `;

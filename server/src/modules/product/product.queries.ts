@@ -26,7 +26,7 @@ export const getProducts = Prisma.sql`
     ORDER BY p.id
 `;
 
-export const getProductByIdQuery = (id: ProductId) => {
+export const getProductByIdQuery = (id: ProductId): Prisma.Sql => {
     const variantsJSON = Prisma.sql`
         SELECT p.id,json_agg(json_build_object('id',vrn.id,'name',p.name,'images',vrn.images)) as variants
         FROM public."Product" as p
@@ -53,7 +53,9 @@ export const getProductByIdQuery = (id: ProductId) => {
     `;
 };
 
-export const getProductsByIdsQuery = (ids: ProductId[]) => Prisma.sql`
+export const getProductsByIdsQuery = (
+    ids: ProductId[],
+): Prisma.Sql => Prisma.sql`
     SELECT p.*,i.images
     FROM public."Product" as p
     INNER JOIN (${imagesJSON}) as i
@@ -64,7 +66,7 @@ export const getProductsByIdsQuery = (ids: ProductId[]) => Prisma.sql`
 export const getSearchDataQuery = (
     input: SearchDataDto,
     categoryIds: CateogoryId[],
-) => {
+): Prisma.Sql => {
     const searchString = parseQueryString(input.search_string);
     const searchCondition = getSearchCondition(searchString);
     const companyCondition = getCompanyCondition(input.company_id);
@@ -98,7 +100,7 @@ export const getSearchDataQuery = (
 export const filteredProductsQuery = (
     input: FilteredProductsDto,
     categoryIds: CateogoryId[],
-) => {
+): Prisma.Sql => {
     const {
         offset,
         limit,
@@ -148,7 +150,9 @@ export const filteredProductsQuery = (
     `;
 };
 
-export const featuredProductsQuery = (input: FeaturedProductsDto) => Prisma.sql`
+export const featuredProductsQuery = (
+    input: FeaturedProductsDto,
+): Prisma.Sql => Prisma.sql`
     SELECT p.*,pi.images
     FROM public."Product" as p
     INNER JOIN (${imagesJSON}) as pi
@@ -157,7 +161,9 @@ export const featuredProductsQuery = (input: FeaturedProductsDto) => Prisma.sql`
     LIMIT ${input.limit} OFFSET ${input.offset}
 `;
 
-export const relatedProductsQuery = (input: RelatedProductsDto) => Prisma.sql`
+export const relatedProductsQuery = (
+    input: RelatedProductsDto,
+): Prisma.Sql => Prisma.sql`
     SELECT po.*,pi.images
     FROM (${productsByOrderCount}) as po
     INNER JOIN (${imagesJSON}) as pi
@@ -169,7 +175,9 @@ export const relatedProductsQuery = (input: RelatedProductsDto) => Prisma.sql`
     LIMIT ${input.limit} OFFSET ${input.offset}
 `;
 
-export const popularProductsQuery = (input: PopularProductsDto) => Prisma.sql`
+export const popularProductsQuery = (
+    input: PopularProductsDto,
+): Prisma.Sql => Prisma.sql`
     SELECT po.*,pi.images
     FROM (${productsByOrderCount}) as po
     INNER JOIN (${imagesJSON}) as pi
@@ -178,7 +186,7 @@ export const popularProductsQuery = (input: PopularProductsDto) => Prisma.sql`
     LIMIT ${input.limit} OFFSET ${input.offset}
 `;
 
-export const searchBarDataQuery = (input: string) => {
+export const searchBarDataQuery = (input: string): Prisma.Sql => {
     const searchString = parseQueryString(input);
 
     return Prisma.sql`
@@ -207,18 +215,18 @@ export const searchBarDataQuery = (input: string) => {
 
 export const updateProductCategoryQuery = (
     input: CreateProductDto,
-) => Prisma.sql`
+): Prisma.Sql => Prisma.sql`
     INSERT INTO public."_CategoryToCompany" ("A","B")
     VALUES (${input.category_id},${input.company_id})
     ON CONFLICT DO NOTHING
 `;
 
-export const getOldImagesQuery = (id: ProductId) => Prisma.sql`
+export const getOldImagesQuery = (id: ProductId): Prisma.Sql => Prisma.sql`
     SELECT * FROM public."ProductImage"
     WHERE product_id = ${id}
 `;
 
-export const deleteOldImagesQuery = (id: ProductId) => Prisma.sql`
+export const deleteOldImagesQuery = (id: ProductId): Prisma.Sql => Prisma.sql`
     DELETE FROM public."ProductImage"
     WHERE product_id = ${id}
 `;

@@ -118,7 +118,12 @@ export class PaymentService {
         return { url: session.url };
     }
 
-    async stripeWebhook(signature: string, body: Buffer) {
+    async stripeWebhook(
+        signature: string,
+        body: Buffer,
+    ): Promise<{
+        received: string;
+    }> {
         const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
         let event: Stripe.Event;
@@ -171,7 +176,7 @@ export class PaymentService {
         orderId: OrderId,
         orderShippingCost: number,
         orderProducts: OrderProductsType[],
-    ) {
+    ): Promise<Stripe.Response<Stripe.Checkout.Session>> {
         const clientUrl = process.env.CLIENT_URL;
         return stripe.checkout.sessions.create({
             payment_method_types: ["card"],

@@ -40,7 +40,9 @@ export class PaymentController {
     stripeWebhook(
         @Req() req: RawBodyRequest<Request>,
         @Headers("stripe-signature") signature: string,
-    ) {
+    ): Promise<{
+        received: string;
+    }> {
         const rawBody = req.rawBody;
         return this.paymentService.stripeWebhook(signature, rawBody);
     }
