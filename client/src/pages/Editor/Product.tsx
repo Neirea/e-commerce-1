@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import { ChangeEvent, FormEvent, useMemo, useRef, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
 import { getAllCategories } from "../../queries/Category";
@@ -12,6 +11,7 @@ import {
     uploadImages,
 } from "../../queries/Product";
 import isJSON from "../../utils/isJSON";
+import { getError } from "../../utils/getError";
 
 const defaultValues = {
     name: "",
@@ -63,7 +63,7 @@ const Product = () => {
     const [selectedVariants, setSelectedVariants] = useState<string[]>([]);
     const [values, setValues] = useState(defaultValues);
     const [inputError, setInputError] = useState(0);
-    const [uploadingError, setUploadingError] = useState<string | null>(null);
+    const [uploadingError, setUploadingError] = useState<Error | null>(null);
     const [uploadLoading, setUploadLoading] = useState(false);
     const filesRef = useRef<HTMLInputElement>(null);
 
@@ -71,9 +71,8 @@ const Product = () => {
     const companies = companyQuery.data?.data;
     const categories = categoryQuery.data?.data;
 
-    // const productError = productQuery.error as AxiosError;
-    const companyError = companyQuery.error as AxiosError;
-    const categoryError = categoryQuery.error as AxiosError;
+    const companyError = getError(companyQuery.error);
+    const categoryError = getError(categoryQuery.error);
 
     const loading =
         uploadLoading ||
@@ -87,10 +86,12 @@ const Product = () => {
         !companyQuery.data ||
         !categoryQuery.data;
 
-    const dataError = (productQuery.error ||
-        deleteProductMutation.error) as AxiosError;
-    const upsertError = (createProductMutation.error ||
-        updateProductMutation.error) as AxiosError;
+    const dataError = getError(
+        productQuery.error || deleteProductMutation.error
+    );
+    const upsertError = getError(
+        createProductMutation.error || updateProductMutation.error
+    );
 
     const isJson = useMemo(
         () => isJSON(values.description),
@@ -193,7 +194,7 @@ const Product = () => {
                 setUploadLoading(false);
             } catch (error) {
                 setUploadLoading(false);
-                setUploadingError((error as AxiosError).message);
+                setUploadingError(getError(error));
                 return;
             }
         }
@@ -392,7 +393,7 @@ const Product = () => {
                 </Form.Group>
                 <Form.Group className="mb-3">
                     {uploadingError && (
-                        <Alert variant="danger">{uploadingError}</Alert>
+                        <Alert variant="danger">{uploadingError.message}</Alert>
                     )}
                     <Form.Label>
                         Images (for updating: doesn't update if no images

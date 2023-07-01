@@ -23,8 +23,8 @@ import {
     phoneZod,
 } from "../utils/zod";
 import { checkout } from "../queries/Checkout";
-import { AxiosError } from "axios";
 import { getProductsById } from "../queries/Product";
+import { getError } from "../utils/getError";
 
 const CheckoutInputSchema = z.object({
     given_name: givenNameZod,
@@ -100,9 +100,7 @@ const Checkout = () => {
             window.open(data.url, "_self");
         } catch (error) {
             setLoading(false);
-            setError(
-                `A payment error occurred: ${(error as AxiosError).message}`
-            );
+            setError(`A payment error occurred: ${getError(error).message}`);
         }
     };
 

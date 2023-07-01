@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
 import {
@@ -9,6 +8,7 @@ import {
     updateCategory,
     uploadImage,
 } from "../../queries/Category";
+import { getError } from "../../utils/getError";
 
 const Category = () => {
     const queryClient = useQueryClient();
@@ -44,7 +44,7 @@ const Category = () => {
     const filesRef = useRef<HTMLInputElement>(null);
 
     const categories = categoryQuery.data?.data;
-    const categoryError = categoryQuery.error as AxiosError;
+    const categoryError = getError(categoryQuery.error);
 
     const loading =
         uploadLoading ||
@@ -54,10 +54,12 @@ const Category = () => {
         deleteCategoryMutation.isLoading ||
         !categoryQuery.data;
 
-    const mutationError = (createCategoryMutation.error ||
-        updateCategoryMutation.error ||
-        deleteCategoryMutation.error ||
-        uploadError) as AxiosError;
+    const mutationError = getError(
+        createCategoryMutation.error ||
+            updateCategoryMutation.error ||
+            deleteCategoryMutation.error ||
+            uploadError
+    );
 
     const resetForm = () => {
         setName("");
@@ -124,7 +126,7 @@ const Category = () => {
                 setUploadLoading(false);
             } catch (error) {
                 setUploadLoading(false);
-                setUploadError(error as AxiosError);
+                setUploadError(error);
                 return;
             }
         }

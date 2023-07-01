@@ -1,5 +1,4 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import qs from "query-string";
 import { ChangeEvent, useEffect, useRef } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
@@ -13,6 +12,7 @@ import { ICategoryType } from "../types/Category";
 import { IProductCatCom } from "../types/Product";
 import { SEARCH_NUMBER } from "../utils/numbers";
 import sortByParentId from "../utils/sortByParents";
+import { getError } from "../utils/getError";
 
 const options = { root: null, rootMargin: "0px", treshold: 1.0 };
 
@@ -60,7 +60,7 @@ const SearchPage = () => {
         keepPreviousData: true,
     });
 
-    const productError = error as AxiosError;
+    const productError = getError(error);
     const isCurrentLoading = productData && searchData ? false : true;
 
     const initialValue: IProductCatCom[] = [];

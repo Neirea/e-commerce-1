@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import { Alert, Button, Col, Container, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { getAllCategories } from "../../queries/Category";
@@ -15,7 +14,7 @@ const Home = () => {
         queryKey: ["category"],
         queryFn: getAllCategories,
     });
-    const categoryError = error as AxiosError;
+    const categoryError = getError(error);
 
     return (
         <>

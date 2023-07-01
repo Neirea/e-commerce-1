@@ -1,4 +1,3 @@
-import { AxiosError } from "axios";
 import { Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { toPriceNumber } from "../utils/numbers";
@@ -10,7 +9,7 @@ const ProductsGrid = ({
     productLoading,
 }: {
     products: IProductWithImages[] | undefined;
-    productError: AxiosError | undefined;
+    productError: Error | undefined;
     productLoading: boolean;
 }) => {
     if (productError) {

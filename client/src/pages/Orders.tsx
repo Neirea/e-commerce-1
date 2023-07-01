@@ -1,11 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useState } from "react";
 import { Button, Container, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import LoadingProgress from "../components/LoadingProgress";
 import { cancelOrder, getAllOrders } from "../queries/Order";
 import { toPriceNumber } from "../utils/numbers";
+import { getError } from "../utils/getError";
 
 const Orders = () => {
     const queryClient = useQueryClient();
@@ -43,7 +44,7 @@ const Orders = () => {
         } catch (error) {
             setPaymentLoading(false);
             console.error(
-                `A payment error occurred: ${(error as AxiosError).message}`
+                `A payment error occurred: ${getError(error).message}`
             );
         }
     };

@@ -1,5 +1,4 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { AxiosError, all } from "axios";
 import { Button, Container } from "react-bootstrap";
 import ProductsGrid from "../../components/ProductsGrid";
 import { getFeaturedProducts } from "../../queries/Product";
@@ -22,7 +21,7 @@ const Featured = () => {
         },
         keepPreviousData: true,
     });
-    const productError = error as AxiosError;
+    const productError = getError(error);
     const fetchMoreProducts = () => fetchNextPage();
     const initialValue: IProductWithImages[] = [];
     const products = productData?.pages.reduce(

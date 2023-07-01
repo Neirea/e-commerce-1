@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
 import {
@@ -8,6 +7,7 @@ import {
     getAllCompanies,
     updateCompany,
 } from "../../queries/Company";
+import { getError } from "../../utils/getError";
 
 const Company = () => {
     const queryClient = useQueryClient();
@@ -37,7 +37,7 @@ const Company = () => {
         },
     });
     const companies = companyQuery.data?.data;
-    const companyError = companyQuery.error as AxiosError;
+    const companyError = getError(companyQuery.error);
     const loading =
         companyQuery.isLoading ||
         createCompanyMutation.isLoading ||
@@ -45,9 +45,11 @@ const Company = () => {
         deleteCompanyMutation.isLoading ||
         !companyQuery.data;
 
-    const mutationError = (createCompanyMutation.error ||
-        updateCompanyMutation.error ||
-        deleteCompanyMutation.error) as AxiosError;
+    const mutationError = getError(
+        createCompanyMutation.error ||
+            updateCompanyMutation.error ||
+            deleteCompanyMutation.error
+    );
 
     const handleSelect = (e: ChangeEvent<HTMLSelectElement>) => {
         const idx = +e.target.value;

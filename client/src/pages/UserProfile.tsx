@@ -12,9 +12,9 @@ import { IUser } from "../types/User";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateUser } from "../queries/User";
-import { AxiosError } from "axios";
 import { fromZodError } from "zod-validation-error";
 import { Alert, Button, Container, Form } from "react-bootstrap";
+import { getError } from "../utils/getError";
 
 const UserProfileSchema = z.object({
     given_name: givenNameZod,
@@ -44,7 +44,7 @@ const UserProfile = ({ user }: { user: IUser | undefined }) => {
         phone: user?.phone || "",
     });
 
-    const error = (updateMutation.error as AxiosError)?.message || errorMessage;
+    const error = getError(updateMutation.error).message || errorMessage;
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         setValues({ ...values, [e.target.name]: e.target.value });

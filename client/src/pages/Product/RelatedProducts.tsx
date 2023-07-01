@@ -1,10 +1,10 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { AxiosError } from "axios";
 import ProductsGrid from "../../components/ProductsGrid";
 import useInView from "../../hooks/useInView";
 import { getRelatedProducts } from "../../queries/Product";
 import { IProduct, IProductWithImages } from "../../types/Product";
 import { FETCH_NUMBER } from "../../utils/numbers";
+import { getError } from "../../utils/getError";
 
 const options = { root: null, rootMargin: "0px", treshold: 1.0 };
 
@@ -30,7 +30,7 @@ const RelatedProducts = ({ product }: { product: IProduct }) => {
         },
         keepPreviousData: true,
     });
-    const relatedProductError = error as AxiosError;
+    const relatedProductError = getError(error);
 
     const initialValue: IProductWithImages[] = [];
     const products = relatedProductData?.pages.reduce(
