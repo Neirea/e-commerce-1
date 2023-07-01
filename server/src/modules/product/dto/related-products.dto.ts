@@ -3,16 +3,16 @@ import { ProductId } from "../product.types";
 import { CateogoryId } from "src/modules/category/category.types";
 import { FeaturedProductsDto } from "./featured-products.dto";
 import { Transform, TransformFnParams } from "class-transformer";
-import { IsNumber } from "class-validator";
+import { IsNotEmpty } from "class-validator";
 
 export class RelatedProductsDto extends FeaturedProductsDto {
     @Transform(({ value }: TransformFnParams) => Number(value))
-    @IsNumber()
+    @IsNotEmpty()
     id: ProductId;
     @Transform(({ value }: TransformFnParams) => Number(value))
-    @IsNumber()
+    @IsNotEmpty()
     company_id: CompanyId;
     @Transform(({ value }: TransformFnParams) => Number(value))
-    @IsNumber()
+    @IsNotEmpty()
     category_id: CateogoryId;
 }

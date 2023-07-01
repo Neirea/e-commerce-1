@@ -1,4 +1,10 @@
-import { IsEmail, IsOptional, IsPhoneNumber, Length } from "class-validator";
+import {
+    Allow,
+    IsEmail,
+    IsPhoneNumber,
+    Length,
+    ValidateIf,
+} from "class-validator";
 import {
     UserAddress,
     UserEmail,
@@ -14,9 +20,9 @@ export class UpdateUserDto {
     family_name: UserFamilyName;
     @IsEmail()
     email: UserEmail;
-    @IsOptional()
+    @Allow()
     address: UserAddress;
-    @IsOptional()
+    @ValidateIf((o) => o.phone.length > 0)
     @IsPhoneNumber()
     phone: UserPhone;
 }

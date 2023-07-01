@@ -13,7 +13,7 @@ import {
 } from "../product.types";
 import {
     IsArray,
-    IsNumber,
+    IsNotEmpty,
     IsObject,
     IsOptional,
     Length,
@@ -41,9 +41,9 @@ export class CreateProductDto {
     @IsOptional()
     @SameLength("img_id")
     img_src: PropductImgSrc[];
-    @IsNumber()
+    @IsNotEmpty()
     company_id: CompanyId;
-    @IsNumber()
+    @IsNotEmpty()
     category_id: CateogoryId;
     @IsArray()
     variants: ProductId[];
