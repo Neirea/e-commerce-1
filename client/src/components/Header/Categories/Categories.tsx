@@ -1,4 +1,3 @@
-// import { useQuery } from "@apollo/client";
 import { useRef, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useOutsideClick } from "../../../hooks/useOutsideClick";
@@ -11,7 +10,6 @@ const Categories = () => {
         queryKey: ["category"],
         queryFn: getAllCategories,
     });
-    // const { data } = useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
     const [showCategories, setShowCategories] = useState(false);
     const menuButtonRef = useRef<HTMLButtonElement | null>(null);
     const categoriesRef = useRef<HTMLDivElement | null>(null);

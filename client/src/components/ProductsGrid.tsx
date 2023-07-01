@@ -1,14 +1,8 @@
 import { AxiosError } from "axios";
 import { Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
-// import { Product } from "../generated/graphql";
 import { toPriceNumber } from "../utils/numbers";
 import { IProductWithImages } from "../types/Product";
-
-// type ProductType = Pick<
-//     IProduct,
-//     "id" | "name" | "price" | "inventory" | "discount"
-// > & { images: Array<Pick<Product["images"][number], "img_src">> };
 
 const ProductsGrid = ({
     products,

@@ -1,4 +1,3 @@
-// import { useMutation, useQuery } from "@apollo/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { ChangeEvent, FormEvent, useState } from "react";
@@ -19,47 +18,24 @@ const Company = () => {
         queryKey: ["company"],
         queryFn: getAllCompanies,
     });
-    // const {
-    //     data,
-    //     loading: companyLoading,
-    //     error: companyError,
-    // } = useQuery<GetAllCompaniesQuery>(QUERY_ALL_COMPANIES);
     const createCompanyMutation = useMutation({
         mutationFn: createCompany,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["company"] });
         },
     });
-    // const [
-    //     createCompany,
-    //     { error: createCompanyError, loading: createCompanyLoading },
-    // ] = useMutation<CreateCompanyMutation, CreateCompanyMutationVariables>(
-    //     MUTATION_CREATE_COMPANY
-    // );
     const updateCompanyMutation = useMutation({
         mutationFn: updateCompany,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["company"] });
         },
     });
-    // const [
-    //     updateCompany,
-    //     { error: updateCompanyError, loading: updateCompanyLoading },
-    // ] = useMutation<UpdateCompanyMutation, UpdateCompanyMutationVariables>(
-    //     MUTATION_UPDATE_COMPANY
-    // );
     const deleteCompanyMutation = useMutation({
         mutationFn: deleteCompany,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["company"] });
         },
     });
-    // const [
-    //     deleteCompany,
-    //     { error: deleteCompanyError, loading: deleteCompanyLoading },
-    // ] = useMutation<DeleteCompanyMutation, DeleteCompanyMutationVariables>(
-    //     MUTATION_DELETE_COMPANY
-    // );
     const companies = companyQuery.data?.data;
     const companyError = companyQuery.error as AxiosError;
     const loading =
@@ -92,12 +68,6 @@ const Company = () => {
     const handleDelete = async () => {
         if (!companyId) return;
         await deleteCompanyMutation.mutateAsync(companyId);
-        // await deleteCompany({
-        //     variables: {
-        //         id: companyId,
-        //     },
-        //     refetchQueries: ["GetAllCompanies"],
-        // });
         setName("");
         setCompanyId(0);
     };
@@ -105,32 +75,14 @@ const Company = () => {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         if (companyId) {
-            //update
             await updateCompanyMutation.mutateAsync({
                 id: companyId,
                 name: name,
             });
-            // await updateCompany({
-            //     variables: {
-            //         input: {
-            //             id: companyId,
-            //             name: name,
-            //         },
-            //     },
-            //     refetchQueries: ["GetAllCompanies"],
-            // });
         } else {
             await createCompanyMutation.mutateAsync({
                 name: name,
             });
-            // await createCompany({
-            //     variables: {
-            //         input: {
-            //             name: name,
-            //         },
-            //     },
-            //     refetchQueries: ["GetAllCompanies"],
-            // });
         }
 
         setName("");

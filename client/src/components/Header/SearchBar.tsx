@@ -1,4 +1,3 @@
-// import { useLazyQuery } from "@apollo/client";
 import { BsSearch } from "@react-icons/all-files/bs/BsSearch";
 import qs from "query-string";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";

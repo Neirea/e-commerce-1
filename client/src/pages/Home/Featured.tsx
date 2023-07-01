@@ -1,4 +1,3 @@
-// import { useQuery } from "@apollo/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { AxiosError, all } from "axios";
 import { Button, Container } from "react-bootstrap";

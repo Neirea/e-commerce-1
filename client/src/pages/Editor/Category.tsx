@@ -1,4 +1,3 @@
-// import { ApolloError, useMutation, useQuery } from "@apollo/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
@@ -19,7 +18,6 @@ const Category = () => {
     const [name, setName] = useState<string>("");
     const [parentId, setParentId] = useState<number>(0);
     const [selectedImage, setSelectedImage] = useState<File | undefined>();
-    // const { user } = useCurrentUser();
 
     const categoryQuery = useQuery({
         queryKey: ["category"],

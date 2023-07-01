@@ -3,7 +3,6 @@ import { forwardRef, useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
 import { ICategory } from "../../../types/Category";
-// import { GetAllCategoriesQuery } from "../../../generated/graphql";
 
 const createWrapperAndAppend = () => {
     const modalRoot = document.createElement("div");

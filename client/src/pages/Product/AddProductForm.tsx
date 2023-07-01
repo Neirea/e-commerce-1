@@ -1,7 +1,6 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import useCartStore from "../../store/useCartStore";
-// import { GetSingleProductQuery } from "../../generated/graphql";
 import { toPriceNumber } from "../../utils/numbers";
 import { ProductWithImgVariants } from "../../types/Product";
 
