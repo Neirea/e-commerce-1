@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { getAllCategories } from "../../queries/Category";
 import Featured from "./Featured";
 import Popular from "./Popular";
+import { getError } from "../../utils/getError";
 
 const Home = () => {
     const {

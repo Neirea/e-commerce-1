@@ -4,6 +4,7 @@ import ProductsGrid from "../../components/ProductsGrid";
 import { getFeaturedProducts } from "../../queries/Product";
 import { IProductWithImages } from "../../types/Product";
 import { FETCH_NUMBER } from "../../utils/numbers";
+import { getError } from "../../utils/getError";
 
 const Featured = () => {
     const {
