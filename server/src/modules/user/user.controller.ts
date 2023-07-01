@@ -29,7 +29,8 @@ export class UserController {
 
     @Get("me")
     showMe(@Req() req: Request): User {
-        return this.userService.showMe(req);
+        const user = req.user;
+        return this.userService.showMe(user);
     }
 
     @Get(":id")

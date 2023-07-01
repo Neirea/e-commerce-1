@@ -5,10 +5,10 @@ import { PrismaService } from "../prisma/prisma.service";
 import {
     cancelOrderQuery,
     deleteOrderQuery,
-    getOrdersQuery,
+    getOrdersByUserQuery,
 } from "./order.queries";
 import { OrderId, OrderWithItems } from "./order.types";
-import { Request } from "express";
+import { User } from "@prisma/client";
 
 @Injectable()
 export class OrderService {
@@ -31,11 +31,10 @@ export class OrderService {
             },
         );
     }
-    getOrders(req: Request): Promise<OrderWithItems[]> {
-        console.log("user=", req.user);
-        const sessionUserId = req.session.passport.user.id;
+    getOrders(user: User): Promise<OrderWithItems[]> {
+        const sessionUserId = user.id;
         return this.prisma.$queryRaw<OrderWithItems[]>(
-            getOrdersQuery(sessionUserId),
+            getOrdersByUserQuery(sessionUserId),
         );
     }
     async cancelOrder(id: OrderId): Promise<void> {

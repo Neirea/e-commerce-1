@@ -19,7 +19,8 @@ export class OrderController {
     @Get()
     @UseGuards(AuthenticatedGuard)
     getOrders(@Req() req: Request): Promise<OrderWithItems[]> {
-        return this.orderService.getOrders(req);
+        const user = req.user;
+        return this.orderService.getOrders(user);
     }
 
     @Patch(":id")
