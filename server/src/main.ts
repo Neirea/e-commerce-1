@@ -14,7 +14,7 @@ async function bootstrap(): Promise<void> {
         rawBody: true,
     });
     app.set("truxt proxy", true);
-    app.enableCors({ credentials: true, origin: true });
+    app.enableCors({ credentials: true, origin: [process.env.CLIENT_URL] });
     app.use(helmet());
     app.setGlobalPrefix("api");
     app.useGlobalPipes(
