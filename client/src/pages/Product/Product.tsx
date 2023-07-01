@@ -28,7 +28,7 @@ const Product = () => {
     const handleShowCart = () => setShowCart(true);
     const handleCloseCart = () => setShowCart(false);
 
-    if (error || product == null) {
+    if (error) {
         return (
             <Container
                 as="main"

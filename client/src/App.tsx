@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { lazy, Suspense } from "react";
 import { Container } from "react-bootstrap";
 import { Route, Routes } from "react-router-dom";
@@ -7,11 +8,6 @@ import Header from "./components/Header";
 import LoadingProgress from "./components/LoadingProgress";
 import RequireAuth from "./components/RequireAuth";
 import ScrollAndHash from "./components/ScrollAndHash";
-import useCartStore, {
-    addCartToLocalStorage,
-    CartType,
-    getSyncedCart,
-} from "./store/useCartStore";
 import useCurrentUser from "./hooks/useCurrentUser";
 import Error from "./pages/Error";
 import Help from "./pages/Help";
@@ -20,8 +16,8 @@ import OrderPayment from "./pages/OrderPayment";
 import ProductWrapper from "./pages/Product";
 import SearchPage from "./pages/SearchPage";
 import Unauthorized from "./pages/Unauthorized";
-import { useQuery } from "@tanstack/react-query";
 import { getProductsById } from "./queries/Product";
+import useCartStore, { CartType } from "./store/useCartStore";
 const Orders = lazy(() => import("./pages/Orders"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 const Editor = lazy(() => import("./pages/Editor/Editor"));
