@@ -30,7 +30,7 @@ export class AuthService {
     private async registerUser(
         profile: GoogleProfile | FacebookProfile,
         platform: Platform,
-    ) {
+    ): Promise<User> {
         const { id, name, photos, emails, displayName } = profile;
         const userCountResult = await this.prisma.$queryRaw(userCountQuery);
         const userCount = userCountResult[0].count;
@@ -54,7 +54,7 @@ export class AuthService {
         return user;
     }
 
-    async exitSession(req: Request, res: Response) {
+    async exitSession(req: Request, res: Response): Promise<void> {
         if (req.session) {
             //deletes from session from Redis too
             req.session.destroy((err: any) => {

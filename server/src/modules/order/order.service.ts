@@ -17,7 +17,7 @@ export class OrderService {
         private prisma: PrismaService,
     ) {}
 
-    addOrderToQueue(orderId: OrderId) {
+    addOrderToQueue(orderId: OrderId): void {
         this.staleOrderQueue.add(
             { id: orderId },
             {

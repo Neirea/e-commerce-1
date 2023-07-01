@@ -20,7 +20,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, "facebook") {
         refreshToken: string,
         profile: Profile,
         done: any,
-    ) {
+    ): Promise<void> {
         const user = await this.authService.validateUser(
             profile,
             Platform.FACEBOOK,

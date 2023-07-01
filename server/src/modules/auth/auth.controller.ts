@@ -19,32 +19,32 @@ export class AuthController {
 
     @Get("google/login")
     @UseGuards(GoogleAuthGuard)
-    handleGoogleLogin() {
+    handleGoogleLogin(): { msg: string } {
         return { msg: "Google Auth" };
     }
 
     @Get("google/callback")
     @UseGuards(GoogleAuthGuard)
     @Redirect(process.env.CLIENT_URL, 301)
-    handleGoogleCallback() {
+    handleGoogleCallback(): { msg: string } {
         return { msg: "Success" };
     }
 
     @Get("facebook/login")
     @UseGuards(FacebookAuthGuard)
-    handleFacebookLogin() {
+    handleFacebookLogin(): { msg: string } {
         return { msg: "Google Auth" };
     }
 
     @Get("facebook/callback")
     @UseGuards(FacebookAuthGuard)
-    handleFacebookCallback() {
+    handleFacebookCallback(): { msg: string } {
         return { msg: "Callback" };
     }
 
     @Delete("logout")
     @UseGuards(AuthenticatedGuard)
-    logout(@Req() req: Request, @Res() res: Response) {
+    logout(@Req() req: Request, @Res() res: Response): void {
         this.authService.exitSession(req, res);
     }
 }
