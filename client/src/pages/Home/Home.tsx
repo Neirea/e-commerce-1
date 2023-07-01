@@ -1,17 +1,21 @@
-import { useQuery } from "@apollo/client";
+import { useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { Alert, Button, Col, Container, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { GetAllCategoriesQuery } from "../../generated/graphql";
-import { QUERY_ALL_CATEGORIES } from "../../queries/Category";
+import { getAllCategories } from "../../queries/Category";
 import Featured from "./Featured";
 import Popular from "./Popular";
 
 const Home = () => {
     const {
         data: categoryData,
-        loading: categoryLoading,
-        error: categoryError,
-    } = useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
+        isLoading: categoryLoading,
+        error,
+    } = useQuery({
+        queryKey: ["category"],
+        queryFn: getAllCategories,
+    });
+    const categoryError = error as AxiosError;
 
     return (
         <>
@@ -55,7 +59,7 @@ const Home = () => {
                                 Error: data was not fetched from the server
                             </Alert>
                         ) : categoryData && !categoryLoading ? (
-                            categoryData.categories.map((category) => {
+                            categoryData.data?.map((category) => {
                                 if (category.img_src) {
                                     return (
                                         <Col

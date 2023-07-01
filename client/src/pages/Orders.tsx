@@ -1,31 +1,34 @@
-import { useMutation, useQuery } from "@apollo/client";
 import { useState } from "react";
 import { Button, Container, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import LoadingProgress from "../components/LoadingProgress";
-import {
-    CancelOrderMutation,
-    CancelOrderMutationVariables,
-    GetAllOrdersQuery,
-    Status,
-} from "../generated/graphql";
-import { MUTATION_CANCEL_ORDER, QUERY_ALL_ORDERS } from "../queries/Order";
 import { toPriceNumber } from "../utils/numbers";
 import { serverUrl } from "../utils/server";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { cancelOrder, getAllOrders } from "../queries/Order";
 
 const Orders = () => {
+    const queryClient = useQueryClient();
     const [paymentLoading, setPaymentLoading] = useState(false);
-    const { data, loading, error } =
-        useQuery<GetAllOrdersQuery>(QUERY_ALL_ORDERS);
-    const [handleCancel, { loading: cancelLoading }] = useMutation<
-        CancelOrderMutation,
-        CancelOrderMutationVariables
-    >(MUTATION_CANCEL_ORDER);
+    const { data, isLoading, error } = useQuery({
+        queryKey: ["order"],
+        queryFn: getAllOrders,
+    });
 
-    const actionLoading = paymentLoading || cancelLoading || loading;
+    const cancelMutation = useMutation({
+        mutationFn: cancelOrder,
+        onSuccess: () => {
+            queryClient.invalidateQueries(["order"]);
+        },
+    });
 
-    const sortedOrders = data?.orders
-        ? [...data.orders].sort((a, b) => b.created_at - a.created_at)
+    const actionLoading =
+        paymentLoading || cancelMutation.isLoading || isLoading;
+
+    const sortedOrders = data?.data
+        ? [...data.data].sort(
+              (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)
+          )
         : undefined;
 
     const handlePayment = async (id: number) => {
@@ -88,7 +91,7 @@ const Orders = () => {
     return (
         <Container as="main" className="pt-3">
             <h2 className="text-center">Your Orders:</h2>
-            <LoadingProgress isLoading={loading} />
+            <LoadingProgress isLoading={isLoading} />
             {!!sortedOrders?.length && (
                 <Table>
                     <thead>
@@ -119,7 +122,7 @@ const Orders = () => {
                                     0
                                 );
                             const textColor =
-                                order.status === Status.PENDING
+                                order.status === "PENDING"
                                     ? "text-danger"
                                     : "text-success";
                             const createdAt = new Date(order.created_at);
@@ -182,7 +185,7 @@ const Orders = () => {
                                     </td>
                                     <td className={`fs-5 ${textColor}`}>
                                         <div>{order.status}</div>
-                                        {order.status === Status.PENDING && (
+                                        {order.status === "PENDING" && (
                                             <>
                                                 <Button
                                                     variant="success"
@@ -199,17 +202,21 @@ const Orders = () => {
                                                     variant="danger"
                                                     title="Cancel Order"
                                                     disabled={actionLoading}
-                                                    onClick={() =>
-                                                        handleCancel({
-                                                            variables: {
-                                                                id: order.id,
-                                                            },
-                                                            refetchQueries: [
-                                                                "GetAllOrders",
-                                                            ],
-                                                            awaitRefetchQueries:
-                                                                true,
-                                                        })
+                                                    onClick={
+                                                        () =>
+                                                            cancelMutation.mutate(
+                                                                order.id
+                                                            )
+                                                        // handleCancel({
+                                                        //     variables: {
+                                                        //         id: order.id,
+                                                        //     },
+                                                        //     refetchQueries: [
+                                                        //         "GetAllOrders",
+                                                        //     ],
+                                                        //     awaitRefetchQueries:
+                                                        //         true,
+                                                        // })
                                                     }
                                                 >
                                                     Cancel
@@ -218,7 +225,7 @@ const Orders = () => {
                                         )}
                                     </td>
                                     <td className="fs-5">
-                                        {order.status === Status.PENDING
+                                        {order.status === "PENDING"
                                             ? toPriceNumber(
                                                   totalOrderPricePending
                                               )

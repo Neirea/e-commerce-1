@@ -1,8 +1,8 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import useCurrentUser from "../hooks/useCurrentUser";
-import { Role } from "../generated/graphql";
+import { IRole } from "../types/User";
 
-const RequireAuth = ({ allowedRoles }: { allowedRoles: Role[] }) => {
+const RequireAuth = ({ allowedRoles }: { allowedRoles: IRole[] }) => {
     const { user } = useCurrentUser();
     const location = useLocation();
 

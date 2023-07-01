@@ -9,7 +9,7 @@ const sortByParentId = <T extends ISortElement>(array: Array<T>) => {
         depth: number;
     }
     const orderByParents = (
-        data: Array<T>,
+        data: T[],
         depth: number,
         p_id?: number | undefined
     ) => {

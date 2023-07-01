@@ -1,18 +1,19 @@
-import { useApolloClient } from "@apollo/client";
-import Navbar from "react-bootstrap/Navbar";
+import { useQueryClient } from "@tanstack/react-query";
 import NavDropdown from "react-bootstrap/NavDropdown";
+import Navbar from "react-bootstrap/Navbar";
 import { Link } from "react-router-dom";
 import useCurrentUser from "../../hooks/useCurrentUser";
-import { Role } from "../../generated/graphql";
-import { serverUrl } from "../../utils/server";
+import { logout } from "../../queries/User";
+import { IRole } from "../../types/User";
 
 const UserMenu = () => {
     const { user } = useCurrentUser();
-    const client = useApolloClient();
+    const queryCient = useQueryClient();
+
+    const editorRoles: IRole[] = ["ADMIN", "EDITOR"];
 
     const isShowEditor =
-        user &&
-        [Role.ADMIN, Role.EDITOR].some((role) => user.role.includes(role));
+        user && editorRoles.some((role) => user.role.includes(role));
 
     return (
         <Navbar
@@ -45,13 +46,8 @@ const UserMenu = () => {
                     <NavDropdown.Divider />
                     <NavDropdown.Item
                         onClick={async () => {
-                            await fetch(`${serverUrl}/api/auth/logout`, {
-                                method: "DELETE",
-                                credentials: "include",
-                            });
-                            await client.refetchQueries({
-                                include: ["ShowCurrentUser"],
-                            });
+                            await logout();
+                            queryCient.invalidateQueries(["me"]);
                         }}
                     >
                         Logout

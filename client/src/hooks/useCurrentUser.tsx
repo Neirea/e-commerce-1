@@ -1,24 +1,22 @@
-import { useQuery } from "@apollo/client";
-import { ShowCurrentUserQuery } from "../generated/graphql";
-import { QUERY_SHOW_ME } from "../queries/User";
+import { useQuery } from "@tanstack/react-query";
+import { IUser } from "../types/User";
+import { getCurrentUser } from "../queries/User";
 
 export interface ICurrentUser {
-    user: ShowCurrentUserQuery["showMe"];
+    user: IUser | undefined;
     isLoading: boolean;
 }
 
 const useCurrentUser = (): ICurrentUser => {
-    const {
-        data,
-        loading: isLoading,
-        error,
-    } = useQuery<ShowCurrentUserQuery>(QUERY_SHOW_ME);
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ["me"],
+        queryFn: getCurrentUser,
+    });
 
-    if (error) {
-        console.log(error);
-    }
+    const user = isError ? undefined : data?.data;
+
     return {
-        user: data?.showMe,
+        user,
         isLoading,
     };
 };

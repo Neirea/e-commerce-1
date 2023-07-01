@@ -1,74 +1,53 @@
-import { useQuery } from "@apollo/client";
-import { useState } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import ProductsGrid from "../../components/ProductsGrid";
-import {
-    GetRelatedProductsQuery,
-    GetSingleProductQuery,
-} from "../../generated/graphql";
 import useInView from "../../hooks/useInView";
-import { QUERY_RELATED_PRODUCTS } from "../../queries/Product";
+import { getRelatedProducts } from "../../queries/Product";
+import { IProduct, IProductWithImages } from "../../types/Product";
 import { FETCH_NUMBER } from "../../utils/numbers";
 
 const options = { root: null, rootMargin: "0px", treshold: 1.0 };
 
-const RelatedProducts = ({
-    product,
-}: {
-    product: GetSingleProductQuery["product"];
-}) => {
-    const [hasMore, setHasMore] = useState(0); //number of pages, 0 - stop fetchingMore
+const RelatedProducts = ({ product }: { product: IProduct }) => {
+    const fetchParams = {
+        id: product?.id,
+        company_id: product?.company_id,
+        category_id: product?.category_id,
+    };
     const {
         data: relatedProductData,
-        previousData,
-        loading: relatedProductLoading,
-        error: relatedProductError,
-        fetchMore,
-    } = useQuery<GetRelatedProductsQuery>(QUERY_RELATED_PRODUCTS, {
-        variables: {
-            offset: 0,
-            limit: FETCH_NUMBER,
-            input: {
-                id: product?.id,
-                company_id: product?.company_id,
-                category_id: product?.category_id,
-            },
+        isLoading: relatedProductLoading,
+        error,
+        fetchNextPage,
+        hasNextPage,
+    } = useInfiniteQuery({
+        queryKey: ["related"],
+        queryFn: ({ pageParam = 0 }) =>
+            getRelatedProducts({ fetchParams, pageParam }),
+        getNextPageParam: (lastPage, allPages) => {
+            if (lastPage.data.length % FETCH_NUMBER !== 0) return;
+            return allPages.length;
         },
-        notifyOnNetworkStatusChange: true,
-        onCompleted(data) {
-            if (
-                data.relatedProducts.length % FETCH_NUMBER !== 0 ||
-                previousData?.relatedProducts.length ===
-                    data.relatedProducts.length
-            ) {
-                setHasMore(0);
-                return;
-            }
-            setHasMore((prev) => prev + 1);
-        },
+        keepPreviousData: true,
     });
+    const relatedProductError = error as AxiosError;
+
+    const initialValue: IProductWithImages[] = [];
+    const products = relatedProductData?.pages.reduce(
+        (arr, curr) => arr.concat(curr.data),
+        initialValue
+    );
 
     const containerRef = useInView<HTMLDivElement>(
         options,
-        async () => {
-            await fetchMore({
-                variables: {
-                    offset: relatedProductData?.relatedProducts.length,
-                    limit: FETCH_NUMBER,
-                    input: {
-                        id: product?.id,
-                        company_id: product?.company_id,
-                        category_id: product?.category_id,
-                    },
-                },
-            });
-        },
-        hasMore
+        fetchNextPage,
+        hasNextPage
     );
 
     return (
         <>
             <ProductsGrid
-                products={relatedProductData?.relatedProducts}
+                products={products}
                 productLoading={relatedProductLoading}
                 productError={relatedProductError}
             />

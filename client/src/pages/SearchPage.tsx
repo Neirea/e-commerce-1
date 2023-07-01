@@ -1,27 +1,23 @@
-import { useQuery } from "@apollo/client";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import qs from "query-string";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef } from "react";
 import { Col, Container, Form, Row } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import LoadingProgress from "../components/LoadingProgress";
 import MultiRangeSlider from "../components/MultiRangeSlider";
 import ProductsGrid from "../components/ProductsGrid";
-import {
-    GetFilteredProductsQuery,
-    GetSearchDataQuery,
-} from "../generated/graphql";
 import useInView from "../hooks/useInView";
-import { QUERY_FILTERED_PRODUCTS, QUERY_SEARCH_DATA } from "../queries/Product";
+import { getFilteredProducts, getSearchData } from "../queries/Product";
+import { ICategoryType } from "../types/Category";
+import { IProductCatCom } from "../types/Product";
+import { SEARCH_NUMBER } from "../utils/numbers";
 import sortByParentId from "../utils/sortByParents";
-
-const FETCH_NUMBER = 12;
-type CategoryType = GetSearchDataQuery["searchData"]["categories"][number];
 
 const options = { root: null, rootMargin: "0px", treshold: 1.0 };
 
 const SearchPage = () => {
     const navigate = useNavigate();
-    const [hasMore, setHasMore] = useState(0); //number of pages, 0 - stop fetchingMore
     const { search } = useLocation();
     const sortRef = useRef<HTMLSelectElement | null>(null);
     const searchParams = qs.parse(search);
@@ -32,60 +28,49 @@ const SearchPage = () => {
     const minParam = searchParams.min != null ? +searchParams.min : undefined;
     const maxParam = searchParams.max != null ? +searchParams.max : undefined;
 
-    //general data about search results
-    const { data: currenntSearchData, previousData: prevSearchData } =
-        useQuery<GetSearchDataQuery>(QUERY_SEARCH_DATA, {
-            variables: {
-                input: {
-                    search_string: searchParams.v,
-                    category_id: categoryParam,
-                    company_id: companyParam,
-                    min_price: minParam,
-                    max_price: maxParam,
-                },
-            },
-        });
-
-    const {
-        data: currentProductData,
-        previousData: prevProductData,
-        loading: productLoading,
-        error: productError,
-        fetchMore,
-    } = useQuery<GetFilteredProductsQuery>(QUERY_FILTERED_PRODUCTS, {
-        variables: {
-            offset: 0,
-            limit: FETCH_NUMBER,
-            input: {
-                search_string: searchParams.v,
-                sortMode: sortParam,
-                category_id: categoryParam,
-                company_id: companyParam,
-                min_price: minParam,
-                max_price: maxParam,
-            },
-        },
-        notifyOnNetworkStatusChange: true,
-        onCompleted(data) {
-            if (
-                data.filteredProducts.length % FETCH_NUMBER !== 0 ||
-                prevProductData?.filteredProducts.length ===
-                    data.filteredProducts.length
-            ) {
-                setHasMore(0);
-                return;
-            }
-            setHasMore((prev) => prev + 1);
-        },
+    const input = {
+        search_string: searchParams.v,
+        category_id: categoryParam,
+        company_id: companyParam,
+        min_price: minParam,
+        max_price: maxParam,
+    };
+    // general data about search
+    const { data: searchData } = useQuery({
+        queryKey: ["search-data", search],
+        queryFn: () => getSearchData(input),
     });
 
-    const searchData = currenntSearchData ?? prevSearchData;
-    const productData = currentProductData ?? prevProductData;
-    const isCurrentLoaded =
-        currenntSearchData && currentProductData ? false : true;
+    const fetchParams = { ...input, sort_mode: sortParam };
 
-    const categoriesData = searchData?.searchData
-        ? sortByParentId<CategoryType>(searchData.searchData.categories)
+    const {
+        data: productData,
+        isLoading: productLoading,
+        error,
+        fetchNextPage,
+        hasNextPage,
+    } = useInfiniteQuery({
+        queryKey: ["filtered", search],
+        queryFn: ({ pageParam = 0 }) =>
+            getFilteredProducts({ fetchParams, pageParam }),
+        getNextPageParam: (lastPage, allPages) => {
+            if (lastPage.data.length % SEARCH_NUMBER !== 0) return;
+            return allPages.length;
+        },
+        keepPreviousData: true,
+    });
+
+    const productError = error as AxiosError;
+    const isCurrentLoading = productData && searchData ? false : true;
+
+    const initialValue: IProductCatCom[] = [];
+    const products = productData?.pages.reduce(
+        (arr, curr) => arr.concat(curr.data),
+        initialValue
+    );
+
+    const categoriesData = searchData?.data
+        ? sortByParentId<ICategoryType>(searchData.data.categories)
         : null;
 
     useEffect(() => {
@@ -96,23 +81,8 @@ const SearchPage = () => {
 
     const containerRef = useInView<HTMLDivElement>(
         options,
-        async () => {
-            await fetchMore({
-                variables: {
-                    offset: productData?.filteredProducts.length,
-                    limit: FETCH_NUMBER,
-                    input: {
-                        search_string: searchParams.v,
-                        sortMode: sortParam,
-                        category_id: categoryParam,
-                        company_id: companyParam,
-                        min_price: minParam,
-                        max_price: maxParam,
-                    },
-                },
-            });
-        },
-        hasMore
+        fetchNextPage,
+        hasNextPage
     );
 
     const handleSort = async (e: ChangeEvent<HTMLSelectElement>) => {
@@ -124,7 +94,7 @@ const SearchPage = () => {
 
     return (
         <Container as="main">
-            <LoadingProgress isLoading={isCurrentLoaded} />
+            <LoadingProgress isLoading={isCurrentLoading} />
             <h4 className="mb-3 mt-3">
                 {searchParams.v
                     ? `Results for «${searchParams.v}»`
@@ -146,7 +116,7 @@ const SearchPage = () => {
 
             <Row className="border-top mt-2 flex-column flex-lg-row">
                 <Col className="col-lg-2 mb-5 pt-3 custom-border">
-                    {!!searchData?.searchData && (
+                    {!!searchData?.data && (
                         <>
                             <div>
                                 <b>Categories:</b>
@@ -182,13 +152,13 @@ const SearchPage = () => {
                                 })}
                                 {!!categoryParam && (
                                     <div className="pb-3 mt-2">
-                                        {searchData.searchData.companies
-                                            .length > 0 && (
+                                        {searchData.data.companies.length >
+                                            0 && (
                                             <div>
                                                 <b>Companies:</b>
                                             </div>
                                         )}
-                                        {searchData.searchData.companies.map(
+                                        {searchData.data.companies.map(
                                             (elem) => {
                                                 return (
                                                     <div
@@ -220,25 +190,25 @@ const SearchPage = () => {
                             </div>
                         </>
                     )}
-                    {!!searchData?.searchData && (
+                    {!!searchData?.data && (
                         <MultiRangeSlider
-                            key={`${searchData.searchData.min}-${searchData.searchData.max}`}
-                            max={searchData.searchData.max}
-                            min={searchData.searchData.min}
+                            key={`${searchData.data.min}-${searchData.data.max}`}
+                            max={searchData.data.max}
+                            min={searchData.data.min}
                         />
                     )}
                 </Col>
 
                 <Col className="col-lg-10 mt-2">
-                    {productData?.filteredProducts.length === 0 && (
+                    {products?.length === 0 && (
                         <h2 className="text-center mt-5">
                             Couldn't find any products with this search
                         </h2>
                     )}
-                    {!!productData?.filteredProducts && (
+                    {!!products && (
                         <>
                             <ProductsGrid
-                                products={productData.filteredProducts}
+                                products={products}
                                 productError={productError}
                                 productLoading={productLoading}
                             />

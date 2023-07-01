@@ -1,13 +1,15 @@
-import { useQuery } from "@apollo/client";
 import { useRef, useState } from "react";
 import { Button } from "react-bootstrap";
-import { GetAllCategoriesQuery } from "../../../generated/graphql";
 import { useOutsideClick } from "../../../hooks/useOutsideClick";
-import { QUERY_ALL_CATEGORIES } from "../../../queries/Category";
+import { getAllCategories } from "../../../queries/Category";
 import CategoriesContent from "./CategoriesContent";
+import { useQuery } from "@tanstack/react-query";
 
 const Categories = () => {
-    const { data } = useQuery<GetAllCategoriesQuery>(QUERY_ALL_CATEGORIES);
+    const { data } = useQuery({
+        queryKey: ["category"],
+        queryFn: getAllCategories,
+    });
     const [showCategories, setShowCategories] = useState(false);
     const menuButtonRef = useRef<HTMLButtonElement | null>(null);
     const categoriesRef = useRef<HTMLDivElement | null>(null);
@@ -28,9 +30,9 @@ const Categories = () => {
             >
                 Сatalog
             </Button>
-            {!!showCategories && (
+            {!!showCategories && data && (
                 <CategoriesContent
-                    categories={data?.categories}
+                    categories={data.data}
                     handleClose={handleCloseCategories}
                     ref={categoriesRef}
                 />

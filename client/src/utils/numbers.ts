@@ -6,3 +6,5 @@ export const toPriceNumber = (n: number) => {
 };
 
 export const FETCH_NUMBER = 5;
+
+export const SEARCH_NUMBER = 12;

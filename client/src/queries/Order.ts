@@ -1,33 +1,10 @@
-import { gql } from "@apollo/client";
+import axios from "axios";
+import { IOrderWithItems } from "../types/Order";
 
-export const QUERY_ALL_ORDERS = gql`
-    query GetAllOrders {
-        orders {
-            id
-            status
-            user_id
-            buyer_name
-            buyer_email
-            buyer_phone
-            delivery_address
-            shipping_cost
-            created_at
-            order_items {
-                amount
-                price
-                product {
-                    id
-                    name
-                    price
-                    discount
-                }
-            }
-        }
-    }
-`;
+export const getAllOrders = () => axios.get<IOrderWithItems[]>("/order");
 
-export const MUTATION_CANCEL_ORDER = gql`
-    mutation CancelOrder($id: Int!) {
-        cancelOrder(id: $id)
-    }
-`;
+export const cancelOrder = (id: Pick<IOrderWithItems, "id">["id"]) =>
+    axios.patch(`/order/${id}`);
+
+export const deleteOrder = (id: Pick<IOrderWithItems, "id">["id"]) =>
+    axios.delete(`/order/${id}`);

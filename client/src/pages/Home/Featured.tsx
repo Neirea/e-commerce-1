@@ -1,43 +1,44 @@
-import { useQuery } from "@apollo/client";
-import { useState } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { AxiosError, all } from "axios";
 import { Button, Container } from "react-bootstrap";
 import ProductsGrid from "../../components/ProductsGrid";
-import { GetFeaturedProductsQuery } from "../../generated/graphql";
-import { QUERY_FEATURED_PRODUCTS } from "../../queries/Product";
+import { getFeaturedProducts } from "../../queries/Product";
+import { IProductWithImages } from "../../types/Product";
 import { FETCH_NUMBER } from "../../utils/numbers";
 
 const Featured = () => {
     const {
         data: productData,
-        loading: productLoading,
-        error: productError,
-        fetchMore,
-    } = useQuery<GetFeaturedProductsQuery>(QUERY_FEATURED_PRODUCTS, {
-        variables: { limit: FETCH_NUMBER, offset: 0 },
-        notifyOnNetworkStatusChange: true,
+        isLoading: productLoading,
+        error,
+        fetchNextPage,
+        hasNextPage,
+    } = useInfiniteQuery({
+        queryKey: ["featured"],
+        queryFn: getFeaturedProducts,
+        getNextPageParam: (lastPage, allPages) => {
+            if (lastPage.data.length % FETCH_NUMBER !== 0) return;
+            return allPages.length;
+        },
+        keepPreviousData: true,
     });
-    const [showMore, setShowMore] = useState(true);
-
-    const fetchMoreProducts = async () => {
-        const fetchedMore = await fetchMore({
-            variables: {
-                offset: productData?.featuredProducts.length,
-                limit: FETCH_NUMBER,
-            },
-        });
-        if (fetchedMore.data.featuredProducts.length < FETCH_NUMBER)
-            setShowMore(false);
-    };
+    const productError = error as AxiosError;
+    const fetchMoreProducts = () => fetchNextPage();
+    const initialValue: IProductWithImages[] = [];
+    const products = productData?.pages.reduce(
+        (arr, curr) => arr.concat(curr.data),
+        initialValue
+    );
 
     return (
         <Container as="section" className="mt-3 gap-3">
             <h2 className="text-center mt-5 mb-5">Featured</h2>
             <ProductsGrid
-                products={productData?.featuredProducts}
+                products={products}
                 productLoading={productLoading}
                 productError={productError}
             />
-            {showMore && (
+            {hasNextPage && (
                 <div className="text-center mt-3">
                     <Button
                         size="lg"

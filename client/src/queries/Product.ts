@@ -1,179 +1,104 @@
-import { gql } from "@apollo/client";
+import axios from "axios";
+import { IUploadedImage } from "../types/Category";
+import {
+    IFilteredProductsParams,
+    IProduct,
+    IProductCatCom,
+    IProductMutate,
+    IProductWithImages,
+    IRelatedProductFetchParams,
+    ISearchDataParams,
+    ISearchDataResponse,
+    ISearchResult,
+    ProductWithImgVariants,
+} from "../types/Product";
+import { FETCH_NUMBER, SEARCH_NUMBER } from "../utils/numbers";
+import { objectToQueryString } from "../utils/objectQueryString";
 
-export const QUERY_SEARCH_BAR = gql`
-    query GetSearchResults($input: String!) {
-        searchBarQuery(input: $input) {
-            id
-            name
-            source
+export const getAllProducts = () => axios.get<IProduct[]>("/product");
+
+export const createProduct = (input: Omit<IProductMutate, "id">) =>
+    axios.post<void>("/product", input);
+
+export const updateProduct = (input: IProductMutate) => {
+    const { id, ...data } = input;
+    console.log(data);
+    return axios.patch<void>(`/product/${id}`, data);
+};
+
+export const deleteProduct = (id: Pick<IProduct, "id">["id"]) =>
+    axios.delete<void>(`/product/${id}`);
+
+export const uploadImages = (formData: FormData) =>
+    axios.post<{ images: IUploadedImage[] }>(
+        "/editor/upload-images",
+        formData,
+        {
+            headers: {
+                "Content-Type": "multipart/form-data",
+                // "csrf-token": user?.csrfToken || "",
+            },
         }
-    }
-`;
+    );
 
-export const QUERY_ALL_PRODUCT = gql`
-    query GetAllProducts {
-        products {
-            id
-            name
-            price
-            description
-            company_id
-            category_id
-            inventory
-            shipping_cost
-            discount
-            variants {
-                id
-            }
-        }
-    }
-`;
+export const getFeaturedProducts = ({ pageParam = 0 }) => {
+    return axios.get<IProductWithImages[]>(
+        `/product/featured?limit=${FETCH_NUMBER}&offset=${
+            pageParam * FETCH_NUMBER
+        }`
+    );
+};
 
-export const QUERY_PRODUCTS_BY_ID = gql`
-    query GetProductsById($ids: [Int!]!) {
-        productsById(ids: $ids) {
-            id
-            name
-            price
-            inventory
-            shipping_cost
-            discount
-            images {
-                img_src
-            }
-        }
-    }
-`;
+export const getRelatedProducts = ({
+    fetchParams,
+    pageParam,
+}: {
+    fetchParams: IRelatedProductFetchParams;
+    pageParam: number;
+}) => {
+    const queryString = objectToQueryString(fetchParams);
+    return axios.get<IProductWithImages[]>(
+        `/product/related?limit=${FETCH_NUMBER}&offset=${
+            pageParam * FETCH_NUMBER
+        }&${queryString}`
+    );
+};
 
-export const QUERY_FILTERED_PRODUCTS = gql`
-    query GetFilteredProducts(
-        $limit: Int!
-        $offset: Int!
-        $input: QueryProductInput!
-    ) {
-        filteredProducts(limit: $limit, offset: $offset, input: $input) {
-            id
-            name
-            price
-            inventory
-            discount
-            images {
-                img_src
-            }
-        }
-    }
-`;
+export const getPopularProducts = ({ pageParam = 0 }) =>
+    axios.get<IProductWithImages[]>(
+        `/product/popular?limit=${FETCH_NUMBER}&offset=${
+            pageParam * FETCH_NUMBER
+        }`
+    );
 
-export const QUERY_SEARCH_DATA = gql`
-    query GetSearchData($input: QuerySearchDataInput!) {
-        searchData(input: $input) {
-            min
-            max
-            categories {
-                id
-                name
-                parent_id
-                productCount
-            }
-            companies {
-                id
-                name
-                productCount
-            }
-        }
-    }
-`;
+export const getProductsById = (ids: Pick<IProduct, "id">["id"][]) => {
+    const query = ids.join(",");
+    const queryIds = ids.length > 0 ? `?ids=${query}` : "";
+    return axios.get<IProductWithImages[]>(`/product/some${queryIds}`);
+};
 
-export const QUERY_FEATURED_PRODUCTS = gql`
-    query GetFeaturedProducts($limit: Int!, $offset: Int!) {
-        featuredProducts(limit: $limit, offset: $offset) {
-            id
-            name
-            price
-            inventory
-            discount
-            images {
-                img_src
-            }
-        }
-    }
-`;
+export const getSingleProductById = (id: Pick<IProduct, "id">["id"]) =>
+    axios.get<ProductWithImgVariants>(`/product/${id}`);
 
-export const QUERY_POPULAR_PRODUCTS = gql`
-    query GetPopularProducts($limit: Int!, $offset: Int!) {
-        popularProducts(limit: $limit, offset: $offset) {
-            id
-            name
-            price
-            inventory
-            discount
-            images {
-                img_src
-            }
-        }
-    }
-`;
+export const getSearchBarData = (query: string) =>
+    axios.get<ISearchResult[]>(`/product/search?v=${query}`);
 
-export const QUERY_RELATED_PRODUCTS = gql`
-    query GetRelatedProducts(
-        $limit: Int!
-        $offset: Int!
-        $input: QueryRelatedInput!
-    ) {
-        relatedProducts(limit: $limit, offset: $offset, input: $input) {
-            id
-            name
-            price
-            inventory
-            discount
-            images {
-                img_src
-            }
-        }
-    }
-`;
+export const getSearchData = (input: ISearchDataParams) => {
+    const queryString = objectToQueryString(input);
+    return axios.get<ISearchDataResponse>(`/product/data?${queryString}`);
+};
 
-export const GET_SINGLE_PRODUCT = gql`
-    query GetSingleProduct($id: Int!) {
-        product(id: $id) {
-            id
-            name
-            price
-            description
-            inventory
-            shipping_cost
-            discount
-            company_id
-            category_id
-            images {
-                img_id
-                img_src
-            }
-            variants {
-                id
-                name
-                images {
-                    img_src
-                }
-            }
-        }
-    }
-`;
-
-export const MUTATION_CREATE_PRODUCT = gql`
-    mutation CreateProduct($input: CreateProductInput!) {
-        createProduct(input: $input)
-    }
-`;
-
-export const MUTATION_UPDATE_PRODUCT = gql`
-    mutation UpdateProduct($input: UpdateProductInput!) {
-        updateProduct(input: $input)
-    }
-`;
-
-export const MUTATION_DELETE_PRODUCT = gql`
-    mutation DeleteProduct($id: Int!) {
-        deleteProduct(id: $id)
-    }
-`;
+export const getFilteredProducts = ({
+    fetchParams,
+    pageParam,
+}: {
+    fetchParams: IFilteredProductsParams;
+    pageParam: number;
+}) => {
+    const queryString = objectToQueryString(fetchParams);
+    return axios.get<IProductCatCom[]>(
+        `/product/filter?limit=${SEARCH_NUMBER}&offset=${
+            pageParam * SEARCH_NUMBER
+        }&${queryString}`
+    );
+};

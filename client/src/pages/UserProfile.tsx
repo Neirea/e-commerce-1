@@ -1,14 +1,4 @@
-import { useMutation } from "@apollo/client";
-import { ChangeEvent, FormEvent, useState } from "react";
-import { Alert, Button, Container, Form } from "react-bootstrap";
 import { z } from "zod";
-import { fromZodError } from "zod-validation-error";
-import {
-    ShowCurrentUserQuery,
-    UpdateUserMutation,
-    UpdateUserMutationVariables,
-} from "../generated/graphql";
-import { MUTATION_UPDATE_USER } from "../queries/User";
 import {
     addressDesc,
     addressZod,
@@ -18,6 +8,13 @@ import {
     phoneDesc,
     phoneZod,
 } from "../utils/zod";
+import { IUser } from "../types/User";
+import { ChangeEvent, FormEvent, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateUser } from "../queries/User";
+import { AxiosError } from "axios";
+import { fromZodError } from "zod-validation-error";
+import { Alert, Button, Container, Form } from "react-bootstrap";
 
 const UserProfileSchema = z.object({
     given_name: givenNameZod,
@@ -29,13 +26,16 @@ const UserProfileSchema = z.object({
 
 type UserStateType = z.infer<typeof UserProfileSchema>;
 
-const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
+const UserProfile = ({ user }: { user: IUser | undefined }) => {
+    const queryClient = useQueryClient();
     const [success, setSuccess] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const [updateUser, { loading, error: mutationError }] = useMutation<
-        UpdateUserMutation,
-        UpdateUserMutationVariables
-    >(MUTATION_UPDATE_USER);
+    const updateMutation = useMutation({
+        mutationFn: updateUser,
+        onSuccess: () => {
+            queryClient.invalidateQueries(["user"]);
+        },
+    });
     const [values, setValues] = useState<UserStateType>({
         given_name: user?.given_name || "",
         family_name: user?.family_name || "",
@@ -44,7 +44,7 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
         phone: user?.phone || "",
     });
 
-    const error = mutationError?.message || errorMessage;
+    const error = (updateMutation.error as AxiosError)?.message || errorMessage;
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         setValues({ ...values, [e.target.name]: e.target.value });
@@ -60,15 +60,7 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
 
             return;
         }
-        await updateUser({
-            variables: {
-                input: {
-                    id: user!.id,
-                    ...values,
-                },
-            },
-            refetchQueries: ["ShowCurrentUser"],
-        });
+        await updateMutation.mutateAsync(values);
         setErrorMessage("");
         setSuccess(true);
     };
@@ -132,8 +124,8 @@ const UserProfile = ({ user }: { user: ShowCurrentUserQuery["showMe"] }) => {
                     <Alert variant="success">Successfully updated</Alert>
                 )}
                 <div className="d-flex justify-content-center">
-                    <Button type="submit" disabled={loading}>
-                        {loading ? "Wait..." : "Submit"}
+                    <Button type="submit" disabled={updateMutation.isLoading}>
+                        {updateMutation.isLoading ? "Wait..." : "Submit"}
                     </Button>
                 </div>
             </Form>
