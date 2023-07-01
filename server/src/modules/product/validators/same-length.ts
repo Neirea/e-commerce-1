@@ -1,12 +1,13 @@
 import {
     registerDecorator,
+    ValidationArguments,
     ValidatorConstraint,
     ValidatorConstraintInterface,
 } from "class-validator";
 
 @ValidatorConstraint({ name: "sameLength", async: false })
 export class SameLengthConstraint implements ValidatorConstraintInterface {
-    validate(value: any, args: any) {
+    validate(value: object, args: ValidationArguments): boolean {
         const fields = args.constraints;
 
         const lengths = fields.map((field: string) => value[field]?.length);
@@ -19,7 +20,7 @@ export class SameLengthConstraint implements ValidatorConstraintInterface {
 }
 
 export function SameLength(...fields: string[]) {
-    return function (object: object, propertyName: string) {
+    return function (object: object, propertyName: string): void {
         registerDecorator({
             name: "sameLength",
             target: object.constructor,

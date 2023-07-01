@@ -2,7 +2,9 @@ import { Prisma } from "@prisma/client";
 import { CateogoryId } from "src/modules/category/category.types";
 import { CompanyId } from "src/modules/company/company.types";
 
-export const subCategoriesQuery = (category_id: CateogoryId) => Prisma.sql`
+export const subCategoriesQuery = (
+    category_id: CateogoryId,
+): Prisma.Sql => Prisma.sql`
     WITH RECURSIVE subcategory AS (
         SELECT ctg.id,ctg.parent_id FROM public."Category" AS ctg WHERE parent_id IS NULL AND id = ${category_id}
     UNION ALL
@@ -26,17 +28,22 @@ export const imagesJSON = Prisma.sql`
     FROM public."ProductImage" GROUP BY product_id
 `;
 
-export const getSearchCondition = (searchString: string | undefined) =>
+export const getSearchCondition = (
+    searchString: string | undefined,
+): Prisma.Sql =>
     searchString
         ? Prisma.sql`(to_tsvector('simple',p.name) @@ to_tsquery('simple',${searchString})
 OR to_tsvector('simple',com.name) @@ to_tsquery('simple',${searchString})
 OR to_tsvector('simple',cat.name) @@ to_tsquery('simple',${searchString}))`
         : Prisma.sql`TRUE`;
 
-export const getCompanyCondition = (id: CompanyId) =>
+export const getCompanyCondition = (id: CompanyId): Prisma.Sql =>
     id ? Prisma.sql`AND p.company_id = ${id}` : Prisma.empty;
 
-export const getCategoryCondition = (ids: number[], id: CateogoryId) =>
+export const getCategoryCondition = (
+    ids: number[],
+    id: CateogoryId,
+): Prisma.Sql =>
     ids.length
         ? Prisma.sql`AND p.category_id IN (${Prisma.join(ids)})`
         : id

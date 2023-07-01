@@ -56,6 +56,8 @@ async function bootstrap(): Promise<void> {
     app.use(passport.session());
 
     const port = process.env.PORT || 5000;
-    await app.listen(port, "0.0.0.0");
+    await app.listen(port, "0.0.0.0", () =>
+        console.log(`Server is listening on ${port}...`),
+    );
 }
 bootstrap();
