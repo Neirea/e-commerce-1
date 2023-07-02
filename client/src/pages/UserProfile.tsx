@@ -29,7 +29,7 @@ type UserStateType = z.infer<typeof UserProfileSchema>;
 const UserProfile = ({ user }: { user: IUser | undefined }) => {
     const queryClient = useQueryClient();
     const [success, setSuccess] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
+    const [validationError, setValidationError] = useState<Error | null>(null);
     const updateMutation = useMutation({
         mutationFn: updateUser,
         onSuccess: () => {
@@ -44,7 +44,7 @@ const UserProfile = ({ user }: { user: IUser | undefined }) => {
         phone: user?.phone || "",
     });
 
-    const error = getError(updateMutation.error).message || errorMessage;
+    const error = getError(updateMutation.error) || validationError;
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         setValues({ ...values, [e.target.name]: e.target.value });
@@ -56,12 +56,12 @@ const UserProfile = ({ user }: { user: IUser | undefined }) => {
         setSuccess(false);
         const parseInput = UserProfileSchema.safeParse(values);
         if (!parseInput.success) {
-            setErrorMessage(fromZodError(parseInput.error).message);
+            setValidationError(fromZodError(parseInput.error));
 
             return;
         }
         await updateMutation.mutateAsync(values);
-        setErrorMessage("");
+        setValidationError(null);
         setSuccess(true);
     };
     return (
@@ -119,7 +119,7 @@ const UserProfile = ({ user }: { user: IUser | undefined }) => {
                         value={values.phone}
                     />
                 </Form.Group>
-                {error.length > 0 && <Alert variant="danger">{error}</Alert>}
+                {error && <Alert variant="danger">{error.message}</Alert>}
                 {success && (
                     <Alert variant="success">Successfully updated</Alert>
                 )}
