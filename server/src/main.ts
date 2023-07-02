@@ -6,9 +6,10 @@ import RedisStore from "connect-redis";
 import * as session from "express-session";
 import * as passport from "passport";
 import helmet from "helmet";
-import { createClient } from "redis";
+// import { createClient } from "redis";
 import { AppModule } from "./app.module";
 import * as cors from "cors";
+import { Redis } from "ioredis";
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -29,10 +30,12 @@ async function bootstrap(): Promise<void> {
         api_secret: process.env.CLDNRY_API_SECRET,
     });
 
-    const redisClient = createClient({
-        url: process.env.REDIS_URL,
-    });
-    redisClient.connect().catch(console.error);
+    const redisClient = new Redis(process.env.REDIS_URL);
+
+    // const redisClient = createClient({
+    //     url: process.env.REDIS_URL,
+    // });
+    // redisClient.connect().catch(console.error);
 
     const redisStore = new RedisStore({
         client: redisClient,
