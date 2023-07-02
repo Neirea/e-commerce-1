@@ -45,7 +45,10 @@ export class AuthController {
 
     @Delete("logout")
     @UseGuards(AuthenticatedGuard)
-    logout(@Req() req: Request, @Res() res: Response): void {
+    logout(
+        @Req() req: Request,
+        @Res({ passthrough: true }) res: Response,
+    ): void {
         this.authService.exitSession(req, res);
     }
 }

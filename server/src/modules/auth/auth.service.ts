@@ -51,7 +51,7 @@ export class AuthService {
         return user;
     }
 
-    async exitSession(req: Request, res: Response): Promise<void> {
+    exitSession(req: Request, res: Response): void {
         if (req.session) {
             //deletes from session from Redis too
             req.session.destroy((err: any) => {
@@ -65,6 +65,5 @@ export class AuthService {
                 process.env.NODE_ENV === "production" ? "none" : undefined,
             secure: process.env.NODE_ENV === "production",
         });
-        res.status(200).json({ logout: true });
     }
 }

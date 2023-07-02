@@ -31,22 +31,13 @@ async function bootstrap(): Promise<void> {
     const redisStore = new RedisStore({
         client: redisClient,
     });
-    app.use(function (req, res, next) {
-        res.on("finish", () => {
-            console.log(`request url = ${req.originalUrl}`);
-            if (req.originalUrl.startsWith("/api/auth/google/callback")) {
-                console.log(res.getHeaders());
-            }
-        });
-        next();
-    });
     app.use(
         session({
             name: "sid",
             store: redisStore,
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
-            proxy: true,
+            // proxy: true,
             resave: false,
             cookie: {
                 httpOnly: true,
