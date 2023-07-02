@@ -15,8 +15,8 @@ async function bootstrap(): Promise<void> {
         rawBody: true,
     });
     app.set("truxt proxy", true);
-    app.enableCors({ credentials: true, origin: process.env.CLIENT_URL });
     app.use(helmet());
+    app.enableCors({ credentials: true, origin: [process.env.CLIENT_URL] });
     app.setGlobalPrefix("api");
     app.useGlobalPipes(
         new ValidationPipe({ whitelist: true, transform: true }),
@@ -45,19 +45,34 @@ async function bootstrap(): Promise<void> {
         });
         next();
     });
+    const sessionOptions = {
+        name: "sid",
+        store: redisStore,
+        saveUninitialized: false,
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        cookie: {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 1000 * 60 * 60 * 24 * 30, //30 days
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        },
+    };
+    console.log(sessionOptions);
     app.use(
         session({
             name: "sid",
             store: redisStore,
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
+            unset: "destroy",
             resave: false,
             cookie: {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 maxAge: 1000 * 60 * 60 * 24 * 30, //30 days
                 sameSite:
-                    process.env.NODE_ENV === "production" ? "none" : undefined,
+                    process.env.NODE_ENV === "production" ? "none" : "lax",
             },
         }),
     );

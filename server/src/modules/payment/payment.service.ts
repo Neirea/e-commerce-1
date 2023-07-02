@@ -83,7 +83,7 @@ export class PaymentService {
                 orderProducts,
             );
             return { url: session.url };
-        } catch (error: any) {
+        } catch (error: unknown) {
             await this.prisma.$queryRaw(deleteOrderQuery(order.id));
             throw new BadRequestException("Stripe error: Incorrect data");
         }
