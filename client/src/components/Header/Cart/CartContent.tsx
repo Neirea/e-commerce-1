@@ -17,6 +17,7 @@ import { CartItem } from "../../../store/useCartStore";
 import { toPriceNumber } from "../../../utils/numbers";
 import { IProductWithImages } from "../../../types/Product";
 import { getProductsById } from "../../../queries/Product";
+import ItemPrice from "../../ItemPrice";
 
 const CartContent = ({
     handleClose,
@@ -38,6 +39,8 @@ const CartContent = ({
                 curr.product.price,
         0
     );
+
+    const outOfStock = cart.some((p) => p.product.inventory === 0);
 
     const handleDecrease = (item: CartItem<IProductWithImages>) => {
         addProductToCart({
@@ -158,29 +161,7 @@ const CartContent = ({
                                             </Button>
                                         </Col>
                                         <Col sm={"4"}>
-                                            <div>
-                                                {item.product.discount > 0 && (
-                                                    <s className="text-muted fs-5">{`${toPriceNumber(
-                                                        item.amount *
-                                                            item.product.price
-                                                    )} $`}</s>
-                                                )}
-                                            </div>
-                                            <div
-                                                className={
-                                                    item.product.discount
-                                                        ? "text-danger fs-4 lh-1"
-                                                        : "fs-4 lh-1"
-                                                }
-                                            >
-                                                {`${toPriceNumber(
-                                                    ((100 -
-                                                        item.product.discount) /
-                                                        100) *
-                                                        item.amount *
-                                                        item.product.price
-                                                )} $`}
-                                            </div>
+                                            <ItemPrice item={item} />
                                         </Col>
                                     </Row>
                                 </Row>
@@ -205,7 +186,9 @@ const CartContent = ({
                                     variant="success"
                                     onClick={handleCheckout}
                                     disabled={
-                                        !cart.length || pathname === "/checkout"
+                                        !cart.length ||
+                                        pathname === "/checkout" ||
+                                        outOfStock
                                     }
                                 >
                                     Checkout

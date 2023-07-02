@@ -25,10 +25,6 @@ export const getSyncedCart = (
                 );
                 return result;
             }
-            if (cartProduct.inventory <= 0) {
-                errors.push(`${cartProduct.name} is out of stock.`);
-                return result;
-            }
             if (cartProduct.inventory < item.amount) {
                 errors.push(
                     `Warning: You cart has changed due to available amount of ${cartProduct.name}.`
@@ -70,13 +66,13 @@ function useCartStore() {
     const syncCart = useCallback(
         (data: IProductWithImages[], source: CartType) => {
             const result = getSyncedCart(data, source);
-            if (result?.errors.length) {
-                addCartToLocalStorage([]);
-                return result.errors.join("\n");
-            }
+
             if (result?.newState) {
                 addCartToLocalStorage(result.newState);
                 changeCart(result.newState);
+            }
+            if (result?.errors.length) {
+                return result.errors.join("\n");
             }
         },
         []

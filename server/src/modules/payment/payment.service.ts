@@ -33,6 +33,9 @@ export class PaymentService {
         if (body.items.length === 0) {
             throw new BadRequestException("Your cart is empty");
         }
+        if (body.items.some((p) => p.amount === 0)) {
+            throw new BadRequestException("Your cart has invalid item");
+        }
         const products = await this.prisma.$queryRaw<ProductWithImages[]>(
             getProductsByIdsQuery(body.items.map((i) => i.id)),
         );

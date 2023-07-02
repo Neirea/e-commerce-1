@@ -25,6 +25,7 @@ import {
 import { checkout } from "../queries/Checkout";
 import { getProductsById } from "../queries/Product";
 import { getError } from "../utils/getError";
+import ItemPrice from "../components/ItemPrice";
 
 const CheckoutInputSchema = z.object({
     given_name: givenNameZod,
@@ -58,6 +59,9 @@ const Checkout = () => {
                 curr.product.price,
         0
     );
+
+    const outOfStock = cart.some((p) => p.product.inventory === 0);
+
     const handleData = (e: ChangeEvent<HTMLInputElement>) =>
         setValues({ ...values, [e.target.name]: e.target.value });
 
@@ -189,29 +193,7 @@ const Checkout = () => {
                                             />
                                         </Col>
                                         <Col>
-                                            <div>
-                                                {!!item.product.discount && (
-                                                    <s className="text-muted fs-5">{`${toPriceNumber(
-                                                        item.amount *
-                                                            item.product.price
-                                                    )} $`}</s>
-                                                )}
-                                            </div>
-                                            <div
-                                                className={
-                                                    item.product.discount
-                                                        ? "text-danger fs-4 lh-1"
-                                                        : "fs-4 lh-1"
-                                                }
-                                            >
-                                                {`${toPriceNumber(
-                                                    ((100 -
-                                                        item.product.discount) /
-                                                        100) *
-                                                        item.amount *
-                                                        item.product.price
-                                                )} $`}
-                                            </div>
+                                            <ItemPrice item={item} />
                                         </Col>
                                     </Row>
                                 );
@@ -234,7 +216,11 @@ const Checkout = () => {
                     </div>
                 )}
                 <div className="d-flex justify-content-center mt-3">
-                    <Button variant="success" type="submit" disabled={loading}>
+                    <Button
+                        variant="success"
+                        type="submit"
+                        disabled={loading || outOfStock}
+                    >
                         Proceed
                     </Button>
                 </div>
