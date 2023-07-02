@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 import { IProductWithImages } from "../types/Product";
-import { getProductsById } from "../queries/Product";
 import { useCart } from "./CartProvider";
 
 export interface CartProductBase {
