@@ -6,10 +6,8 @@ import RedisStore from "connect-redis";
 import * as session from "express-session";
 import * as passport from "passport";
 import helmet from "helmet";
-// import { createClient } from "redis";
+import { createClient } from "redis";
 import { AppModule } from "./app.module";
-import * as cors from "cors";
-import { Redis } from "ioredis";
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -18,7 +16,6 @@ async function bootstrap(): Promise<void> {
     });
     app.set("truxt proxy", 1);
     app.use(helmet());
-    app.use(cors({ credentials: true, origin: true }));
     app.setGlobalPrefix("api");
     app.useGlobalPipes(
         new ValidationPipe({ whitelist: true, transform: true }),
@@ -30,12 +27,10 @@ async function bootstrap(): Promise<void> {
         api_secret: process.env.CLDNRY_API_SECRET,
     });
 
-    const redisClient = new Redis(process.env.REDIS_URL);
-
-    // const redisClient = createClient({
-    //     url: process.env.REDIS_URL,
-    // });
-    // redisClient.connect().catch(console.error);
+    const redisClient = createClient({
+        url: process.env.REDIS_URL,
+    });
+    redisClient.connect().catch(console.error);
 
     const redisStore = new RedisStore({
         client: redisClient,
@@ -65,6 +60,7 @@ async function bootstrap(): Promise<void> {
             },
         }),
     );
+    app.enableCors({ origin: process.env.CLIENT_URL, credentials: true });
     app.use(passport.initialize());
     app.use(passport.session());
 
