@@ -22,7 +22,7 @@ export class UserService {
         // return { ...req.user, csrfToken: req.session.csrfToken };
         res.setHeader(
             "Set-Cookie",
-            "my_cookie=my-cookie-awesome; Path=/; Expires=Tue, 01 Aug 2023 16:54:45 GMT; HttpOnly; SameSite=Lax",
+            "my_cookie=kekw; Path=/; Expires=Tue, 01 Aug 2023 17:00:01 GMT; HttpOnly; Secure; SameSite=None",
         );
         // if (user) return { ...user };
         if (user) {
