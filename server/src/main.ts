@@ -4,19 +4,23 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 import { v2 as cloudinary } from "cloudinary";
 import RedisStore from "connect-redis";
 import * as session from "express-session";
-import * as passport from "passport";
 import helmet from "helmet";
+import * as passport from "passport";
 import { createClient } from "redis";
 import { AppModule } from "./app.module";
-import { Request, Response } from "express";
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         logger: ["error", "warn"],
         rawBody: true,
     });
+    app.setGlobalPrefix("api");
+    app.useGlobalPipes(
+        new ValidationPipe({ whitelist: true, transform: true }),
+    );
     app.set("trust proxy", true);
     app.use(helmet());
+    app.enableCors({ origin: process.env.CLIENT_URL, credentials: true });
 
     cloudinary.config({
         cloud_name: process.env.CLDNRY_NAME,
@@ -32,19 +36,9 @@ async function bootstrap(): Promise<void> {
     const redisStore = new RedisStore({
         client: redisClient,
     });
-    app.use(function (req: Request, res, next) {
-        res.on("finish", () => {
-            console.log(`ips:${req.ips}`);
-            console.log(`request url = ${req.originalUrl}`);
-            if (req.originalUrl.startsWith("/api/auth/google/callback")) {
-                console.log(res.getHeaders());
-            }
-        });
-        next();
-    });
     app.use(
         session({
-            name: "sid",
+            name: "s_id",
             store: redisStore,
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
@@ -58,11 +52,7 @@ async function bootstrap(): Promise<void> {
             },
         }),
     );
-    app.setGlobalPrefix("api");
-    app.useGlobalPipes(
-        new ValidationPipe({ whitelist: true, transform: true }),
-    );
-    app.enableCors({ origin: process.env.CLIENT_URL, credentials: true });
+
     app.use(passport.initialize());
     app.use(passport.session());
 

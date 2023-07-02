@@ -60,7 +60,7 @@ export class AuthService {
                 }
             });
         }
-        res.clearCookie("sid", {
+        res.clearCookie("s_id", {
             sameSite:
                 process.env.NODE_ENV === "production" ? "none" : undefined,
             secure: process.env.NODE_ENV === "production",
