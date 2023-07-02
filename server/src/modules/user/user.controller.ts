@@ -5,11 +5,12 @@ import {
     Param,
     Patch,
     Req,
+    Res,
     UseGuards,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { Request } from "express";
+import { Request, Response } from "express";
 import { UserId } from "./user.types";
 import { RolesGuard } from "src/common/roles/roles.guard";
 import { Role, User } from "@prisma/client";
@@ -28,9 +29,9 @@ export class UserController {
     }
 
     @Get("me")
-    showMe(@Req() req: Request): User {
+    showMe(@Req() req: Request, @Res() res: Response): void {
         const user = req.session?.passport?.user;
-        return this.userService.showMe(user);
+        this.userService.showMe(res, user);
     }
 
     @Get(":id")

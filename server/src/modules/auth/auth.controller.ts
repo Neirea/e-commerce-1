@@ -24,7 +24,8 @@ export class AuthController {
     }
 
     @Get("google/callback")
-    @Redirect(process.env.CLIENT_URL, 302)
+    @UseGuards(GoogleAuthGuard)
+    @Redirect(process.env.CLIENT_URL, 301)
     handleGoogleCallback(): { msg: string } {
         return { msg: "Success" };
     }
@@ -36,9 +37,10 @@ export class AuthController {
     }
 
     @Get("facebook/callback")
-    @Redirect(process.env.CLIENT_URL, 302)
+    @UseGuards(FacebookAuthGuard)
+    @Redirect(process.env.CLIENT_URL, 301)
     handleFacebookCallback(): { msg: string } {
-        return { msg: "Callback" };
+        return { msg: "Success" };
     }
 
     @Delete("logout")
