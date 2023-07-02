@@ -24,11 +24,12 @@ export class AuthController {
     }
 
     @Get("google/callback")
-    @UseGuards(GoogleAuthGuard)
-    @Redirect(process.env.CLIENT_URL, 301)
-    handleGoogleCallback(@Req() req: Request): { msg: string } {
+    // @UseGuards(GoogleAuthGuard)
+    // @Redirect(process.env.CLIENT_URL, 301)
+    handleGoogleCallback(@Req() req: Request, @Res() res: Response): void {
         console.log("session=", req.session);
-        return { msg: "Success" };
+        // return { msg: "Success" };
+        res.redirect(301, process.env.CLIENT_URL);
     }
 
     @Get("facebook/login")
