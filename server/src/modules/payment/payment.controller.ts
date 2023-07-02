@@ -22,7 +22,7 @@ export class PaymentController {
         @Req() req: Request,
         @Body() body: CheckoutBodyDto,
     ): Promise<CheckoutReturnType> {
-        const user = req.session.passport.user;
+        const user = req.user;
         return this.paymentService.initializePayment(user, body);
     }
 
@@ -31,7 +31,7 @@ export class PaymentController {
         @Param("id") id: OrderId,
         @Req() req: Request,
     ): Promise<CheckoutReturnType> {
-        const user = req.session.passport.user;
+        const user = req.user;
         return this.paymentService.resumePayment(user, id);
     }
 

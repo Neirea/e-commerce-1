@@ -19,7 +19,7 @@ export class OrderController {
     @Get()
     @UseGuards(AuthenticatedGuard)
     getOrders(@Req() req: Request): Promise<OrderWithItems[]> {
-        const user = req.session.passport.user;
+        const user = req.user;
         return this.orderService.getOrders(user);
     }
 
