@@ -15,7 +15,7 @@ async function bootstrap(): Promise<void> {
         rawBody: true,
     });
     app.set("truxt proxy", true);
-    app.enableCors({ credentials: true, origin: true });
+    app.enableCors({ credentials: true, origin: process.env.CLIENT_URL });
     app.use(helmet());
     app.setGlobalPrefix("api");
     app.useGlobalPipes(
@@ -35,6 +35,15 @@ async function bootstrap(): Promise<void> {
 
     const redisStore = new RedisStore({
         client: redisClient,
+    });
+    app.use(function (req, res, next) {
+        res.on("finish", () => {
+            console.log(`request url = ${req.originalUrl}`);
+            if (req.originalUrl.startsWith("/api/auth/google/callback")) {
+                console.log(res.getHeaders());
+            }
+        });
+        next();
     });
     app.use(
         session({

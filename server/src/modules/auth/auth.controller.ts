@@ -32,6 +32,7 @@ export class AuthController {
 
     @Get("facebook/login")
     @UseGuards(FacebookAuthGuard)
+    @Redirect(process.env.CLIENT_URL, 301)
     handleFacebookLogin(): { msg: string } {
         return { msg: "Google Auth" };
     }
