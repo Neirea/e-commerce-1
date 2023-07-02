@@ -38,17 +38,21 @@ async function bootstrap(): Promise<void> {
     });
     app.use(
         session({
-            name: "s_id",
+            name: "techway_sid",
             store: redisStore,
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
             resave: false,
             cookie: {
                 httpOnly: true,
+                domain:
+                    process.env.NODE_ENV === "production"
+                        ? "neirea.com"
+                        : undefined,
                 secure: process.env.NODE_ENV === "production",
                 maxAge: 1000 * 60 * 60 * 24 * 30, //30 days
                 sameSite:
-                    process.env.NODE_ENV === "production" ? "none" : "lax",
+                    process.env.NODE_ENV === "production" ? "strict" : "lax",
             },
         }),
     );

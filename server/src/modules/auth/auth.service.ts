@@ -60,7 +60,7 @@ export class AuthService {
                 }
             });
         }
-        res.clearCookie("s_id", {
+        res.clearCookie("techway_sid", {
             sameSite:
                 process.env.NODE_ENV === "production" ? "none" : undefined,
             secure: process.env.NODE_ENV === "production",
