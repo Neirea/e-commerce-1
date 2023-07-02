@@ -3,7 +3,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { User } from "@prisma/client";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserByIdQuery, allUsersQuery, updateUserQuery } from "./user.queries";
-import { Request, Response } from "express";
+import { Request } from "express";
 
 @Injectable()
 export class UserService {
@@ -18,18 +18,9 @@ export class UserService {
         return user[0];
     }
 
-    showMe(res: Response, user: User): void {
+    showMe(user: User): User | undefined {
         // return { ...req.user, csrfToken: req.session.csrfToken };
-        res.setHeader(
-            "Set-Cookie",
-            "my_cookie=kekw; Path=/; Expires=Tue, 01 Aug 2023 17:00:01 GMT; HttpOnly; Secure; SameSite=None",
-        );
-        // if (user) return { ...user };
-        if (user) {
-            res.json({ ...user });
-            return;
-        }
-        res.send();
+        if (user) return { ...user };
     }
 
     async updateUser(req: Request, input: UpdateUserDto): Promise<User> {

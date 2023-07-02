@@ -16,10 +16,6 @@ async function bootstrap(): Promise<void> {
     });
     app.set("truxt proxy", 1);
     app.use(helmet());
-    app.setGlobalPrefix("api");
-    app.useGlobalPipes(
-        new ValidationPipe({ whitelist: true, transform: true }),
-    );
 
     cloudinary.config({
         cloud_name: process.env.CLDNRY_NAME,
@@ -35,15 +31,15 @@ async function bootstrap(): Promise<void> {
     const redisStore = new RedisStore({
         client: redisClient,
     });
-    app.use(function (req, res, next) {
-        res.on("finish", () => {
-            console.log(`request url = ${req.originalUrl}`);
-            if (req.originalUrl.startsWith("/api/auth/google/callback")) {
-                console.log(res.getHeaders());
-            }
-        });
-        next();
-    });
+    // app.use(function (req, res, next) {
+    //     res.on("finish", () => {
+    //         console.log(`request url = ${req.originalUrl}`);
+    //         if (req.originalUrl.startsWith("/api/auth/google/callback")) {
+    //             console.log(res.getHeaders());
+    //         }
+    //     });
+    //     next();
+    // });
     app.use(
         session({
             name: "sid",
@@ -59,6 +55,10 @@ async function bootstrap(): Promise<void> {
                     process.env.NODE_ENV === "production" ? "none" : "lax",
             },
         }),
+    );
+    app.setGlobalPrefix("api");
+    app.useGlobalPipes(
+        new ValidationPipe({ whitelist: true, transform: true }),
     );
     app.enableCors({ origin: process.env.CLIENT_URL, credentials: true });
     app.use(passport.initialize());
