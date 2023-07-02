@@ -8,15 +8,16 @@ import * as passport from "passport";
 import helmet from "helmet";
 import { createClient } from "redis";
 import { AppModule } from "./app.module";
+import * as cors from "cors";
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         logger: ["error", "warn"],
         rawBody: true,
     });
-    // app.set("truxt proxy", true);
+    app.set("truxt proxy", 1);
     app.use(helmet());
-    app.enableCors({ credentials: true, origin: [process.env.CLIENT_URL] });
+    app.use(cors({ credentials: true, origin: [process.env.CLIENT_URL] }));
     app.setGlobalPrefix("api");
     app.useGlobalPipes(
         new ValidationPipe({ whitelist: true, transform: true }),
