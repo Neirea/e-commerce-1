@@ -3,7 +3,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CheckoutReturnType, OrderProductsType } from "./payment.types";
 import { PrismaPromise, Product, User } from "@prisma/client";
 import { getProductsByIdsQuery } from "../product/product.queries";
-import { stripe } from "src/common/stripe";
+// import { stripe } from "src/common/stripe";
 import {
     deleteOrderQuery,
     getOrdersByOrderIdQuery,
@@ -21,6 +21,9 @@ import { getDiscountPrice } from "./utils/get-price";
 
 @Injectable()
 export class PaymentService {
+    private stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY, {
+        apiVersion: "2022-11-15",
+    });
     constructor(private prisma: PrismaService) {}
 
     async initializePayment(
@@ -128,7 +131,7 @@ export class PaymentService {
 
         let event: Stripe.Event;
         try {
-            event = stripe.webhooks.constructEvent(
+            event = this.stripe.webhooks.constructEvent(
                 body,
                 signature,
                 webhookSecret,
@@ -162,7 +165,7 @@ export class PaymentService {
             }
         } catch (err) {
             // On error, log and return the error message
-            // logger.error(`Payment webhook error: ${(err as Error).message}`);
+            console.error(`Payment webhook error: ${(err as Error).message}`);
             throw new BadRequestException(
                 `Webhook Error: ${(err as Error).message}`,
             );
@@ -177,7 +180,7 @@ export class PaymentService {
         orderProducts: OrderProductsType[],
     ): Promise<Stripe.Response<Stripe.Checkout.Session>> {
         const clientUrl = process.env.CLIENT_URL;
-        return stripe.checkout.sessions.create({
+        return this.stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             mode: "payment",
             metadata: { orderId },
