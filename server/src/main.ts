@@ -46,6 +46,7 @@ async function bootstrap(): Promise<void> {
             store: redisStore,
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
+            proxy: true,
             resave: false,
             cookie: {
                 httpOnly: true,
