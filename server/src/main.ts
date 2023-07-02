@@ -14,7 +14,7 @@ async function bootstrap(): Promise<void> {
         logger: ["error", "warn"],
         rawBody: true,
     });
-    app.set("truxt proxy", 1);
+    // app.set("truxt proxy", 1);
     app.use(helmet());
 
     cloudinary.config({
