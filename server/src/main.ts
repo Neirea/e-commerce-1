@@ -8,13 +8,14 @@ import * as passport from "passport";
 import helmet from "helmet";
 import { createClient } from "redis";
 import { AppModule } from "./app.module";
+import { Request, Response } from "express";
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         logger: ["error", "warn"],
         rawBody: true,
     });
-    // app.set("truxt proxy", 1);
+    app.set("trust proxy", true);
     app.use(helmet());
 
     cloudinary.config({
@@ -31,13 +32,22 @@ async function bootstrap(): Promise<void> {
     const redisStore = new RedisStore({
         client: redisClient,
     });
+    app.use(function (req: Request, res, next) {
+        res.on("finish", () => {
+            console.log(`ips:${req.ips}`);
+            console.log(`request url = ${req.originalUrl}`);
+            if (req.originalUrl.startsWith("/api/auth/google/callback")) {
+                console.log(res.getHeaders());
+            }
+        });
+        next();
+    });
     app.use(
         session({
             name: "sid",
             store: redisStore,
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
-            proxy: true,
             resave: false,
             cookie: {
                 httpOnly: true,
