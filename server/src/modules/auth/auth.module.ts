@@ -8,7 +8,7 @@ import { SessionSerializer } from "./session.serializer";
 import { FacebookStrategy } from "./strategies/facebook.strategy";
 
 @Module({
-    imports: [PassportModule.register({ session: true })],
+    imports: [PassportModule.register({ session: false })],
     controllers: [AuthController],
     providers: [
         AuthService,

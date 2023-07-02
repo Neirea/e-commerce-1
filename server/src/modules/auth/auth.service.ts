@@ -1,7 +1,4 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-// import { UsersService } from "../users/users.service";
-// import { comparePassword } from "src/utils/password";
-// import CustomRequest from "src/interfaces/custom-requests.interface";
 import { Request, Response } from "express";
 import { Profile as GoogleProfile } from "passport-google-oauth20";
 import { Profile as FacebookProfile } from "passport-facebook";

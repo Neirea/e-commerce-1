@@ -37,11 +37,10 @@ async function bootstrap(): Promise<void> {
     });
     app.use(
         session({
-            name: "sid",
+            name: "s_id",
             store: redisStore,
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
-            proxy: true,
             resave: false,
             cookie: {
                 httpOnly: true,
@@ -52,9 +51,8 @@ async function bootstrap(): Promise<void> {
             },
         }),
     );
-    app.enableCors({ credentials: true, origin: [process.env.CLIENT_URL] });
+    app.enableCors({ credentials: true, origin: process.env.CLIENT_URL });
     app.use(passport.initialize());
-    app.use(passport.session());
 
     const port = process.env.PORT || 5000;
     await app.listen(port, "0.0.0.0", () =>

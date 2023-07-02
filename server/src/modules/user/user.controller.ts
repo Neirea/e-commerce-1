@@ -29,7 +29,7 @@ export class UserController {
 
     @Get("me")
     showMe(@Req() req: Request): User {
-        const user = req.user;
+        const user = req.session?.passport?.user;
         return this.userService.showMe(user);
     }
 
