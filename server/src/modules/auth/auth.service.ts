@@ -52,11 +52,14 @@ export class AuthService {
     }
 
     async exitSession(req: Request, res: Response): Promise<void> {
-        req.logOut((err: unknown) => {
-            if (err) {
-                throw new BadRequestException("Failed to logout");
-            }
-        });
+        if (req.session) {
+            //deletes from session from Redis too
+            req.session.destroy((err: any) => {
+                if (err) {
+                    throw new BadRequestException("Failed to logout");
+                }
+            });
+        }
         res.clearCookie("sid", {
             sameSite:
                 process.env.NODE_ENV === "production" ? "none" : undefined,
