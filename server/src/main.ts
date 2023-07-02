@@ -17,7 +17,7 @@ async function bootstrap(): Promise<void> {
     });
     app.set("truxt proxy", 1);
     app.use(helmet());
-    app.use(cors({ credentials: true, origin: [process.env.CLIENT_URL] }));
+    app.use(cors({ credentials: true }));
     app.setGlobalPrefix("api");
     app.useGlobalPipes(
         new ValidationPipe({ whitelist: true, transform: true }),
