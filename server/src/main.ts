@@ -15,12 +15,11 @@ async function bootstrap(): Promise<void> {
         rawBody: true,
     });
     app.set("truxt proxy", true);
-    app.enableCors({ credentials: true, origin: [process.env.CLIENT_URL] });
-    app.use(helmet());
     app.setGlobalPrefix("api");
     app.useGlobalPipes(
         new ValidationPipe({ whitelist: true, transform: true }),
     );
+    app.use(helmet());
 
     cloudinary.config({
         cloud_name: process.env.CLDNRY_NAME,
@@ -42,6 +41,7 @@ async function bootstrap(): Promise<void> {
             store: redisStore,
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
+            proxy: true,
             resave: false,
             cookie: {
                 httpOnly: true,
@@ -52,6 +52,7 @@ async function bootstrap(): Promise<void> {
             },
         }),
     );
+    app.enableCors({ credentials: true, origin: [process.env.CLIENT_URL] });
     app.use(passport.initialize());
     app.use(passport.session());
 
