@@ -58,7 +58,7 @@ export class PaymentService {
         //create order
         const order = await this.prisma.order.create({
             data: {
-                user_id: user?.id,
+                user_id: user.id,
                 buyer_name: body.buyer.name,
                 buyer_email: body.buyer.email,
                 delivery_address: body.buyer.address,

@@ -93,7 +93,7 @@ export class ProductService {
             // finding unique items and product count
             if (getPriceCondition(price, input.min_price, input.max_price)) {
                 setAndCount(allCategories, p.category, catCount);
-                if (p.category.parent?.id != null) {
+                if (p.category.parent != null) {
                     setAndCount(allCategories, p.category.parent, catCount);
                 }
                 setAndCount(allCompanies, p.company, compCount);
@@ -159,7 +159,7 @@ export class ProductService {
         const { variants, img_id, img_src, ...createData } = input;
 
         //create product, create product images and connection to variants
-        const connectArr = variants?.map((p_id) => {
+        const connectArr = variants.map((p_id) => {
             return { id: p_id };
         });
         const productImages = img_id.map((img, i) => {
@@ -192,7 +192,7 @@ export class ProductService {
         const { variants, img_id, img_src, ...updateData } = input;
 
         //update product, create product images and connection to variants
-        const newVariants = variants?.map((p_id) => {
+        const newVariants = variants.map((p_id) => {
             return { id: p_id };
         });
         const newProductImages = img_id.map((img, i) => {

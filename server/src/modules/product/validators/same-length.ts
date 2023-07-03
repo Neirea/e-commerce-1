@@ -10,7 +10,7 @@ export class SameLengthConstraint implements ValidatorConstraintInterface {
     validate(value: object, args: ValidationArguments): boolean {
         const fields = args.constraints;
 
-        const lengths = fields.map((field: string) => value[field]?.length);
+        const lengths = fields.map((field: string) => value[field].length);
         const firstLength = lengths[0];
 
         return lengths.every(

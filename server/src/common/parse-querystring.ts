@@ -1,4 +1,4 @@
-export const parseQueryString = (input: string | null | undefined) => {
+export const parseQueryString = (input: string | null | undefined): string => {
     const resultStr = input?.length
         ? input
               .replace(/[\!\:\*\<\(\)\@\&\|]/g, "")
