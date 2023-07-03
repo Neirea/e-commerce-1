@@ -25,6 +25,7 @@ import { parseArrayQuery } from "src/pipes/parseArrayQuery";
 import { Roles } from "src/common/roles/roles.decorator";
 import { Role } from "@prisma/client";
 import { RolesGuard } from "src/common/roles/roles.guard";
+import { ApiTags, ApiCookieAuth } from "@nestjs/swagger";
 import { ProductWithImagesDto } from "./dto/product-with-images.dto";
 import {
     SearchDataQueryDto,
@@ -35,6 +36,7 @@ import { ProductByIdResponseDto } from "./dto/product-by-id.dto";
 import { ProductWithVariantsDto } from "./dto/get-product.dto";
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 
+@ApiTags("product")
 @Controller("product")
 export class ProductController {
     constructor(private readonly productService: ProductService) {}
@@ -100,6 +102,7 @@ export class ProductController {
     }
 
     @Post()
+    @ApiCookieAuth()
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
     createProduct(@Body() body: CreateProductDto): Promise<void> {
@@ -107,6 +110,7 @@ export class ProductController {
     }
 
     @Patch(":id")
+    @ApiCookieAuth()
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
     updateProduct(
@@ -117,6 +121,7 @@ export class ProductController {
     }
 
     @Delete(":id")
+    @ApiCookieAuth()
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
     deleteProduct(@Param("id") id: ProductId): void {

@@ -1,6 +1,6 @@
 {
     "name": "server",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "",
     "private": true,
     "scripts": {
@@ -24,6 +24,7 @@
         "@nestjs/passport": "^10.0.0",
         "@nestjs/platform-express": "^10.0.0",
         "@nestjs/schedule": "^3.0.1",
+        "@nestjs/swagger": "^7.0.12",
         "@prisma/client": "^4.16.1",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.14.0",

@@ -15,8 +15,10 @@ import { CompanyId } from "./company.types";
 import { Role } from "@prisma/client";
 import { RolesGuard } from "src/common/roles/roles.guard";
 import { Roles } from "src/common/roles/roles.decorator";
+import { ApiCookieAuth, ApiTags } from "@nestjs/swagger";
 import { CompanyWithCategoriesDto } from "./dto/get-companies.dto";
 
+@ApiTags("company")
 @Controller("company")
 export class CompanyController {
     constructor(private readonly companyService: CompanyService) {}
@@ -27,6 +29,7 @@ export class CompanyController {
     }
 
     @Post()
+    @ApiCookieAuth()
     @Roles(Role.ADMIN)
     @UseGuards(RolesGuard)
     createCompany(@Body() body: CreateCompanyDto): void {
@@ -35,6 +38,7 @@ export class CompanyController {
 
     @Patch(":id")
     @Roles(Role.ADMIN)
+    @ApiCookieAuth()
     @UseGuards(RolesGuard)
     updateCompany(
         @Param("id") id: CompanyId,
@@ -45,6 +49,7 @@ export class CompanyController {
 
     @Delete(":id")
     @Roles(Role.ADMIN)
+    @ApiCookieAuth()
     @UseGuards(RolesGuard)
     deleteCompany(@Param("id") id: CompanyId): void {
         this.companyService.deleteCompany(id);

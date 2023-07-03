@@ -16,13 +16,17 @@ import { RolesGuard } from "src/common/roles/roles.guard";
 import { Role } from "@prisma/client";
 import { Roles } from "src/common/roles/roles.decorator";
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
+import { ApiCookieAuth, ApiTags } from "@nestjs/swagger";
 import { User } from "./entities/user.entity";
 
+@ApiTags("user")
 @Controller("user")
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @Get()
+    @ApiCookieAuth()
+    @UseGuards(AuthenticatedGuard)
     @Roles(Role.ADMIN)
     @UseGuards(RolesGuard)
     getUsers(): Promise<User[]> {
@@ -36,6 +40,8 @@ export class UserController {
     }
 
     @Get(":id")
+    @ApiCookieAuth()
+    @UseGuards(AuthenticatedGuard)
     @Roles(Role.ADMIN)
     @UseGuards(RolesGuard)
     getUserById(@Param("id") id: UserId): Promise<User> {
@@ -43,6 +49,7 @@ export class UserController {
     }
 
     @Patch("me")
+    @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     updateCurrentUser(
         @Req() req: Request,

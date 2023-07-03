@@ -15,8 +15,10 @@ import { CategoryId } from "./category.types";
 import { RolesGuard } from "src/common/roles/roles.guard";
 import { Roles } from "src/common/roles/roles.decorator";
 import { Role } from "@prisma/client";
+import { ApiCookieAuth, ApiTags } from "@nestjs/swagger";
 import { CategoryWithCompaniesDto } from "./dto/get-categories.dto";
 
+@ApiTags("category")
 @Controller("category")
 export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}
@@ -27,6 +29,7 @@ export class CategoryController {
     }
 
     @Post()
+    @ApiCookieAuth()
     @Roles(Role.ADMIN)
     @UseGuards(RolesGuard)
     createCategory(@Body() body: createCategoryDto): void {
@@ -34,6 +37,7 @@ export class CategoryController {
     }
 
     @Patch(":id")
+    @ApiCookieAuth()
     @Roles(Role.ADMIN)
     @UseGuards(RolesGuard)
     updateCategory(
@@ -45,6 +49,7 @@ export class CategoryController {
 
     @Delete(":id")
     @Roles(Role.ADMIN)
+    @ApiCookieAuth()
     @UseGuards(RolesGuard)
     deleteCategory(@Param("id") id: CategoryId): void {
         this.categoryService.deleteCategory(id);

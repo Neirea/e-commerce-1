@@ -11,6 +11,11 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class Order {
     id: OrderId;
+    @ApiProperty({
+        enum: [
+            '"PENDING", "ACCEPTED", "PROCESSING" , "DELIVERED" , "CANCELLED"',
+        ],
+    })
     status: OrderStatus;
     shipping_cost: ProductShippingCost;
     user_id: UserId;
