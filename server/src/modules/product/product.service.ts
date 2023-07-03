@@ -37,6 +37,13 @@ import {
     SearchResult,
 } from "./product.types";
 import { CategoryId } from "../category/category.types";
+import { CompanyId } from "../company/company.types";
+import {
+    ProductCountType,
+    getArrayWithProductCount,
+    getPriceCondition,
+    setAndCount,
+} from "./utils/search-data";
 
 @Injectable()
 export class ProductService {
@@ -52,10 +59,12 @@ export class ProductService {
         );
         return product[0];
     }
+
     getProductsByIds(ids: ProductId[]): Promise<ProductWithImages[]> {
         if (!ids) return Promise.resolve([]);
         return this.prisma.$queryRaw(getProductsByIdsQuery(ids));
     }
+
     async getSearchData(input: SearchDataDto): SearchDataResponse {
         const searchCategoryIds: CategoryId[] = [];
         if (input.category_id) {
@@ -69,59 +78,32 @@ export class ProductService {
             getSearchDataQuery(input, searchCategoryIds),
         );
 
-        let min = 2147483647; // Infinity?
+        let min = Infinity;
         let max = 0;
-        const allCategories: CategoryType[] = [];
-        const allCompanies: CompanyType[] = [];
-        const maxPrice = input.max_price ?? 2147483647;
-        const minPrice = input.min_price ?? 0;
+        const allCategories = new Map<CategoryId, CategoryType>();
+        const allCompanies = new Map<CompanyId, CompanyType>();
+        const catCount: ProductCountType = {};
+        const compCount: ProductCountType = {};
+
         data.forEach((p) => {
             const price = ((100 - p.discount) / 100) * p.price;
+            //finding min/max
             if (price < min) min = price;
             if (price > max) max = price;
-            if (input.max_price || input.min_price) {
-                if (price <= maxPrice && price >= minPrice) {
-                    allCategories.push(p.category);
-                    allCompanies.push(p.company);
+            // finding unique items and product count
+            if (getPriceCondition(price, input.min_price, input.max_price)) {
+                setAndCount(allCategories, p.category, catCount);
+                if (p.category.parent?.id != null) {
+                    setAndCount(allCategories, p.category.parent, catCount);
                 }
-            } else {
-                allCategories.push(p.category);
-                allCompanies.push(p.company);
+                setAndCount(allCompanies, p.company, compCount);
             }
         });
         if (min === Infinity) min = 0;
-        //push parent categories
-        allCategories.forEach((elem) => {
-            if (elem.parent && elem.parent.id != null) {
-                allCategories.push(elem.parent);
-            }
-        });
 
-        //get unique categories, companies
-        const categories = [
-            ...new Map(
-                allCategories.map((item) => [item["id"], item]),
-            ).values(),
-        ];
-        const companies = [
-            ...new Map(allCompanies.map((item) => [item["id"], item])).values(),
-        ];
+        const categories = getArrayWithProductCount(allCategories, catCount);
+        const companies = getArrayWithProductCount(allCompanies, compCount);
 
-        // count products per category, company
-        const catCount: { [key: string]: number } = {};
-        allCategories.forEach((c) => {
-            catCount[c.id] = (catCount[c.id] || 0) + 1;
-        });
-        const compCount: { [key: string]: number } = {};
-        allCompanies.forEach((c) => {
-            compCount[c.id] = (compCount[c.id] || 0) + 1;
-        });
-        categories.forEach((elem) => {
-            elem.productCount = catCount[elem.id];
-        });
-        companies.forEach((elem) => {
-            elem.productCount = compCount[elem.id];
-        });
         return {
             min: Math.floor(min),
             max: Math.ceil(max),
@@ -129,6 +111,7 @@ export class ProductService {
             companies,
         };
     }
+
     async getFilteredProducts(
         input: FilteredProductsDto,
     ): Promise<ProductWithCatCom[]> {
