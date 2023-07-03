@@ -49,6 +49,7 @@ export class UserController {
     }
 
     @Patch("me")
+    @HttpCode(200)
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     updateCurrentUser(

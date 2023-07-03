@@ -6,6 +6,7 @@ import {
     UploadedFile,
     UploadedFiles,
     UseFilters,
+    UseGuards,
     UseInterceptors,
 } from "@nestjs/common";
 import { EditorService } from "./editor.service";
@@ -43,6 +44,9 @@ export class EditorController {
             },
         },
     })
+    @UseGuards(AuthenticatedGuard)
+    @Roles(Role.EDITOR)
+    @UseGuards(RolesGuard)
     @UseInterceptors(FilesInterceptor("files", 5, imgMulterOptions))
     uploadImages(
         @UploadedFiles(
@@ -72,6 +76,9 @@ export class EditorController {
             },
         },
     })
+    @UseGuards(AuthenticatedGuard)
+    @Roles(Role.EDITOR)
+    @UseGuards(RolesGuard)
     @UseInterceptors(FileInterceptor("files", imgMulterOptions))
     uploadSingeImage(
         @UploadedFile(

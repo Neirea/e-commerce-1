@@ -3,6 +3,7 @@ import {
     Controller,
     Delete,
     Get,
+    HttpCode,
     Param,
     Patch,
     Post,
@@ -17,6 +18,7 @@ import { RolesGuard } from "src/common/roles/roles.guard";
 import { Roles } from "src/common/roles/roles.decorator";
 import { ApiCookieAuth, ApiTags } from "@nestjs/swagger";
 import { CompanyWithCategoriesDto } from "./dto/get-companies.dto";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 
 @ApiTags("company")
 @Controller("company")
@@ -30,15 +32,18 @@ export class CompanyController {
 
     @Post()
     @ApiCookieAuth()
-    @Roles(Role.ADMIN)
+    @UseGuards(AuthenticatedGuard)
+    @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
     createCompany(@Body() body: CreateCompanyDto): void {
         this.companyService.createCompany(body);
     }
 
     @Patch(":id")
-    @Roles(Role.ADMIN)
+    @HttpCode(204)
     @ApiCookieAuth()
+    @UseGuards(AuthenticatedGuard)
+    @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
     updateCompany(
         @Param("id") id: CompanyId,
@@ -48,8 +53,10 @@ export class CompanyController {
     }
 
     @Delete(":id")
-    @Roles(Role.ADMIN)
+    @HttpCode(204)
     @ApiCookieAuth()
+    @UseGuards(AuthenticatedGuard)
+    @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
     deleteCompany(@Param("id") id: CompanyId): void {
         this.companyService.deleteCompany(id);

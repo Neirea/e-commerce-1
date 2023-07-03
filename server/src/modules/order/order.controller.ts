@@ -2,6 +2,7 @@ import {
     Controller,
     Delete,
     Get,
+    HttpCode,
     Param,
     Patch,
     Req,
@@ -27,12 +28,14 @@ export class OrderController {
         return this.orderService.getOrders(user);
     }
     @Patch(":id")
+    @HttpCode(204)
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     cancelOrder(@Param("id") id: OrderId): void {
         this.orderService.cancelOrder(id);
     }
     @Delete(":id")
+    @HttpCode(204)
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     deleteOrder(@Param("id") id: OrderId): void {

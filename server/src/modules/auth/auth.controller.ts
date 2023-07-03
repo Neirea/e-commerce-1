@@ -2,6 +2,7 @@ import {
     Controller,
     Delete,
     Get,
+    HttpCode,
     Redirect,
     Req,
     Res,
@@ -27,6 +28,7 @@ export class AuthController {
     }
 
     @Get("google/callback")
+    @HttpCode(301)
     @ApiOperation({ description: "Redirecting user to client url after login" })
     @UseGuards(GoogleAuthGuard)
     @Redirect(process.env.CLIENT_URL, 301)
@@ -42,6 +44,7 @@ export class AuthController {
     }
 
     @Get("facebook/callback")
+    @HttpCode(301)
     @ApiOperation({ description: "Redirecting user to client url after login" })
     @UseGuards(FacebookAuthGuard)
     @Redirect(process.env.CLIENT_URL, 301)
@@ -50,6 +53,7 @@ export class AuthController {
     }
 
     @Delete("logout")
+    @HttpCode(204)
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     logout(

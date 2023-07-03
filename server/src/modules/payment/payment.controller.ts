@@ -6,6 +6,7 @@ import {
     RawBodyRequest,
     Req,
     Headers,
+    HttpCode,
 } from "@nestjs/common";
 import { PaymentService } from "./payment.service";
 import { Request } from "express";
@@ -30,6 +31,7 @@ export class PaymentController {
     }
 
     @Post("checkout/:id")
+    @HttpCode(200)
     @ApiOperation({ description: "Proceeding unfinished order" })
     @ApiCookieAuth()
     finishPayment(
@@ -41,6 +43,7 @@ export class PaymentController {
     }
 
     @Post("webhook")
+    @HttpCode(200)
     @ApiOperation({ description: "Receiving stripe events" })
     @ApiCookieAuth()
     stripeWebhook(

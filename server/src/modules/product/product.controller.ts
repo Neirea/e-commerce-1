@@ -103,6 +103,7 @@ export class ProductController {
 
     @Post()
     @ApiCookieAuth()
+    @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
     createProduct(@Body() body: CreateProductDto): Promise<void> {
@@ -110,7 +111,9 @@ export class ProductController {
     }
 
     @Patch(":id")
+    @HttpCode(204)
     @ApiCookieAuth()
+    @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
     updateProduct(
@@ -121,7 +124,9 @@ export class ProductController {
     }
 
     @Delete(":id")
+    @HttpCode(204)
     @ApiCookieAuth()
+    @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
     deleteProduct(@Param("id") id: ProductId): void {
