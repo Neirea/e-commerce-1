@@ -35,7 +35,6 @@ export const uploadImages = (formData: FormData) =>
         {
             headers: {
                 "Content-Type": "multipart/form-data",
-                // "csrf-token": user?.csrfToken || "",
             },
         }
     );

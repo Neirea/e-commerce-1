@@ -18,6 +18,5 @@ export const uploadImage = async (formData: FormData) =>
     axios.post<{ image: IUploadedImage }>("/editor/upload-image", formData, {
         headers: {
             "Content-Type": "multipart/form-data",
-            // "csrf-token": user?.csrfToken || "",
         },
     });
