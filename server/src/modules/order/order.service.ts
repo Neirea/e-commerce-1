@@ -5,16 +5,17 @@ import {
     deleteOrderQuery,
     getOrdersByUserQuery,
 } from "./order.queries";
-import { OrderId, OrderWithItems } from "./order.types";
+import { OrderId } from "./order.types";
 import { User } from "@prisma/client";
+import { OrderWithItemsDto } from "./dto/get-orders.dto";
 
 @Injectable()
 export class OrderService {
     constructor(private prisma: PrismaService) {}
 
-    getOrders(user: User): Promise<OrderWithItems[]> {
+    getOrders(user: User): Promise<OrderWithItemsDto[]> {
         const sessionUserId = user.id;
-        return this.prisma.$queryRaw<OrderWithItems[]>(
+        return this.prisma.$queryRaw<OrderWithItemsDto[]>(
             getOrdersByUserQuery(sessionUserId),
         );
     }

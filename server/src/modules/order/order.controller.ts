@@ -8,9 +8,10 @@ import {
     UseGuards,
 } from "@nestjs/common";
 import { OrderService } from "./order.service";
-import { OrderId, OrderWithItems } from "./order.types";
+import { OrderId } from "./order.types";
 import { Request } from "express";
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
+import { OrderWithItemsDto } from "./dto/get-orders.dto";
 
 @Controller("order")
 export class OrderController {
@@ -18,19 +19,18 @@ export class OrderController {
 
     @Get()
     @UseGuards(AuthenticatedGuard)
-    getOrders(@Req() req: Request): Promise<OrderWithItems[]> {
+    getOrders(@Req() req: Request): Promise<OrderWithItemsDto[]> {
         const user = req.user;
         return this.orderService.getOrders(user);
     }
-
     @Patch(":id")
     @UseGuards(AuthenticatedGuard)
-    cancelOrder(@Param("id") id: OrderId): Promise<void> {
-        return this.orderService.cancelOrder(id);
+    cancelOrder(@Param("id") id: OrderId): void {
+        this.orderService.cancelOrder(id);
     }
     @Delete(":id")
     @UseGuards(AuthenticatedGuard)
-    deleteOrder(@Param("id") id: OrderId): Promise<void> {
-        return this.orderService.deleteOrder(id);
+    deleteOrder(@Param("id") id: OrderId): void {
+        this.orderService.deleteOrder(id);
     }
 }

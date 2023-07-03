@@ -2,6 +2,7 @@ import {
     Body,
     Controller,
     Get,
+    HttpCode,
     Param,
     Patch,
     Req,
@@ -12,9 +13,10 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { Request } from "express";
 import { UserId } from "./user.types";
 import { RolesGuard } from "src/common/roles/roles.guard";
-import { Role, User } from "@prisma/client";
+import { Role } from "@prisma/client";
 import { Roles } from "src/common/roles/roles.decorator";
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
+import { User } from "./entities/user.entity";
 
 @Controller("user")
 export class UserController {

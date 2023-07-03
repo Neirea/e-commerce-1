@@ -1,8 +1,8 @@
-import { CategoryType, CompanyType } from "../product.types";
+import { ExtendedCategory, ExtendedCompany } from "../dto/search-data.dto";
 
 export type ProductCountType = { [key: string]: number };
 export type SharedType = Pick<
-    CategoryType | CompanyType,
+    ExtendedCategory | ExtendedCompany,
     "id" | "productCount"
 >;
 type SharedMapType<T extends SharedType> = Map<Pick<T, "id">["id"], T>;

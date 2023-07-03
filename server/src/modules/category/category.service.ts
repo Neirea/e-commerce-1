@@ -11,14 +11,17 @@ import {
     deleteCategoryQuery,
     updateCategoryQuery,
 } from "./category.queries";
-import { CategoryWithCompanies, CategoryId } from "./category.types";
+import { CategoryWithCompaniesDto } from "./dto/get-categories.dto";
+import { CategoryId } from "./category.types";
 
 @Injectable()
 export class CategoryService {
     constructor(private prisma: PrismaService) {}
 
-    getCategories(): Promise<CategoryWithCompanies[]> {
-        return this.prisma.$queryRaw<CategoryWithCompanies[]>(categoriesQuery);
+    getCategories(): Promise<CategoryWithCompaniesDto[]> {
+        return this.prisma.$queryRaw<CategoryWithCompaniesDto[]>(
+            categoriesQuery,
+        );
     }
 
     async createCategory(input: createCategoryDto): Promise<void> {

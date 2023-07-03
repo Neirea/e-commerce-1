@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { User } from "@prisma/client";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserByIdQuery, allUsersQuery, updateUserQuery } from "./user.queries";
 import { Request } from "express";
+import { User } from "./entities/user.entity";
 
 @Injectable()
 export class UserService {
@@ -19,7 +19,6 @@ export class UserService {
     }
 
     showMe(user: User): User | undefined {
-        // return { ...req.user, csrfToken: req.session.csrfToken };
         if (user) return { ...user };
     }
 

@@ -1,23 +1,20 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { CheckoutReturnType, OrderProductsType } from "./payment.types";
+import { OrderProductsType } from "./payment.types";
 import { PrismaPromise, Product, User } from "@prisma/client";
 import { getProductsByIdsQuery } from "../product/product.queries";
-// import { stripe } from "src/common/stripe";
 import {
     deleteOrderQuery,
     getOrdersByOrderIdQuery,
     updateOrderItemQuery,
 } from "../order/order.queries";
 import { CheckoutBodyDto } from "./dto/checkout-body.dto";
-import {
-    OrderId,
-    OrderWithItems,
-    OrderWithItemsAndImgs,
-} from "../order/order.types";
-import { ProductWithImages } from "../product/product.types";
+import { OrderId, OrderWithItemsAndImgs } from "../order/order.types";
 import Stripe from "stripe";
 import { getDiscountPrice } from "./utils/get-price";
+import { OrderWithItemsDto } from "../order/dto/get-orders.dto";
+import { CheckoutResponseDto } from "./dto/checkout-response.dto";
+import { ProductWithImagesDto } from "../product/dto/product-with-images.dto";
 
 @Injectable()
 export class PaymentService {
@@ -29,14 +26,14 @@ export class PaymentService {
     async initializePayment(
         user: User,
         body: CheckoutBodyDto,
-    ): Promise<CheckoutReturnType> {
+    ): Promise<CheckoutResponseDto> {
         if (body.items.length === 0) {
             throw new BadRequestException("Your cart is empty");
         }
         if (body.items.some((p) => p.amount === 0)) {
             throw new BadRequestException("Your cart has invalid item");
         }
-        const products = await this.prisma.$queryRaw<ProductWithImages[]>(
+        const products = await this.prisma.$queryRaw<ProductWithImagesDto[]>(
             getProductsByIdsQuery(body.items.map((i) => i.id)),
         );
 
@@ -92,7 +89,7 @@ export class PaymentService {
         }
     }
 
-    async resumePayment(user: User, id: OrderId): Promise<CheckoutReturnType> {
+    async resumePayment(user: User, id: OrderId): Promise<CheckoutResponseDto> {
         const orderQuery = await this.prisma.$queryRaw<[OrderWithItemsAndImgs]>(
             getOrdersByOrderIdQuery(id),
         );
@@ -218,7 +215,7 @@ export class PaymentService {
         });
     }
 
-    private checkOrderValidity(user: User, order: OrderWithItems): void {
+    private checkOrderValidity(user: User, order: OrderWithItemsDto): void {
         if (order == null) {
             throw new BadRequestException("Failed to retrieve order data");
         }

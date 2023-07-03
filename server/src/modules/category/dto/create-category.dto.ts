@@ -22,5 +22,5 @@ export class createCategoryDto {
     @IsUrl()
     img_src: CategoryImgSrc;
     @IsOptional()
-    parent_id: CategoryId;
+    parent_id?: CategoryId;
 }

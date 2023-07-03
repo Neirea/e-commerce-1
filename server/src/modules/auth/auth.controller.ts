@@ -8,10 +8,9 @@ import {
     UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
+import { Request, Response } from "express";
 import { GoogleAuthGuard } from "./guards/google.guard";
 import { FacebookAuthGuard } from "./guards/facebook.guard";
-import { AuthenticatedGuard } from "./guards/authenticated.guard";
-import { Request, Response } from "express";
 
 @Controller("auth")
 export class AuthController {
@@ -19,28 +18,28 @@ export class AuthController {
 
     @Get("google/login")
     @UseGuards(GoogleAuthGuard)
-    handleGoogleLogin(): { msg: string } {
-        return { msg: "Google Auth" };
+    handleGoogleLogin(): void {
+        return;
     }
 
     @Get("google/callback")
     @UseGuards(GoogleAuthGuard)
     @Redirect(process.env.CLIENT_URL, 301)
-    handleGoogleCallback(): { msg: string } {
-        return { msg: "Success" };
+    handleGoogleCallback(): void {
+        return;
     }
 
     @Get("facebook/login")
     @UseGuards(FacebookAuthGuard)
-    handleFacebookLogin(): { msg: string } {
-        return { msg: "Google Auth" };
+    handleFacebookLogin(): void {
+        return;
     }
 
     @Get("facebook/callback")
     @UseGuards(FacebookAuthGuard)
     @Redirect(process.env.CLIENT_URL, 301)
-    handleFacebookCallback(): { msg: string } {
-        return { msg: "Success" };
+    handleFacebookCallback(): void {
+        return;
     }
 
     @Delete("logout")

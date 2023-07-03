@@ -8,14 +8,15 @@ import {
     getCompaniesQuery,
     updateCompanyQuery,
 } from "./company.queries";
-import { CompanyId, CompanyWithCategories } from "./company.types";
+import { CompanyId } from "./company.types";
+import { CompanyWithCategoriesDto } from "./dto/get-companies.dto";
 
 @Injectable()
 export class CompanyService {
     constructor(private prisma: PrismaService) {}
 
-    getCompanies(): Promise<CompanyWithCategories[]> {
-        return this.prisma.$queryRaw<CompanyWithCategories[]>(
+    getCompanies(): Promise<CompanyWithCategoriesDto[]> {
+        return this.prisma.$queryRaw<CompanyWithCategoriesDto[]>(
             getCompaniesQuery,
         );
     }

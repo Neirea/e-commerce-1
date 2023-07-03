@@ -14,7 +14,6 @@ import { ProductId } from "src/modules/product/product.types";
 export class ItemDto {
     @IsNumber()
     id: ProductId;
-
     @IsNumber()
     amount: number;
 }
@@ -23,14 +22,11 @@ export class BuyerDto {
     @IsString()
     @IsNotEmpty()
     name: string;
-
     @IsEmail()
     email: string;
-
     @IsString()
     @IsNotEmpty()
     address: string;
-
     @ValidateIf((o) => o.phone.length > 0)
     @IsPhoneNumber()
     phone: string;

@@ -8,10 +8,10 @@ import {
     Headers,
 } from "@nestjs/common";
 import { PaymentService } from "./payment.service";
-import { CheckoutReturnType } from "./payment.types";
 import { Request } from "express";
 import { CheckoutBodyDto } from "./dto/checkout-body.dto";
 import { OrderId } from "../order/order.types";
+import { CheckoutResponseDto } from "./dto/checkout-response.dto";
 
 @Controller("payment")
 export class PaymentController {
@@ -21,7 +21,7 @@ export class PaymentController {
     checkoutPayment(
         @Req() req: Request,
         @Body() body: CheckoutBodyDto,
-    ): Promise<CheckoutReturnType> {
+    ): Promise<CheckoutResponseDto> {
         const user = req.user;
         return this.paymentService.initializePayment(user, body);
     }
@@ -30,7 +30,7 @@ export class PaymentController {
     finishPayment(
         @Param("id") id: OrderId,
         @Req() req: Request,
-    ): Promise<CheckoutReturnType> {
+    ): Promise<CheckoutResponseDto> {
         const user = req.user;
         return this.paymentService.resumePayment(user, id);
     }

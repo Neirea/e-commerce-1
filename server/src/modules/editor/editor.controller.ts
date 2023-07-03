@@ -10,9 +10,10 @@ import {
 } from "@nestjs/common";
 import { EditorService } from "./editor.service";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
-import { UploadedImage } from "./editor.types";
 import { imgMulterOptions } from "src/config/multer";
 import { ValidationExceptionFilter } from "./validation-exception.filter";
+import { UploadedImagesDto } from "./dto/upload-images.dto";
+import { SingleUploadedImageDto } from "./dto/upload-image.dto";
 
 @Controller("editor")
 @UseFilters(new ValidationExceptionFilter())
@@ -28,7 +29,7 @@ export class EditorController {
             }),
         )
         files: Express.Multer.File[],
-    ): Promise<{ images: UploadedImage[] }> {
+    ): Promise<UploadedImagesDto> {
         return this.editorService.uploadImages(files);
     }
 
@@ -41,7 +42,7 @@ export class EditorController {
             }),
         )
         file: Express.Multer.File,
-    ): Promise<{ image: UploadedImage }> {
+    ): Promise<SingleUploadedImageDto> {
         return this.editorService.uploadSingleImage(file);
     }
 }

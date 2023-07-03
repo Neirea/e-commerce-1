@@ -4,10 +4,18 @@ import { v2 as cloudinary } from "cloudinary";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateProductDto } from "./dto/create-propduct.dto";
 import { FeaturedProductsDto } from "./dto/featured-products.dto";
-import { FilteredProductsDto } from "./dto/filtered-products.dto";
+import {
+    FilteredProductsQueryDto,
+    FilteredProductsResponseDto,
+} from "./dto/filtered-products.dto";
 import { PopularProductsDto } from "./dto/popular-products.dto";
 import { RelatedProductsDto } from "./dto/related-products.dto";
-import { SearchDataDto } from "./dto/search-data.dto";
+import {
+    ExtendedCategory,
+    ExtendedCompany,
+    SearchDataQueryDto,
+    SearchDataResponseDto,
+} from "./dto/search-data.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import {
     deleteOldImagesQuery,
@@ -24,18 +32,7 @@ import {
     updateProductCategoryQuery,
 } from "./product.queries";
 import { subCategoriesQuery } from "./utils/sql";
-import {
-    CategoryType,
-    CompanyType,
-    ProductId,
-    ProductWithCatCom,
-    ProductWithImages,
-    ProductWithImgVariants,
-    ProductWithVariants,
-    SearchDataResponse,
-    SearchDataType,
-    SearchResult,
-} from "./product.types";
+import { ProductId, SearchDataType } from "./product.types";
 import { CategoryId } from "../category/category.types";
 import { CompanyId } from "../company/company.types";
 import {
@@ -44,28 +41,34 @@ import {
     getPriceCondition,
     setAndCount,
 } from "./utils/search-data";
+import { ProductWithImagesDto } from "./dto/product-with-images.dto";
+import { SearchResponseDto } from "./dto/search.dto";
+import { ProductByIdResponseDto } from "./dto/product-by-id.dto";
+import { ProductWithVariantsDto } from "./dto/get-product.dto";
 
 @Injectable()
 export class ProductService {
     constructor(private prisma: PrismaService) {}
 
-    getProducts(): Promise<ProductWithVariants[]> {
-        return this.prisma.$queryRaw<ProductWithVariants[]>(getProducts);
+    getProducts(): Promise<ProductWithVariantsDto[]> {
+        return this.prisma.$queryRaw<ProductWithVariantsDto[]>(getProducts);
     }
 
-    async getProductById(id: ProductId): Promise<ProductWithImgVariants> {
-        const product = await this.prisma.$queryRaw<[ProductWithImgVariants]>(
+    async getProductById(id: ProductId): Promise<ProductByIdResponseDto> {
+        const product = await this.prisma.$queryRaw<[ProductByIdResponseDto]>(
             getProductByIdQuery(id),
         );
         return product[0];
     }
 
-    getProductsByIds(ids: ProductId[]): Promise<ProductWithImages[]> {
+    getProductsByIds(ids: ProductId[]): Promise<ProductWithImagesDto[]> {
         if (!ids) return Promise.resolve([]);
         return this.prisma.$queryRaw(getProductsByIdsQuery(ids));
     }
 
-    async getSearchData(input: SearchDataDto): SearchDataResponse {
+    async getSearchData(
+        input: SearchDataQueryDto,
+    ): Promise<SearchDataResponseDto> {
         const searchCategoryIds: CategoryId[] = [];
         if (input.category_id) {
             const res = await this.prisma.$queryRaw<{ id: CategoryId }[]>(
@@ -80,8 +83,8 @@ export class ProductService {
 
         let min = Infinity;
         let max = 0;
-        const allCategories = new Map<CategoryId, CategoryType>();
-        const allCompanies = new Map<CompanyId, CompanyType>();
+        const allCategories = new Map<CategoryId, ExtendedCategory>();
+        const allCompanies = new Map<CompanyId, ExtendedCompany>();
         const catCount: ProductCountType = {};
         const compCount: ProductCountType = {};
 
@@ -113,8 +116,8 @@ export class ProductService {
     }
 
     async getFilteredProducts(
-        input: FilteredProductsDto,
-    ): Promise<ProductWithCatCom[]> {
+        input: FilteredProductsQueryDto,
+    ): Promise<FilteredProductsResponseDto[]> {
         const { category_id } = input;
         const searchCategoryIds: ProductId[] = [];
         if (category_id) {
@@ -131,28 +134,30 @@ export class ProductService {
 
     getFeaturedProducts(
         input: FeaturedProductsDto,
-    ): Promise<ProductWithImages[]> {
-        return this.prisma.$queryRaw<ProductWithImages[]>(
+    ): Promise<ProductWithImagesDto[]> {
+        return this.prisma.$queryRaw<ProductWithImagesDto[]>(
             featuredProductsQuery(input),
         );
     }
     getRelatedProducts(
         input: RelatedProductsDto,
-    ): Promise<ProductWithImages[]> {
+    ): Promise<ProductWithImagesDto[]> {
         //get products with same company(ordered first) and same category
-        return this.prisma.$queryRaw<ProductWithImages[]>(
+        return this.prisma.$queryRaw<ProductWithImagesDto[]>(
             relatedProductsQuery(input),
         );
     }
     getPopularProducts(
         input: PopularProductsDto,
-    ): Promise<ProductWithImages[]> {
-        return this.prisma.$queryRaw<ProductWithImages[]>(
+    ): Promise<ProductWithImagesDto[]> {
+        return this.prisma.$queryRaw<ProductWithImagesDto[]>(
             popularProductsQuery(input),
         );
     }
-    getSearchBarData(input: string): Promise<SearchResult> {
-        return this.prisma.$queryRaw<SearchResult>(searchBarDataQuery(input));
+    getSearchBarData(input: string): Promise<SearchResponseDto> {
+        return this.prisma.$queryRaw<SearchResponseDto>(
+            searchBarDataQuery(input),
+        );
     }
 
     async createProduct(input: CreateProductDto): Promise<void> {

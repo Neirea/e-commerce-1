@@ -7,14 +7,14 @@ import {
     productsByOrderCount,
 } from "./utils/sql";
 import { parseQueryString } from "src/common/parse-querystring";
-import { SearchDataDto } from "./dto/search-data.dto";
 import { FeaturedProductsDto } from "./dto/featured-products.dto";
 import { RelatedProductsDto } from "./dto/related-products.dto";
 import { PopularProductsDto } from "./dto/popular-products.dto";
 import { CreateProductDto } from "./dto/create-propduct.dto";
 import { ProductId } from "./product.types";
 import { CategoryId } from "../category/category.types";
-import { FilteredProductsDto } from "./dto/filtered-products.dto";
+import { SearchDataQueryDto } from "./dto/search-data.dto";
+import { FilteredProductsQueryDto } from "./dto/filtered-products.dto";
 
 export const getProducts = Prisma.sql`
     SELECT p.*,
@@ -64,7 +64,7 @@ export const getProductsByIdsQuery = (
 `;
 
 export const getSearchDataQuery = (
-    input: SearchDataDto,
+    input: SearchDataQueryDto,
     categoryIds: CategoryId[],
 ): Prisma.Sql => {
     const searchString = parseQueryString(input.search_string);
@@ -98,7 +98,7 @@ export const getSearchDataQuery = (
 };
 
 export const filteredProductsQuery = (
-    input: FilteredProductsDto,
+    input: FilteredProductsQueryDto,
     categoryIds: CategoryId[],
 ): Prisma.Sql => {
     const {
