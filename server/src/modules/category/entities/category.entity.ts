@@ -8,7 +8,7 @@ import {
 export class Category {
     id: CategoryId;
     name: CategoryName;
-    img_id: CategoryImgId;
-    img_src: CategoryImgSrc;
-    parent_id: CategoryId;
+    img_id?: CategoryImgId;
+    img_src?: CategoryImgSrc;
+    parent_id?: CategoryId;
 }
