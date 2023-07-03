@@ -9,7 +9,7 @@ import {
     CategoryImgId,
     CategoryImgSrc,
     CategoryName,
-    CateogoryId,
+    CategoryId,
 } from "../category.types";
 
 export class createCategoryDto {
@@ -22,5 +22,5 @@ export class createCategoryDto {
     @IsUrl()
     img_src: CategoryImgSrc;
     @IsOptional()
-    parent_id: CateogoryId;
+    parent_id: CategoryId;
 }

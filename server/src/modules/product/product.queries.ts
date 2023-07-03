@@ -13,7 +13,7 @@ import { RelatedProductsDto } from "./dto/related-products.dto";
 import { PopularProductsDto } from "./dto/popular-products.dto";
 import { CreateProductDto } from "./dto/create-propduct.dto";
 import { ProductId } from "./product.types";
-import { CateogoryId } from "../category/category.types";
+import { CategoryId } from "../category/category.types";
 import { FilteredProductsDto } from "./dto/filtered-products.dto";
 
 export const getProducts = Prisma.sql`
@@ -65,7 +65,7 @@ export const getProductsByIdsQuery = (
 
 export const getSearchDataQuery = (
     input: SearchDataDto,
-    categoryIds: CateogoryId[],
+    categoryIds: CategoryId[],
 ): Prisma.Sql => {
     const searchString = parseQueryString(input.search_string);
     const searchCondition = getSearchCondition(searchString);
@@ -99,7 +99,7 @@ export const getSearchDataQuery = (
 
 export const filteredProductsQuery = (
     input: FilteredProductsDto,
-    categoryIds: CateogoryId[],
+    categoryIds: CategoryId[],
 ): Prisma.Sql => {
     const {
         offset,

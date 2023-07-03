@@ -1,5 +1,5 @@
 import { Category, Company, Product, ProductImage } from "@prisma/client";
-import { CateogoryId } from "../category/category.types";
+import { CategoryId } from "../category/category.types";
 
 export type ProductId = Pick<Product, "id">["id"];
 export type ProductName = Pick<Product, "name">["name"];
@@ -28,8 +28,8 @@ export type ProductWithImgVariants = ProductWithImages & {
 
 export type SearchDataType = {
     company: Company;
-    category: Category;
-    category_id: CateogoryId;
+    category: CategoryType;
+    category_id: CategoryId;
     price: number;
     discount: number;
 }[];

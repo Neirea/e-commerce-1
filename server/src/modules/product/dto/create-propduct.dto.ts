@@ -1,4 +1,4 @@
-import { CateogoryId } from "src/modules/category/category.types";
+import { CategoryId } from "src/modules/category/category.types";
 import { CompanyId } from "src/modules/company/company.types";
 import {
     ProductDescription,
@@ -44,7 +44,7 @@ export class CreateProductDto {
     @IsNotEmpty()
     company_id: CompanyId;
     @IsNotEmpty()
-    category_id: CateogoryId;
+    category_id: CategoryId;
     @IsArray()
     variants: ProductId[];
 }

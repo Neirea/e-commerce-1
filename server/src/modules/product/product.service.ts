@@ -36,6 +36,7 @@ import {
     SearchDataType,
     SearchResult,
 } from "./product.types";
+import { CategoryId } from "../category/category.types";
 
 @Injectable()
 export class ProductService {
@@ -56,9 +57,9 @@ export class ProductService {
         return this.prisma.$queryRaw(getProductsByIdsQuery(ids));
     }
     async getSearchData(input: SearchDataDto): SearchDataResponse {
-        const searchCategoryIds: ProductId[] = [];
+        const searchCategoryIds: CategoryId[] = [];
         if (input.category_id) {
-            const res = await this.prisma.$queryRaw<{ id: ProductId }[]>(
+            const res = await this.prisma.$queryRaw<{ id: CategoryId }[]>(
                 subCategoriesQuery(input.category_id),
             );
             res.forEach((i) => searchCategoryIds.push(i.id));
