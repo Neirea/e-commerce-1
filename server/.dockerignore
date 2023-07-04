@@ -1,0 +1,6 @@
+.git
+.gitignore
+.env
+build
+node_modules
+uploads
