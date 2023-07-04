@@ -58,7 +58,7 @@ export class EditorController {
     uploadImages(
         @UploadedFiles(
             new ParseFilePipe({
-                validators: [new MaxFileSizeValidator({ maxSize: 5000 })],
+                validators: [new MaxFileSizeValidator({ maxSize: 5242880 })],
             }),
         )
         files: Express.Multer.File[],
@@ -91,7 +91,7 @@ export class EditorController {
     uploadSingeImage(
         @UploadedFile(
             new ParseFilePipe({
-                validators: [new MaxFileSizeValidator({ maxSize: 5000 })],
+                validators: [new MaxFileSizeValidator({ maxSize: 5242880 })],
             }),
         )
         file: Express.Multer.File,

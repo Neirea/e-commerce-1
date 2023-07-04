@@ -23,7 +23,7 @@ import {
 import { SameLength } from "../validators/same-length";
 
 export class CreateProductDto {
-    @Length(3, 20)
+    @Length(3, 70)
     name: ProductName;
     @Min(0)
     price: ProductPrice;

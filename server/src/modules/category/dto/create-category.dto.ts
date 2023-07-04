@@ -7,7 +7,7 @@ import {
 } from "../category.types";
 
 export class createCategoryDto {
-    @Length(3, 20)
+    @Length(3, 30)
     name: CategoryName;
     @ValidateIf((o) => o.img_src?.length > 0)
     @IsOptional()

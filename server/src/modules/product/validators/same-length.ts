@@ -1,32 +1,31 @@
 import {
     registerDecorator,
     ValidationArguments,
+    ValidationOptions,
     ValidatorConstraint,
     ValidatorConstraintInterface,
 } from "class-validator";
 
 @ValidatorConstraint({ name: "sameLength", async: false })
 export class SameLengthConstraint implements ValidatorConstraintInterface {
-    validate(value: object, args: ValidationArguments): boolean {
-        const fields = args.constraints;
-
-        const lengths = fields.map((field: string) => value[field].length);
-        const firstLength = lengths[0];
-
-        return lengths.every(
-            (length: number | undefined) => length === firstLength,
-        );
+    validate(currValue: any, args: ValidationArguments): boolean {
+        const [propertyName] = args.constraints;
+        const propertyValue = args.object[propertyName];
+        return propertyValue.length === currValue.length;
     }
 }
 
-export function SameLength(...fields: string[]) {
+export function SameLength(
+    property: string,
+    validationOptions?: ValidationOptions,
+) {
     return function (object: object, propertyName: string): void {
         registerDecorator({
             name: "sameLength",
             target: object.constructor,
             propertyName: propertyName,
-            options: {},
-            constraints: [...fields, propertyName],
+            options: validationOptions,
+            constraints: [property],
             validator: SameLengthConstraint,
         });
     };
