@@ -221,12 +221,17 @@ export const updateProductCategoryQuery = (
     ON CONFLICT DO NOTHING
 `;
 
-export const getOldImagesQuery = (id: ProductId): Prisma.Sql => Prisma.sql`
+export const getImagesQuery = (id: ProductId): Prisma.Sql => Prisma.sql`
     SELECT * FROM public."ProductImage"
     WHERE product_id = ${id}
 `;
 
-export const deleteOldImagesQuery = (id: ProductId): Prisma.Sql => Prisma.sql`
+export const deleteImagesQuery = (id: ProductId): Prisma.Sql => Prisma.sql`
     DELETE FROM public."ProductImage"
     WHERE product_id = ${id}
+`;
+
+export const deleteProductQuery = (id: ProductId): Prisma.Sql => Prisma.sql`
+    DELETE FROM public."Product"
+    WHERE id = ${id}
 `;

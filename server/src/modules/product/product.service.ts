@@ -18,10 +18,11 @@ import {
 } from "./dto/search-data.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import {
-    deleteOldImagesQuery,
+    deleteImagesQuery,
+    deleteProductQuery,
     featuredProductsQuery,
     filteredProductsQuery,
-    getOldImagesQuery,
+    getImagesQuery,
     getProductByIdQuery,
     getProducts,
     getProductsByIdsQuery,
@@ -190,8 +191,7 @@ export class ProductService {
         const updateCategory = this.prisma.$queryRaw(
             updateProductCategoryQuery(input),
         );
-
-        await Promise.all([createdProduct, updateCategory]);
+        await this.prisma.$transaction([createdProduct, updateCategory]);
     }
     async updateProduct(id: ProductId, input: UpdateProductDto): Promise<void> {
         const { variants, img_id, img_src, ...updateData } = input;
@@ -228,23 +228,26 @@ export class ProductService {
         //delete old images
         if (img_id.length) {
             const oldImages = await this.prisma.$queryRaw<ProductImage[]>(
-                getOldImagesQuery(id),
+                getImagesQuery(id),
             );
-            this.prisma.$queryRaw(deleteOldImagesQuery(id));
+            this.prisma.$queryRaw(deleteImagesQuery(id));
             cloudinary.api.delete_resources(oldImages.map((i) => i.img_id));
         }
 
-        const promiseArray = [productUpdate, categoryUpdate];
-        await Promise.all(promiseArray);
+        await this.prisma.$transaction([productUpdate, categoryUpdate]);
     }
     async deleteproduct(id: ProductId): Promise<void> {
-        const data = await this.prisma.product.delete({
-            where: { id: id },
-            include: { images: true },
-        });
+        const imagesQuery = this.prisma.$queryRaw<ProductImage[]>(
+            getImagesQuery(id),
+        );
+        const deleteQuery = this.prisma.$queryRaw(deleteProductQuery(id));
+        const [images] = await this.prisma.$transaction([
+            imagesQuery,
+            deleteQuery,
+        ]);
 
-        if (data.images.length) {
-            cloudinary.api.delete_resources(data.images.map((i) => i.img_id));
+        if (images.length) {
+            cloudinary.api.delete_resources(images.map((i) => i.img_id));
         }
     }
 }

@@ -161,7 +161,7 @@ export class PaymentService {
                     );
                     productUpdates.push(update);
                 });
-                await Promise.all(productUpdates);
+                await this.prisma.$transaction(productUpdates);
             }
         } catch (err) {
             // On error, log and return the error message
