@@ -1,4 +1,4 @@
-name: Railway Deploy
+name: Deploy
 on:
     push:
         branches:
