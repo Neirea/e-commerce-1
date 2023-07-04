@@ -8,6 +8,7 @@ import {
     Patch,
     Post,
     Query,
+    UseFilters,
     UseGuards,
 } from "@nestjs/common";
 import { ProductService } from "./product.service";
@@ -35,9 +36,11 @@ import { SearchResponseDto } from "./dto/search.dto";
 import { ProductByIdResponseDto } from "./dto/product-by-id.dto";
 import { ProductWithVariantsDto } from "./dto/get-product.dto";
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
+import { MultipleUploadsFilter } from "./product.filter";
 
 @ApiTags("product")
 @Controller("product")
+@UseFilters(MultipleUploadsFilter)
 export class ProductController {
     constructor(private readonly productService: ProductService) {}
 

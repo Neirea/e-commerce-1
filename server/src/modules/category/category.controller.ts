@@ -7,6 +7,7 @@ import {
     Param,
     Patch,
     Post,
+    UseFilters,
     UseGuards,
 } from "@nestjs/common";
 import { CategoryService } from "./category.service";
@@ -19,9 +20,11 @@ import { Role } from "@prisma/client";
 import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CategoryWithCompaniesDto } from "./dto/get-categories.dto";
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
+import { SingleUploadFilter } from "./category.filter";
 
 @ApiTags("category")
 @Controller("category")
+@UseFilters(SingleUploadFilter)
 export class CategoryController {
     constructor(private readonly categoryService: CategoryService) {}
 
