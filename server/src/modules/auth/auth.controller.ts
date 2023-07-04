@@ -21,7 +21,7 @@ export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
     @Get("google/login")
-    @ApiOperation({ description: "Performs OAuth2 login via Google" })
+    @ApiOperation({ summary: "Performs OAuth2 login via Google" })
     @UseGuards(GoogleAuthGuard)
     handleGoogleLogin(): void {
         return;
@@ -29,7 +29,7 @@ export class AuthController {
 
     @Get("google/callback")
     @HttpCode(301)
-    @ApiOperation({ description: "Redirecting user to client url after login" })
+    @ApiOperation({ summary: "Redirects user to client url after login" })
     @UseGuards(GoogleAuthGuard)
     @Redirect(process.env.CLIENT_URL, 301)
     handleGoogleCallback(): void {
@@ -37,7 +37,7 @@ export class AuthController {
     }
 
     @Get("facebook/login")
-    @ApiOperation({ description: "Performs OAuth2 login via Facebook" })
+    @ApiOperation({ summary: "Performs OAuth2 login via Facebook" })
     @UseGuards(FacebookAuthGuard)
     handleFacebookLogin(): void {
         return;
@@ -45,7 +45,7 @@ export class AuthController {
 
     @Get("facebook/callback")
     @HttpCode(301)
-    @ApiOperation({ description: "Redirecting user to client url after login" })
+    @ApiOperation({ summary: "Redirects user to client url after login" })
     @UseGuards(FacebookAuthGuard)
     @Redirect(process.env.CLIENT_URL, 301)
     handleFacebookCallback(): void {
@@ -54,6 +54,7 @@ export class AuthController {
 
     @Delete("logout")
     @HttpCode(204)
+    @ApiOperation({ summary: "Logs user out" })
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     logout(

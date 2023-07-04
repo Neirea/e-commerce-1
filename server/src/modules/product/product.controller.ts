@@ -25,7 +25,7 @@ import { parseArrayQuery } from "src/pipes/parseArrayQuery";
 import { Roles } from "src/common/roles/roles.decorator";
 import { Role } from "@prisma/client";
 import { RolesGuard } from "src/common/roles/roles.guard";
-import { ApiTags, ApiCookieAuth } from "@nestjs/swagger";
+import { ApiTags, ApiCookieAuth, ApiOperation } from "@nestjs/swagger";
 import { ProductWithImagesDto } from "./dto/product-with-images.dto";
 import {
     SearchDataQueryDto,
@@ -42,11 +42,13 @@ export class ProductController {
     constructor(private readonly productService: ProductService) {}
 
     @Get()
+    @ApiOperation({ summary: "Retrieves all products" })
     getProducts(): Promise<ProductWithVariantsDto[]> {
         return this.productService.getProducts();
     }
 
     @Get("some")
+    @ApiOperation({ summary: "Retrieves products by id's" })
     getProductsByIds(
         @Query("ids", parseArrayQuery)
         ids: ProductId[] | undefined,
@@ -55,6 +57,7 @@ export class ProductController {
     }
 
     @Get("data")
+    @ApiOperation({ summary: "Retrieves products data based on filters" })
     getSeachData(
         @Query() query: SearchDataQueryDto,
     ): Promise<SearchDataResponseDto> {
@@ -62,6 +65,7 @@ export class ProductController {
     }
 
     @Get("filter")
+    @ApiOperation({ summary: "Retrieves products based on filters" })
     getFilteredProducts(
         @Query() query: FilteredProductsQueryDto,
     ): Promise<FilteredProductsResponseDto[]> {
@@ -69,6 +73,7 @@ export class ProductController {
     }
 
     @Get("featured")
+    @ApiOperation({ summary: "Retrieves featured products" })
     getFeaturedProducts(
         @Query() query: FeaturedProductsDto,
     ): Promise<ProductWithImagesDto[]> {
@@ -76,6 +81,7 @@ export class ProductController {
     }
 
     @Get("related")
+    @ApiOperation({ summary: "Retrieves related products" })
     getRelatedProducts(
         @Query() query: RelatedProductsDto,
     ): Promise<ProductWithImagesDto[]> {
@@ -83,6 +89,7 @@ export class ProductController {
     }
 
     @Get("popular")
+    @ApiOperation({ summary: "Retrieves popular products" })
     getPopularProducts(
         @Query() query: PopularProductsDto,
     ): Promise<ProductWithImagesDto[]> {
@@ -90,11 +97,13 @@ export class ProductController {
     }
 
     @Get("search")
+    @ApiOperation({ summary: "Retrieves data for search bar" })
     getSearch(@Query("v") query: string): Promise<SearchResponseDto> {
         return this.productService.getSearchBarData(query);
     }
 
     @Get(":id")
+    @ApiOperation({ summary: "Retrieves specific product" })
     getProductById(
         @Param("id") id: ProductId,
     ): Promise<ProductByIdResponseDto> {
@@ -102,6 +111,7 @@ export class ProductController {
     }
 
     @Post()
+    @ApiOperation({ summary: "Creates product" })
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
@@ -112,6 +122,7 @@ export class ProductController {
 
     @Patch(":id")
     @HttpCode(204)
+    @ApiOperation({ summary: "Updates specific product" })
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
@@ -125,6 +136,7 @@ export class ProductController {
 
     @Delete(":id")
     @HttpCode(204)
+    @ApiOperation({ summary: "Deletes specific product" })
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)

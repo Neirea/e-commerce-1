@@ -21,6 +21,7 @@ export class PaymentController {
     constructor(private readonly paymentService: PaymentService) {}
 
     @Post("checkout")
+    @ApiOperation({ summary: "Proceeds fresh order" })
     @ApiCookieAuth()
     checkoutPayment(
         @Req() req: Request,
@@ -32,7 +33,7 @@ export class PaymentController {
 
     @Post("checkout/:id")
     @HttpCode(200)
-    @ApiOperation({ description: "Proceeding unfinished order" })
+    @ApiOperation({ summary: "Proceeds unfinished order" })
     @ApiCookieAuth()
     finishPayment(
         @Param("id") id: OrderId,
@@ -44,7 +45,7 @@ export class PaymentController {
 
     @Post("webhook")
     @HttpCode(200)
-    @ApiOperation({ description: "Receiving stripe events" })
+    @ApiOperation({ summary: "Receives stripe events" })
     @ApiCookieAuth()
     stripeWebhook(
         @Req() req: RawBodyRequest<Request>,

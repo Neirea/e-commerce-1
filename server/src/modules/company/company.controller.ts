@@ -16,7 +16,7 @@ import { CompanyId } from "./company.types";
 import { Role } from "@prisma/client";
 import { RolesGuard } from "src/common/roles/roles.guard";
 import { Roles } from "src/common/roles/roles.decorator";
-import { ApiCookieAuth, ApiTags } from "@nestjs/swagger";
+import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CompanyWithCategoriesDto } from "./dto/get-companies.dto";
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 
@@ -26,11 +26,13 @@ export class CompanyController {
     constructor(private readonly companyService: CompanyService) {}
 
     @Get()
+    @ApiOperation({ summary: "Retrieves all companies with their categories" })
     getCompanies(): Promise<CompanyWithCategoriesDto[]> {
         return this.companyService.getCompanies();
     }
 
     @Post()
+    @ApiOperation({ summary: "Creates company" })
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
@@ -41,6 +43,7 @@ export class CompanyController {
 
     @Patch(":id")
     @HttpCode(204)
+    @ApiOperation({ summary: "Updates specific company" })
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
@@ -54,6 +57,7 @@ export class CompanyController {
 
     @Delete(":id")
     @HttpCode(204)
+    @ApiOperation({ summary: "Deletes specific company" })
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)

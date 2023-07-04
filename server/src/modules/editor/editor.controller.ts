@@ -13,7 +13,13 @@ import { EditorService } from "./editor.service";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { imgMulterOptions } from "src/config/multer";
 import { ValidationExceptionFilter } from "./validation-exception.filter";
-import { ApiBody, ApiConsumes, ApiTags, ApiCookieAuth } from "@nestjs/swagger";
+import {
+    ApiBody,
+    ApiConsumes,
+    ApiTags,
+    ApiCookieAuth,
+    ApiOperation,
+} from "@nestjs/swagger";
 import { UploadedImagesDto } from "./dto/upload-images.dto";
 import { SingleUploadedImageDto } from "./dto/upload-image.dto";
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
@@ -28,6 +34,7 @@ export class EditorController {
     constructor(private readonly editorService: EditorService) {}
 
     @Post("upload-images")
+    @ApiOperation({ summary: "Uploads up to 5 image files" })
     @ApiCookieAuth()
     @ApiConsumes("multipart/form-data")
     @ApiBody({
@@ -60,6 +67,7 @@ export class EditorController {
     }
 
     @Post("upload-image")
+    @ApiOperation({ summary: "Uploads single image file" })
     @ApiCookieAuth()
     @ApiConsumes("multipart/form-data")
     @ApiBody({

@@ -12,7 +12,7 @@ import { OrderService } from "./order.service";
 import { OrderId } from "./order.types";
 import { Request } from "express";
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
-import { ApiCookieAuth, ApiTags } from "@nestjs/swagger";
+import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { OrderWithItemsDto } from "./dto/get-orders.dto";
 
 @ApiTags("order")
@@ -21,6 +21,7 @@ export class OrderController {
     constructor(private readonly orderService: OrderService) {}
 
     @Get()
+    @ApiOperation({ summary: "Retrieves user's orders" })
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     getOrders(@Req() req: Request): Promise<OrderWithItemsDto[]> {
@@ -29,6 +30,7 @@ export class OrderController {
     }
     @Patch(":id")
     @HttpCode(204)
+    @ApiOperation({ summary: "Cancels specific order" })
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     cancelOrder(@Param("id") id: OrderId): void {
@@ -36,6 +38,7 @@ export class OrderController {
     }
     @Delete(":id")
     @HttpCode(204)
+    @ApiOperation({ summary: "Deletes specific order" })
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     deleteOrder(@Param("id") id: OrderId): void {
