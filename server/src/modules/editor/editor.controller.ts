@@ -5,14 +5,12 @@ import {
     Post,
     UploadedFile,
     UploadedFiles,
-    UseFilters,
     UseGuards,
     UseInterceptors,
 } from "@nestjs/common";
 import { EditorService } from "./editor.service";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { imgMulterOptions } from "src/config/multer";
-import { ValidationExceptionFilter } from "./validation-exception.filter";
 import {
     ApiBody,
     ApiConsumes,
@@ -29,7 +27,6 @@ import { RolesGuard } from "src/common/roles/roles.guard";
 
 @ApiTags("editor")
 @Controller("editor")
-@UseFilters(new ValidationExceptionFilter())
 export class EditorController {
     constructor(private readonly editorService: EditorService) {}
 

@@ -1,7 +1,5 @@
-import { diskStorage } from "multer";
+import { memoryStorage } from "multer";
 
 export const imgMulterOptions = {
-    storage: diskStorage({
-        destination: "uploads",
-    }),
+    storage: memoryStorage(),
 };
