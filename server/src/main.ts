@@ -6,7 +6,7 @@ import RedisStore from "connect-redis";
 import * as session from "express-session";
 import helmet from "helmet";
 import * as passport from "passport";
-import { createClient } from "redis";
+import { Redis } from "ioredis";
 import { AppModule } from "./app.module";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 
@@ -29,10 +29,7 @@ async function bootstrap(): Promise<void> {
         api_secret: process.env.CLDNRY_API_SECRET,
     });
 
-    const redisClient = createClient({
-        url: process.env.REDIS_URL,
-    });
-    redisClient.connect().catch(console.error);
+    const redisClient = new Redis(process.env.REDIS_URL);
 
     const redisStore = new RedisStore({
         client: redisClient,
