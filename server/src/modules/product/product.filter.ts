@@ -5,10 +5,12 @@ import {
     BadRequestException,
 } from "@nestjs/common";
 import { Request, Response } from "express";
-import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
 
 @Catch()
 export class MultipleUploadsFilter implements ExceptionFilter {
+    constructor(private cloudinary: CloudinaryService) {}
+
     catch(exception: BadRequestException, host: ArgumentsHost): void {
         const ctx = host.switchToHttp();
         const request = ctx.getRequest<Request>();
@@ -16,7 +18,7 @@ export class MultipleUploadsFilter implements ExceptionFilter {
 
         const img_id = request.body?.img_id;
         if (img_id) {
-            cloudinary.api.delete_resources(img_id);
+            this.cloudinary.deleteMany(img_id);
         }
 
         response.status(400).json({

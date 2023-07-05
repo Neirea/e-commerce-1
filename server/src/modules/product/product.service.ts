@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { ProductImage } from "@prisma/client";
-import { v2 as cloudinary } from "cloudinary";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateProductDto } from "./dto/create-propduct.dto";
 import { FeaturedProductsDto } from "./dto/featured-products.dto";
@@ -46,10 +45,14 @@ import { ProductWithImagesDto } from "./dto/product-with-images.dto";
 import { SearchResponseDto } from "./dto/search.dto";
 import { ProductByIdResponseDto } from "./dto/product-by-id.dto";
 import { ProductWithVariantsDto } from "./dto/get-product.dto";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
 
 @Injectable()
 export class ProductService {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private cloudinary: CloudinaryService,
+    ) {}
 
     getProducts(): Promise<ProductWithVariantsDto[]> {
         return this.prisma.$queryRaw<ProductWithVariantsDto[]>(getProducts);
@@ -231,7 +234,7 @@ export class ProductService {
                 getImagesQuery(id),
             );
             this.prisma.$queryRaw(deleteImagesQuery(id));
-            cloudinary.api.delete_resources(oldImages.map((i) => i.img_id));
+            this.cloudinary.deleteMany(oldImages.map((i) => i.img_id));
         }
 
         await this.prisma.$transaction([productUpdate, categoryUpdate]);
@@ -247,7 +250,7 @@ export class ProductService {
         ]);
 
         if (images.length) {
-            cloudinary.api.delete_resources(images.map((i) => i.img_id));
+            this.cloudinary.deleteMany(images.map((i) => i.img_id));
         }
     }
 }

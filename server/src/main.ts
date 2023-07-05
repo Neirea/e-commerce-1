@@ -1,14 +1,13 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
-import { v2 as cloudinary } from "cloudinary";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import RedisStore from "connect-redis";
 import * as session from "express-session";
 import helmet from "helmet";
 import * as passport from "passport";
-import { Redis } from "ioredis";
 import { AppModule } from "./app.module";
-import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import { RedisService } from "./modules/redis/redis.service";
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -23,14 +22,8 @@ async function bootstrap(): Promise<void> {
     app.use(helmet());
     app.enableCors({ origin: process.env.CLIENT_URL, credentials: true });
 
-    cloudinary.config({
-        cloud_name: process.env.CLDNRY_NAME,
-        api_key: process.env.CLDNRY_API_KEY,
-        api_secret: process.env.CLDNRY_API_SECRET,
-    });
-
-    const redisClient = new Redis(process.env.REDIS_URL);
-
+    const { redisClient } = app.get(RedisService);
+    await redisClient.connect();
     const redisStore = new RedisStore({
         client: redisClient,
     });
