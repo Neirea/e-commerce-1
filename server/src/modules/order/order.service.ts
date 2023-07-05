@@ -6,23 +6,22 @@ import {
     getOrdersByUserQuery,
 } from "./order.queries";
 import { OrderId } from "./order.types";
-import { User } from "@prisma/client";
 import { OrderWithItemsDto } from "./dto/get-orders.dto";
+import { UserId } from "../user/user.types";
 
 @Injectable()
 export class OrderService {
     constructor(private prisma: PrismaService) {}
 
-    getOrders(user: User): Promise<OrderWithItemsDto[]> {
-        const sessionUserId = user.id;
+    getOrders(userId: UserId): Promise<OrderWithItemsDto[]> {
         return this.prisma.$queryRaw<OrderWithItemsDto[]>(
-            getOrdersByUserQuery(sessionUserId),
+            getOrdersByUserQuery(userId),
         );
     }
-    async cancelOrder(id: OrderId): Promise<void> {
-        await this.prisma.$queryRaw(cancelOrderQuery(id));
+    async cancelOrder(id: OrderId, userId: UserId): Promise<void> {
+        await this.prisma.$queryRaw(cancelOrderQuery(id, userId));
     }
-    async deleteOrder(id: OrderId): Promise<void> {
-        await this.prisma.$queryRaw(deleteOrderQuery(id));
+    async deleteOrder(id: OrderId, userId: UserId): Promise<void> {
+        await this.prisma.$queryRaw(deleteOrderQuery(id, userId));
     }
 }

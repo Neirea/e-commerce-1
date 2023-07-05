@@ -4,7 +4,6 @@ import { OrderProductsType } from "./payment.types";
 import { PrismaPromise, Product, User } from "@prisma/client";
 import { getProductsByIdsQuery } from "../product/product.queries";
 import {
-    deleteOrderQuery,
     getOrdersByOrderIdQuery,
     updateOrderItemQuery,
 } from "../order/order.queries";
@@ -75,18 +74,13 @@ export class PaymentService {
             },
         });
         //start payment session
-        try {
-            const session = await this.createStripeSession(
-                body.buyer.email,
-                order.id,
-                order.shipping_cost,
-                orderProducts,
-            );
-            return { url: session.url };
-        } catch (error: unknown) {
-            await this.prisma.$queryRaw(deleteOrderQuery(order.id));
-            throw new BadRequestException("Stripe error: Incorrect data");
-        }
+        const session = await this.createStripeSession(
+            body.buyer.email,
+            order.id,
+            order.shipping_cost,
+            orderProducts,
+        );
+        return { url: session.url };
     }
 
     async resumePayment(user: User, id: OrderId): Promise<CheckoutResponseDto> {

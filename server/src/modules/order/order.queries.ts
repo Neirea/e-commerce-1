@@ -15,15 +15,21 @@ export const getOrdersByUserQuery = (userId: UserId): Prisma.Sql => Prisma.sql`
     GROUP BY o.id
 `;
 
-export const cancelOrderQuery = (id: OrderId): Prisma.Sql => Prisma.sql`
+export const cancelOrderQuery = (
+    id: OrderId,
+    userId: UserId,
+): Prisma.Sql => Prisma.sql`
     UPDATE public."Order"
     SET "status" = 'CANCELLED'
-    WHERE id = ${id} AND "status" = 'PENDING'
+    WHERE id = ${id} AND "status" = 'PENDING' AND user_id = ${userId}
 `;
 
-export const deleteOrderQuery = (id: OrderId): Prisma.Sql => Prisma.sql`
+export const deleteOrderQuery = (
+    id: OrderId,
+    userId: UserId,
+): Prisma.Sql => Prisma.sql`
     DELETE FROM public."Order"
-    WHERE id = ${id}
+    WHERE id = ${id} AND user_id = ${userId}
 `;
 
 export const getOrdersByOrderIdQuery = (
