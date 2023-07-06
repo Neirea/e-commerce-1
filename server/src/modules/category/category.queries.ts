@@ -25,7 +25,7 @@ export const categoryByIdQuery = (id: CategoryId): Prisma.Sql => Prisma.sql`
 
 export const updateCategoryQuery = (
     id: CategoryId,
-    { img_id, img_src, parent_id }: UpdateCategoryDto,
+    { img_id, img_src, parent_id, name }: UpdateCategoryDto,
 ): Prisma.Sql => {
     const imgSQL = img_id
         ? Prisma.sql`,img_id = ${img_id},img_src=${img_src}`

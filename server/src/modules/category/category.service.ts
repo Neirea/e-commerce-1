@@ -38,12 +38,16 @@ export class CategoryService {
         if (id === input.parent_id) {
             throw new BadRequestException("Can not assign itself as a parent");
         }
-
-        const oldCategory = await this.prisma.$queryRaw<[Category]>(
+        const getOldCategory = this.prisma.$queryRaw<[Category]>(
             categoryByIdQuery(id),
         );
-
-        await this.prisma.$queryRaw(updateCategoryQuery(id, input));
+        const updateCategory = this.prisma.$queryRaw(
+            updateCategoryQuery(id, input),
+        );
+        const [oldCategory] = await this.prisma.$transaction([
+            getOldCategory,
+            updateCategory,
+        ]);
         if (oldCategory[0].img_id && input.img_id) {
             this.cloudinary.deleteOne(oldCategory[0].img_id);
         }
