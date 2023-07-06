@@ -3,7 +3,7 @@ import { createCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { CategoryId } from "./category.types";
 
-export const categoriesQuery = Prisma.sql`
+export const getCategoriesQuery = Prisma.sql`
     SELECT cat.*,COALESCE(json_agg(com.*) FILTER (WHERE com.id IS NOT NULL),'[]') as companies
     FROM public."Category" as cat
     LEFT JOIN public."_CategoryToCompany" as catcom ON cat.id = catcom."A"

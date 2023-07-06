@@ -17,10 +17,12 @@ import { ProductWithImagesDto } from "../product/dto/product-with-images.dto";
 
 @Injectable()
 export class PaymentService {
-    private stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY, {
-        apiVersion: "2022-11-15",
-    });
-    constructor(private prisma: PrismaService) {}
+    private stripe: Stripe;
+    constructor(private prisma: PrismaService) {
+        this.stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY, {
+            apiVersion: "2022-11-15",
+        });
+    }
 
     async initializePayment(
         user: User,
@@ -149,7 +151,7 @@ export class PaymentService {
                 });
                 // remove items from inventory
                 const productUpdates: PrismaPromise<void>[] = [];
-                order.order_items.forEach(async (o) => {
+                order.order_items.forEach((o) => {
                     const update = this.prisma.$queryRaw<void>(
                         updateOrderItemQuery(o),
                     );

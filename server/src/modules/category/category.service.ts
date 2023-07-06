@@ -4,7 +4,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { createCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import {
-    categoriesQuery,
+    getCategoriesQuery,
     categoryByIdQuery,
     createCategoryQuery,
     deleteCategoryQuery,
@@ -23,7 +23,7 @@ export class CategoryService {
 
     getCategories(): Promise<CategoryWithCompaniesDto[]> {
         return this.prisma.$queryRaw<CategoryWithCompaniesDto[]>(
-            categoriesQuery,
+            getCategoriesQuery,
         );
     }
 
