@@ -12,9 +12,9 @@ Techway is a full-stack e-commerce demo website that "sells" computers and phone
 ## Client technologies:
 
 -   React with Typescript
--   Initialized with Vite
+-   Developed with Vite
 -   Bootstrap for styling
--   Apollo Client for state management
+-   Tanstack Query for async state management
 -   Deployed on Netlify
 
 ## Server features:
@@ -22,14 +22,13 @@ Techway is a full-stack e-commerce demo website that "sells" computers and phone
 -   Session authentication with Passport.js
 -   Data is stored in PostgreSQL
 -   "Payments" via Stripe
--   REST endpoints for the external services
--   GraphQL for the internal services
+-   REST API with input validation
+-   Swagger documentation at route '/doc'
 -   Cloudinary for image management
 
 ## Server technologies:
 
--   Express with Typescript
--   Apollo Server GraphQL
--   Prisma ORM to access PostgreSQL
+-   Nest.js with Typescript
+-   Prisma ORM for PostgreSQL
 -   Sessions are stored in Redis
--   Deployed on Railway
+-   Deployed on Google Cloud Run
