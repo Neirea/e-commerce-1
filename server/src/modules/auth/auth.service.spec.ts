@@ -10,6 +10,7 @@ import { Profile } from "passport-google-oauth20";
 import { Platform, Role } from "@prisma/client";
 import { userByPlatformIdQuery } from "./auth.queries";
 import { PrismaServiceMockType } from "src/utils/types.mock";
+import { User } from "../user/entities/user.entity";
 
 describe("AuthService", () => {
     let service: AuthService;
@@ -45,31 +46,37 @@ describe("AuthService", () => {
     });
 
     describe("validateUser", () => {
-        const mockProfile: Profile = {
-            id: "123456789",
-            name: {
-                givenName: "John",
-                familyName: "Doe",
-            },
-            provider: "",
-            profileUrl: "",
-            photos: [{ value: "photo_url" }],
-            emails: [{ value: "john.doe@example.com", verified: "true" }],
-            displayName: "John Doe",
-            _raw: "",
-            _json: {
-                iat: 1353601026,
-                exp: 1353604926,
-                sub: "10769150350006150715113082367",
-                aud: "1234987819200.apps.googleusercontent.com",
-                iss: "https://accounts.google.com",
-            },
-        };
-        const mockUser = {
-            id: 1,
-            name: "John Doe",
-            platformId: "123456789",
-        };
+        let mockProfile: Profile;
+        let mockUser: Partial<User>;
+
+        beforeEach(() => {
+            mockProfile = {
+                id: "123456789",
+                name: {
+                    givenName: "John",
+                    familyName: "Doe",
+                },
+                provider: "",
+                profileUrl: "",
+                photos: [{ value: "photo_url" }],
+                emails: [{ value: "john.doe@example.com", verified: "true" }],
+                displayName: "John Doe",
+                _raw: "",
+                _json: {
+                    iat: 1353601026,
+                    exp: 1353604926,
+                    sub: "10769150350006150715113082367",
+                    aud: "1234987819200.apps.googleusercontent.com",
+                    iss: "https://accounts.google.com",
+                },
+            };
+            mockUser = {
+                id: 1,
+                given_name: "John Doe",
+                platform_id: "123456789",
+            };
+        });
+
         it("should return existing user if found", async () => {
             prismaService.$queryRaw.mockImplementation(() => [mockUser]);
 
@@ -77,6 +84,7 @@ describe("AuthService", () => {
                 mockProfile,
                 Platform.GOOGLE,
             );
+
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
                 userByPlatformIdQuery(mockProfile.id),
             );
@@ -89,6 +97,7 @@ describe("AuthService", () => {
                 .mockImplementationOnce(() => [{ count: 1 }]);
 
             prismaService.user.create.mockResolvedValue(mockUser);
+
             const result = await service.validateUser(
                 mockProfile,
                 Platform.FACEBOOK,

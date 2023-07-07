@@ -32,6 +32,7 @@ describe("OrderService", () => {
         it("should return list of orders", async () => {
             const mockResult = [{ id: 1, name: "RAM" }];
             prismaServiceMock.$queryRaw.mockImplementation(() => mockResult);
+
             const result = await service.getOrders(2);
 
             expect(prismaServiceMock.$queryRaw).toHaveBeenCalledWith(

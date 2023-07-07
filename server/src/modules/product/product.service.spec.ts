@@ -65,6 +65,7 @@ describe("ProductService", () => {
             prismaService.$queryRaw.mockImplementation(() => expectedProducts);
 
             const products = await service.getProducts();
+
             expect(products).toEqual(expectedProducts);
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(getProducts);
         });
@@ -80,6 +81,7 @@ describe("ProductService", () => {
             prismaService.$queryRaw.mockImplementation(() => [expectedProduct]);
 
             const product = await service.getProductById(productId);
+
             expect(product).toEqual(expectedProduct);
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
                 getProductByIdQuery(productId),
@@ -98,6 +100,7 @@ describe("ProductService", () => {
             prismaService.$queryRaw.mockImplementation(() => expectedProducts);
 
             const products = await service.getProductsByIds(productIds);
+
             expect(products).toEqual(expectedProducts);
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
                 getProductsByIdsQuery(productIds),
@@ -149,6 +152,7 @@ describe("ProductService", () => {
                 .mockImplementationOnce(() => dataLookupResponse);
 
             const searchData = await service.getSearchData(inputData);
+
             expect(searchData).toEqual(expectedSearchData);
             expect(prismaService.$queryRaw).toHaveBeenNthCalledWith(
                 1,
@@ -175,6 +179,7 @@ describe("ProductService", () => {
             prismaService.$queryRaw.mockImplementation(() => []);
 
             const searchData = await service.getSearchData(inputData);
+
             expect(searchData).toEqual(expectedSearchData);
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
                 getSearchDataQuery(inputData, expect.any(Array)),
@@ -204,6 +209,7 @@ describe("ProductService", () => {
             const filteredProducts = await service.getFilteredProducts(
                 inputQuery,
             );
+
             expect(filteredProducts).toEqual(expectedProducts);
             expect(prismaService.$queryRaw).toHaveBeenNthCalledWith(
                 1,
@@ -227,6 +233,7 @@ describe("ProductService", () => {
                 max_price: 100,
             };
             prismaService.$queryRaw.mockImplementation(() => []);
+
             const filteredProducts = await service.getFilteredProducts(
                 inputQuery,
             );
@@ -256,14 +263,15 @@ describe("ProductService", () => {
             const createdProduct = {
                 ...inputProduct,
                 id: 1,
-                created_at: Date.now(),
-                updated_at: Date.now(),
+                created_at: new Date(),
+                updated_at: new Date(),
             };
             prismaService.product.create.mockImplementationOnce(
                 () => createdProduct,
             );
 
             await service.createProduct(inputProduct);
+
             expect(prismaService.product.create).toHaveBeenCalledTimes(1);
         });
     });
@@ -287,6 +295,7 @@ describe("ProductService", () => {
             prismaService.$transaction.mockImplementation(() => [1, 2]);
 
             await service.updateProduct(inputId, inputProduct);
+
             expect(prismaService.product.update).toHaveBeenCalledTimes(1);
             expect(cloudinaryService.deleteMany).not.toHaveBeenCalled();
         });

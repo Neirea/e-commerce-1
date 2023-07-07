@@ -6,6 +6,7 @@ import { BadRequestException } from "@nestjs/common";
 import { getProductsByIdsQuery } from "../product/product.queries";
 import { getOrdersByOrderIdQuery } from "../order/order.queries";
 import { PrismaServiceMockType } from "src/utils/types.mock";
+import { CheckoutBodyDto } from "./dto/checkout-body.dto";
 
 const createCheckoutSessionMock = jest.fn();
 const constructEventMock = jest.fn();
@@ -65,9 +66,11 @@ describe("PaymentService", () => {
     });
 
     describe("initializePayment", () => {
-        it("should throw BadRequestException if cart is empty", async () => {
-            const user = {} as User;
-            const body = {
+        let user: User;
+        let body: CheckoutBodyDto;
+        beforeEach(() => {
+            user = {} as User;
+            body = {
                 items: [],
                 buyer: {
                     name: "John Doe",
@@ -76,46 +79,30 @@ describe("PaymentService", () => {
                     phone: "",
                 },
             };
+        });
 
+        it("should throw BadRequestException if cart is empty", async () => {
             await expect(service.initializePayment(user, body)).rejects.toThrow(
                 BadRequestException,
             );
+
             expect(prismaService.$queryRaw).not.toBeCalled();
             expect(prismaService.order.create).not.toBeCalled();
             expect(prismaService.order.update).not.toBeCalled();
         });
 
         it("should throw BadRequestException if cart has invalid item", async () => {
-            const user = {} as User;
-            const body = {
-                items: [{ id: 1, amount: 0 }],
-                buyer: {
-                    name: "John Doe",
-                    email: "john@example.com",
-                    address: "123 Street",
-                    phone: "",
-                },
-            };
-
             await expect(service.initializePayment(user, body)).rejects.toThrow(
                 BadRequestException,
             );
+
             expect(prismaService.$queryRaw).not.toBeCalled();
             expect(prismaService.order.create).not.toBeCalled();
             expect(prismaService.order.update).not.toBeCalled();
         });
 
         it("should create an order and return a CheckoutResponseDto with session URL", async () => {
-            const user = {} as User;
-            const body = {
-                items: [{ id: 1, amount: 2 }],
-                buyer: {
-                    name: "John Doe",
-                    email: "john@example.com",
-                    address: "123 Street",
-                    phone: "+380551234567",
-                },
-            };
+            body.items = [{ id: 1, amount: 2 }];
             const products = [
                 {
                     id: 1,
@@ -138,6 +125,7 @@ describe("PaymentService", () => {
             }));
 
             const result = await service.initializePayment(user, body);
+
             expect(result).toEqual({ url: sessionUrl });
             expect(prismaService.$queryRaw).toBeCalledWith(
                 getProductsByIdsQuery(body.items.map((i) => i.id)),
@@ -159,6 +147,7 @@ describe("PaymentService", () => {
             prismaService.$queryRaw.mockImplementation(() => []);
 
             const result = service.resumePayment(user, orderId);
+
             await expect(result).rejects.toThrow(BadRequestException);
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
                 getOrdersByOrderIdQuery(orderId),
@@ -171,6 +160,7 @@ describe("PaymentService", () => {
             prismaService.$queryRaw.mockImplementation(() => [{ user_id: 2 }]);
 
             const result = service.resumePayment(user, orderId);
+
             await expect(result).rejects.toThrow(BadRequestException);
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
                 getOrdersByOrderIdQuery(orderId),
@@ -211,6 +201,7 @@ describe("PaymentService", () => {
             }));
 
             const result = await service.resumePayment(user, orderId);
+
             expect(result).toEqual({ url: "session-url" });
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
                 getOrdersByOrderIdQuery(orderId),
@@ -260,6 +251,7 @@ describe("PaymentService", () => {
             constructEventMock.mockReturnValue(event);
 
             const result = await service.stripeWebhook(signature, body);
+
             expect(result).toEqual({ received: "true" });
             expect(constructEventMock).toHaveBeenCalledWith(
                 body,

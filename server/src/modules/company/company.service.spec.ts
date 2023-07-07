@@ -39,6 +39,7 @@ describe("CompanyService", () => {
             prismaService.$queryRaw.mockImplementationOnce(() => mockResult);
 
             const result = await service.getCompanies();
+
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
                 getCompaniesQuery,
             );

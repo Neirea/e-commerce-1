@@ -53,6 +53,7 @@ describe("CategoryService", () => {
         ];
         it("should return list of categories", async () => {
             prismaService.$queryRaw.mockImplementation(() => mockResult);
+
             const result = await service.getCategories();
 
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
@@ -77,11 +78,13 @@ describe("CategoryService", () => {
                 oldCategory,
             ]);
             const result = service.updateCategory(1, {
-                name: "wow",
-                img_id: "123",
-                img_src: "123",
+                name: "PC components",
+                img_id: "1",
+                img_src: "example.com/1",
             });
+
             await expect(result).resolves.not.toThrow();
+
             expect(cloudinaryService.deleteOne).toHaveBeenCalledWith(
                 oldCategory[0].img_id,
             );
