@@ -9,24 +9,19 @@ import { CanActivate } from "@nestjs/common";
 import { Profile } from "passport-google-oauth20";
 import { Platform, Role } from "@prisma/client";
 import { userByPlatformIdQuery } from "./auth.queries";
-
-type prismaServiceMockType = Partial<PrismaService> & {
-    $queryRaw: jest.Mock;
-    user: { create: jest.Mock };
-};
+import { PrismaServiceMockType } from "src/utils/types.mock";
 
 describe("AuthService", () => {
     let service: AuthService;
-    let prismaServiceMock: prismaServiceMockType;
+    let prismaService: PrismaServiceMockType;
     const fakeGuard: CanActivate = { canActivate: () => true };
 
     beforeEach(async () => {
-        prismaServiceMock = {
+        const prismaMock = {
             $queryRaw: jest.fn(),
-            user: {
-                create: jest.fn(),
-            },
-        } as prismaServiceMockType;
+            $transaction: jest.fn(),
+            user: { create: jest.fn() },
+        } as PrismaServiceMockType;
         const module: TestingModule = await Test.createTestingModule({
             controllers: [AuthController],
             providers: [
@@ -36,12 +31,13 @@ describe("AuthService", () => {
                 SessionSerializer,
                 {
                     provide: PrismaService,
-                    useValue: prismaServiceMock,
+                    useValue: prismaMock,
                 },
             ],
         }).compile();
 
         service = module.get<AuthService>(AuthService);
+        prismaService = module.get<PrismaServiceMockType>(PrismaService);
     });
 
     it("should be defined", () => {
@@ -75,31 +71,31 @@ describe("AuthService", () => {
             platformId: "123456789",
         };
         it("should return existing user if found", async () => {
-            prismaServiceMock.$queryRaw.mockImplementation(() => [mockUser]);
+            prismaService.$queryRaw.mockImplementation(() => [mockUser]);
 
             const result = await service.validateUser(
                 mockProfile,
                 Platform.GOOGLE,
             );
-            expect(prismaServiceMock.$queryRaw).toHaveBeenCalledWith(
+            expect(prismaService.$queryRaw).toHaveBeenCalledWith(
                 userByPlatformIdQuery(mockProfile.id),
             );
             expect(result).toEqual(mockUser);
         });
         it("should return a new user if not found", async () => {
             // didn't find user in db and user count = 1
-            prismaServiceMock.$queryRaw
+            prismaService.$queryRaw
                 .mockImplementationOnce(() => [])
                 .mockImplementationOnce(() => [{ count: 1 }]);
 
-            prismaServiceMock.user.create.mockResolvedValue(mockUser);
+            prismaService.user.create.mockResolvedValue(mockUser);
             const result = await service.validateUser(
                 mockProfile,
                 Platform.FACEBOOK,
             );
 
-            expect(prismaServiceMock.$queryRaw).toHaveBeenCalledTimes(2);
-            expect(prismaServiceMock.user.create).toHaveBeenCalledWith({
+            expect(prismaService.$queryRaw).toHaveBeenCalledTimes(2);
+            expect(prismaService.user.create).toHaveBeenCalledWith({
                 data: expect.objectContaining({
                     given_name: "John",
                     family_name: "Doe",
@@ -109,7 +105,7 @@ describe("AuthService", () => {
                     email: "john.doe@example.com",
                 }),
             });
-            expect(prismaServiceMock.user.create).toHaveBeenCalledTimes(1);
+            expect(prismaService.user.create).toHaveBeenCalledTimes(1);
             expect(result).toEqual(mockUser);
         });
     });

@@ -1,25 +1,26 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { EditorService } from "./editor.service";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { CloudinaryServiceMockType } from "src/utils/types.mock";
 
 describe("EditorService", () => {
     let service: EditorService;
-    let cloudinaryServiceMock: Partial<CloudinaryService> & {
-        upload: jest.Mock;
-    };
+    let cloudinaryService: CloudinaryServiceMockType;
 
     beforeEach(async () => {
-        cloudinaryServiceMock = {
+        const cloudinaryMock = {
             upload: jest.fn(),
         };
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 EditorService,
-                { provide: CloudinaryService, useValue: cloudinaryServiceMock },
+                { provide: CloudinaryService, useValue: cloudinaryMock },
             ],
         }).compile();
 
         service = module.get<EditorService>(EditorService);
+        cloudinaryService =
+            module.get<CloudinaryServiceMockType>(CloudinaryService);
     });
 
     it("should be defined", () => {
@@ -37,7 +38,7 @@ describe("EditorService", () => {
                 { public_id: "image1_id", secure_url: "image1_url" },
                 { public_id: "image2_id", secure_url: "image2_url" },
             ];
-            cloudinaryServiceMock.upload.mockImplementation((buffer) => {
+            cloudinaryService.upload.mockImplementation((buffer) => {
                 const index = mockFiles.findIndex(
                     (file) => file.buffer === buffer,
                 );
@@ -46,7 +47,7 @@ describe("EditorService", () => {
 
             const result = await service.uploadImages(mockFiles);
 
-            expect(cloudinaryServiceMock.upload).toHaveBeenCalledTimes(2);
+            expect(cloudinaryService.upload).toHaveBeenCalledTimes(2);
             expect(result).toEqual({
                 images: [
                     { img_id: "image1_id", img_src: "image1_url" },
@@ -66,13 +67,13 @@ describe("EditorService", () => {
                 public_id: "image_id",
                 secure_url: "image_url",
             };
-            cloudinaryServiceMock.upload.mockImplementation(
+            cloudinaryService.upload.mockImplementation(
                 () => mockUploadResponse,
             );
 
             const result = await service.uploadSingleImage(mockFile);
 
-            expect(cloudinaryServiceMock.upload).toHaveBeenCalledWith(
+            expect(cloudinaryService.upload).toHaveBeenCalledWith(
                 mockFile.buffer,
                 expect.any(Object),
             );

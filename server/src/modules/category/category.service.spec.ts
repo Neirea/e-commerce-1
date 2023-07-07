@@ -3,42 +3,43 @@ import { CategoryService } from "./category.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { getCategoriesQuery } from "./category.queries";
+import {
+    CloudinaryServiceMockType,
+    PrismaServiceMockType,
+} from "src/utils/types.mock";
 
 describe("CategoryService", () => {
     let service: CategoryService;
-    let prismaServiceMock: Partial<PrismaService> & {
-        $queryRaw: jest.Mock;
-        $transaction: jest.Mock;
-    };
-    let cloudinaryServiceMock: Partial<CloudinaryService> & {
-        upload: jest.Mock;
-    };
+    let prismaService: PrismaServiceMockType;
+    let cloudinaryService: CloudinaryServiceMockType;
 
     beforeEach(async () => {
-        prismaServiceMock = {
+        const prismaMock = {
             $queryRaw: jest.fn(),
             $transaction: jest.fn(),
         };
-        cloudinaryServiceMock = {
+        const cloudinaryMock = {
             upload: jest.fn(),
             deleteOne: jest.fn(),
-            deleteMany: jest.fn(),
         };
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 CategoryService,
                 {
                     provide: PrismaService,
-                    useValue: prismaServiceMock,
+                    useValue: prismaMock,
                 },
                 {
                     provide: CloudinaryService,
-                    useValue: cloudinaryServiceMock,
+                    useValue: cloudinaryMock,
                 },
             ],
         }).compile();
 
         service = module.get<CategoryService>(CategoryService);
+        prismaService = module.get<PrismaServiceMockType>(PrismaService);
+        cloudinaryService =
+            module.get<CloudinaryServiceMockType>(CloudinaryService);
     });
 
     it("should be defined", () => {
@@ -51,10 +52,10 @@ describe("CategoryService", () => {
             { id: 2, name: "RAM", parent_id: 1 },
         ];
         it("should return list of categories", async () => {
-            prismaServiceMock.$queryRaw.mockImplementation(() => mockResult);
+            prismaService.$queryRaw.mockImplementation(() => mockResult);
             const result = await service.getCategories();
 
-            expect(prismaServiceMock.$queryRaw).toHaveBeenCalledWith(
+            expect(prismaService.$queryRaw).toHaveBeenCalledWith(
                 getCategoriesQuery,
             );
             expect(result).toEqual(mockResult);
@@ -62,21 +63,28 @@ describe("CategoryService", () => {
     });
 
     describe("updateCategory", () => {
-        const mockResult = [
-            { id: 1, name: "PC components" },
-            { id: 2, name: "RAM", parent_id: 1 },
+        const oldCategory = [
+            {
+                id: 1,
+                name: "PC components",
+                img_id: "1",
+                img_src: "example.com/1",
+            },
         ];
         it("should update category", async () => {
-            prismaServiceMock.$queryRaw.mockImplementation(() => mockResult);
-            prismaServiceMock.$transaction.mockImplementationOnce(() => [
-                mockResult,
+            prismaService.$queryRaw.mockImplementation(() => oldCategory);
+            prismaService.$transaction.mockImplementationOnce(() => [
+                oldCategory,
             ]);
             const result = service.updateCategory(1, {
                 name: "wow",
                 img_id: "123",
                 img_src: "123",
             });
-            expect(result).resolves.not.toThrow();
+            await expect(result).resolves.not.toThrow();
+            expect(cloudinaryService.deleteOne).toHaveBeenCalledWith(
+                oldCategory[0].img_id,
+            );
         });
     });
 });

@@ -2,13 +2,14 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CompanyService } from "./company.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { getCompaniesQuery } from "./company.queries";
+import { PrismaServiceMockType } from "src/utils/types.mock";
 
 describe("CompanyService", () => {
     let service: CompanyService;
-    let prismaServiceMock: Partial<PrismaService> & { $queryRaw: jest.Mock };
+    let prismaService: PrismaServiceMockType;
 
     beforeEach(async () => {
-        prismaServiceMock = {
+        const prismaMock = {
             $queryRaw: jest.fn(),
         };
         const module: TestingModule = await Test.createTestingModule({
@@ -16,12 +17,13 @@ describe("CompanyService", () => {
                 CompanyService,
                 {
                     provide: PrismaService,
-                    useValue: prismaServiceMock,
+                    useValue: prismaMock,
                 },
             ],
         }).compile();
 
         service = module.get<CompanyService>(CompanyService);
+        prismaService = module.get<PrismaServiceMockType>(PrismaService);
     });
 
     it("should be defined", () => {
@@ -34,13 +36,10 @@ describe("CompanyService", () => {
                 { id: 1, name: "Apple" },
                 { id: 2, name: "Samsung" },
             ];
-            prismaServiceMock.$queryRaw.mockImplementationOnce(
-                () => mockResult,
-            );
+            prismaService.$queryRaw.mockImplementationOnce(() => mockResult);
 
             const result = await service.getCompanies();
-
-            expect(prismaServiceMock.$queryRaw).toHaveBeenCalledWith(
+            expect(prismaService.$queryRaw).toHaveBeenCalledWith(
                 getCompaniesQuery,
             );
             expect(result).toEqual(mockResult);

@@ -18,39 +18,38 @@ import {
     FilteredProductsResponseDto,
 } from "./dto/filtered-products.dto";
 import { CreateProductDto } from "./dto/create-propduct.dto";
-
-type PrismaServiceMockType = Partial<PrismaService> & {
-    $queryRaw: jest.Mock;
-    $transaction: jest.Mock;
-    product: { create: jest.Mock; update: jest.Mock };
-};
+import {
+    CloudinaryServiceMockType,
+    PrismaServiceMockType,
+} from "src/utils/types.mock";
 
 describe("ProductService", () => {
     let service: ProductService;
-    let prismaServiceMock: PrismaServiceMockType;
-    let cloudinaryServiceMock: Partial<CloudinaryService> & {
-        upload: jest.Mock;
-    };
+    let prismaService: PrismaServiceMockType;
+    let cloudinaryService: CloudinaryServiceMockType;
 
     beforeEach(async () => {
-        prismaServiceMock = {
+        const prismaMock = {
             $queryRaw: jest.fn(),
             $transaction: jest.fn(),
             product: { create: jest.fn(), update: jest.fn() },
         } as PrismaServiceMockType;
-        cloudinaryServiceMock = {
+        const cloudinaryMock = {
             upload: jest.fn(),
             deleteMany: jest.fn(),
         };
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 ProductService,
-                { provide: PrismaService, useValue: prismaServiceMock },
-                { provide: CloudinaryService, useValue: cloudinaryServiceMock },
+                { provide: PrismaService, useValue: prismaMock },
+                { provide: CloudinaryService, useValue: cloudinaryMock },
             ],
         }).compile();
 
         service = module.get<ProductService>(ProductService);
+        prismaService = module.get<PrismaServiceMockType>(PrismaService);
+        cloudinaryService =
+            module.get<CloudinaryServiceMockType>(CloudinaryService);
     });
 
     it("should be defined", () => {
@@ -63,15 +62,11 @@ describe("ProductService", () => {
                 { id: 1, name: "Product 1" },
                 { id: 2, name: "Product 2" },
             ];
-            prismaServiceMock.$queryRaw.mockImplementation(
-                () => expectedProducts,
-            );
+            prismaService.$queryRaw.mockImplementation(() => expectedProducts);
 
             const products = await service.getProducts();
             expect(products).toEqual(expectedProducts);
-            expect(prismaServiceMock.$queryRaw).toHaveBeenCalledWith(
-                getProducts,
-            );
+            expect(prismaService.$queryRaw).toHaveBeenCalledWith(getProducts);
         });
     });
 
@@ -82,13 +77,11 @@ describe("ProductService", () => {
                 id: 1,
                 name: "Product 1",
             };
-            prismaServiceMock.$queryRaw.mockImplementation(() => [
-                expectedProduct,
-            ]);
+            prismaService.$queryRaw.mockImplementation(() => [expectedProduct]);
 
             const product = await service.getProductById(productId);
             expect(product).toEqual(expectedProduct);
-            expect(prismaServiceMock.$queryRaw).toHaveBeenCalledWith(
+            expect(prismaService.$queryRaw).toHaveBeenCalledWith(
                 getProductByIdQuery(productId),
             );
         });
@@ -102,13 +95,11 @@ describe("ProductService", () => {
                 { id: 2, name: "Product 2" },
                 { id: 3, name: "Product 3" },
             ];
-            prismaServiceMock.$queryRaw.mockImplementation(
-                () => expectedProducts,
-            );
+            prismaService.$queryRaw.mockImplementation(() => expectedProducts);
 
             const products = await service.getProductsByIds(productIds);
             expect(products).toEqual(expectedProducts);
-            expect(prismaServiceMock.$queryRaw).toHaveBeenCalledWith(
+            expect(prismaService.$queryRaw).toHaveBeenCalledWith(
                 getProductsByIdsQuery(productIds),
             );
         });
@@ -117,7 +108,7 @@ describe("ProductService", () => {
             const products = await service.getProductsByIds([]);
 
             expect(products).toEqual([]);
-            expect(prismaServiceMock.$queryRaw).not.toHaveBeenCalled();
+            expect(prismaService.$queryRaw).not.toHaveBeenCalled();
         });
     });
 
@@ -153,17 +144,17 @@ describe("ProductService", () => {
                     discount: 15,
                 },
             ];
-            prismaServiceMock.$queryRaw
+            prismaService.$queryRaw
                 .mockImplementationOnce(() => subCatsQueryResponse)
                 .mockImplementationOnce(() => dataLookupResponse);
 
             const searchData = await service.getSearchData(inputData);
             expect(searchData).toEqual(expectedSearchData);
-            expect(prismaServiceMock.$queryRaw).toHaveBeenNthCalledWith(
+            expect(prismaService.$queryRaw).toHaveBeenNthCalledWith(
                 1,
                 subCategoriesQuery(inputData.category_id),
             );
-            expect(prismaServiceMock.$queryRaw).toHaveBeenNthCalledWith(
+            expect(prismaService.$queryRaw).toHaveBeenNthCalledWith(
                 2,
                 getSearchDataQuery(inputData, subCategoriesIds),
             );
@@ -181,11 +172,11 @@ describe("ProductService", () => {
                 categories: [],
                 companies: [],
             };
-            prismaServiceMock.$queryRaw.mockImplementation(() => []);
+            prismaService.$queryRaw.mockImplementation(() => []);
 
             const searchData = await service.getSearchData(inputData);
             expect(searchData).toEqual(expectedSearchData);
-            expect(prismaServiceMock.$queryRaw).toHaveBeenCalledWith(
+            expect(prismaService.$queryRaw).toHaveBeenCalledWith(
                 getSearchDataQuery(inputData, expect.any(Array)),
             );
         });
@@ -206,7 +197,7 @@ describe("ProductService", () => {
                 { id: 3, name: "Product 3", category_id: 1 },
             ];
             const subCatsQueryResponse = [{ id: 1 }];
-            prismaServiceMock.$queryRaw
+            prismaService.$queryRaw
                 .mockImplementationOnce(() => subCatsQueryResponse)
                 .mockImplementationOnce(() => expectedProducts);
 
@@ -214,11 +205,11 @@ describe("ProductService", () => {
                 inputQuery,
             );
             expect(filteredProducts).toEqual(expectedProducts);
-            expect(prismaServiceMock.$queryRaw).toHaveBeenNthCalledWith(
+            expect(prismaService.$queryRaw).toHaveBeenNthCalledWith(
                 1,
                 subCategoriesQuery(inputQuery.category_id),
             );
-            expect(prismaServiceMock.$queryRaw).toHaveBeenNthCalledWith(
+            expect(prismaService.$queryRaw).toHaveBeenNthCalledWith(
                 2,
                 filteredProductsQuery(
                     inputQuery,
@@ -235,13 +226,13 @@ describe("ProductService", () => {
                 min_price: 10,
                 max_price: 100,
             };
-            prismaServiceMock.$queryRaw.mockImplementation(() => []);
+            prismaService.$queryRaw.mockImplementation(() => []);
             const filteredProducts = await service.getFilteredProducts(
                 inputQuery,
             );
 
             expect(filteredProducts).toEqual([]);
-            expect(prismaServiceMock.$queryRaw).toHaveBeenCalledWith(
+            expect(prismaService.$queryRaw).toHaveBeenCalledWith(
                 filteredProductsQuery(inputQuery, expect.any(Array)),
             );
         });
@@ -268,12 +259,12 @@ describe("ProductService", () => {
                 created_at: Date.now(),
                 updated_at: Date.now(),
             };
-            prismaServiceMock.product.create.mockImplementationOnce(
+            prismaService.product.create.mockImplementationOnce(
                 () => createdProduct,
             );
 
             await service.createProduct(inputProduct);
-            expect(prismaServiceMock.product.create).toHaveBeenCalledTimes(1);
+            expect(prismaService.product.create).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -293,11 +284,11 @@ describe("ProductService", () => {
                 img_src: [],
                 variants: [],
             };
-            prismaServiceMock.$transaction.mockImplementation(() => [1, 2]);
+            prismaService.$transaction.mockImplementation(() => [1, 2]);
 
             await service.updateProduct(inputId, inputProduct);
-            expect(prismaServiceMock.product.update).toHaveBeenCalledTimes(1);
-            expect(cloudinaryServiceMock.deleteMany).not.toHaveBeenCalled();
+            expect(prismaService.product.update).toHaveBeenCalledTimes(1);
+            expect(cloudinaryService.deleteMany).not.toHaveBeenCalled();
         });
 
         it("should delete associated images if provided and there was an error during product update", async () => {
@@ -321,16 +312,14 @@ describe("ProductService", () => {
                 { img_id: "2", img_src: "example.com/2" },
             ];
 
-            prismaServiceMock.$queryRaw.mockImplementation(() => []);
-            prismaServiceMock.$transaction.mockImplementation(() => [
-                oldImages,
-            ]);
+            prismaService.$queryRaw.mockImplementation(() => []);
+            prismaService.$transaction.mockImplementation(() => [oldImages]);
 
             await service.updateProduct(inputId, inputProduct);
 
-            expect(prismaServiceMock.product.update).toHaveBeenCalledTimes(1);
-            expect(prismaServiceMock.$queryRaw).toHaveBeenCalledTimes(3);
-            expect(cloudinaryServiceMock.deleteMany).toHaveBeenCalledWith(
+            expect(prismaService.product.update).toHaveBeenCalledTimes(1);
+            expect(prismaService.$queryRaw).toHaveBeenCalledTimes(3);
+            expect(cloudinaryService.deleteMany).toHaveBeenCalledWith(
                 oldImages.map((i) => i.img_id),
             );
         });
