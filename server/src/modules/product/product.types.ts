@@ -1,5 +1,4 @@
 import { Company, Product, ProductImage } from "@prisma/client";
-import { CategoryId } from "../category/category.types";
 import { ExtendedCategory } from "./dto/search-data.dto";
 
 export type ProductId = Pick<Product, "id">["id"];
@@ -18,7 +17,6 @@ export type PropductImgSrc = Pick<ProductImage, "img_src">["img_src"];
 export type SearchDataType = {
     company: Company;
     category: ExtendedCategory;
-    category_id: CategoryId;
     price: number;
     discount: number;
-}[];
+};

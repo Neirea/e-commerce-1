@@ -36,11 +36,10 @@ export class CreateProductDto {
     @Min(0)
     @Max(100)
     discount: ProductDiscount;
-    @IsOptional()
-    img_id?: PropductImgId[];
-    @IsOptional()
+    @IsNotEmpty()
+    img_id: PropductImgId[];
     @SameLength("img_id")
-    img_src?: PropductImgSrc[];
+    img_src: PropductImgSrc[];
     @IsNotEmpty()
     company_id: CompanyId;
     @IsNotEmpty()

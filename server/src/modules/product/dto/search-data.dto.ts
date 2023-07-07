@@ -26,7 +26,7 @@ export class SearchDataQueryDto {
 
 export class ExtendedCategory extends Category {
     productCount?: number;
-    parent: Category | null;
+    parent?: Category;
 }
 
 export class ExtendedCompany extends Company {

@@ -85,7 +85,7 @@ export const getSearchDataQuery = (
         `;
 
     return Prisma.sql`
-            SELECT p.price, p.discount, p.category_id,
+            SELECT p.price, p.discount,
                 json_build_object('id',com.id,'name',com.name) as company,
                 json_build_object('id',cat.id,'name',cat.name,'parent',cat.parent,'parent_id',cat.parent_id) as category
             FROM public."Product" as p

@@ -65,8 +65,10 @@ export class ProductService {
         return product[0];
     }
 
-    getProductsByIds(ids: ProductId[]): Promise<ProductWithImagesDto[]> {
-        if (!ids) return Promise.resolve([]);
+    getProductsByIds(
+        ids: ProductId[] | undefined,
+    ): Promise<ProductWithImagesDto[]> {
+        if (!ids?.length) return Promise.resolve([]);
         return this.prisma.$queryRaw(getProductsByIdsQuery(ids));
     }
 
@@ -81,7 +83,7 @@ export class ProductService {
             res.forEach((i) => searchCategoryIds.push(i.id));
         }
 
-        const data = await this.prisma.$queryRaw<SearchDataType>(
+        const data = await this.prisma.$queryRaw<SearchDataType[]>(
             getSearchDataQuery(input, searchCategoryIds),
         );
 
@@ -125,9 +127,9 @@ export class ProductService {
         const { category_id } = input;
         const searchCategoryIds: ProductId[] = [];
         if (category_id) {
-            const res = await this.prisma.$queryRaw<{ id: ProductId }[]>`
-                ${subCategoriesQuery(category_id)}
-                `;
+            const res = await this.prisma.$queryRaw<{ id: ProductId }[]>(
+                subCategoriesQuery(category_id),
+            );
             res.forEach((i) => searchCategoryIds.push(i.id));
         }
 
