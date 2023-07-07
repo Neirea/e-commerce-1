@@ -1,4 +1,4 @@
-import { ValidationPipe } from "@nestjs/common";
+import { RequestMethod, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
@@ -14,7 +14,9 @@ async function bootstrap(): Promise<void> {
         logger: ["error", "warn"],
         rawBody: true,
     });
-    app.setGlobalPrefix("api");
+    app.setGlobalPrefix("api", {
+        exclude: [{ path: "/", method: RequestMethod.GET }],
+    });
     app.useGlobalPipes(
         new ValidationPipe({ whitelist: true, transform: true }),
     );

@@ -9,8 +9,9 @@ import { PaymentModule } from "./modules/payment/payment.module";
 import { PrismaModule } from "./modules/prisma/prisma.module";
 import { ProductModule } from "./modules/product/product.module";
 import { RedisModule } from "./modules/redis/redis.module";
-import { TasksModule } from "./modules/tasks/tasks.module";
 import { UserModule } from "./modules/user/user.module";
+import { AppController } from "./app.controller";
+import { PrismaService } from "./modules/prisma/prisma.service";
 
 @Module({
     imports: [
@@ -23,9 +24,10 @@ import { UserModule } from "./modules/user/user.module";
         OrderModule,
         ProductModule,
         UserModule,
-        TasksModule,
         CloudinaryModule,
         RedisModule,
     ],
+    controllers: [AppController],
+    providers: [PrismaService],
 })
 export class AppModule {}
