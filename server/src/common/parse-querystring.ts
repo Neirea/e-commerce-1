@@ -1,18 +1,17 @@
-export const parseQueryString = (input: string | null | undefined): string => {
-    const resultStr = input?.length
-        ? input
-              .replace(/[\!\:\*\<\(\)\@\&\|]/g, "")
-              .split(",")
-              .reduce<string[]>((filtered, s) => {
-                  const trimmed = s.trim();
-                  if (trimmed.length > 0) {
-                      filtered.push(trimmed + ":*");
-                  }
-                  return filtered;
-              }, [])
-              .join("|")
-              .replace(/( )+/g, ":*&")
-        : undefined;
-
-    return resultStr;
+export const parseQueryString = (
+    input: string | undefined,
+): string | undefined => {
+    if (!input?.length) return;
+    return input
+        .replace(/[\!\:\*\<\(\)\@\&\|]/g, "")
+        .split(",")
+        .reduce<string[]>((filtered, s) => {
+            const trimmed = s.trim();
+            if (trimmed.length > 0) {
+                const transformedValue = trimmed.replace(/( )+/g, ":*&");
+                filtered.push(transformedValue + ":*");
+            }
+            return filtered;
+        }, [])
+        .join("|");
 };

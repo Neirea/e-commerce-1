@@ -22,7 +22,7 @@ import { PopularProductsDto } from "./dto/popular-products.dto";
 import { CreateProductDto } from "./dto/create-propduct.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
 import { ProductId } from "./product.types";
-import { parseArrayQuery } from "src/pipes/parseArrayQuery";
+import { ParseQuaryArrayPipe } from "src/pipes/parse-ids.pipe";
 import { Roles } from "src/common/roles/roles.decorator";
 import { Role } from "@prisma/client";
 import { RolesGuard } from "src/common/roles/roles.guard";
@@ -53,7 +53,7 @@ export class ProductController {
     @Get("some")
     @ApiOperation({ summary: "Retrieves products by id's" })
     getProductsByIds(
-        @Query("ids", parseArrayQuery)
+        @Query("ids", new ParseQuaryArrayPipe())
         ids: ProductId[] | undefined,
     ): Promise<ProductWithImagesDto[]> {
         return this.productService.getProductsByIds(ids);

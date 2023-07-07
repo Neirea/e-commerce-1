@@ -19,7 +19,7 @@ import {
     Max,
     Min,
 } from "class-validator";
-import { SameLength } from "../validators/same-length";
+import { SameLength } from "../validators/same-length.validator";
 
 export class CreateProductDto {
     @Length(3, 70)
