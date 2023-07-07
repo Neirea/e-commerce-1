@@ -1,4 +1,4 @@
-import { Platform, Role } from "@prisma/client";
+import { Platform, Role, User as IUser } from "@prisma/client";
 import {
     UserAddress,
     UserAvatar,
@@ -11,7 +11,7 @@ import {
 } from "../user.types";
 import { ApiProperty } from "@nestjs/swagger";
 
-export class User {
+export class User implements IUser {
     id: UserId;
     given_name: UserGivenName;
     family_name: UserFamilyName;

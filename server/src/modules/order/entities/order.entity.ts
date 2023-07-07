@@ -1,4 +1,4 @@
-import { OrderStatus } from "@prisma/client";
+import { OrderStatus, Order as IOrder } from "@prisma/client";
 import { OrderId } from "../order.types";
 import {
     UserAddress,
@@ -9,7 +9,7 @@ import {
 import { ProductShippingCost } from "src/modules/product/product.types";
 import { ApiProperty } from "@nestjs/swagger";
 
-export class Order {
+export class Order implements IOrder {
     id: OrderId;
     @ApiProperty({
         enum: [

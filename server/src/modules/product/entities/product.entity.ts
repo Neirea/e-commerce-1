@@ -9,8 +9,9 @@ import {
     ProductShippingCost,
 } from "../product.types";
 import { CategoryId } from "src/modules/category/category.types";
+import { Product as IProduct } from "@prisma/client";
 
-export class Product {
+export class Product implements IProduct {
     id: ProductId;
     name: ProductName;
     price: ProductPrice;
