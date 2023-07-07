@@ -70,8 +70,9 @@ export const getPopularProducts = ({ pageParam = 0 }) =>
     );
 
 export const getProductsById = (ids: Pick<IProduct, "id">["id"][]) => {
+    if (!ids.length) return { data: [] as IProductWithImages[] };
     const query = ids.join(",");
-    const queryIds = ids.length > 0 ? `?ids=${query}` : "";
+    const queryIds = `?ids=${query}`;
     return axios.get<IProductWithImages[]>(`/product/some${queryIds}`);
 };
 
