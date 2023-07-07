@@ -65,10 +65,8 @@ export class ProductService {
         return product[0];
     }
 
-    getProductsByIds(
-        ids: ProductId[] | undefined,
-    ): Promise<ProductWithImagesDto[]> {
-        if (!ids?.length) return Promise.resolve([]);
+    getProductsByIds(ids: ProductId[]): Promise<ProductWithImagesDto[]> {
+        if (!ids.length) return Promise.resolve([]);
         return this.prisma.$queryRaw(getProductsByIdsQuery(ids));
     }
 

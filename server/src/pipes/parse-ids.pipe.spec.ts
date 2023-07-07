@@ -21,9 +21,11 @@ describe("parseIdsPipe", () => {
 
     it("should return undefined if the value is not provided and optional", async () => {
         const value = undefined;
-        const transformedValue = await pipe.transform(value, { type: "query" });
+        const transformedValue = pipe.transform(value, { type: "query" });
 
-        expect(transformedValue).toBeUndefined();
+        await expect(transformedValue).rejects.toThrowError(
+            BadRequestException,
+        );
     });
 
     it(`should throw error for non numbers`, async () => {

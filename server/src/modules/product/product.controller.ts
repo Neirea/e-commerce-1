@@ -54,7 +54,7 @@ export class ProductController {
     @ApiOperation({ summary: "Retrieves products by id's" })
     getProductsByIds(
         @Query("ids", new ParseQuaryArrayPipe())
-        ids: ProductId[] | undefined,
+        ids: ProductId[],
     ): Promise<ProductWithImagesDto[]> {
         return this.productService.getProductsByIds(ids);
     }
