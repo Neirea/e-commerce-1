@@ -7,6 +7,10 @@ on:
     paths:
       - server/**
 
+defaults:
+  run:
+    working-directory: ./server
+
 env:
   PROJECT_ID: ${{ secrets.CLOUD_RUN_PROJECT_ID }}
   REGION: europe-west4
