@@ -4,12 +4,12 @@ import {
     CategoryImgSrc,
     CategoryName,
 } from "../category.types";
-import { Prisma } from "@prisma/client";
+import { Category as ICategory } from "@prisma/client";
 
-export class Category implements Prisma.CategoryCreateInput {
+export class Category implements Partial<ICategory> {
     id: CategoryId;
     name: CategoryName;
-    img_id?: CategoryImgId;
+    img_id: CategoryImgId;
     img_src?: CategoryImgSrc;
     parent_id?: CategoryId;
 }
