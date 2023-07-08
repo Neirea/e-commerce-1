@@ -13,8 +13,10 @@ export class AppController {
     }
     @Post("/cron")
     @ApiOperation({ summary: "Deletes old pending orders" })
-    handleCron(@Body("token") token: string): void {
+    async handleCron(@Body("token") token: string): Promise<void> {
+        console.log(`token=${token}`);
         if (token !== process.env.TOKEN_SECRET) return;
-        this.prisma.$queryRaw(deletePendingOrdersQuery);
+        console.log("Deleting old pending orders...");
+        await this.prisma.$queryRaw(deletePendingOrdersQuery);
     }
 }
