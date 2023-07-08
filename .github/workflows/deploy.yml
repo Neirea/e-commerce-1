@@ -1,12 +1,11 @@
 name: e-commerce
-
 on:
   push:
     branches:
       - main
     paths:
       - server/**
-
+      
 defaults:
   run:
     working-directory: ./server
@@ -17,6 +16,7 @@ env:
   REPO_NAME: e-commerce
 
 jobs:
+  # running tests first
   test:
     name: Running tests
     runs-on: ubuntu-latest
@@ -30,6 +30,7 @@ jobs:
       - run: npm run lint
       - run: npm run test
 
+  # deploying to Google Cloud Runn
   build-and-deploy:
     name: Setup, Build, and Deploy
     needs: [test]
@@ -58,7 +59,7 @@ jobs:
       - name: Push the image to the Google Container Registry (GCR)
         run: |-
           docker push gcr.io/$PROJECT_ID/$REPO_NAME:$GITHUB_SHA
-
+      # Deploy with specified options
       - name: Deploy
         run: |-
           gcloud run deploy $REPO_NAME \
