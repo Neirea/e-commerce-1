@@ -239,12 +239,11 @@ export class ProductService {
         }
         transactions.push(productUpdate, categoryUpdate);
 
-        //any add typings
-
         const [oldImages] = await this.prisma.$transaction(transactions);
         // if we updated images succesfully
         if (img_id.length) {
-            this.cloudinary.deleteMany(oldImages.map((i) => i.img_id));
+            const imgIds = (oldImages as ProductImage[]).map((i) => i.img_id);
+            this.cloudinary.deleteMany(imgIds);
         }
     }
     async deleteproduct(id: ProductId): Promise<void> {
