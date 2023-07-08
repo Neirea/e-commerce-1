@@ -1,6 +1,6 @@
 .git
 .gitignore
 .env
-dist
-node_modules
-uploads
+/dist
+/node_modules
+/uploads
