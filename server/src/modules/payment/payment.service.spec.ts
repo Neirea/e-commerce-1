@@ -7,6 +7,7 @@ import { getProductsByIdsQuery } from "../product/product.queries";
 import { getOrdersByOrderIdQuery } from "../order/order.queries";
 import { PrismaServiceMockType } from "src/utils/types.mock";
 import { CheckoutBodyDto } from "./dto/checkout-body.dto";
+import { appConfig } from "src/config/env";
 
 const createCheckoutSessionMock = jest.fn();
 const constructEventMock = jest.fn();
@@ -214,6 +215,7 @@ describe("PaymentService", () => {
         it("should throw BadRequestException if event construction fails", async () => {
             const signature = "signature";
             const body = Buffer.from("body");
+            const webhook = appConfig.stripeWebhookSecret;
             constructEventMock.mockImplementation(() => {
                 throw new BadRequestException("Oops! Event Constructor failed");
             });
@@ -224,13 +226,14 @@ describe("PaymentService", () => {
             expect(constructEventMock).toHaveBeenCalledWith(
                 body,
                 signature,
-                expect.anything(),
+                webhook,
             );
         });
 
         it("should update order status and remove items from inventory on 'checkout.session.completed' event", async () => {
             const signature = "signature";
             const body = Buffer.from("body");
+            const webhook = appConfig.stripeWebhookSecret;
             const orderId = "order-id";
             const event = {
                 type: "checkout.session.completed",
@@ -256,7 +259,7 @@ describe("PaymentService", () => {
             expect(constructEventMock).toHaveBeenCalledWith(
                 body,
                 signature,
-                expect.anything(),
+                webhook,
             );
             expect(prismaService.order.update).toHaveBeenCalledWith({
                 where: {
