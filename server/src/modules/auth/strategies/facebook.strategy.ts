@@ -3,14 +3,15 @@ import { PassportStrategy } from "@nestjs/passport";
 import { Strategy, Profile } from "passport-facebook";
 import { Platform } from "@prisma/client";
 import { AuthService } from "../auth.service";
+import { appConfig } from "src/config/env";
 
 @Injectable()
 export class FacebookStrategy extends PassportStrategy(Strategy, "facebook") {
     constructor(private authService: AuthService) {
         super({
-            clientID: process.env.FACEBOOK_CLIENT_ID,
-            clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-            callbackURL: process.env.FACEBOOK_CALLBACK_URL,
+            clientID: appConfig.facebookClientId,
+            clientSecret: appConfig.facebookClientSecret,
+            callbackURL: appConfig.facebookCallbackUrl,
             scope: ["public_profile", "email"],
         });
     }

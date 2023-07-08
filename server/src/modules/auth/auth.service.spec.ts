@@ -11,6 +11,7 @@ import { Platform, Role } from "@prisma/client";
 import { userByPlatformIdQuery } from "./auth.queries";
 import { PrismaServiceMockType } from "src/utils/types.mock";
 import { User } from "../user/entities/user.entity";
+import { appConfig } from "src/config/env";
 
 describe("AuthService", () => {
     let service: AuthService;
@@ -143,7 +144,7 @@ describe("AuthService", () => {
             expect(mockResponse.clearCookie).toHaveBeenCalledWith(
                 "techway_sid",
                 {
-                    domain: process.env.SERVER_DOMAIN,
+                    domain: appConfig.serverDomain,
                 },
             );
         });

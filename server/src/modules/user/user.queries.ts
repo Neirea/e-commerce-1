@@ -6,12 +6,15 @@ export const allUsersQuery = Prisma.sql`
     SELECT * FROM public."User";
 `;
 
-export const UserByIdQuery = (id: UserId) => Prisma.sql`
+export const UserByIdQuery = (id: UserId): Prisma.Sql => Prisma.sql`
     SELECT * FROM public."User"
     WHERE id = ${id}
 `;
 
-export const updateUserQuery = (id: UserId, input: UpdateUserDto) => Prisma.sql`
+export const updateUserQuery = (
+    id: UserId,
+    input: UpdateUserDto,
+): Prisma.Sql => Prisma.sql`
     UPDATE public."User"
     SET "given_name" = ${input.given_name},
         "family_name" = ${input.family_name},

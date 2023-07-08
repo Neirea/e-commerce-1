@@ -14,6 +14,7 @@ import { Request, Response } from "express";
 import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { GoogleAuthGuard } from "./guards/google.guard";
 import { FacebookAuthGuard } from "./guards/facebook.guard";
+import { appConfig } from "src/config/env";
 
 @ApiTags("auth")
 @Controller("auth")
@@ -31,7 +32,7 @@ export class AuthController {
     @HttpCode(301)
     @ApiOperation({ summary: "Redirects user to client url after login" })
     @UseGuards(GoogleAuthGuard)
-    @Redirect(process.env.CLIENT_URL, 301)
+    @Redirect(appConfig.clientUrl, 301)
     handleGoogleCallback(): void {
         return;
     }
@@ -47,7 +48,7 @@ export class AuthController {
     @HttpCode(301)
     @ApiOperation({ summary: "Redirects user to client url after login" })
     @UseGuards(FacebookAuthGuard)
-    @Redirect(process.env.CLIENT_URL, 301)
+    @Redirect(appConfig.clientUrl, 301)
     handleFacebookCallback(): void {
         return;
     }

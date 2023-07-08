@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { RequestMethod, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
@@ -8,6 +9,7 @@ import helmet from "helmet";
 import * as passport from "passport";
 import { AppModule } from "./app.module";
 import { RedisService } from "./modules/redis/redis.service";
+import { appConfig } from "./config/env";
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -22,7 +24,7 @@ async function bootstrap(): Promise<void> {
     );
     app.set("trust proxy", true);
     app.use(helmet());
-    app.enableCors({ origin: process.env.CLIENT_URL, credentials: true });
+    app.enableCors({ origin: appConfig.clientUrl, credentials: true });
 
     const { redisClient } = app.get(RedisService);
     await redisClient.connect();
@@ -34,11 +36,11 @@ async function bootstrap(): Promise<void> {
             name: "techway_sid",
             store: redisStore,
             saveUninitialized: false,
-            secret: process.env.SESSION_SECRET,
+            secret: appConfig.sessionSecret,
             resave: false,
             cookie: {
                 httpOnly: true,
-                domain: process.env.SERVER_DOMAIN,
+                domain: appConfig.serverDomain,
                 secure: process.env.NODE_ENV === "production",
                 maxAge: 1000 * 60 * 60 * 24 * 30, //30 days
                 sameSite:
@@ -80,11 +82,11 @@ async function bootstrap(): Promise<void> {
     SwaggerModule.setup("/doc", app, document, {
         swaggerOptions: {
             initOAuth: {
-                clientId: process.env.GOOGLE_CLIENT_ID,
-                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+                clientId: appConfig.googleClientId,
+                clientSecret: appConfig.googleClientSecret,
                 scopes: ["profile", "email"],
             },
-            oauth2RedirectUrl: process.env.GOOGLE_CALLBACK_URL,
+            oauth2RedirectUrl: appConfig.googleCallbackUrl,
         },
     });
 

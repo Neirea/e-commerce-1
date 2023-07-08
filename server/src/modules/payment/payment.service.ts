@@ -14,12 +14,13 @@ import { getDiscountPrice } from "./utils/get-price";
 import { OrderWithItemsDto } from "../order/dto/get-orders.dto";
 import { CheckoutResponseDto } from "./dto/checkout-response.dto";
 import { ProductWithImagesDto } from "../product/dto/product-with-images.dto";
+import { appConfig } from "src/config/env";
 
 @Injectable()
 export class PaymentService {
     private stripe: Stripe;
     constructor(private prisma: PrismaService) {
-        this.stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY, {
+        this.stripe = new Stripe(appConfig.stripePrivateKey, {
             apiVersion: "2022-11-15",
         });
     }
@@ -123,7 +124,7 @@ export class PaymentService {
     ): Promise<{
         received: string;
     }> {
-        const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+        const webhookSecret = appConfig.stripeWebhookSecret;
 
         let event: Stripe.Event;
         try {
@@ -175,7 +176,7 @@ export class PaymentService {
         orderShippingCost: number,
         orderProducts: OrderProductsType[],
     ): Promise<Stripe.Response<Stripe.Checkout.Session>> {
-        const clientUrl = process.env.CLIENT_URL;
+        const clientUrl = appConfig.clientUrl;
         return this.stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             mode: "payment",

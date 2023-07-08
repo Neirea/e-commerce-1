@@ -5,6 +5,7 @@ import { Profile as FacebookProfile } from "passport-facebook";
 import { userByPlatformIdQuery, userCountQuery } from "./auth.queries";
 import { Platform, Role, User } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
+import { appConfig } from "src/config/env";
 
 @Injectable()
 export class AuthService {
@@ -60,6 +61,6 @@ export class AuthService {
                 }
             });
         }
-        res.clearCookie("techway_sid", { domain: process.env.SERVER_DOMAIN });
+        res.clearCookie("techway_sid", { domain: appConfig.serverDomain });
     }
 }
