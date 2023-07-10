@@ -1,10 +1,11 @@
 import { ExtendedCategory, ExtendedCompany } from "../dto/search-data.dto";
 
-export type ProductCountType = { [key: string]: number };
 export type SharedType = Pick<
     ExtendedCategory | ExtendedCompany,
     "id" | "productCount"
 >;
+export type ProductCountType = { [key: SharedType["id"]]: number };
+
 type SharedMapType<T extends SharedType> = Map<Pick<T, "id">["id"], T>;
 
 export const setAndCount = <T extends SharedType>(
