@@ -228,23 +228,24 @@ export class ProductService {
             updateProductCategoryQuery(input),
         );
 
-        const transactions = [];
-        //delete old images
-        if (img_id.length) {
-            const getOldImages = this.prisma.$queryRaw(getImagesQuery(id));
-            const deleteOldImages = this.prisma.$queryRaw(
-                deleteImagesQuery(id),
-            );
-            transactions.push(getOldImages, deleteOldImages);
+        // no new images
+        if (!img_id.length) {
+            await this.prisma.$transaction([productUpdate, categoryUpdate]);
+            return;
         }
-        transactions.push(productUpdate, categoryUpdate);
 
-        const [oldImages] = await this.prisma.$transaction(transactions);
-        // if we updated images succesfully
-        if (img_id.length) {
-            const imgIds = (oldImages as ProductImage[]).map((i) => i.img_id);
-            this.cloudinary.deleteMany(imgIds);
-        }
+        const getOldImages = this.prisma.$queryRaw<ProductImage[]>(
+            getImagesQuery(id),
+        );
+        const deleteOldImages = this.prisma.$queryRaw(deleteImagesQuery(id));
+        const [oldImages] = await this.prisma.$transaction([
+            getOldImages,
+            deleteOldImages,
+            productUpdate,
+            categoryUpdate,
+        ]);
+        const imgIds = oldImages.map((i) => i.img_id);
+        this.cloudinary.deleteMany(imgIds);
     }
     async deleteproduct(id: ProductId): Promise<void> {
         const imagesQuery = this.prisma.$queryRaw<ProductImage[]>(
