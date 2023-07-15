@@ -1,17 +1,22 @@
+/*
+    from:"  red apple ,   orange, yellow banana      "
+    to:"red:*&apple:*|orange:*|yellow:*&banana:*"
+*/
 export const parseQueryString = (
     input: string | undefined,
 ): string | undefined => {
     if (!input?.length) return;
     return input
-        .replace(/[\!\:\*\<\(\)\@\&\|]/g, "")
+        .replace(/[!:*<()@&|]/g, "") //filter out symbols used by postgres
         .split(",")
-        .reduce<string[]>((filtered, s) => {
-            const trimmed = s.trim();
-            if (trimmed.length > 0) {
-                const transformedValue = trimmed.replace(/( )+/g, ":*&");
-                filtered.push(transformedValue + ":*");
+        .reduce((query, param) => {
+            const trimmedParam = param.trim();
+            if (trimmedParam.length > 0) {
+                let str = trimmedParam + ":*";
+                if (query.length > 0) str = "|" + str;
+                query += str;
             }
-            return filtered;
-        }, [])
-        .join("|");
+            return query;
+        }, "")
+        .replace(/( )+/g, ":*&");
 };
