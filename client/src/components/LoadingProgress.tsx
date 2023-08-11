@@ -10,7 +10,7 @@ const LoadingProgress = ({ isLoading }: { isLoading: boolean }) => {
         if (isLoading) {
             timeoutId = setTimeout(() => {
                 setShowLoading(true);
-            }, 120);
+            }, 250);
         }
 
         return () => {
