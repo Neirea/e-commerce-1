@@ -41,9 +41,8 @@ export class PaymentService {
 
         //products info for order
         const orderProducts: OrderProductsType[] = products.map((product) => {
-            const orderAmount = body.items.find(
-                (p) => p.id === product.id,
-            )?.amount;
+            const orderAmount = body.items.find((p) => p.id === product.id)
+                ?.amount;
             this.checkInventoryAmount(product, orderAmount);
             return {
                 id: product.id,
