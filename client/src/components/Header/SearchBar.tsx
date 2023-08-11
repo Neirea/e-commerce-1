@@ -19,6 +19,7 @@ const SearchBar = () => {
     const [searchLoading, setSearchLoading] = useState(false);
     const [showResults, setShowResults] = useState(false);
     const searchBarRef = useRef<HTMLInputElement>(null);
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
     const showSearchData = searchText && searchData && searchData.length > 0;
 
     useOutsideClick([searchBarRef], () => setShowResults(false));
@@ -41,8 +42,37 @@ const SearchBar = () => {
     const handleSearch = (e: FormEvent) => {
         e.preventDefault();
         if (!searchText) return;
-        navigate(`/search?v=${searchText}`);
+        if (selectedIndex === null) {
+            navigate(`/search?v=${searchText}`);
+        } else if (searchData) {
+            const destination = {
+                Company: `/search?b=${searchData[selectedIndex].id}`,
+                Category: `/search?c=${searchData[selectedIndex].id}`,
+                Product: `/product/${searchData[selectedIndex].id}`,
+            };
+            navigate(destination[searchData[selectedIndex].source]);
+        }
     };
+
+    const handleArrowNavigation = (e: React.KeyboardEvent<HTMLElement>) => {
+        if (!searchData) return;
+        if (e.key === "ArrowUp") {
+            e.preventDefault();
+            setSelectedIndex((prevIndex) =>
+                prevIndex === null || prevIndex === 0
+                    ? searchData.length - 1
+                    : prevIndex - 1
+            );
+        } else if (e.key === "ArrowDown") {
+            e.preventDefault();
+            setSelectedIndex((prevIndex) =>
+                prevIndex === null || prevIndex === searchData.length - 1
+                    ? 0
+                    : prevIndex + 1
+            );
+        }
+    };
+
     return (
         <section style={{ position: "relative", width: "40rem" }}>
             <Form onSubmit={handleSearch}>
@@ -53,6 +83,8 @@ const SearchBar = () => {
                         placeholder="Search..."
                         value={searchText}
                         onChange={handleSearchText}
+                        onKeyDown={handleArrowNavigation}
+                        tabIndex={0}
                         aria-label="Search"
                         aria-describedby="btn-search"
                         title="Separate with ',' to search for multiple queries"
@@ -70,7 +102,11 @@ const SearchBar = () => {
             </Form>
             {/* Search Results */}
             {showResults && (
-                <div className="d-none d-sm-block position-absolute mt-3 border-bottom border-start border-end border-secondary rounded-bottom bg-white w-100">
+                <div
+                    className="d-none d-sm-block position-absolute mt-3 border-bottom border-start border-end border-secondary rounded-bottom bg-white w-100"
+                    onKeyDown={handleArrowNavigation}
+                    tabIndex={0}
+                >
                     {searchLoading && (
                         <div className="d-flex justify-content-start gap-2 p-2">
                             <LoadingSpinner />
@@ -79,7 +115,7 @@ const SearchBar = () => {
                     )}
                     {showSearchData && (
                         <>
-                            {searchData.map((item) => {
+                            {searchData.map((item, idx) => {
                                 const link =
                                     item.source === "Category"
                                         ? `/search?c=${item.id}`
@@ -90,7 +126,10 @@ const SearchBar = () => {
                                     <Link
                                         key={`${item.source}-${item.id}`}
                                         to={link}
-                                        className="text-decoration-none text-dark search-link"
+                                        className={`text-decoration-none text-dark search-link ${
+                                            idx === selectedIndex &&
+                                            "selected-link"
+                                        }`}
                                     >
                                         {item.name}
                                         <span className="text-secondary opacity-75">
