@@ -31,6 +31,7 @@ const SearchBar = () => {
                 const { data } = await getSearchBarData(debouncedText);
                 setSearchData(data);
                 setSearchLoading(false);
+                setSelectedIndex(null);
             }
         })();
     }, [debouncedText]);
@@ -42,6 +43,7 @@ const SearchBar = () => {
     const handleSearch = (e: FormEvent) => {
         e.preventDefault();
         if (!searchText) return;
+        setSelectedIndex(null);
         if (selectedIndex === null) {
             navigate(`/search?v=${searchText}`);
         } else if (searchData) {
