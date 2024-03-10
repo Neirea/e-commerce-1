@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { lazy, Suspense } from "react";
 import { Container } from "react-bootstrap";
 import { Route, Routes } from "react-router-dom";
-import "./bootstrap.theme.css";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import LoadingProgress from "./components/LoadingProgress";
