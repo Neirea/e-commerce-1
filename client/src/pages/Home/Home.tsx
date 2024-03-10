@@ -34,7 +34,6 @@ const Home = () => {
                                 src="https://res.cloudinary.com/dna5i1spz/image/upload/v1667474975/ecommerce-1/static/logo_left_dqui4i.jpg"
                                 alt="First img"
                                 className="img-fit-cover"
-                                loading="lazy"
                                 width={742}
                                 height={410}
                             />

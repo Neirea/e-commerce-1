@@ -40,6 +40,7 @@ const AddProductForm = ({ product, handleShowCart }: IAddProductForm) => {
                     <Col>
                         <Form.Control
                             className="w-25"
+                            aria-label="handle amount"
                             type="number"
                             value={amount}
                             min={1}
