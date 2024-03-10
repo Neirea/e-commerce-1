@@ -1,5 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { Alert, Button, Col, Container, Row } from "react-bootstrap";
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
 import { getAllCategories } from "../../queries/Category";
 import Featured from "./Featured";

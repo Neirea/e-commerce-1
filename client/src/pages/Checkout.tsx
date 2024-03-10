@@ -1,13 +1,11 @@
 import { ChangeEvent, FormEvent, useState } from "react";
-import {
-    Alert,
-    Button,
-    Col,
-    Container,
-    Form,
-    Image,
-    Row,
-} from "react-bootstrap";
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
+import Form from "react-bootstrap/Form";
+import Image from "react-bootstrap/Image";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 import useCartStore from "../store/useCartStore";

@@ -1,6 +1,8 @@
 import qs from "query-string";
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { Button, Form, FormGroup } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import FormGroup from "react-bootstrap/FormGroup";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const MultiRangeSlider = ({ min, max }: { min: number; max: number }) => {

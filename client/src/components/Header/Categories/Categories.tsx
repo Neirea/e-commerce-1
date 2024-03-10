@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Button } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
 import { useOutsideClick } from "../../../hooks/useOutsideClick";
 import { getAllCategories } from "../../../queries/Category";
 import CategoriesContent from "./CategoriesContent";

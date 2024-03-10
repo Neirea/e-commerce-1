@@ -1,7 +1,9 @@
 import { BsSearch } from "@react-icons/all-files/bs/BsSearch";
 import qs from "query-string";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
-import { Button, Form, InputGroup } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useOutsideClick } from "../../hooks/useOutsideClick";

@@ -1,5 +1,8 @@
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 import useCartStore from "../../store/useCartStore";
 import { toPriceNumber } from "../../utils/numbers";
 import { ProductWithImgVariants } from "../../types/Product";

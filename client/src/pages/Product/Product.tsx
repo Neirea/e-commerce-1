@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
+import Container from "react-bootstrap/Container";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 import { Link, useParams } from "react-router-dom";
 import Cart from "../../components/Header/Cart/CartContent";
 import LoadingProgress from "../../components/LoadingProgress";

@@ -1,4 +1,4 @@
-import { Alert } from "react-bootstrap";
+import Alert from "react-bootstrap/Alert";
 import { Link } from "react-router-dom";
 import { toPriceNumber } from "../utils/numbers";
 import { IProductWithImages } from "../types/Product";

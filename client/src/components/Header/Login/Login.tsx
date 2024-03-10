@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Nav } from "react-bootstrap";
+import Nav from "react-bootstrap/Nav";
 import useCurrentUser from "../../../hooks/useCurrentUser";
 import LoginContent from "./LoginContent";
 import UserMenu from "../UserMenu";

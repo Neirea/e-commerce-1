@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { Button, Container } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
 import ProductsGrid from "../../components/ProductsGrid";
 import { getPopularProducts } from "../../queries/Product";
 import { IProductWithImages } from "../../types/Product";

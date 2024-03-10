@@ -1,6 +1,7 @@
 import { FaFacebook } from "@react-icons/all-files/fa/FaFacebook";
 import { FaGoogle } from "@react-icons/all-files/fa/FaGoogle";
-import { Button, Modal } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import { useLocation } from "react-router-dom";
 import { serverUrl } from "../../../utils/server";
 

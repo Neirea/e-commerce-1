@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useState } from "react";
-import { Button, Container, Table } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
+import Table from "react-bootstrap/Table";
 import { Link } from "react-router-dom";
 import LoadingProgress from "../components/LoadingProgress";
 import { cancelOrder, getAllOrders } from "../queries/Order";

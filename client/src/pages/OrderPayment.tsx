@@ -1,5 +1,5 @@
 import qs from "query-string";
-import { Button } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
 import { useLocation, useNavigate } from "react-router-dom";
 import useCurrentUser from "../hooks/useCurrentUser";
 

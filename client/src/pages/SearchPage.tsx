@@ -1,7 +1,10 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import qs from "query-string";
 import { ChangeEvent, useEffect, useRef } from "react";
-import { Col, Container, Form, Row } from "react-bootstrap";
+import Container from "react-bootstrap/Container";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
+import Form from "react-bootstrap/Form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import LoadingProgress from "../components/LoadingProgress";
 import MultiRangeSlider from "../components/MultiRangeSlider";

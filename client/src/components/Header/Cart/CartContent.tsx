@@ -2,15 +2,13 @@ import { AiOutlineDelete } from "@react-icons/all-files/ai/AiOutlineDelete";
 import { BsPlus } from "@react-icons/all-files/bs/BsPlus";
 import { FiMinus } from "@react-icons/all-files/fi/FiMinus";
 import { BaseSyntheticEvent, useState } from "react";
-import {
-    Alert,
-    Button,
-    Col,
-    FormControl,
-    Image,
-    Modal,
-    Row,
-} from "react-bootstrap";
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
+import FormControl from "react-bootstrap/FormControl";
+import Image from "react-bootstrap/Image";
+import Modal from "react-bootstrap/Modal";
 import { useLocation, useNavigate } from "react-router-dom";
 import useCartStore from "../../../store/useCartStore";
 import { CartItem } from "../../../store/useCartStore";

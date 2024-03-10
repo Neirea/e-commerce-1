@@ -13,7 +13,10 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateUser } from "../queries/User";
 import { fromZodError } from "zod-validation-error";
-import { Alert, Button, Container, Form } from "react-bootstrap";
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
+import Form from "react-bootstrap/Form";
 import { getError } from "../utils/getError";
 
 const UserProfileSchema = z.object({
