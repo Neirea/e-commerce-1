@@ -57,10 +57,10 @@ describe("AuthService", () => {
                     givenName: "John",
                     familyName: "Doe",
                 },
-                provider: "",
+                provider: "google",
                 profileUrl: "",
                 photos: [{ value: "photo_url" }],
-                emails: [{ value: "john.doe@example.com", verified: "true" }],
+                emails: [{ value: "john.doe@example.com", verified: true }],
                 displayName: "John Doe",
                 _raw: "",
                 _json: {
