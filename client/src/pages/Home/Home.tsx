@@ -1,26 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
-import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
-import { getAllCategories } from "../../queries/Category";
+import Categories from "./Categories";
 import Featured from "./Featured";
 import Popular from "./Popular";
-import { getError } from "../../utils/getError";
 
 const Home = () => {
-    const {
-        data: categoryData,
-        isLoading: categoryLoading,
-        error,
-    } = useQuery({
-        queryKey: ["category"],
-        queryFn: getAllCategories,
-    });
-    const categoryError = getError(error);
-
     return (
         <>
             <Container as="main">
@@ -56,42 +43,11 @@ const Home = () => {
                         </Col>
                     </Row>
                     <h2 className="text-center mt-3">Categories</h2>
-                    <Row>
-                        {categoryError ? (
-                            <Alert variant="danger">
-                                Error: data was not fetched from the server
-                            </Alert>
-                        ) : categoryData && !categoryLoading ? (
-                            categoryData.data?.map((category) => {
-                                if (category.img_src) {
-                                    return (
-                                        <Col
-                                            key={category.id}
-                                            className="d-flex justify-content-center mb-4"
-                                        >
-                                            <div style={{ width: "15rem" }}>
-                                                <Link
-                                                    to={`/search?c=${category.id}`}
-                                                    className="custom-link d-flex flex-column justify-content-center align-items-center text-center"
-                                                >
-                                                    <img
-                                                        className="mb-2"
-                                                        src={category.img_src}
-                                                        title={category.name}
-                                                        alt={category.name}
-                                                        width={240}
-                                                        height={240}
-                                                    />
-                                                    <div>{category.name}</div>
-                                                </Link>
-                                            </div>
-                                        </Col>
-                                    );
-                                }
-                            })
-                        ) : (
-                            <div style={{ height: "18.5rem" }} />
-                        )}
+                    <Row
+                        className="d-flex flex-column justify-content-center align-items-center"
+                        style={{ minHeight: "18.5rem" }}
+                    >
+                        <Categories />
                     </Row>
                 </Container>
                 <Featured />
