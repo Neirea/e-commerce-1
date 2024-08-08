@@ -49,14 +49,6 @@ function App() {
 
     const loading = isLoading || syncQueryLoading;
 
-    if (isLoading)
-        return (
-            <>
-                <Header />
-                <LoadingProgress isLoading={loading} />
-            </>
-        );
-
     return (
         <>
             <Header />
