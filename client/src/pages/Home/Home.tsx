@@ -44,7 +44,7 @@ const Home = () => {
                     </Row>
                     <h2 className="text-center mt-3">Categories</h2>
                     <Row
-                        className="d-flex flex-column justify-content-center align-items-center"
+                        className="d-flex justify-content-center align-items-center"
                         style={{ minHeight: "18.5rem" }}
                     >
                         <Categories />
