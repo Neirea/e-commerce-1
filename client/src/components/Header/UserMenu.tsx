@@ -4,13 +4,13 @@ import Navbar from "react-bootstrap/Navbar";
 import { Link } from "react-router-dom";
 import useCurrentUser from "../../hooks/useCurrentUser";
 import { logout } from "../../queries/User";
-import { IRole } from "../../types/User";
+import type { TRole } from "../../types/User";
 
 const UserMenu = () => {
     const { user } = useCurrentUser();
     const queryCient = useQueryClient();
 
-    const editorRoles: IRole[] = ["ADMIN", "EDITOR"];
+    const editorRoles: TRole[] = ["ADMIN", "EDITOR"];
 
     const isShowEditor =
         user && editorRoles.some((role) => user.role.includes(role));

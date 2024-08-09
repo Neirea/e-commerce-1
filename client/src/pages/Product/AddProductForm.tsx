@@ -1,18 +1,18 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { type ChangeEvent, type FormEvent, useState } from "react";
 import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
+import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import useCartStore from "../../store/useCartStore";
+import type { TProductWithImgVariants } from "../../types/Product";
 import { toPriceNumber } from "../../utils/numbers";
-import { ProductWithImgVariants } from "../../types/Product";
 
-interface IAddProductForm {
-    product: ProductWithImgVariants;
+type TAddProductForm = {
+    product: TProductWithImgVariants;
     handleShowCart: () => void;
-}
+};
 
-const AddProductForm = ({ product, handleShowCart }: IAddProductForm) => {
+const AddProductForm = ({ product, handleShowCart }: TAddProductForm) => {
     const [amount, setAmount] = useState(1);
     const { addProductToCart } = useCartStore();
 

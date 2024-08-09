@@ -2,8 +2,8 @@ import { FaGithub } from "@react-icons/all-files/fa/FaGithub";
 import { FaLinkedin } from "@react-icons/all-files/fa/FaLinkedin";
 import { FiMail } from "@react-icons/all-files/fi/FiMail";
 import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
 import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
 
 const Footer = () => {

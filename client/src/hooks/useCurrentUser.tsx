@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { IUser } from "../types/User";
+import type { TUser } from "../types/User";
 import { getCurrentUser } from "../queries/User";
 
-export interface ICurrentUser {
-    user: IUser | undefined;
+export type TCurrentUser = {
+    user: TUser | undefined;
     isLoading: boolean;
-}
+};
 
-const useCurrentUser = (): ICurrentUser => {
+const useCurrentUser = (): TCurrentUser => {
     const { data, isLoading, isError } = useQuery({
         queryKey: ["me"],
         queryFn: getCurrentUser,

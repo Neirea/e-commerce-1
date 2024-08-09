@@ -3,9 +3,9 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import ProductsGrid from "../../components/ProductsGrid";
 import { getFeaturedProducts } from "../../queries/Product";
-import { IProductWithImages } from "../../types/Product";
-import { FETCH_NUMBER } from "../../utils/numbers";
+import type { TProductWithImages } from "../../types/Product";
 import { getError } from "../../utils/getError";
+import { FETCH_NUMBER } from "../../utils/numbers";
 
 const Featured = () => {
     const {
@@ -25,7 +25,7 @@ const Featured = () => {
     });
     const productError = getError(error);
     const fetchMoreProducts = () => fetchNextPage();
-    const initialValue: IProductWithImages[] = [];
+    const initialValue: TProductWithImages[] = [];
     const products = productData?.pages.reduce(
         (arr, curr) => arr.concat(curr.data),
         initialValue

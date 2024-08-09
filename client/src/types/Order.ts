@@ -1,15 +1,15 @@
-import { IProduct } from "./Product";
+import type { TProduct } from "./Product";
 
-export type IOrderStatus =
+export type TOrderStatus =
     | "PENDING"
     | "ACCEPTED"
     | "PROCESSING"
     | "DELIVERED"
     | "CANCELLED";
 
-export type IOrder = {
+export type TOrder = {
     id: number;
-    status: IOrderStatus;
+    status: TOrderStatus;
     shipping_cost: number;
     user_id: number;
     buyer_name: string;
@@ -20,7 +20,7 @@ export type IOrder = {
     payment_time: string;
 };
 
-export type ISingleOrderItem = {
+export type TSingleOrderItem = {
     id: number;
     order_id: number;
     amount: number;
@@ -28,6 +28,6 @@ export type ISingleOrderItem = {
     product_id: number;
 };
 
-export type IOrderItem = ISingleOrderItem & { product: IProduct };
+export type TOrderItem = TSingleOrderItem & { product: TProduct };
 
-export type IOrderWithItems = IOrder & { order_items: IOrderItem[] };
+export type TOrderWithItems = TOrder & { order_items: TOrderItem[] };

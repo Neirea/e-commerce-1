@@ -1,10 +1,10 @@
 import axios from "axios";
-import { IOrderWithItems } from "../types/Order";
+import type { TOrderWithItems } from "../types/Order";
 
-export const getAllOrders = () => axios.get<IOrderWithItems[]>("/order");
+export const getAllOrders = () => axios.get<TOrderWithItems[]>("/order");
 
-export const cancelOrder = (id: Pick<IOrderWithItems, "id">["id"]) =>
+export const cancelOrder = (id: Pick<TOrderWithItems, "id">["id"]) =>
     axios.patch(`/order/${id}`);
 
-export const deleteOrder = (id: Pick<IOrderWithItems, "id">["id"]) =>
+export const deleteOrder = (id: Pick<TOrderWithItems, "id">["id"]) =>
     axios.delete(`/order/${id}`);

@@ -16,7 +16,7 @@ import ProductWrapper from "./pages/Product";
 import SearchPage from "./pages/SearchPage";
 import Unauthorized from "./pages/Unauthorized";
 import { getProductsById } from "./queries/Product";
-import useCartStore, { CartType } from "./store/useCartStore";
+import useCartStore, { type TCart } from "./store/useCartStore";
 const Orders = lazy(() => import("./pages/Orders"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 const Editor = lazy(() => import("./pages/Editor/Editor"));
@@ -30,7 +30,7 @@ function App() {
     const { syncCart } = useCartStore();
     const { user, isLoading } = useCurrentUser();
 
-    let localCart: CartType = [];
+    let localCart: TCart = [];
     let ids: number[] = [];
     try {
         localCart = JSON.parse(localStorage.getItem("cart") || "[]");

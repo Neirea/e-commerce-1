@@ -1,15 +1,15 @@
 import axios from "axios";
-import { ICompany } from "../types/Company";
+import type { TCompany } from "../types/Company";
 
-export const getAllCompanies = () => axios.get<ICompany[]>("/company");
+export const getAllCompanies = () => axios.get<TCompany[]>("/company");
 
-export const createCompany = async (input: Omit<ICompany, "id">) =>
+export const createCompany = async (input: Omit<TCompany, "id">) =>
     axios.post<void>("/company", input);
 
-export const updateCompany = async (input: ICompany) => {
+export const updateCompany = async (input: TCompany) => {
     const { id, ...data } = input;
     return axios.patch<void>(`/company/${id}`, data);
 };
 
-export const deleteCompany = async (id: Pick<ICompany, "id">["id"]) =>
+export const deleteCompany = async (id: Pick<TCompany, "id">["id"]) =>
     axios.delete<void>(`/company/${id}`);

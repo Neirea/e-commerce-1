@@ -1,23 +1,23 @@
 import { useCallback } from "react";
-import { IProductWithImages } from "../types/Product";
+import type { TProductWithImages } from "../types/Product";
 import { useCart } from "./CartProvider";
 
-export interface CartProductBase {
+export type TCartProductBase = {
     id: number;
-}
-export interface CartItem<ProductType extends CartProductBase> {
-    product: ProductType;
+};
+export type TCartItem<TProduct extends TCartProductBase> = {
+    product: TProduct;
     amount: number;
-}
-export type CartType = CartItem<IProductWithImages>[];
+};
+export type TCart = TCartItem<TProductWithImages>[];
 
 export const getSyncedCart = (
-    data: IProductWithImages[] | undefined,
-    source: CartType
-): { newState: CartType; errors: string[] } | undefined => {
+    data: TProductWithImages[] | undefined,
+    source: TCart
+): { newState: TCart; errors: string[] } | undefined => {
     if (data?.length && source.length) {
         let errors: string[] = [];
-        const newState: CartType = source.reduce<CartType>((result, item) => {
+        const newState: TCart = source.reduce<TCart>((result, item) => {
             const cartProduct = data.find((i) => item.product.id === i.id);
             if (!cartProduct) {
                 errors.push(
@@ -46,7 +46,7 @@ export const getSyncedCart = (
     return undefined;
 };
 
-export const addCartToLocalStorage = (products: CartType) => {
+export const addCartToLocalStorage = (products: TCart) => {
     localStorage.setItem(
         "cart",
         JSON.stringify(
@@ -64,7 +64,7 @@ function useCartStore() {
     const { cart, changeCart } = useCart();
 
     const syncCart = useCallback(
-        (data: IProductWithImages[], source: CartType) => {
+        (data: TProductWithImages[], source: TCart) => {
             const result = getSyncedCart(data, source);
 
             if (result?.newState) {
@@ -79,12 +79,12 @@ function useCartStore() {
     );
 
     const addProductToCart = useCallback(
-        (item: CartItem<IProductWithImages>) => {
+        (item: TCartItem<TProductWithImages>) => {
             const existingProduct = cart.find(
                 (p) => p.product.id === item.product.id
             );
 
-            let newCart: CartType = [];
+            let newCart: TCart = [];
             if (existingProduct) {
                 newCart = cart.map((i) => {
                     if (i.product.id === existingProduct.product.id) {
@@ -112,7 +112,7 @@ function useCartStore() {
     );
 
     const removeProductFromCart = useCallback(
-        (product: IProductWithImages) => {
+        (product: TProductWithImages) => {
             const newCart = cart.filter((p) => p.product.id !== product.id);
             addCartToLocalStorage(newCart);
             changeCart(newCart);

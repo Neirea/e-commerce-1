@@ -1,21 +1,21 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import qs from "query-string";
-import { ChangeEvent, useEffect, useRef } from "react";
-import Container from "react-bootstrap/Container";
+import { type ChangeEvent, useEffect, useRef } from "react";
 import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
+import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import LoadingProgress from "../components/LoadingProgress";
 import MultiRangeSlider from "../components/MultiRangeSlider";
 import ProductsGrid from "../components/ProductsGrid";
 import useInView from "../hooks/useInView";
 import { getFilteredProducts, getSearchData } from "../queries/Product";
-import { ICategoryType } from "../types/Category";
-import { IProductCatCom } from "../types/Product";
+import type { TCategoryFull } from "../types/Category";
+import type { TProductCatCom } from "../types/Product";
+import { getError } from "../utils/getError";
 import { SEARCH_NUMBER } from "../utils/numbers";
 import sortByParentId from "../utils/sortByParents";
-import { getError } from "../utils/getError";
 
 const options = { root: null, rootMargin: "0px", treshold: 1.0 };
 
@@ -66,14 +66,14 @@ const SearchPage = () => {
     const productError = getError(error);
     const isCurrentLoading = productData && searchData ? false : true;
 
-    const initialValue: IProductCatCom[] = [];
+    const initialValue: TProductCatCom[] = [];
     const products = productData?.pages.reduce(
         (arr, curr) => arr.concat(curr.data),
         initialValue
     );
 
     const categoriesData = searchData?.data
-        ? sortByParentId<ICategoryType>(searchData.data.categories)
+        ? sortByParentId<TCategoryFull>(searchData.data.categories)
         : null;
 
     useEffect(() => {

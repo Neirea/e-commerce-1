@@ -1,14 +1,14 @@
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import { Link, useParams } from "react-router-dom";
 import Cart from "../../components/Header/Cart/CartContent";
 import LoadingProgress from "../../components/LoadingProgress";
+import { getSingleProductById } from "../../queries/Product";
 import AddProductForm from "./AddProductForm";
 import RelatedProducts from "./RelatedProducts";
-import { useQuery } from "@tanstack/react-query";
-import { getSingleProductById } from "../../queries/Product";
 
 const Product = () => {
     const { id: idParam } = useParams();

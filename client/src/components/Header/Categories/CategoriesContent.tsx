@@ -2,7 +2,7 @@ import { BiChevronRight } from "@react-icons/all-files/bi/BiChevronRight";
 import { forwardRef, useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
-import { ICategory } from "../../../types/Category";
+import type { TCategory } from "../../../types/Category";
 
 const createWrapperAndAppend = () => {
     const modalRoot = document.createElement("div");
@@ -16,7 +16,7 @@ const CategoriesContent = (
         categories,
         handleClose,
     }: {
-        categories: ICategory[];
+        categories: TCategory[];
         handleClose: () => void;
     },
     ref: React.Ref<HTMLDivElement>

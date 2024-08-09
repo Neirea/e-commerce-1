@@ -1,20 +1,20 @@
 import { AiOutlineDelete } from "@react-icons/all-files/ai/AiOutlineDelete";
 import { BsPlus } from "@react-icons/all-files/bs/BsPlus";
 import { FiMinus } from "@react-icons/all-files/fi/FiMinus";
-import { BaseSyntheticEvent, useState } from "react";
+import { type BaseSyntheticEvent, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
 import FormControl from "react-bootstrap/FormControl";
 import Image from "react-bootstrap/Image";
 import Modal from "react-bootstrap/Modal";
+import Row from "react-bootstrap/Row";
 import { useLocation, useNavigate } from "react-router-dom";
-import useCartStore from "../../../store/useCartStore";
-import { CartItem } from "../../../store/useCartStore";
-import { toPriceNumber } from "../../../utils/numbers";
-import { IProductWithImages } from "../../../types/Product";
 import { getProductsById } from "../../../queries/Product";
+import type { TCartItem } from "../../../store/useCartStore";
+import useCartStore from "../../../store/useCartStore";
+import type { TProductWithImages } from "../../../types/Product";
+import { toPriceNumber } from "../../../utils/numbers";
 import ItemPrice from "../../ItemPrice";
 
 const CartContent = ({
@@ -40,21 +40,21 @@ const CartContent = ({
 
     const outOfStock = cart.some((p) => p.product.inventory === 0);
 
-    const handleDecrease = (item: CartItem<IProductWithImages>) => {
+    const handleDecrease = (item: TCartItem<TProductWithImages>) => {
         addProductToCart({
             product: item.product,
             amount: item.amount === 1 ? 0 : -1,
         });
     };
 
-    const handleIncrease = (item: CartItem<IProductWithImages>) => {
+    const handleIncrease = (item: TCartItem<TProductWithImages>) => {
         addProductToCart({
             product: item.product,
             amount: item.amount === item.product.inventory ? 0 : 1,
         });
     };
 
-    const handleSetAmount = (item: CartItem<IProductWithImages>) => {
+    const handleSetAmount = (item: TCartItem<TProductWithImages>) => {
         return (e: BaseSyntheticEvent) => {
             const setAmount = +e.target.value - item.amount;
             addProductToCart({

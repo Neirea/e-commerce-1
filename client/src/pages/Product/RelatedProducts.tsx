@@ -2,13 +2,13 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import ProductsGrid from "../../components/ProductsGrid";
 import useInView from "../../hooks/useInView";
 import { getRelatedProducts } from "../../queries/Product";
-import { IProduct, IProductWithImages } from "../../types/Product";
-import { FETCH_NUMBER } from "../../utils/numbers";
+import type { TProduct, TProductWithImages } from "../../types/Product";
 import { getError } from "../../utils/getError";
+import { FETCH_NUMBER } from "../../utils/numbers";
 
 const options = { root: null, rootMargin: "0px", treshold: 1.0 };
 
-const RelatedProducts = ({ product }: { product: IProduct }) => {
+const RelatedProducts = ({ product }: { product: TProduct }) => {
     const fetchParams = {
         id: product?.id,
         company_id: product?.company_id,
@@ -32,7 +32,7 @@ const RelatedProducts = ({ product }: { product: IProduct }) => {
     });
     const relatedProductError = getError(error);
 
-    const initialValue: IProductWithImages[] = [];
+    const initialValue: TProductWithImages[] = [];
     const products = relatedProductData?.pages.reduce(
         (arr, curr) => arr.concat(curr.data),
         initialValue

@@ -1,7 +1,7 @@
-import { ICategory, ICategoryType, IUploadedImage } from "./Category";
-import { ICompany, ICompanyType } from "./Company";
+import type { TCategory, TCategoryFull, TUploadedImage } from "./Category";
+import type { TCompany, TCompanyFull } from "./Company";
 
-export type IProduct = {
+export type TProduct = {
     id: number;
     name: string;
     price: number;
@@ -13,63 +13,63 @@ export type IProduct = {
     discount: number;
     created_at: Date;
     updated_at: Date;
-    variants: IProductWithImages[];
+    variants: TProductWithImages[];
 };
 
-export type IProductUploadImage = IUploadedImage & {
-    product_id: Pick<IProduct, "id">["id"];
+export type TProductUploadImage = TUploadedImage & {
+    product_id: Pick<TProduct, "id">["id"];
 };
 
-export type IProductWithImages = IProduct & {
-    images: IProductUploadImage[];
+export type TProductWithImages = TProduct & {
+    images: TProductUploadImage[];
 };
 
-export type IProductCatCom = IProductWithImages & {
-    company: ICompany;
-    category: ICategory;
+export type TProductCatCom = TProductWithImages & {
+    company: TCompany;
+    category: TCategory;
 };
 
-export type IProductMutate = Omit<
-    IProduct,
+export type TProductMutate = Omit<
+    TProduct,
     "created_at" | "updated_at" | "variants"
-> & { variants: Pick<IProduct, "id">["id"][] };
+> & { variants: Pick<TProduct, "id">["id"][] };
 
-export type ProductWithImgVariants = IProductWithImages & {
-    company: ICompany;
-    category: ICategory;
+export type TProductWithImgVariants = TProductWithImages & {
+    company: TCompany;
+    category: TCategory;
 };
 
-export type IRelatedProductFetchParams = {
-    id: Pick<IProduct, "id">["id"];
-    company_id: Pick<ICompany, "id">["id"];
-    category_id: Pick<ICategory, "id">["id"];
+export type TRelatedProductFetchParams = {
+    id: Pick<TProduct, "id">["id"];
+    company_id: Pick<TCompany, "id">["id"];
+    category_id: Pick<TCategory, "id">["id"];
 };
 
-export type ISearchResult = {
-    id: Pick<IProduct, "id">["id"];
+export type TSearchResult = {
+    id: Pick<TProduct, "id">["id"];
     name: string;
     source: "Category" | "Company" | "Product";
 };
 
-export type ISearchDataParams = {
+export type TSearchDataParams = {
     search_string?: string | (string | null)[] | null;
-    company_id?: Pick<ICompany, "id">["id"];
-    category_id?: Pick<ICategory, "id">["id"];
+    company_id?: Pick<TCompany, "id">["id"];
+    category_id?: Pick<TCategory, "id">["id"];
     min_price?: number;
     max_price?: number;
 };
 
-export type ISearchDataResponse = {
+export type TSearchDataResponse = {
     min: number;
     max: number;
-    categories: ICategoryType[];
-    companies: ICompanyType[];
+    categories: TCategoryFull[];
+    companies: TCompanyFull[];
 };
 
-export type IFilteredProductsParams = {
+export type TFilteredProductsParams = {
     search_string?: string | (string | null)[] | null;
-    company_id?: Pick<ICompany, "id">["id"];
-    category_id?: Pick<ICategory, "id">["id"];
+    company_id?: Pick<TCompany, "id">["id"];
+    category_id?: Pick<TCategory, "id">["id"];
     min_price?: number;
     max_price?: number;
     sort_mode?: number;

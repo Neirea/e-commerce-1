@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 
-interface IOptions {
+type TOptions = {
     root: HTMLElement | null;
     rootMargin: string;
     treshold: number;
-}
+};
 
 const useInView = <T extends HTMLElement>(
-    options: IOptions,
+    options: TOptions,
     cb: () => void,
     hasMore: boolean | undefined
 ) => {

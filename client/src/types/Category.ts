@@ -1,6 +1,4 @@
-import { ICompany } from "./Company";
-
-export type ICategory = {
+export type TCategory = {
     id: number;
     name: string;
     img_id?: string;
@@ -8,11 +6,11 @@ export type ICategory = {
     parent_id?: number;
 };
 
-export type IUploadedImage = {
+export type TUploadedImage = {
     img_id: string;
     img_src: string;
 };
 
-export type ICategoryType = ICategory & { productCount?: number } & {
-    parent?: ICategory | null;
+export type TCategoryFull = TCategory & { productCount?: number } & {
+    parent?: TCategory | null;
 };

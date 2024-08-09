@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChangeEvent, FormEvent, useMemo, useRef, useState } from "react";
+import {
+    type ChangeEvent,
+    type FormEvent,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -12,8 +18,8 @@ import {
     updateProduct,
     uploadImages,
 } from "../../queries/Product";
-import isJSON from "../../utils/isJSON";
 import { getError } from "../../utils/getError";
+import isJSON from "../../utils/isJSON";
 
 const defaultValues = {
     name: "",

@@ -1,8 +1,8 @@
-import { IProductWithImages } from "../types/Product";
-import { CartItem } from "../store/useCartStore";
+import type { TProductWithImages } from "../types/Product";
+import type { TCartItem } from "../store/useCartStore";
 import { toPriceNumber } from "../utils/numbers";
 
-const ItemPrice = ({ item }: { item: CartItem<IProductWithImages> }) => {
+const ItemPrice = ({ item }: { item: TCartItem<TProductWithImages> }) => {
     return (
         <>
             {item.product.inventory === 0 ? (

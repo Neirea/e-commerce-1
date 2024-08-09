@@ -1,15 +1,21 @@
 import { BsSearch } from "@react-icons/all-files/bs/BsSearch";
 import qs from "query-string";
-import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import {
+    type ChangeEvent,
+    type FormEvent,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
-import LoadingSpinner from "../LoadingSpinner";
 import { getSearchBarData } from "../../queries/Product";
-import { ISearchResult } from "../../types/Product";
+import type { TSearchResult } from "../../types/Product";
+import LoadingSpinner from "../LoadingSpinner";
 
 const SearchBar = () => {
     const navigate = useNavigate();
@@ -17,7 +23,7 @@ const SearchBar = () => {
     const query = qs.parse(search).v as string | null;
     const [searchText, setSearchText] = useState(query || "");
     const debouncedText = useDebounce(searchText, 300);
-    const [searchData, setSearchData] = useState<ISearchResult[]>();
+    const [searchData, setSearchData] = useState<TSearchResult[]>();
     const [searchLoading, setSearchLoading] = useState(false);
     const [showResults, setShowResults] = useState(false);
     const searchBarRef = useRef<HTMLInputElement>(null);

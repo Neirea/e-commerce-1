@@ -1,6 +1,6 @@
-export type ICompany = {
+export type TCompany = {
     id: number;
     name: string;
 };
 
-export type ICompanyType = ICompany & { productCount?: number };
+export type TCompanyFull = TCompany & { productCount?: number };

@@ -1,20 +1,21 @@
-interface ISortElement {
+type TSortElement = {
     id: number;
     parent_id?: number | null;
-}
+};
 
-const sortByParentId = <T extends ISortElement>(array: Array<T>) => {
-    interface IResult {
-        elem: Array<T>[number];
-        depth: number;
-    }
+type TResult<T> = {
+    elem: Array<T>[number];
+    depth: number;
+};
+
+const sortByParentId = <T extends TSortElement>(array: Array<T>) => {
     const orderByParents = (
         data: T[],
         depth: number,
         p_id?: number | undefined
     ) => {
         if (p_id !== undefined) depth++;
-        return data.reduce((r: Array<IResult>, e) => {
+        return data.reduce((r: Array<TResult<T>>, e) => {
             //check if element is parent to any element
             if (p_id == e.parent_id) {
                 //push element

@@ -7,8 +7,8 @@ import Table from "react-bootstrap/Table";
 import { Link } from "react-router-dom";
 import LoadingProgress from "../components/LoadingProgress";
 import { cancelOrder, getAllOrders } from "../queries/Order";
-import { toPriceNumber } from "../utils/numbers";
 import { getError } from "../utils/getError";
+import { toPriceNumber } from "../utils/numbers";
 
 const Orders = () => {
     const queryClient = useQueryClient();

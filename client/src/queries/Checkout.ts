@@ -1,9 +1,9 @@
 import axios from "axios";
-import { IProduct } from "../types/Product";
+import type { TProduct } from "../types/Product";
 
-type ICheckoutBody = {
+type TCheckoutBody = {
     items: {
-        id: Pick<IProduct, "id">["id"];
+        id: Pick<TProduct, "id">["id"];
         amount: number;
     }[];
     buyer: {
@@ -14,5 +14,5 @@ type ICheckoutBody = {
     };
 };
 
-export const checkout = (body: ICheckoutBody) =>
+export const checkout = (body: TCheckoutBody) =>
     axios.post("/payment/checkout", body);

@@ -1,10 +1,9 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import useCurrentUser from "../hooks/useCurrentUser";
-import { IRole } from "../types/User";
-import LoadingProgress from "./LoadingProgress";
+import type { TRole } from "../types/User";
 import Container from "react-bootstrap/Container";
 
-const RequireAuth = ({ allowedRoles }: { allowedRoles: IRole[] }) => {
+const RequireAuth = ({ allowedRoles }: { allowedRoles: TRole[] }) => {
     const { user, isLoading } = useCurrentUser();
     const location = useLocation();
 

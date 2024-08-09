@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAllCategories } from "../../queries/Category";
-import { getError } from "../../utils/getError";
 import Alert from "react-bootstrap/Alert";
 import Col from "react-bootstrap/Col";
 import { Link } from "react-router-dom";
+import { getAllCategories } from "../../queries/Category";
+import { getError } from "../../utils/getError";
 
 const Categories = () => {
     const { data: categoryData, error } = useQuery({

@@ -1,21 +1,21 @@
-export type IPlatform = "GOOGLE" | "FACEBOOK";
-export type IRole = "USER" | "ADMIN" | "EDITOR";
+export type TPlatform = "GOOGLE" | "FACEBOOK";
+export type TRole = "USER" | "ADMIN" | "EDITOR";
 
-export type IUser = {
+export type TUser = {
     id: number;
     given_name: string;
     family_name: string;
     email: string;
     platform_id: string;
-    platform: IPlatform;
+    platform: TPlatform;
     address: string;
     phone: string;
-    role: IRole[];
+    role: TRole[];
     created_at: Date;
     avatar: string;
 };
 
-export type IUpdateUserParams = {
+export type TUpdateUserParams = {
     given_name: string;
     family_name: string;
     email: string;

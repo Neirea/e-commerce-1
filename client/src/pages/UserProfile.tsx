@@ -1,4 +1,14 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { type ChangeEvent, type FormEvent, useState } from "react";
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
+import Form from "react-bootstrap/Form";
 import { z } from "zod";
+import { fromZodError } from "zod-validation-error";
+import { updateUser } from "../queries/User";
+import type { TUser } from "../types/User";
+import { getError } from "../utils/getError";
 import {
     addressDesc,
     addressZod,
@@ -8,16 +18,6 @@ import {
     phoneDesc,
     phoneZod,
 } from "../utils/zod";
-import { IUser } from "../types/User";
-import { ChangeEvent, FormEvent, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateUser } from "../queries/User";
-import { fromZodError } from "zod-validation-error";
-import Alert from "react-bootstrap/Alert";
-import Button from "react-bootstrap/Button";
-import Container from "react-bootstrap/Container";
-import Form from "react-bootstrap/Form";
-import { getError } from "../utils/getError";
 
 const UserProfileSchema = z.object({
     given_name: givenNameZod,
@@ -29,7 +29,7 @@ const UserProfileSchema = z.object({
 
 type UserStateType = z.infer<typeof UserProfileSchema>;
 
-const UserProfile = ({ user }: { user: IUser | undefined }) => {
+const UserProfile = ({ user }: { user: TUser | undefined }) => {
     const queryClient = useQueryClient();
     const [success, setSuccess] = useState(false);
     const [validationError, setValidationError] = useState<Error | null>(null);

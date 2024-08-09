@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { type ChangeEvent, type FormEvent, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
@@ -33,7 +33,7 @@ const CheckoutInputSchema = z.object({
     phone: phoneZod,
 });
 
-type CheckoutInputType = z.infer<typeof CheckoutInputSchema>;
+type TCheckoutInput = z.infer<typeof CheckoutInputSchema>;
 
 const Checkout = () => {
     const { user } = useCurrentUser();
@@ -41,7 +41,7 @@ const Checkout = () => {
     const { cart, clearCart, syncCart } = useCartStore();
     const [error, setError] = useState("");
 
-    const [values, setValues] = useState<CheckoutInputType>({
+    const [values, setValues] = useState<TCheckoutInput>({
         given_name: user?.given_name || "",
         family_name: user?.family_name || "",
         email: user?.email || "",

@@ -1,14 +1,14 @@
 import Alert from "react-bootstrap/Alert";
 import { Link } from "react-router-dom";
 import { toPriceNumber } from "../utils/numbers";
-import { IProductWithImages } from "../types/Product";
+import type { TProductWithImages } from "../types/Product";
 
 const ProductsGrid = ({
     products,
     productError,
     productLoading,
 }: {
-    products: IProductWithImages[] | undefined;
+    products: TProductWithImages[] | undefined;
     productError: Error | undefined;
     productLoading: boolean;
 }) => {

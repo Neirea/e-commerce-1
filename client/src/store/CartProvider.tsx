@@ -1,17 +1,17 @@
-import React, { ReactNode, useContext, useState } from "react";
-import { CartType } from "./useCartStore";
+import React, { type ReactNode, useContext, useState } from "react";
+import type { TCart } from "./useCartStore";
 
-type CartStore = {
-    cart: CartType;
-    changeCart: (value: CartType) => void;
+type TCartStore = {
+    cart: TCart;
+    changeCart: (value: TCart) => void;
 };
 
-export const CartContext = React.createContext<CartStore>({} as CartStore);
+export const CartContext = React.createContext({} as TCartStore);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-    const [cart, setCart] = useState<CartType>([]);
+    const [cart, setCart] = useState<TCart>([]);
 
-    const changeCart = (value: CartType) => {
+    const changeCart = (value: TCart) => {
         setCart(value);
     };
 

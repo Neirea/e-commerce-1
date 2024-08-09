@@ -1,21 +1,21 @@
 import axios from "axios";
-import { ICategory, IUploadedImage } from "../types/Category";
+import type { TCategory, TUploadedImage } from "../types/Category";
 
-export const getAllCategories = () => axios.get<ICategory[]>("/category");
+export const getAllCategories = () => axios.get<TCategory[]>("/category");
 
-export const createCategory = async (input: Omit<ICategory, "id">) =>
+export const createCategory = async (input: Omit<TCategory, "id">) =>
     axios.post<void>("/category", input);
 
-export const updateCategory = async (input: ICategory) => {
+export const updateCategory = async (input: TCategory) => {
     const { id, ...data } = input;
     return axios.patch<void>(`/category/${id}`, { ...data });
 };
 
-export const deleteCategory = async (id: Pick<ICategory, "id">["id"]) =>
+export const deleteCategory = async (id: Pick<TCategory, "id">["id"]) =>
     axios.delete<void>(`/category/${id}`);
 
 export const uploadImage = async (formData: FormData) =>
-    axios.post<{ image: IUploadedImage }>("/editor/upload-image", formData, {
+    axios.post<{ image: TUploadedImage }>("/editor/upload-image", formData, {
         headers: {
             "Content-Type": "multipart/form-data",
         },
