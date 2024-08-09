@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { UserService } from "./user.service";
 import { PrismaService } from "../prisma/prisma.service";
-import { PrismaServiceMockType } from "src/utils/types.mock";
+import { TPrismaServiceMock } from "src/utils/types.mock";
 import { Request } from "express";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User } from "./entities/user.entity";
@@ -10,7 +10,7 @@ import { updateUserQuery } from "./user.queries";
 
 describe("UserService", () => {
     let service: UserService;
-    let prismaService: PrismaServiceMockType;
+    let prismaService: TPrismaServiceMock;
 
     beforeEach(async () => {
         const prismaMock = {
@@ -24,7 +24,7 @@ describe("UserService", () => {
         }).compile();
 
         service = module.get<UserService>(UserService);
-        prismaService = module.get<PrismaServiceMockType>(PrismaService);
+        prismaService = module.get<TPrismaServiceMock>(PrismaService);
     });
 
     it("should be defined", () => {

@@ -11,7 +11,7 @@ import {
 import { PaymentService } from "./payment.service";
 import { Request } from "express";
 import { CheckoutBodyDto } from "./dto/checkout-body.dto";
-import { OrderId } from "../order/order.types";
+import { TOrderId } from "../order/order.types";
 import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CheckoutResponseDto } from "./dto/checkout-response.dto";
 
@@ -36,7 +36,7 @@ export class PaymentController {
     @ApiOperation({ summary: "Proceeds unfinished order" })
     @ApiCookieAuth()
     finishPayment(
-        @Param("id") id: OrderId,
+        @Param("id") id: TOrderId,
         @Req() req: Request,
     ): Promise<CheckoutResponseDto> {
         const user = req.user;

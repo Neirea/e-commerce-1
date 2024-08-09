@@ -1,14 +1,14 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { OrderProductsType } from "./payment.types";
+import { TOrderProducts } from "./payment.types";
 import { PrismaPromise, Product, User } from "@prisma/client";
 import { getProductsByIdsQuery } from "../product/product.queries";
 import {
-    getOrdersByOrderIdQuery,
+    getOrdersByTOrderIdQuery,
     updateOrderItemQuery,
 } from "../order/order.queries";
 import { CheckoutBodyDto } from "./dto/checkout-body.dto";
-import { OrderId, OrderWithItemsAndImgs } from "../order/order.types";
+import { TOrderId, TOrderWithItemsAndImgs } from "../order/order.types";
 import Stripe from "stripe";
 import { getDiscountPrice } from "./utils/get-price";
 import { OrderWithItemsDto } from "../order/dto/get-orders.dto";
@@ -40,9 +40,10 @@ export class PaymentService {
         );
 
         //products info for order
-        const orderProducts: OrderProductsType[] = products.map((product) => {
-            const orderAmount = body.items.find((p) => p.id === product.id)
-                ?.amount;
+        const orderProducts: TOrderProducts[] = products.map((product) => {
+            const orderAmount = body.items.find(
+                (p) => p.id === product.id,
+            )?.amount;
             this.checkInventoryAmount(product, orderAmount);
             return {
                 id: product.id,
@@ -85,10 +86,13 @@ export class PaymentService {
         return { url: session.url };
     }
 
-    async resumePayment(user: User, id: OrderId): Promise<CheckoutResponseDto> {
-        const orderQuery = await this.prisma.$queryRaw<[OrderWithItemsAndImgs]>(
-            getOrdersByOrderIdQuery(id),
-        );
+    async resumePayment(
+        user: User,
+        id: TOrderId,
+    ): Promise<CheckoutResponseDto> {
+        const orderQuery = await this.prisma.$queryRaw<
+            [TOrderWithItemsAndImgs]
+        >(getOrdersByTOrderIdQuery(id));
         const order = orderQuery[0];
 
         this.checkOrderValidity(user, order);
@@ -134,12 +138,12 @@ export class PaymentService {
             );
 
             if (event.type === "checkout.session.completed") {
-                const orderId = (event.data.object as Stripe.Charge).metadata
-                    .orderId;
+                const TOrderId = (event.data.object as Stripe.Charge).metadata
+                    .TOrderId;
                 // update status
                 const order = await this.prisma.order.update({
                     where: {
-                        id: +orderId,
+                        id: +TOrderId,
                     },
                     data: {
                         status: "ACCEPTED",
@@ -171,15 +175,15 @@ export class PaymentService {
 
     private createStripeSession(
         buyer_email: string,
-        orderId: OrderId,
+        TOrderId: TOrderId,
         orderShippingCost: number,
-        orderProducts: OrderProductsType[],
+        orderProducts: TOrderProducts[],
     ): Promise<Stripe.Response<Stripe.Checkout.Session>> {
         const clientUrl = appConfig.clientUrl;
         return this.stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             mode: "payment",
-            metadata: { orderId },
+            metadata: { TOrderId },
             customer_email: buyer_email,
             shipping_options: [
                 {
@@ -206,8 +210,8 @@ export class PaymentService {
                     quantity: item.amount || 0,
                 };
             }),
-            success_url: `${clientUrl}/order_payment?order_id=${orderId}&success=true`,
-            cancel_url: `${clientUrl}/order_payment?order_id=${orderId}&success=false`,
+            success_url: `${clientUrl}/order_payment?order_id=${TOrderId}&success=true`,
+            cancel_url: `${clientUrl}/order_payment?order_id=${TOrderId}&success=false`,
         });
     }
 

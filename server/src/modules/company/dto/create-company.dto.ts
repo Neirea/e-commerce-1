@@ -1,7 +1,7 @@
 import { Length } from "class-validator";
-import { CompanyName } from "../company.types";
+import { TCompanyName } from "../company.types";
 
 export class CreateCompanyDto {
     @Length(3, 30)
-    name: CompanyName;
+    name: TCompanyName;
 }

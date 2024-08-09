@@ -12,7 +12,7 @@ import {
 import { CompanyService } from "./company.service";
 import { CreateCompanyDto } from "./dto/create-company.dto";
 import { UpdateCompanyDto } from "./dto/update-company.dto";
-import { CompanyId } from "./company.types";
+import { TCompanyId } from "./company.types";
 import { Role } from "@prisma/client";
 import { RolesGuard } from "src/common/roles/roles.guard";
 import { Roles } from "src/common/roles/roles.decorator";
@@ -49,7 +49,7 @@ export class CompanyController {
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
     updateCompany(
-        @Param("id") id: CompanyId,
+        @Param("id") id: TCompanyId,
         @Body() body: UpdateCompanyDto,
     ): void {
         this.companyService.updateCompany(id, body);
@@ -62,7 +62,7 @@ export class CompanyController {
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
-    deleteCompany(@Param("id") id: CompanyId): void {
+    deleteCompany(@Param("id") id: TCompanyId): void {
         this.companyService.deleteCompany(id);
     }
 }

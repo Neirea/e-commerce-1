@@ -13,7 +13,7 @@ import {
 import { CategoryService } from "./category.service";
 import { createCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
-import { CategoryId } from "./category.types";
+import { TCategoryId } from "./category.types";
 import { RolesGuard } from "src/common/roles/roles.guard";
 import { Roles } from "src/common/roles/roles.decorator";
 import { Role } from "@prisma/client";
@@ -52,7 +52,7 @@ export class CategoryController {
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
     updateCategory(
-        @Param("id") id: CategoryId,
+        @Param("id") id: TCategoryId,
         @Body() body: UpdateCategoryDto,
     ): void {
         this.categoryService.updateCategory(id, body);
@@ -65,7 +65,7 @@ export class CategoryController {
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
-    deleteCategory(@Param("id") id: CategoryId): void {
+    deleteCategory(@Param("id") id: TCategoryId): void {
         this.categoryService.deleteCategory(id);
     }
 }

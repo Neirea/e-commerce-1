@@ -1,9 +1,11 @@
 import { Prisma, SingleOrderItem } from "@prisma/client";
-import { OrderId } from "./order.types";
-import { UserId } from "../user/user.types";
+import { TOrderId } from "./order.types";
+import { TUserId } from "../user/user.types";
 import { imagesJSON } from "../product/utils/sql";
 
-export const getOrdersByUserQuery = (userId: UserId): Prisma.Sql => Prisma.sql`
+export const getOrdersByUserQuery = (
+    TUserId: TUserId,
+): Prisma.Sql => Prisma.sql`
     SELECT o.*,json_agg(sp.*) as order_items
     FROM public."Order" as o
     INNER JOIN
@@ -11,29 +13,29 @@ export const getOrdersByUserQuery = (userId: UserId): Prisma.Sql => Prisma.sql`
         FROM public."SingleOrderItem" as so
         INNER JOIN public."Product" as p ON so.product_id = p.id) as sp
     ON o.id = sp.order_id
-    WHERE o.user_id = ${userId}
+    WHERE o.user_id = ${TUserId}
     GROUP BY o.id
 `;
 
 export const cancelOrderQuery = (
-    id: OrderId,
-    userId: UserId,
+    id: TOrderId,
+    TUserId: TUserId,
 ): Prisma.Sql => Prisma.sql`
     UPDATE public."Order"
     SET "status" = 'CANCELLED'
-    WHERE id = ${id} AND "status" = 'PENDING' AND user_id = ${userId}
+    WHERE id = ${id} AND "status" = 'PENDING' AND user_id = ${TUserId}
 `;
 
 export const deleteOrderQuery = (
-    id: OrderId,
-    userId: UserId,
+    id: TOrderId,
+    TUserId: TUserId,
 ): Prisma.Sql => Prisma.sql`
     DELETE FROM public."Order"
-    WHERE id = ${id} AND user_id = ${userId}
+    WHERE id = ${id} AND user_id = ${TUserId}
 `;
 
-export const getOrdersByOrderIdQuery = (
-    orderId: OrderId,
+export const getOrdersByTOrderIdQuery = (
+    TOrderId: TOrderId,
 ): Prisma.Sql => Prisma.sql`
     SELECT o.*,json_agg(s.*) as order_items
     FROM public."Order" as o
@@ -44,7 +46,7 @@ export const getOrdersByOrderIdQuery = (
         INNER JOIN public."Product" as p
         ON s.product_id = p.id) as s
     ON s.order_id = o.id
-    WHERE o.id = ${orderId}
+    WHERE o.id = ${TOrderId}
     GROUP BY o.id
 `;
 

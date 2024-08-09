@@ -2,11 +2,11 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CompanyService } from "./company.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { getCompaniesQuery } from "./company.queries";
-import { PrismaServiceMockType } from "src/utils/types.mock";
+import { TPrismaServiceMock } from "src/utils/types.mock";
 
 describe("CompanyService", () => {
     let service: CompanyService;
-    let prismaService: PrismaServiceMockType;
+    let prismaService: TPrismaServiceMock;
 
     beforeEach(async () => {
         const prismaMock = {
@@ -23,7 +23,7 @@ describe("CompanyService", () => {
         }).compile();
 
         service = module.get<CompanyService>(CompanyService);
-        prismaService = module.get<PrismaServiceMockType>(PrismaService);
+        prismaService = module.get<TPrismaServiceMock>(PrismaService);
     });
 
     it("should be defined", () => {

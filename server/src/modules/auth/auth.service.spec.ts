@@ -9,13 +9,13 @@ import { CanActivate } from "@nestjs/common";
 import { Profile } from "passport-google-oauth20";
 import { Platform, Role } from "@prisma/client";
 import { userByPlatformIdQuery } from "./auth.queries";
-import { PrismaServiceMockType } from "src/utils/types.mock";
+import { TPrismaServiceMock } from "src/utils/types.mock";
 import { User } from "../user/entities/user.entity";
 import { appConfig } from "src/config/env";
 
 describe("AuthService", () => {
     let service: AuthService;
-    let prismaService: PrismaServiceMockType;
+    let prismaService: TPrismaServiceMock;
     const fakeGuard: CanActivate = { canActivate: () => true };
 
     beforeEach(async () => {
@@ -23,7 +23,7 @@ describe("AuthService", () => {
             $queryRaw: jest.fn(),
             $transaction: jest.fn(),
             user: { create: jest.fn() },
-        } as PrismaServiceMockType;
+        } as TPrismaServiceMock;
         const module: TestingModule = await Test.createTestingModule({
             controllers: [AuthController],
             providers: [
@@ -39,7 +39,7 @@ describe("AuthService", () => {
         }).compile();
 
         service = module.get<AuthService>(AuthService);
-        prismaService = module.get<PrismaServiceMockType>(PrismaService);
+        prismaService = module.get<TPrismaServiceMock>(PrismaService);
     });
 
     it("should be defined", () => {

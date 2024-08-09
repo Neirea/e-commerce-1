@@ -1,7 +1,7 @@
 import { CloudinaryService } from "src/modules/cloudinary/cloudinary.service";
 import { PrismaService } from "src/modules/prisma/prisma.service";
 
-export type PrismaServiceMockType = Partial<PrismaService> & {
+export type TPrismaServiceMock = Partial<PrismaService> & {
     $queryRaw: jest.Mock;
     $transaction: jest.Mock;
     order: { create: jest.Mock; update: jest.Mock };
@@ -9,7 +9,7 @@ export type PrismaServiceMockType = Partial<PrismaService> & {
     user: { create: jest.Mock };
 };
 
-export type CloudinaryServiceMockType = Partial<CloudinaryService> & {
+export type TCloudinaryServiceMock = Partial<CloudinaryService> & {
     upload: jest.Mock;
     deleteOne: jest.Mock;
     deleteMany: jest.Mock;

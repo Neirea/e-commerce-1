@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { CreateCompanyDto } from "./dto/create-company.dto";
 import { UpdateCompanyDto } from "./dto/update-company.dto";
-import { CompanyId } from "./company.types";
+import { TCompanyId } from "./company.types";
 
 export const getCompaniesQuery = Prisma.sql`
     SELECT com.*,COALESCE(json_agg(cat.*) FILTER (WHERE cat.id IS NOT NULL),'[]') as categories
@@ -19,7 +19,7 @@ export const createCompanyQuery = (
 `;
 
 export const updateCompanyQuery = (
-    id: CompanyId,
+    id: TCompanyId,
     input: UpdateCompanyDto,
 ): Prisma.Sql => Prisma.sql`
     UPDATE public."Company"
@@ -27,7 +27,7 @@ export const updateCompanyQuery = (
     WHERE id = ${id}
 `;
 
-export const deleteCompanyQuery = (id: CompanyId): Prisma.Sql => Prisma.sql`
+export const deleteCompanyQuery = (id: TCompanyId): Prisma.Sql => Prisma.sql`
     DELETE FROM public."Company"
     WHERE id = ${id}
 `;

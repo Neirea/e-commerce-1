@@ -11,7 +11,7 @@ import {
     getSearchDataQuery,
 } from "./product.queries";
 import { SearchDataResponseDto } from "./dto/search-data.dto";
-import { SearchDataType } from "./product.types";
+import { TSearchData } from "./product.types";
 import { subCategoriesQuery } from "./utils/sql";
 import {
     FilteredProductsQueryDto,
@@ -19,21 +19,21 @@ import {
 } from "./dto/filtered-products.dto";
 import { CreateProductDto } from "./dto/create-propduct.dto";
 import {
-    CloudinaryServiceMockType,
-    PrismaServiceMockType,
+    TCloudinaryServiceMock,
+    TPrismaServiceMock,
 } from "src/utils/types.mock";
 
 describe("ProductService", () => {
     let service: ProductService;
-    let prismaService: PrismaServiceMockType;
-    let cloudinaryService: CloudinaryServiceMockType;
+    let prismaService: TPrismaServiceMock;
+    let cloudinaryService: TCloudinaryServiceMock;
 
     beforeEach(async () => {
         const prismaMock = {
             $queryRaw: jest.fn(),
             $transaction: jest.fn(),
             product: { create: jest.fn(), update: jest.fn() },
-        } as PrismaServiceMockType;
+        } as TPrismaServiceMock;
         const cloudinaryMock = {
             upload: jest.fn(),
             deleteMany: jest.fn(),
@@ -47,9 +47,9 @@ describe("ProductService", () => {
         }).compile();
 
         service = module.get<ProductService>(ProductService);
-        prismaService = module.get<PrismaServiceMockType>(PrismaService);
+        prismaService = module.get<TPrismaServiceMock>(PrismaService);
         cloudinaryService =
-            module.get<CloudinaryServiceMockType>(CloudinaryService);
+            module.get<TCloudinaryServiceMock>(CloudinaryService);
     });
 
     it("should be defined", () => {
@@ -73,25 +73,25 @@ describe("ProductService", () => {
 
     describe("getProductById", () => {
         it("should return the product with the specified ID", async () => {
-            const productId = 1;
+            const TProductId = 1;
             const expectedProduct: Partial<ProductWithVariantsDto> = {
                 id: 1,
                 name: "Product 1",
             };
             prismaService.$queryRaw.mockImplementation(() => [expectedProduct]);
 
-            const product = await service.getProductById(productId);
+            const product = await service.getProductById(TProductId);
 
             expect(product).toEqual(expectedProduct);
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
-                getProductByIdQuery(productId),
+                getProductByIdQuery(TProductId),
             );
         });
     });
 
     describe("getProductsByIds", () => {
         it("should return an array of products with images for the specified IDs", async () => {
-            const productIds = [1, 2, 3];
+            const TProductIds = [1, 2, 3];
             const expectedProducts: Partial<ProductWithVariantsDto>[] = [
                 { id: 1, name: "Product 1" },
                 { id: 2, name: "Product 2" },
@@ -99,11 +99,11 @@ describe("ProductService", () => {
             ];
             prismaService.$queryRaw.mockImplementation(() => expectedProducts);
 
-            const products = await service.getProductsByIds(productIds);
+            const products = await service.getProductsByIds(TProductIds);
 
             expect(products).toEqual(expectedProducts);
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
-                getProductsByIdsQuery(productIds),
+                getProductsByIdsQuery(TProductIds),
             );
         });
 
@@ -133,7 +133,7 @@ describe("ProductService", () => {
             };
             const subCatsQueryResponse = [{ id: 1 }];
             const subCategoriesIds = subCatsQueryResponse.map((i) => i.id);
-            const dataLookupResponse: SearchDataType[] = [
+            const dataLookupResponse: TSearchData[] = [
                 {
                     company: { id: 1, name: "Company 1" },
                     category: { id: 1, name: "Category 1" },
@@ -206,9 +206,8 @@ describe("ProductService", () => {
                 .mockImplementationOnce(() => subCatsQueryResponse)
                 .mockImplementationOnce(() => expectedProducts);
 
-            const filteredProducts = await service.getFilteredProducts(
-                inputQuery,
-            );
+            const filteredProducts =
+                await service.getFilteredProducts(inputQuery);
 
             expect(filteredProducts).toEqual(expectedProducts);
             expect(prismaService.$queryRaw).toHaveBeenNthCalledWith(
@@ -234,9 +233,8 @@ describe("ProductService", () => {
             };
             prismaService.$queryRaw.mockImplementation(() => []);
 
-            const filteredProducts = await service.getFilteredProducts(
-                inputQuery,
-            );
+            const filteredProducts =
+                await service.getFilteredProducts(inputQuery);
 
             expect(filteredProducts).toEqual([]);
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(

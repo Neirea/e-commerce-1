@@ -1,9 +1,9 @@
 import {
-    PropductImgId,
-    PropductImgSrc,
+    TPropductImgId,
+    TPropductImgSrc,
 } from "src/modules/product/product.types";
 
 export class UploadedImage {
-    img_id: PropductImgId;
-    img_src: PropductImgSrc;
+    img_id: TPropductImgId;
+    img_src: TPropductImgSrc;
 }

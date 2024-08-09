@@ -1,10 +1,10 @@
-import { User as IUser } from "@prisma/client";
+import { User as TUser } from "@prisma/client";
 
 declare global {
     namespace Express {
-        interface User extends IUser {
+        interface User extends TUser {
             // redefined to remove lint error
-            id: Pick<IUser, "id">["id"];
+            id: Pick<TUser, "id">["id"];
         }
     }
 }

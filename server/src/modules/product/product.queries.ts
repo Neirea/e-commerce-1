@@ -11,8 +11,8 @@ import { FeaturedProductsDto } from "./dto/featured-products.dto";
 import { RelatedProductsDto } from "./dto/related-products.dto";
 import { PopularProductsDto } from "./dto/popular-products.dto";
 import { CreateProductDto } from "./dto/create-propduct.dto";
-import { ProductId } from "./product.types";
-import { CategoryId } from "../category/category.types";
+import { TProductId } from "./product.types";
+import { TCategoryId } from "../category/category.types";
 import { SearchDataQueryDto } from "./dto/search-data.dto";
 import { FilteredProductsQueryDto } from "./dto/filtered-products.dto";
 
@@ -26,7 +26,7 @@ export const getProducts = Prisma.sql`
     ORDER BY p.id
 `;
 
-export const getProductByIdQuery = (id: ProductId): Prisma.Sql => {
+export const getProductByIdQuery = (id: TProductId): Prisma.Sql => {
     const variantsJSON = Prisma.sql`
         SELECT p.id,json_agg(json_build_object('id',vrn.id,'name',p.name,'images',vrn.images)) as variants
         FROM public."Product" as p
@@ -54,7 +54,7 @@ export const getProductByIdQuery = (id: ProductId): Prisma.Sql => {
 };
 
 export const getProductsByIdsQuery = (
-    ids: ProductId[],
+    ids: TProductId[],
 ): Prisma.Sql => Prisma.sql`
     SELECT p.*,i.images
     FROM public."Product" as p
@@ -65,13 +65,13 @@ export const getProductsByIdsQuery = (
 
 export const getSearchDataQuery = (
     input: SearchDataQueryDto,
-    categoryIds: CategoryId[],
+    TCategoryIds: TCategoryId[],
 ): Prisma.Sql => {
     const searchString = parseQueryString(input.search_string);
     const searchCondition = getSearchCondition(searchString);
     const companyCondition = getCompanyCondition(input.company_id);
     const categoryCondition = getCategoryCondition(
-        categoryIds,
+        TCategoryIds,
         input.category_id,
     );
 
@@ -99,7 +99,7 @@ export const getSearchDataQuery = (
 
 export const filteredProductsQuery = (
     input: FilteredProductsQueryDto,
-    categoryIds: CategoryId[],
+    TCategoryIds: TCategoryId[],
 ): Prisma.Sql => {
     const {
         offset,
@@ -115,13 +115,13 @@ export const filteredProductsQuery = (
         sort_mode === 1
             ? Prisma.sql`p.inventory != 0 DESC, p.price ASC,p._count DESC, p.id ASC`
             : sort_mode === 2
-            ? Prisma.sql`p.inventory != 0 DESC, p.price DESC,p._count DESC, p.id ASC`
-            : Prisma.sql`p.inventory != 0 DESC, p._count DESC,p.discount DESC, p.id ASC`;
+              ? Prisma.sql`p.inventory != 0 DESC, p.price DESC,p._count DESC, p.id ASC`
+              : Prisma.sql`p.inventory != 0 DESC, p._count DESC,p.discount DESC, p.id ASC`;
 
     const searchString = parseQueryString(search_string);
     const searchCondition = getSearchCondition(searchString);
     const companyCondition = getCompanyCondition(company_id);
-    const categoryCondition = getCategoryCondition(categoryIds, category_id);
+    const categoryCondition = getCategoryCondition(TCategoryIds, category_id);
 
     const minPriceCondition = min_price
         ? Prisma.sql`AND p.price >= ${min_price}`
@@ -221,17 +221,17 @@ export const updateProductCategoryQuery = (
     ON CONFLICT DO NOTHING
 `;
 
-export const getImagesQuery = (id: ProductId): Prisma.Sql => Prisma.sql`
+export const getImagesQuery = (id: TProductId): Prisma.Sql => Prisma.sql`
     SELECT * FROM public."ProductImage"
     WHERE product_id = ${id}
 `;
 
-export const deleteImagesQuery = (id: ProductId): Prisma.Sql => Prisma.sql`
+export const deleteImagesQuery = (id: TProductId): Prisma.Sql => Prisma.sql`
     DELETE FROM public."ProductImage"
     WHERE product_id = ${id}
 `;
 
-export const deleteProductQuery = (id: ProductId): Prisma.Sql => Prisma.sql`
+export const deleteProductQuery = (id: TProductId): Prisma.Sql => Prisma.sql`
     DELETE FROM public."Product"
     WHERE id = ${id}
 `;

@@ -1,28 +1,28 @@
-import { OrderStatus, Order as IOrder } from "@prisma/client";
-import { OrderId } from "../order.types";
+import { OrderStatus, Order as TOrder } from "@prisma/client";
+import { TOrderId } from "../order.types";
 import {
-    UserAddress,
-    UserEmail,
-    UserGivenName,
-    UserId,
+    TUserAddress,
+    TUserEmail,
+    TUserGivenName,
+    TUserId,
 } from "src/modules/user/user.types";
-import { ProductShippingCost } from "src/modules/product/product.types";
+import { TProductShippingCost } from "src/modules/product/product.types";
 import { ApiProperty } from "@nestjs/swagger";
 
-export class Order implements IOrder {
-    id: OrderId;
+export class Order implements TOrder {
+    id: TOrderId;
     @ApiProperty({
         enum: [
             '"PENDING", "ACCEPTED", "PROCESSING" , "DELIVERED" , "CANCELLED"',
         ],
     })
     status: OrderStatus;
-    shipping_cost: ProductShippingCost;
-    user_id: UserId;
-    buyer_name: UserGivenName;
-    buyer_email: UserEmail;
+    shipping_cost: TProductShippingCost;
+    user_id: TUserId;
+    buyer_name: TUserGivenName;
+    buyer_email: TUserEmail;
     buyer_phone: string;
-    delivery_address: UserAddress;
+    delivery_address: TUserAddress;
     created_at: Date;
     payment_time: Date;
 }

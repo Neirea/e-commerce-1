@@ -1,9 +1,9 @@
 import { Prisma } from "@prisma/client";
-import { CategoryId } from "src/modules/category/category.types";
-import { CompanyId } from "src/modules/company/company.types";
+import { TCategoryId } from "src/modules/category/category.types";
+import { TCompanyId } from "src/modules/company/company.types";
 
 export const subCategoriesQuery = (
-    category_id: CategoryId,
+    category_id: TCategoryId,
 ): Prisma.Sql => Prisma.sql`
     WITH RECURSIVE subcategory AS (
         SELECT ctg.id,ctg.parent_id FROM public."Category" AS ctg WHERE parent_id IS NULL AND id = ${category_id}
@@ -37,15 +37,15 @@ OR to_tsvector('simple',com.name) @@ to_tsquery('simple',${searchString})
 OR to_tsvector('simple',cat.name) @@ to_tsquery('simple',${searchString}))`
         : Prisma.sql`TRUE`;
 
-export const getCompanyCondition = (id: CompanyId): Prisma.Sql =>
+export const getCompanyCondition = (id: TCompanyId): Prisma.Sql =>
     id ? Prisma.sql`AND p.company_id = ${id}` : Prisma.empty;
 
 export const getCategoryCondition = (
-    ids: CategoryId[],
-    id: CategoryId,
+    ids: TCategoryId[],
+    id: TCategoryId,
 ): Prisma.Sql =>
     ids.length
         ? Prisma.sql`AND p.category_id IN (${Prisma.join(ids)})`
         : id
-        ? Prisma.sql`AND p.category_id = ${id}`
-        : Prisma.empty;
+          ? Prisma.sql`AND p.category_id = ${id}`
+          : Prisma.empty;

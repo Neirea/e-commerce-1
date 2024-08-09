@@ -1,17 +1,17 @@
 import { ExtendedCategory, ExtendedCompany } from "../dto/search-data.dto";
 
-export type SharedType = Pick<
+export type TShared = Pick<
     ExtendedCategory | ExtendedCompany,
     "id" | "productCount"
 >;
-export type ProductCountType = { [key: SharedType["id"]]: number };
+export type TProductCount = { [key: TShared["id"]]: number };
 
-type SharedMapType<T extends SharedType> = Map<Pick<T, "id">["id"], T>;
+type TSharedMap<T extends TShared> = Map<Pick<T, "id">["id"], T>;
 
-export const setAndCount = <T extends SharedType>(
-    map: SharedMapType<T>,
+export const setAndCount = <T extends TShared>(
+    map: TSharedMap<T>,
     item: T,
-    count: ProductCountType,
+    count: TProductCount,
 ): void => {
     if (!map.has(item.id)) {
         map.set(item.id, item);
@@ -32,9 +32,9 @@ export const getPriceCondition = (
     );
 };
 
-export const getArrayWithProductCount = <T extends SharedType>(
-    map: SharedMapType<T>,
-    count: ProductCountType,
+export const getArrayWithProductCount = <T extends TShared>(
+    map: TSharedMap<T>,
+    count: TProductCount,
 ): T[] =>
     Array.from(map, ([key, value]) => {
         value.productCount = count[key];

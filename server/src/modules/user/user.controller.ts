@@ -11,7 +11,7 @@ import {
 import { UserService } from "./user.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { Request } from "express";
-import { UserId } from "./user.types";
+import { TUserId } from "./user.types";
 import { RolesGuard } from "src/common/roles/roles.guard";
 import { Role } from "@prisma/client";
 import { Roles } from "src/common/roles/roles.decorator";
@@ -47,7 +47,7 @@ export class UserController {
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.ADMIN)
     @UseGuards(RolesGuard)
-    getUserById(@Param("id") id: UserId): Promise<User> {
+    getUserById(@Param("id") id: TUserId): Promise<User> {
         return this.userService.getUser(id);
     }
 

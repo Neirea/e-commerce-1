@@ -1,11 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { EditorService } from "./editor.service";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
-import { CloudinaryServiceMockType } from "src/utils/types.mock";
+import { TCloudinaryServiceMock } from "src/utils/types.mock";
 
 describe("EditorService", () => {
     let service: EditorService;
-    let cloudinaryService: CloudinaryServiceMockType;
+    let cloudinaryService: TCloudinaryServiceMock;
 
     beforeEach(async () => {
         const cloudinaryMock = {
@@ -20,7 +20,7 @@ describe("EditorService", () => {
 
         service = module.get<EditorService>(EditorService);
         cloudinaryService =
-            module.get<CloudinaryServiceMockType>(CloudinaryService);
+            module.get<TCloudinaryServiceMock>(CloudinaryService);
     });
 
     it("should be defined", () => {

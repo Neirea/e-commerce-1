@@ -1,26 +1,26 @@
-import { CompanyId } from "src/modules/company/company.types";
+import { TCompanyId } from "src/modules/company/company.types";
 import {
-    ProductDescription,
-    ProductDiscount,
-    ProductId,
-    ProductInventory,
-    ProductName,
-    ProductPrice,
-    ProductShippingCost,
+    TProductDescription,
+    TProductDiscount,
+    TProductId,
+    TProductInventory,
+    TProductName,
+    TProductPrice,
+    TProductShippingCost,
 } from "../product.types";
-import { CategoryId } from "src/modules/category/category.types";
-import { Product as IProduct } from "@prisma/client";
+import { TCategoryId } from "src/modules/category/category.types";
+import { Product as TProduct } from "@prisma/client";
 
-export class Product implements IProduct {
-    id: ProductId;
-    name: ProductName;
-    price: ProductPrice;
-    description: ProductDescription;
-    inventory: ProductInventory;
-    company_id: CompanyId;
-    category_id: CategoryId;
-    shipping_cost: ProductShippingCost;
-    discount: ProductDiscount;
+export class Product implements TProduct {
+    id: TProductId;
+    name: TProductName;
+    price: TProductPrice;
+    description: TProductDescription;
+    inventory: TProductInventory;
+    company_id: TCompanyId;
+    category_id: TCategoryId;
+    shipping_cost: TProductShippingCost;
+    discount: TProductDiscount;
     created_at: Date;
     updated_at: Date;
 }

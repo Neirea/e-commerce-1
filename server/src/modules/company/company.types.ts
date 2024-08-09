@@ -1,4 +1,4 @@
 import { Company } from "@prisma/client";
 
-export type CompanyId = Pick<Company, "id">["id"];
-export type CompanyName = Pick<Company, "name">["name"];
+export type TCompanyId = Pick<Company, "id">["id"];
+export type TCompanyName = Pick<Company, "name">["name"];

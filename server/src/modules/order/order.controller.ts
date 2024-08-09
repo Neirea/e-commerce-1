@@ -9,7 +9,7 @@ import {
     UseGuards,
 } from "@nestjs/common";
 import { OrderService } from "./order.service";
-import { OrderId } from "./order.types";
+import { TOrderId } from "./order.types";
 import { Request } from "express";
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
@@ -25,25 +25,25 @@ export class OrderController {
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     getOrders(@Req() req: Request): Promise<OrderWithItemsDto[]> {
-        const userId = req.user.id;
-        return this.orderService.getOrders(userId);
+        const TUserId = req.user.id;
+        return this.orderService.getOrders(TUserId);
     }
     @Patch(":id")
     @HttpCode(204)
     @ApiOperation({ summary: "Cancels specific order" })
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
-    cancelOrder(@Param("id") id: OrderId, @Req() req: Request): void {
-        const userId = req.user.id;
-        this.orderService.cancelOrder(id, userId);
+    cancelOrder(@Param("id") id: TOrderId, @Req() req: Request): void {
+        const TUserId = req.user.id;
+        this.orderService.cancelOrder(id, TUserId);
     }
     @Delete(":id")
     @HttpCode(204)
     @ApiOperation({ summary: "Deletes specific order" })
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
-    deleteOrder(@Param("id") id: OrderId, @Req() req: Request): void {
-        const userId = req.user.id;
-        this.orderService.deleteOrder(id, userId);
+    deleteOrder(@Param("id") id: TOrderId, @Req() req: Request): void {
+        const TUserId = req.user.id;
+        this.orderService.deleteOrder(id, TUserId);
     }
 }

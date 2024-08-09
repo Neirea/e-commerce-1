@@ -1,18 +1,18 @@
 import { Prisma } from "@prisma/client";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { UserId } from "./user.types";
+import { TUserId } from "./user.types";
 
 export const allUsersQuery = Prisma.sql`
     SELECT * FROM public."User";
 `;
 
-export const UserByIdQuery = (id: UserId): Prisma.Sql => Prisma.sql`
+export const UserByIdQuery = (id: TUserId): Prisma.Sql => Prisma.sql`
     SELECT * FROM public."User"
     WHERE id = ${id}
 `;
 
 export const updateUserQuery = (
-    id: UserId,
+    id: TUserId,
     input: UpdateUserDto,
 ): Prisma.Sql => Prisma.sql`
     UPDATE public."User"

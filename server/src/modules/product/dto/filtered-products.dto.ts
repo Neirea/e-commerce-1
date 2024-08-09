@@ -1,7 +1,7 @@
 import { Transform, TransformFnParams } from "class-transformer";
 import { IsIn, IsOptional, Min } from "class-validator";
-import { CategoryId } from "src/modules/category/category.types";
-import { CompanyId } from "src/modules/company/company.types";
+import { TCategoryId } from "src/modules/category/category.types";
+import { TCompanyId } from "src/modules/company/company.types";
 import { FeaturedProductsDto } from "./featured-products.dto";
 import { ProductWithImagesDto } from "./product-with-images.dto";
 import { Category } from "src/modules/category/entities/category.entity";
@@ -10,10 +10,10 @@ import { Company } from "src/modules/company/entities/company.entity";
 export class FilteredProductsQueryDto extends FeaturedProductsDto {
     @Transform(({ value }: TransformFnParams) => Number(value))
     @IsOptional()
-    category_id?: CategoryId;
+    category_id?: TCategoryId;
     @Transform(({ value }: TransformFnParams) => Number(value))
     @IsOptional()
-    company_id?: CompanyId;
+    company_id?: TCompanyId;
     @IsOptional()
     @Transform(({ value }: TransformFnParams) => Number(value))
     @Min(0)

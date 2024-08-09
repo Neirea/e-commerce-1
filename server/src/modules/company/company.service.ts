@@ -8,7 +8,7 @@ import {
     getCompaniesQuery,
     updateCompanyQuery,
 } from "./company.queries";
-import { CompanyId } from "./company.types";
+import { TCompanyId } from "./company.types";
 import { CompanyWithCategoriesDto } from "./dto/get-companies.dto";
 
 @Injectable()
@@ -25,10 +25,13 @@ export class CompanyService {
         await this.prisma.$queryRaw(createCompanyQuery(input));
     }
 
-    async updateCompany(id: CompanyId, input: UpdateCompanyDto): Promise<void> {
+    async updateCompany(
+        id: TCompanyId,
+        input: UpdateCompanyDto,
+    ): Promise<void> {
         await this.prisma.$queryRaw(updateCompanyQuery(id, input));
     }
-    async deleteCompany(id: CompanyId): Promise<void> {
+    async deleteCompany(id: TCompanyId): Promise<void> {
         await this.prisma.$queryRaw(deleteCompanyQuery(id));
     }
 }

@@ -4,8 +4,8 @@ import { PrismaService } from "../prisma/prisma.service";
 import { User } from "@prisma/client";
 import { BadRequestException } from "@nestjs/common";
 import { getProductsByIdsQuery } from "../product/product.queries";
-import { getOrdersByOrderIdQuery } from "../order/order.queries";
-import { PrismaServiceMockType } from "src/utils/types.mock";
+import { getOrdersByTOrderIdQuery } from "../order/order.queries";
+import { TPrismaServiceMock } from "src/utils/types.mock";
 import { CheckoutBodyDto } from "./dto/checkout-body.dto";
 import { appConfig } from "src/config/env";
 
@@ -32,7 +32,7 @@ jest.mock("stripe", () => {
 
 describe("PaymentService", () => {
     let service: PaymentService;
-    let prismaService: PrismaServiceMockType;
+    let prismaService: TPrismaServiceMock;
 
     beforeEach(async () => {
         const prismaMock = {
@@ -42,7 +42,7 @@ describe("PaymentService", () => {
                 create: jest.fn(),
                 update: jest.fn(),
             },
-        } as PrismaServiceMockType;
+        } as TPrismaServiceMock;
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 PaymentService,
@@ -54,7 +54,7 @@ describe("PaymentService", () => {
         }).compile();
 
         service = module.get<PaymentService>(PaymentService);
-        prismaService = module.get<PrismaServiceMockType>(PrismaService);
+        prismaService = module.get<TPrismaServiceMock>(PrismaService);
     });
 
     afterEach(() => {
@@ -144,50 +144,50 @@ describe("PaymentService", () => {
     describe("resumePayment", () => {
         it("should throw BadRequestException if order is not found", async () => {
             const user = { id: 1 } as User;
-            const orderId = 123;
+            const TOrderId = 123;
             prismaService.$queryRaw.mockImplementation(() => []);
 
-            const result = service.resumePayment(user, orderId);
+            const result = service.resumePayment(user, TOrderId);
 
             await expect(result).rejects.toThrow(BadRequestException);
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
-                getOrdersByOrderIdQuery(orderId),
+                getOrdersByTOrderIdQuery(TOrderId),
             );
         });
 
         it("should throw BadRequestException if order does not belong to the user", async () => {
             const user = { id: 1 } as User;
-            const orderId = 123;
+            const TOrderId = 123;
             prismaService.$queryRaw.mockImplementation(() => [{ user_id: 2 }]);
 
-            const result = service.resumePayment(user, orderId);
+            const result = service.resumePayment(user, TOrderId);
 
             await expect(result).rejects.toThrow(BadRequestException);
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
-                getOrdersByOrderIdQuery(orderId),
+                getOrdersByTOrderIdQuery(TOrderId),
             );
         });
 
         it("should throw BadRequestException if order status is not 'PENDING'", async () => {
             const user = { id: 1 } as User;
-            const orderId = 123;
+            const TOrderId = 123;
             prismaService.$queryRaw.mockImplementation(() => [
                 { user_id: user.id, status: "ACCEPTED" },
             ]);
 
-            await expect(service.resumePayment(user, orderId)).rejects.toThrow(
+            await expect(service.resumePayment(user, TOrderId)).rejects.toThrow(
                 BadRequestException,
             );
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
-                getOrdersByOrderIdQuery(orderId),
+                getOrdersByTOrderIdQuery(TOrderId),
             );
         });
 
         it("should create a Stripe session and return the session URL", async () => {
             const user = { id: 1 } as User;
-            const orderId = 123;
+            const TOrderId = 123;
             const order = {
-                id: orderId,
+                id: TOrderId,
                 buyer_email: "john@example.com",
                 shipping_cost: 10,
                 order_items: [],
@@ -201,11 +201,11 @@ describe("PaymentService", () => {
                 url: "session-url",
             }));
 
-            const result = await service.resumePayment(user, orderId);
+            const result = await service.resumePayment(user, TOrderId);
 
             expect(result).toEqual({ url: "session-url" });
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
-                getOrdersByOrderIdQuery(orderId),
+                getOrdersByTOrderIdQuery(TOrderId),
             );
             expect(createCheckoutSessionMock).toHaveBeenCalledTimes(1);
         });
@@ -234,18 +234,18 @@ describe("PaymentService", () => {
             const signature = "signature";
             const body = Buffer.from("body");
             const webhook = appConfig.stripeWebhookSecret;
-            const orderId = "order-id";
+            const TOrderId = "order-id";
             const event = {
                 type: "checkout.session.completed",
                 data: {
                     object: {
                         metadata: {
-                            orderId,
+                            TOrderId,
                         },
                     },
                 },
             };
-            const order = { id: orderId, order_items: [{}, {}] };
+            const order = { id: TOrderId, order_items: [{}, {}] };
             const updateOrderItemQueryMock = jest.fn();
             prismaService.order.update.mockImplementation(() => order);
             prismaService.$queryRaw.mockImplementation(
@@ -263,7 +263,7 @@ describe("PaymentService", () => {
             );
             expect(prismaService.order.update).toHaveBeenCalledWith({
                 where: {
-                    id: +event.data.object.metadata.orderId,
+                    id: +event.data.object.metadata.TOrderId,
                 },
                 data: {
                     status: "ACCEPTED",

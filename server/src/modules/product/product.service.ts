@@ -32,11 +32,11 @@ import {
     updateProductCategoryQuery,
 } from "./product.queries";
 import { subCategoriesQuery } from "./utils/sql";
-import { ProductId, SearchDataType } from "./product.types";
-import { CategoryId } from "../category/category.types";
-import { CompanyId } from "../company/company.types";
+import { TProductId, TSearchData } from "./product.types";
+import { TCategoryId } from "../category/category.types";
+import { TCompanyId } from "../company/company.types";
 import {
-    ProductCountType,
+    TProductCount,
     getArrayWithProductCount,
     getPriceCondition,
     setAndCount,
@@ -58,14 +58,14 @@ export class ProductService {
         return this.prisma.$queryRaw<ProductWithVariantsDto[]>(getProducts);
     }
 
-    async getProductById(id: ProductId): Promise<ProductByIdResponseDto> {
+    async getProductById(id: TProductId): Promise<ProductByIdResponseDto> {
         const product = await this.prisma.$queryRaw<[ProductByIdResponseDto]>(
             getProductByIdQuery(id),
         );
         return product[0];
     }
 
-    getProductsByIds(ids: ProductId[]): Promise<ProductWithImagesDto[]> {
+    getProductsByIds(ids: TProductId[]): Promise<ProductWithImagesDto[]> {
         if (!ids.length) return Promise.resolve([]);
         return this.prisma.$queryRaw(getProductsByIdsQuery(ids));
     }
@@ -73,24 +73,24 @@ export class ProductService {
     async getSearchData(
         input: SearchDataQueryDto,
     ): Promise<SearchDataResponseDto> {
-        const searchCategoryIds: CategoryId[] = [];
+        const searchTCategoryIds: TCategoryId[] = [];
         if (input.category_id) {
-            const res = await this.prisma.$queryRaw<{ id: CategoryId }[]>(
+            const res = await this.prisma.$queryRaw<{ id: TCategoryId }[]>(
                 subCategoriesQuery(input.category_id),
             );
-            res.forEach((i) => searchCategoryIds.push(i.id));
+            res.forEach((i) => searchTCategoryIds.push(i.id));
         }
 
-        const data = await this.prisma.$queryRaw<SearchDataType[]>(
-            getSearchDataQuery(input, searchCategoryIds),
+        const data = await this.prisma.$queryRaw<TSearchData[]>(
+            getSearchDataQuery(input, searchTCategoryIds),
         );
 
         let min = Infinity;
         let max = 0;
-        const allCategories = new Map<CategoryId, ExtendedCategory>();
-        const allCompanies = new Map<CompanyId, ExtendedCompany>();
-        const catCount: ProductCountType = {};
-        const compCount: ProductCountType = {};
+        const allCategories = new Map<TCategoryId, ExtendedCategory>();
+        const allCompanies = new Map<TCompanyId, ExtendedCompany>();
+        const catCount: TProductCount = {};
+        const compCount: TProductCount = {};
 
         data.forEach((p) => {
             const price = ((100 - p.discount) / 100) * p.price;
@@ -123,16 +123,16 @@ export class ProductService {
         input: FilteredProductsQueryDto,
     ): Promise<FilteredProductsResponseDto[]> {
         const { category_id } = input;
-        const searchCategoryIds: ProductId[] = [];
+        const searchTCategoryIds: TProductId[] = [];
         if (category_id) {
-            const res = await this.prisma.$queryRaw<{ id: ProductId }[]>(
+            const res = await this.prisma.$queryRaw<{ id: TProductId }[]>(
                 subCategoriesQuery(category_id),
             );
-            res.forEach((i) => searchCategoryIds.push(i.id));
+            res.forEach((i) => searchTCategoryIds.push(i.id));
         }
 
         return this.prisma.$queryRaw(
-            filteredProductsQuery(input, searchCategoryIds),
+            filteredProductsQuery(input, searchTCategoryIds),
         );
     }
 
@@ -196,7 +196,10 @@ export class ProductService {
         );
         await this.prisma.$transaction([createdProduct, updateCategory]);
     }
-    async updateProduct(id: ProductId, input: UpdateProductDto): Promise<void> {
+    async updateProduct(
+        id: TProductId,
+        input: UpdateProductDto,
+    ): Promise<void> {
         const { variants, img_id, img_src, ...updateData } = input;
 
         //update product, create product images and connection to variants
@@ -247,7 +250,7 @@ export class ProductService {
         const imgIds = oldImages.map((i) => i.img_id);
         this.cloudinary.deleteMany(imgIds);
     }
-    async deleteproduct(id: ProductId): Promise<void> {
+    async deleteproduct(id: TProductId): Promise<void> {
         const imagesQuery = this.prisma.$queryRaw<ProductImage[]>(
             getImagesQuery(id),
         );

@@ -1,15 +1,15 @@
-import { CategoryId } from "src/modules/category/category.types";
-import { CompanyId } from "src/modules/company/company.types";
+import { TCategoryId } from "src/modules/category/category.types";
+import { TCompanyId } from "src/modules/company/company.types";
 import {
-    ProductDescription,
-    ProductDiscount,
-    ProductInventory,
-    ProductName,
-    ProductPrice,
-    ProductShippingCost,
-    ProductId,
-    PropductImgId,
-    PropductImgSrc,
+    TProductDescription,
+    TProductDiscount,
+    TProductInventory,
+    TProductName,
+    TProductPrice,
+    TProductShippingCost,
+    TProductId,
+    TPropductImgId,
+    TPropductImgSrc,
 } from "../product.types";
 import {
     IsArray,
@@ -23,26 +23,26 @@ import { SameLength } from "../validators/same-length.validator";
 
 export class CreateProductDto {
     @Length(3, 70)
-    name: ProductName;
+    name: TProductName;
     @Min(0)
-    price: ProductPrice;
+    price: TProductPrice;
     @IsObject()
-    description: ProductDescription;
+    description: TProductDescription;
     @Min(0)
-    inventory: ProductInventory;
+    inventory: TProductInventory;
     @Min(0)
-    shipping_cost: ProductShippingCost;
+    shipping_cost: TProductShippingCost;
     @Min(0)
     @Max(100)
-    discount: ProductDiscount;
+    discount: TProductDiscount;
     @IsNotEmpty()
-    img_id: PropductImgId[];
+    img_id: TPropductImgId[];
     @SameLength("img_id")
-    img_src: PropductImgSrc[];
+    img_src: TPropductImgSrc[];
     @IsNotEmpty()
-    company_id: CompanyId;
+    company_id: TCompanyId;
     @IsNotEmpty()
-    category_id: CategoryId;
+    category_id: TCategoryId;
     @IsArray()
-    variants: ProductId[];
+    variants: TProductId[];
 }

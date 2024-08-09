@@ -6,28 +6,28 @@ import {
     ValidateIf,
 } from "class-validator";
 import {
-    UserAddress,
-    UserEmail,
-    UserFamilyName,
-    UserGivenName,
-    UserPhone,
+    TUserAddress,
+    TUserEmail,
+    TUserFamilyName,
+    TUserGivenName,
+    TUserPhone,
 } from "../user.types";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class UpdateUserDto {
     @Length(2, 30)
-    given_name: UserGivenName;
+    given_name: TUserGivenName;
     @Length(2, 30)
-    family_name: UserFamilyName;
+    family_name: TUserFamilyName;
     @ApiProperty({
         description: "The email of the user",
         example: "someone@gmail.com",
     })
     @IsEmail()
-    email: UserEmail;
+    email: TUserEmail;
     @Allow()
-    address: UserAddress;
+    address: TUserAddress;
     @ValidateIf((o) => o.phone.length > 0)
     @IsPhoneNumber()
-    phone: UserPhone;
+    phone: TUserPhone;
 }

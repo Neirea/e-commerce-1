@@ -1,7 +1,7 @@
-import { ProductId } from "../product.types";
+import { TProductId } from "../product.types";
 
 export class SearchResponseDto {
-    id: ProductId;
+    id: TProductId;
     name: string;
     source: "Category" | "Company" | "Product";
 }

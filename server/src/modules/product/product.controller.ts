@@ -21,7 +21,7 @@ import { RelatedProductsDto } from "./dto/related-products.dto";
 import { PopularProductsDto } from "./dto/popular-products.dto";
 import { CreateProductDto } from "./dto/create-propduct.dto";
 import { UpdateProductDto } from "./dto/update-product.dto";
-import { ProductId } from "./product.types";
+import { TProductId } from "./product.types";
 import { ParseQuaryArrayPipe } from "src/pipes/parse-ids.pipe";
 import { Roles } from "src/common/roles/roles.decorator";
 import { Role } from "@prisma/client";
@@ -54,7 +54,7 @@ export class ProductController {
     @ApiOperation({ summary: "Retrieves products by id's" })
     getProductsByIds(
         @Query("ids", new ParseQuaryArrayPipe())
-        ids: ProductId[],
+        ids: TProductId[],
     ): Promise<ProductWithImagesDto[]> {
         return this.productService.getProductsByIds(ids);
     }
@@ -108,7 +108,7 @@ export class ProductController {
     @Get(":id")
     @ApiOperation({ summary: "Retrieves specific product" })
     getProductById(
-        @Param("id") id: ProductId,
+        @Param("id") id: TProductId,
     ): Promise<ProductByIdResponseDto> {
         return this.productService.getProductById(id);
     }
@@ -131,7 +131,7 @@ export class ProductController {
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
     updateProduct(
-        @Param("id") id: ProductId,
+        @Param("id") id: TProductId,
         @Body() body: UpdateProductDto,
     ): void {
         this.productService.updateProduct(id, body);
@@ -144,7 +144,7 @@ export class ProductController {
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
-    deleteProduct(@Param("id") id: ProductId): void {
+    deleteProduct(@Param("id") id: TProductId): void {
         this.productService.deleteproduct(id);
     }
 }

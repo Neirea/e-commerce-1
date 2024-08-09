@@ -11,7 +11,7 @@ import {
     updateCategoryQuery,
 } from "./category.queries";
 import { CategoryWithCompaniesDto } from "./dto/get-categories.dto";
-import { CategoryId } from "./category.types";
+import { TCategoryId } from "./category.types";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 
 @Injectable()
@@ -32,7 +32,7 @@ export class CategoryService {
     }
 
     async updateCategory(
-        id: CategoryId,
+        id: TCategoryId,
         input: UpdateCategoryDto,
     ): Promise<void> {
         if (id === input.parent_id) {
@@ -52,7 +52,7 @@ export class CategoryService {
             this.cloudinary.deleteOne(oldCategory[0].img_id);
         }
     }
-    async deleteCategory(id: CategoryId): Promise<void> {
+    async deleteCategory(id: TCategoryId): Promise<void> {
         const data = await this.prisma.$queryRaw<[Category]>(
             deleteCategoryQuery(id),
         );

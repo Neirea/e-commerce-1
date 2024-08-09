@@ -1,21 +1,21 @@
 import { IsOptional, IsUrl, Length, ValidateIf } from "class-validator";
 import {
-    CategoryImgId,
-    CategoryImgSrc,
-    CategoryName,
-    CategoryId,
+    TCategoryImgId,
+    TCategoryImgSrc,
+    TCategoryName,
+    TCategoryId,
 } from "../category.types";
 
 export class createCategoryDto {
     @Length(3, 30)
-    name: CategoryName;
+    name: TCategoryName;
     @ValidateIf((o) => o.img_src?.length > 0)
     @IsOptional()
-    img_id?: CategoryImgId;
+    img_id?: TCategoryImgId;
     @ValidateIf((o) => o.img_id?.length > 0)
     @IsOptional()
     @IsUrl()
-    img_src?: CategoryImgSrc;
+    img_src?: TCategoryImgSrc;
     @IsOptional()
-    parent_id?: CategoryId;
+    parent_id?: TCategoryId;
 }

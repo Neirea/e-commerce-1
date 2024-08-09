@@ -2,15 +2,15 @@ import {
     setAndCount,
     getPriceCondition,
     getArrayWithProductCount,
-    SharedType,
-    ProductCountType,
+    TShared,
+    TProductCount,
 } from "./search-data";
 
 describe("setAndCount", () => {
     it("should add item to the map and increment the count", () => {
-        const map = new Map<number, SharedType>();
-        const item: SharedType = { id: 1, productCount: 0 };
-        const count: ProductCountType = {};
+        const map = new Map<number, TShared>();
+        const item: TShared = { id: 1, productCount: 0 };
+        const count: TProductCount = {};
 
         setAndCount(map, item, count);
 
@@ -20,9 +20,9 @@ describe("setAndCount", () => {
     });
 
     it("should increment the count for existing item in the map", () => {
-        const map = new Map<number, SharedType>();
-        const item: SharedType = { id: 1, productCount: 0 };
-        const count: ProductCountType = { 1: 2 };
+        const map = new Map<number, TShared>();
+        const item: TShared = { id: 1, productCount: 0 };
+        const count: TProductCount = { 1: 2 };
 
         setAndCount(map, item, count);
 
@@ -76,12 +76,12 @@ describe("getPriceCondition", () => {
 
 describe("getArrayWithProductCount", () => {
     it("should return an array of shared items with product counts", () => {
-        const map = new Map<number, SharedType>();
-        const item1: SharedType = { id: 1, productCount: 0 };
-        const item2: SharedType = { id: 2, productCount: 0 };
+        const map = new Map<number, TShared>();
+        const item1: TShared = { id: 1, productCount: 0 };
+        const item2: TShared = { id: 2, productCount: 0 };
         map.set(1, item1);
         map.set(2, item2);
-        const count: ProductCountType = { 1: 3, 2: 5 };
+        const count: TProductCount = { 1: 3, 2: 5 };
 
         const result = getArrayWithProductCount(map, count);
 

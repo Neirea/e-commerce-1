@@ -4,14 +4,14 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { getCategoriesQuery } from "./category.queries";
 import {
-    CloudinaryServiceMockType,
-    PrismaServiceMockType,
+    TCloudinaryServiceMock,
+    TPrismaServiceMock,
 } from "src/utils/types.mock";
 
 describe("CategoryService", () => {
     let service: CategoryService;
-    let prismaService: PrismaServiceMockType;
-    let cloudinaryService: CloudinaryServiceMockType;
+    let prismaService: TPrismaServiceMock;
+    let cloudinaryService: TCloudinaryServiceMock;
 
     beforeEach(async () => {
         const prismaMock = {
@@ -37,9 +37,9 @@ describe("CategoryService", () => {
         }).compile();
 
         service = module.get<CategoryService>(CategoryService);
-        prismaService = module.get<PrismaServiceMockType>(PrismaService);
+        prismaService = module.get<TPrismaServiceMock>(PrismaService);
         cloudinaryService =
-            module.get<CloudinaryServiceMockType>(CloudinaryService);
+            module.get<TCloudinaryServiceMock>(CloudinaryService);
     });
 
     it("should be defined", () => {

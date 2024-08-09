@@ -9,11 +9,11 @@ import {
     ValidateIf,
     ValidateNested,
 } from "class-validator";
-import { ProductId } from "src/modules/product/product.types";
+import { TProductId } from "src/modules/product/product.types";
 
 export class ItemDto {
     @IsNumber()
-    id: ProductId;
+    id: TProductId;
     @IsNumber()
     amount: number;
 }

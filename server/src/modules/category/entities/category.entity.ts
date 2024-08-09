@@ -1,15 +1,15 @@
 import {
-    CategoryId,
-    CategoryImgId,
-    CategoryImgSrc,
-    CategoryName,
+    TCategoryId,
+    TCategoryImgId,
+    TCategoryImgSrc,
+    TCategoryName,
 } from "../category.types";
-import { Category as ICategory } from "@prisma/client";
+import { Category as TCategory } from "@prisma/client";
 
-export class Category implements Partial<ICategory> {
-    id: CategoryId;
-    name: CategoryName;
-    img_id?: CategoryImgId;
-    img_src?: CategoryImgSrc;
-    parent_id?: CategoryId;
+export class Category implements Partial<TCategory> {
+    id: TCategoryId;
+    name: TCategoryName;
+    img_id?: TCategoryImgId;
+    img_src?: TCategoryImgSrc;
+    parent_id?: TCategoryId;
 }

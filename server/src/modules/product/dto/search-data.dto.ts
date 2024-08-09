@@ -1,8 +1,8 @@
 import { Transform, TransformFnParams } from "class-transformer";
 import { IsOptional, Min } from "class-validator";
-import { CategoryId } from "src/modules/category/category.types";
+import { TCategoryId } from "src/modules/category/category.types";
 import { Category } from "src/modules/category/entities/category.entity";
-import { CompanyId } from "src/modules/company/company.types";
+import { TCompanyId } from "src/modules/company/company.types";
 import { Company } from "src/modules/company/entities/company.entity";
 
 export class SearchDataQueryDto {
@@ -18,10 +18,10 @@ export class SearchDataQueryDto {
     search_string?: string;
     @Transform(({ value }: TransformFnParams) => Number(value))
     @IsOptional()
-    category_id?: CategoryId;
+    category_id?: TCategoryId;
     @Transform(({ value }: TransformFnParams) => Number(value))
     @IsOptional()
-    company_id?: CompanyId;
+    company_id?: TCompanyId;
 }
 
 export class ExtendedCategory extends Category {
