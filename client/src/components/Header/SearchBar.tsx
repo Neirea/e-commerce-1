@@ -118,7 +118,7 @@ const SearchBar = () => {
                 >
                     {searchLoading && (
                         <div className="d-flex justify-content-start gap-2 p-2">
-                            <LoadingSpinner />
+                            <LoadingSpinner size={20} />
                             <span>Loading ...</span>
                         </div>
                     )}
