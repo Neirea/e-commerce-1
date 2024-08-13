@@ -42,6 +42,7 @@ const Footer = () => {
                             <div>
                                 <a
                                     href="https://github.com/Neirea"
+                                    target="_blank"
                                     aria-label="GitHub"
                                 >
                                     <FaGithub size={24} />
@@ -50,6 +51,7 @@ const Footer = () => {
                             <div>
                                 <a
                                     href="https://www.linkedin.com/in/eugene-shumilin/"
+                                    target="_blank"
                                     aria-label="Linkedin"
                                 >
                                     <FaLinkedin size={24} />
