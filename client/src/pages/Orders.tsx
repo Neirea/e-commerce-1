@@ -191,21 +191,10 @@ const Orders = () => {
                                                     variant="danger"
                                                     title="Cancel Order"
                                                     disabled={actionLoading}
-                                                    onClick={
-                                                        () =>
-                                                            cancelMutation.mutate(
-                                                                order.id
-                                                            )
-                                                        // handleCancel({
-                                                        //     variables: {
-                                                        //         id: order.id,
-                                                        //     },
-                                                        //     refetchQueries: [
-                                                        //         "GetAllOrders",
-                                                        //     ],
-                                                        //     awaitRefetchQueries:
-                                                        //         true,
-                                                        // })
+                                                    onClick={() =>
+                                                        cancelMutation.mutate(
+                                                            order.id
+                                                        )
                                                     }
                                                 >
                                                     Cancel

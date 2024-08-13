@@ -18,8 +18,7 @@ export const setAndCount = <T extends TShared>(
     }
     count[item.id] = (count[item.id] || 0) + 1;
 };
-// if price range exists or it doesn't
-export const getPriceCondition = (
+export const isValidPriceRange = (
     price: number,
     min: number,
     max: number,

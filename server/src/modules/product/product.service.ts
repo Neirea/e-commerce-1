@@ -38,7 +38,7 @@ import { TCompanyId } from "../company/company.types";
 import {
     TProductCount,
     getArrayWithProductCount,
-    getPriceCondition,
+    isValidPriceRange,
     setAndCount,
 } from "./utils/search-data";
 import { ProductWithImagesDto } from "./dto/product-with-images.dto";
@@ -94,11 +94,10 @@ export class ProductService {
 
         data.forEach((p) => {
             const price = ((100 - p.discount) / 100) * p.price;
-            //finding min/max
             if (price < min) min = price;
             if (price > max) max = price;
             // finding unique items and product count
-            if (getPriceCondition(price, input.min_price, input.max_price)) {
+            if (isValidPriceRange(price, input.min_price, input.max_price)) {
                 setAndCount(allCategories, p.category, catCount);
                 if (p.category.parent != null) {
                     setAndCount(allCategories, p.category.parent, catCount);
@@ -146,7 +145,7 @@ export class ProductService {
     getRelatedProducts(
         input: RelatedProductsDto,
     ): Promise<ProductWithImagesDto[]> {
-        //get products with same company(ordered first) and same category
+        // get products with same company(ordered first) and same category
         return this.prisma.$queryRaw<ProductWithImagesDto[]>(
             relatedProductsQuery(input),
         );
@@ -167,7 +166,7 @@ export class ProductService {
     async createProduct(input: CreateProductDto): Promise<void> {
         const { variants, img_id, img_src, ...createData } = input;
 
-        //create product, create product images and connection to variants
+        // create product, create product images and connection to variants
         const connectArr = variants.map((p_id) => {
             return { id: p_id };
         });
@@ -190,7 +189,7 @@ export class ProductService {
                 },
             },
         });
-        //create connection between company and category
+        // create connection between company and category
         const updateCategory = this.prisma.$queryRaw(
             updateProductCategoryQuery(input),
         );
@@ -202,7 +201,7 @@ export class ProductService {
     ): Promise<void> {
         const { variants, img_id, img_src, ...updateData } = input;
 
-        //update product, create product images and connection to variants
+        // update product, create product images and connection to variants
         const newVariants = variants.map((p_id) => {
             return { id: p_id };
         });
@@ -226,7 +225,7 @@ export class ProductService {
             },
         });
 
-        //update relation between company and category
+        // update relation between company and category
         const categoryUpdate = this.prisma.$queryRaw(
             updateProductCategoryQuery(input),
         );

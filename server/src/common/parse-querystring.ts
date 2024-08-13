@@ -7,7 +7,7 @@ export const parseQueryString = (
 ): string | undefined => {
     if (!input?.length) return;
     return input
-        .replace(/[!:*<()@&|]/g, "") //filter out symbols used by postgres
+        .replace(/[!:*<()@&|]/g, "")
         .split(",")
         .reduce((query, param) => {
             const trimmedParam = param.trim();

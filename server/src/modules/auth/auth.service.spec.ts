@@ -92,7 +92,6 @@ describe("AuthService", () => {
             expect(result).toEqual(mockUser);
         });
         it("should return a new user if not found", async () => {
-            // didn't find user in db and user count = 1
             prismaService.$queryRaw
                 .mockImplementationOnce(() => [])
                 .mockImplementationOnce(() => [{ count: 1 }]);

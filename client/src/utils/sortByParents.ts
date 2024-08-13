@@ -8,25 +8,25 @@ type TResult<T> = {
     depth: number;
 };
 
-const sortByParentId = <T extends TSortElement>(array: Array<T>) => {
-    const orderByParents = (
-        data: T[],
-        depth: number,
-        p_id?: number | undefined
-    ) => {
-        if (p_id !== undefined) depth++;
-        return data.reduce((r: Array<TResult<T>>, e) => {
-            //check if element is parent to any element
-            if (p_id == e.parent_id) {
-                //push element
-                r.push({ elem: e, depth });
-                //push its children after
-                r.push(...orderByParents(data, depth, e.id));
-            }
-            return r;
-        }, []);
-    };
+const orderByParents = <T extends TSortElement>(
+    data: T[],
+    depth: number,
+    p_id?: number | undefined
+) => {
+    if (p_id !== undefined) depth++;
+    return data.reduce((r: Array<TResult<T>>, e) => {
+        //check if element is parent to any element
+        if (p_id == e.parent_id) {
+            //push element
+            r.push({ elem: e, depth });
+            //push its children after
+            r.push(...orderByParents(data, depth, e.id));
+        }
+        return r;
+    }, []);
+};
 
+const sortByParentId = <T extends TSortElement>(array: Array<T>) => {
     return orderByParents(array, 0);
 };
 

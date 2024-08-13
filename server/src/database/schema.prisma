@@ -23,8 +23,6 @@ model User {
   orders      Order[]
 }
 
-// add payment info for users accounts -> any
-
 model Product {
   id               Int               @id @default(autoincrement())
   name             String

@@ -22,11 +22,9 @@ const AddProductForm = ({ product, handleShowCart }: TAddProductForm) => {
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        // add to cart variable
         if (product && product.inventory >= amount) {
             addProductToCart({ product: product, amount: amount });
         }
-        // open cart modal
         handleShowCart();
     };
 

@@ -9,7 +9,6 @@ const Login = () => {
 
     const [showLogin, setShowLogin] = useState(false);
 
-    // Login Modal
     const handleShowLogin = () => setShowLogin(true);
     const handleCloseLogin = () => setShowLogin(false);
 

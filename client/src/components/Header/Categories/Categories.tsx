@@ -14,7 +14,6 @@ const Categories = () => {
     const menuButtonRef = useRef<HTMLButtonElement | null>(null);
     const categoriesRef = useRef<HTMLDivElement | null>(null);
 
-    // Categories Menu
     const toggleCategories = () => setShowCategories((old) => !old);
     const handleCloseCategories = () => setShowCategories(false);
 

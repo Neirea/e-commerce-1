@@ -38,7 +38,6 @@ const SearchPage = () => {
         min_price: minParam,
         max_price: maxParam,
     };
-    // general data about search
     const { data: searchData } = useQuery({
         queryKey: ["search-data", search],
         queryFn: () => getSearchData(input),

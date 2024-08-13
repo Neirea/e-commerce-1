@@ -28,7 +28,6 @@ export class UserService {
             updateUserQuery(user.id, input),
         );
 
-        // change session data if self update
         if (data[0]) {
             req.session.passport.user = data[0];
             return data[0];

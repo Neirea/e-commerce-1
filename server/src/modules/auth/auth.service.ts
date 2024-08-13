@@ -54,7 +54,6 @@ export class AuthService {
 
     exitSession(req: Request, res: Response): void {
         if (req.session) {
-            //deletes from session from Redis too
             req.session.destroy((err: any) => {
                 if (err) {
                     throw new BadRequestException("Failed to logout");

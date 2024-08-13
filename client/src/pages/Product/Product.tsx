@@ -26,7 +26,6 @@ const Product = () => {
 
     const product = currentData?.data;
 
-    // Cart Modal
     const handleShowCart = () => setShowCart(true);
     const handleCloseCart = () => setShowCart(false);
 
@@ -62,7 +61,6 @@ const Product = () => {
                                     alt={product.name}
                                 />
                             )}
-                            {/* show all images here */}
                             <div className="d-flex mt-3 gap-3">
                                 {product.images?.map((img, idx) => {
                                     return (

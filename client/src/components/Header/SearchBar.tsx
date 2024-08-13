@@ -110,7 +110,6 @@ const SearchBar = () => {
                     </Button>
                 </InputGroup>
             </Form>
-            {/* Search Results */}
             {showResults && (
                 <div
                     className="d-none d-sm-block position-absolute mt-3 border-bottom border-start border-end border-secondary rounded-bottom bg-white w-100"

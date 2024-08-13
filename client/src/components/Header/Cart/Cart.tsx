@@ -7,7 +7,6 @@ import CartContent from "./CartContent";
 const Cart = () => {
     const { cart } = useCartStore();
     const [showCart, setShowCart] = useState(false);
-    // Cart Modal
     const handleShowCart = () => setShowCart(true);
     const handleCloseCart = () => setShowCart(false);
 

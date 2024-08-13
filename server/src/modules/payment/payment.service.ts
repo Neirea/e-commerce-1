@@ -39,7 +39,6 @@ export class PaymentService {
             getProductsByIdsQuery(body.items.map((i) => i.id)),
         );
 
-        //products info for order
         const orderProducts: TOrderProducts[] = products.map((product) => {
             const orderAmount = body.items.find(
                 (p) => p.id === product.id,
@@ -54,7 +53,6 @@ export class PaymentService {
             };
         });
         const shippingConst = Math.max(...products.map((p) => p.shipping_cost));
-        //create order
         const order = await this.prisma.order.create({
             data: {
                 user_id: user?.id,
@@ -76,7 +74,6 @@ export class PaymentService {
                 },
             },
         });
-        //start payment session
         const session = await this.createStripeSession(
             body.buyer.email,
             order.id,
@@ -97,7 +94,6 @@ export class PaymentService {
 
         this.checkOrderValidity(user, order);
 
-        //products info for order
         const orderProducts = order.order_items.map((order) => {
             this.checkInventoryAmount(order.product, order.amount);
             return {
@@ -111,7 +107,6 @@ export class PaymentService {
                 image: order.images[0].img_src,
             };
         });
-        //start payment session
         const session = await this.createStripeSession(
             order.buyer_email,
             order.id,
@@ -140,7 +135,6 @@ export class PaymentService {
             if (event.type === "checkout.session.completed") {
                 const TOrderId = (event.data.object as Stripe.Charge).metadata
                     .TOrderId;
-                // update status
                 const order = await this.prisma.order.update({
                     where: {
                         id: +TOrderId,
@@ -153,7 +147,6 @@ export class PaymentService {
                         order_items: true,
                     },
                 });
-                // remove items from inventory
                 const productUpdates: PrismaPromise<void>[] = [];
                 order.order_items.forEach((o) => {
                     const update = this.prisma.$queryRaw<void>(
@@ -164,7 +157,6 @@ export class PaymentService {
                 await this.prisma.$transaction(productUpdates);
             }
         } catch (err) {
-            // On error, log and return the error message
             console.error(`Payment webhook error: ${(err as Error).message}`);
             throw new BadRequestException(
                 `Webhook Error: ${(err as Error).message}`,

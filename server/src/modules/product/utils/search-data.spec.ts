@@ -1,6 +1,6 @@
 import {
     setAndCount,
-    getPriceCondition,
+    isValidPriceRange,
     getArrayWithProductCount,
     TShared,
     TProductCount,
@@ -32,13 +32,13 @@ describe("setAndCount", () => {
     });
 });
 
-describe("getPriceCondition", () => {
+describe("isValidPriceRange", () => {
     it("should return true if price is within the range", () => {
         const price = 50;
         const min = 10;
         const max = 100;
 
-        const result = getPriceCondition(price, min, max);
+        const result = isValidPriceRange(price, min, max);
 
         expect(result).toBe(true);
     });
@@ -48,7 +48,7 @@ describe("getPriceCondition", () => {
         const min = undefined;
         const max = undefined;
 
-        const result = getPriceCondition(price, min, max);
+        const result = isValidPriceRange(price, min, max);
 
         expect(result).toBe(true);
     });
@@ -58,7 +58,7 @@ describe("getPriceCondition", () => {
         const min = 10;
         const max = 100;
 
-        const result = getPriceCondition(price, min, max);
+        const result = isValidPriceRange(price, min, max);
 
         expect(result).toBe(false);
     });
@@ -68,7 +68,7 @@ describe("getPriceCondition", () => {
         const min = 10;
         const max = 100;
 
-        const result = getPriceCondition(price, min, max);
+        const result = isValidPriceRange(price, min, max);
 
         expect(result).toBe(false);
     });
