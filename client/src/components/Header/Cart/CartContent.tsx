@@ -41,16 +41,22 @@ const CartContent = ({
     const outOfStock = cart.some((p) => p.product.inventory === 0);
 
     const handleDecrease = (item: TCartItem<TProductWithImages>) => {
+        if (item.amount === 1) {
+            return;
+        }
         addProductToCart({
             product: item.product,
-            amount: item.amount === 1 ? 0 : -1,
+            amount: -1,
         });
     };
 
     const handleIncrease = (item: TCartItem<TProductWithImages>) => {
+        if (item.amount === item.product.inventory) {
+            return;
+        }
         addProductToCart({
             product: item.product,
-            amount: item.amount === item.product.inventory ? 0 : 1,
+            amount: 1,
         });
     };
 
