@@ -107,7 +107,7 @@ const UserProfile = ({
                 <Form.Group className="mb-3">
                     <Form.Label>Email</Form.Label>
                     <Form.Control
-                        type="email"
+                        type="text"
                         name="email"
                         onChange={handleChange}
                         value={values.email}
