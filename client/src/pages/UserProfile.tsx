@@ -17,6 +17,7 @@ import {
     phoneDesc,
     phoneZod,
 } from "../utils/zod";
+import { postcodeValidator } from "postcode-validator";
 
 const UserProfileSchema = z.object({
     given_name: givenNameZod,
@@ -90,6 +91,17 @@ const UserProfile = ({
             setValidationError(fromZodError(parseInput.error));
             return;
         }
+
+        const isPostcodeValid = postcodeValidator(
+            values.address.postal_code,
+            values.address.country
+        );
+
+        if (!isPostcodeValid) {
+            setValidationError(new Error(`Postal code is not valid`));
+            return;
+        }
+
         await updateMutation.mutateAsync(values);
         await getUpdatedUser();
         setValidationError(null);
@@ -100,8 +112,8 @@ const UserProfile = ({
         <Container as="main" className="d-flex flex-column align-items-center">
             <h2 className="mt-4">Profile</h2>
             <p className="text-muted">
-                Enter your information to automatically set information required
-                for purchasing
+                Enter your information for automatic insertion during payment
+                process
             </p>
             <Form className="col-12 col-md-6" onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
