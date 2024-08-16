@@ -15,6 +15,7 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Image from "react-bootstrap/Image";
 import Row from "react-bootstrap/Row";
+import { useNavigate } from "react-router-dom";
 import ItemPrice from "../components/ItemPrice";
 import LoadingSpinner from "../components/LoadingSpinner";
 import useCurrentUser from "../hooks/useCurrentUser";
@@ -28,6 +29,7 @@ import { clientUrl, stripePublicKey } from "../utils/server";
 const stripePromise = loadStripe(stripePublicKey);
 
 const Checkout = () => {
+    const navigate = useNavigate();
     const [clientSecret, setClientSecret] = useState("");
     const { cart } = useCartStore();
 
@@ -36,7 +38,8 @@ const Checkout = () => {
     });
 
     useEffect(() => {
-        if (!checkoutItems.length) {
+        if (cart.length === 0) {
+            navigate("/");
             return;
         }
         checkout({ items: checkoutItems }).then((response) => {
