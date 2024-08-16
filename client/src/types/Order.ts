@@ -1,7 +1,7 @@
 import type { TProduct } from "./Product";
+import type { TAddress } from "./User";
 
 export type TOrderStatus =
-    | "PENDING"
     | "ACCEPTED"
     | "PROCESSING"
     | "DELIVERED"
@@ -15,7 +15,7 @@ export type TOrder = {
     buyer_name: string;
     buyer_email: string;
     buyer_phone: string;
-    delivery_address: string;
+    delivery_address: TAddress;
     created_at: string;
     payment_time: string;
 };

@@ -119,12 +119,12 @@ describe("ProductService", () => {
         it("should return search data based on the provided query", async () => {
             const inputData = {
                 category_id: 1,
-                min_price: 10,
-                max_price: 100,
+                min_price: 1000,
+                max_price: 10000,
             };
             const expectedSearchData: SearchDataResponseDto = {
-                min: 42,
-                max: 85,
+                min: 4250,
+                max: 8500,
                 categories: [{ id: 1, name: "Category 1", productCount: 2 }],
                 companies: [
                     { id: 1, name: "Company 1", productCount: 1 },
@@ -137,13 +137,13 @@ describe("ProductService", () => {
                 {
                     company: { id: 1, name: "Company 1" },
                     category: { id: 1, name: "Category 1" },
-                    price: 50,
+                    price: 5000,
                     discount: 15,
                 },
                 {
                     company: { id: 2, name: "Company 2" },
                     category: { id: 1, name: "Category 1" },
-                    price: 100,
+                    price: 10000,
                     discount: 15,
                 },
             ];
@@ -167,8 +167,8 @@ describe("ProductService", () => {
         it("should return 0 for min price when no matching products are found", async () => {
             const inputData = {
                 category_id: 1,
-                min_price: 10,
-                max_price: 100,
+                min_price: 1000,
+                max_price: 10000,
             };
             const expectedSearchData: SearchDataResponseDto = {
                 min: 0,
@@ -193,8 +193,8 @@ describe("ProductService", () => {
                 limit: 10,
                 offset: 0,
                 category_id: 1,
-                min_price: 10,
-                max_price: 100,
+                min_price: 1000,
+                max_price: 10000,
             };
             const expectedProducts: Partial<FilteredProductsResponseDto>[] = [
                 { id: 1, name: "Product 1", category_id: 1 },
@@ -228,8 +228,8 @@ describe("ProductService", () => {
                 limit: 10,
                 offset: 0,
                 category_id: 1,
-                min_price: 10,
-                max_price: 100,
+                min_price: 1000,
+                max_price: 10000,
             };
             prismaService.$queryRaw.mockImplementation(() => []);
 
@@ -247,7 +247,7 @@ describe("ProductService", () => {
         it("should create a new product and its associated data", async () => {
             const inputProduct: CreateProductDto = {
                 name: "Product 1",
-                price: 100,
+                price: 10000,
                 description: {},
                 inventory: 10,
                 shipping_cost: 0,

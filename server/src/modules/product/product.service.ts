@@ -46,6 +46,7 @@ import { SearchResponseDto } from "./dto/search.dto";
 import { ProductByIdResponseDto } from "./dto/product-by-id.dto";
 import { ProductWithVariantsDto } from "./dto/get-product.dto";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { getDiscountPrice } from "../payment/utils/get-price";
 
 @Injectable()
 export class ProductService {
@@ -93,7 +94,7 @@ export class ProductService {
         const compCount: TProductCount = {};
 
         data.forEach((p) => {
-            const price = ((100 - p.discount) / 100) * p.price;
+            const price = getDiscountPrice(p.price, p.discount);
             if (price < min) min = price;
             if (price > max) max = price;
             // finding unique items and product count
@@ -111,8 +112,8 @@ export class ProductService {
         const companies = getArrayWithProductCount(allCompanies, compCount);
 
         return {
-            min: Math.floor(min),
-            max: Math.ceil(max),
+            min,
+            max,
             categories,
             companies,
         };

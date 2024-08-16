@@ -6,6 +6,7 @@ import Row from "react-bootstrap/Row";
 import useCartStore from "../../store/useCartStore";
 import type { TProductWithImgVariants } from "../../types/Product";
 import { toPriceNumber } from "../../utils/numbers";
+import { getDiscountPrice } from "../../utils/getDiscountedPrice";
 
 type TAddProductForm = {
     product: TProductWithImgVariants;
@@ -67,9 +68,10 @@ const AddProductForm = ({ product, handleShowCart }: TAddProductForm) => {
                             }
                         >
                             {`${toPriceNumber(
-                                ((100 - product.discount) / 100) *
-                                    amount *
-                                    product.price
+                                getDiscountPrice(
+                                    product.price,
+                                    product.discount
+                                ) * amount
                             )} $`}
                         </div>
                     </div>

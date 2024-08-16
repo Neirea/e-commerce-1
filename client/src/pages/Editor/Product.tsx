@@ -28,7 +28,7 @@ const defaultValues = {
     inventory: 0,
     company_id: 0,
     category_id: 0,
-    shipping_cost: 15,
+    shipping_cost: 1500,
     discount: 0,
 };
 
@@ -276,7 +276,7 @@ const Product = () => {
                     <Form.Control
                         type="number"
                         name="price"
-                        placeholder="Float number in USD"
+                        placeholder="Number in cents"
                         onChange={handleChange}
                         value={values.price}
                         min={0}
@@ -294,7 +294,7 @@ const Product = () => {
                         isValid={isJson}
                         onChange={handleChange}
                         value={values.description}
-                        placeholder={`JSON of product description:\n{\n\tname:"Iphone 11",\n\tprice: 1000,\n\t ...\n}`}
+                        placeholder={`JSON of product description:\n{\n\tname:"Iphone 11",\n\tprice: 100000,\n\t ...\n}`}
                         required
                     />
                 </Form.Group>
@@ -314,7 +314,7 @@ const Product = () => {
                     <Form.Control
                         type="number"
                         name="shipping_cost"
-                        placeholder="Float number in USD"
+                        placeholder="Number in cents"
                         onChange={handleChange}
                         value={values.shipping_cost}
                         min={0}

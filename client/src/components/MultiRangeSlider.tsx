@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import FormGroup from "react-bootstrap/FormGroup";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toPriceNumber } from "../utils/numbers";
 
 const MultiRangeSlider = ({ min, max }: { min: number; max: number }) => {
     const { search } = useLocation();
@@ -71,8 +72,8 @@ const MultiRangeSlider = ({ min, max }: { min: number; max: number }) => {
                     className="p-0 text-center"
                     min={min}
                     max={maxVal}
-                    value={minVal}
-                    pattern="^[0-9]*$"
+                    value={toPriceNumber(minVal)}
+                    pattern="^[0-9]*.[0-9]{2}$"
                     aria-label="Min price value"
                     onChange={(e) => setMinVal(+e.target.value)}
                 />
@@ -81,8 +82,8 @@ const MultiRangeSlider = ({ min, max }: { min: number; max: number }) => {
                     className="p-0 text-center"
                     min={minVal}
                     max={max}
-                    value={maxVal}
-                    pattern="^[0-9]*$"
+                    value={toPriceNumber(maxVal)}
+                    pattern="^[0-9]*.[0-9]{2}$"
                     aria-label="Max price value"
                     onChange={(e) => setMaxVal(+e.target.value)}
                 />

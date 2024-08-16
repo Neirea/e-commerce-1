@@ -6,12 +6,6 @@ type TCheckoutBody = {
         id: Pick<TProduct, "id">["id"];
         amount: number;
     }[];
-    buyer: {
-        name: string;
-        email: string;
-        address: string;
-        phone: string;
-    };
 };
 
 export const checkout = (body: TCheckoutBody) =>

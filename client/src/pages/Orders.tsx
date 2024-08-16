@@ -1,55 +1,22 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import { useState } from "react";
-import Button from "react-bootstrap/Button";
+import { useQuery } from "@tanstack/react-query";
 import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
 import { Link } from "react-router-dom";
 import LoadingProgress from "../components/LoadingProgress";
-import { cancelOrder, getAllOrders } from "../queries/Order";
-import { getError } from "../utils/getError";
+import { getAllOrders } from "../queries/Order";
 import { toPriceNumber } from "../utils/numbers";
 
 const Orders = () => {
-    const queryClient = useQueryClient();
-    const [paymentLoading, setPaymentLoading] = useState(false);
     const { data, isLoading, error } = useQuery({
         queryKey: ["order"],
         queryFn: getAllOrders,
     });
-
-    const cancelMutation = useMutation({
-        mutationFn: cancelOrder,
-        onSuccess: () => {
-            queryClient.invalidateQueries(["order"]);
-        },
-    });
-
-    const actionLoading =
-        paymentLoading || cancelMutation.isLoading || isLoading;
 
     const sortedOrders = data?.data
         ? [...data.data].sort(
               (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)
           )
         : undefined;
-
-    const handlePayment = async (id: number) => {
-        setPaymentLoading(true);
-
-        try {
-            const { data } = await axios.post<{
-                url: string;
-            }>(`/payment/checkout/${id}`);
-
-            window.open(data.url, "_self");
-        } catch (error) {
-            setPaymentLoading(false);
-            console.error(
-                `A payment error occurred: ${getError(error).message}`
-            );
-        }
-    };
 
     if (error) {
         return (
@@ -77,6 +44,10 @@ const Orders = () => {
         );
     }
 
+    if (isLoading) {
+        return <Container as="main" />;
+    }
+
     return (
         <Container as="main" className="pt-3">
             <h2 className="text-center">Your Orders:</h2>
@@ -94,24 +65,14 @@ const Orders = () => {
                     </thead>
                     <tbody>
                         {sortedOrders.map((order) => {
-                            const totalOrderPricePending =
-                                order.order_items.reduce(
-                                    (prev, curr) =>
-                                        prev +
-                                        curr.amount *
-                                            ((100 - curr.product.discount) /
-                                                100) *
-                                            curr.product.price,
-                                    0
-                                );
                             const totalOrderPricePaid =
                                 order.order_items.reduce(
                                     (prev, curr) =>
                                         prev + curr.amount * curr.price,
-                                    0
+                                    order.shipping_cost
                                 );
                             const textColor =
-                                order.status === "PENDING"
+                                order.status === "CANCELLED"
                                     ? "text-danger"
                                     : "text-success";
                             const createdAt = new Date(order.created_at);
@@ -174,43 +135,11 @@ const Orders = () => {
                                     </td>
                                     <td className={`fs-5 ${textColor}`}>
                                         <div>{order.status}</div>
-                                        {order.status === "PENDING" && (
-                                            <>
-                                                <Button
-                                                    variant="success"
-                                                    title="Pay for the order"
-                                                    disabled={actionLoading}
-                                                    className="d-block m-auto mb-1"
-                                                    onClick={() =>
-                                                        handlePayment(order.id)
-                                                    }
-                                                >
-                                                    Continue
-                                                </Button>
-                                                <Button
-                                                    variant="danger"
-                                                    title="Cancel Order"
-                                                    disabled={actionLoading}
-                                                    onClick={() =>
-                                                        cancelMutation.mutate(
-                                                            order.id
-                                                        )
-                                                    }
-                                                >
-                                                    Cancel
-                                                </Button>
-                                            </>
-                                        )}
                                     </td>
                                     <td className="fs-5">
-                                        {order.status === "PENDING"
-                                            ? toPriceNumber(
-                                                  totalOrderPricePending
-                                              )
-                                            : toPriceNumber(
-                                                  totalOrderPricePaid
-                                              )}{" "}
-                                        $
+                                        {`${toPriceNumber(
+                                            totalOrderPricePaid
+                                        )} $`}
                                     </td>
                                 </tr>
                             );

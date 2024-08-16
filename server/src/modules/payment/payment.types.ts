@@ -1,7 +1,5 @@
-export type TOrderProducts = {
-    id: number;
-    name: string;
+export type TOrderItem = {
+    product_id: number;
     amount: number;
-    image: string;
     price: number;
 };

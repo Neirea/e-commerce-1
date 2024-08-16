@@ -120,11 +120,9 @@ function useCartStore() {
         [cart]
     );
 
-    const clearCart = useCallback((clearVar?: boolean) => {
+    const clearCart = useCallback(() => {
         addCartToLocalStorage([]);
-        if (clearVar) {
-            changeCart([]);
-        }
+        changeCart([]);
     }, []);
 
     return {

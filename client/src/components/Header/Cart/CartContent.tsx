@@ -16,6 +16,7 @@ import useCartStore from "../../../store/useCartStore";
 import type { TProductWithImages } from "../../../types/Product";
 import { toPriceNumber } from "../../../utils/numbers";
 import ItemPrice from "../../ItemPrice";
+import { getDiscountPrice } from "../../../utils/getDiscountedPrice";
 
 const CartContent = ({
     handleClose,
@@ -32,9 +33,8 @@ const CartContent = ({
     const totalPrice = cart.reduce(
         (prev, curr) =>
             prev +
-            ((100 - curr.product.discount) / 100) *
-                curr.amount *
-                curr.product.price,
+            getDiscountPrice(curr.product.price, curr.product.discount) *
+                curr.amount,
         0
     );
 

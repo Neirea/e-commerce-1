@@ -1,34 +1,26 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
-import { TOrderProducts } from "./payment.types";
 import { PrismaPromise, Product, User } from "@prisma/client";
-import { getProductsByIdsQuery } from "../product/product.queries";
-import {
-    getOrdersByTOrderIdQuery,
-    updateOrderItemQuery,
-} from "../order/order.queries";
-import { CheckoutBodyDto } from "./dto/checkout-body.dto";
-import { TOrderId, TOrderWithItemsAndImgs } from "../order/order.types";
-import Stripe from "stripe";
-import { getDiscountPrice } from "./utils/get-price";
-import { OrderWithItemsDto } from "../order/dto/get-orders.dto";
-import { CheckoutResponseDto } from "./dto/checkout-response.dto";
-import { ProductWithImagesDto } from "../product/dto/product-with-images.dto";
 import { appConfig } from "src/config/env";
+import Stripe from "stripe";
+import { updateOrderItemQuery } from "../order/order.queries";
+import { PrismaService } from "../prisma/prisma.service";
+import { ProductWithImagesDto } from "../product/dto/product-with-images.dto";
+import { getProductsByIdsQuery } from "../product/product.queries";
+import { CheckoutBodyDto } from "./dto/checkout-body.dto";
+import { TOrderItem } from "./payment.types";
+import { getDiscountPrice } from "./utils/get-price";
 
 @Injectable()
 export class PaymentService {
     private stripe: Stripe;
     constructor(private prisma: PrismaService) {
-        this.stripe = new Stripe(appConfig.stripePrivateKey, {
-            apiVersion: "2022-11-15",
-        });
+        this.stripe = new Stripe(appConfig.stripePrivateKey);
     }
 
     async initializePayment(
         user: User,
         body: CheckoutBodyDto,
-    ): Promise<CheckoutResponseDto> {
+    ): Promise<{ clientSecret: string }> {
         if (body.items.length === 0) {
             throw new BadRequestException("Your cart is empty");
         }
@@ -39,81 +31,30 @@ export class PaymentService {
             getProductsByIdsQuery(body.items.map((i) => i.id)),
         );
 
-        const orderProducts: TOrderProducts[] = products.map((product) => {
+        const orderItems: TOrderItem[] = products.map((product) => {
             const orderAmount = body.items.find(
                 (p) => p.id === product.id,
             )?.amount;
             this.checkInventoryAmount(product, orderAmount);
             return {
-                id: product.id,
-                name: product.name,
+                product_id: product.id,
                 amount: orderAmount,
-                image: product.images[0].img_src,
-                price: getDiscountPrice(product.price, product.discount), // in dollars
+                price: getDiscountPrice(product.price, product.discount),
             };
         });
-        const shippingConst = Math.max(...products.map((p) => p.shipping_cost));
-        const order = await this.prisma.order.create({
-            data: {
+        const shippingCost = Math.max(...products.map((p) => p.shipping_cost));
+
+        const paymentIntent = await this.stripe.paymentIntents.create({
+            amount: this.getOrderPrice(orderItems, shippingCost),
+            currency: "USD",
+            metadata: {
                 user_id: user?.id,
-                buyer_name: body.buyer.name,
-                buyer_email: body.buyer.email,
-                delivery_address: body.buyer.address,
-                buyer_phone: body.buyer.phone || undefined,
-                shipping_cost: shippingConst,
-                order_items: {
-                    createMany: {
-                        data: orderProducts.map((p) => {
-                            return {
-                                product_id: p.id,
-                                amount: p.amount,
-                                price: p.price,
-                            };
-                        }),
-                    },
-                },
+                shipping_cost: shippingCost,
+                order_items: JSON.stringify(orderItems),
             },
         });
-        const session = await this.createStripeSession(
-            body.buyer.email,
-            order.id,
-            order.shipping_cost,
-            orderProducts,
-        );
-        return { url: session.url };
-    }
 
-    async resumePayment(
-        user: User,
-        id: TOrderId,
-    ): Promise<CheckoutResponseDto> {
-        const orderQuery = await this.prisma.$queryRaw<
-            [TOrderWithItemsAndImgs]
-        >(getOrdersByTOrderIdQuery(id));
-        const order = orderQuery[0];
-
-        this.checkOrderValidity(user, order);
-
-        const orderProducts = order.order_items.map((order) => {
-            this.checkInventoryAmount(order.product, order.amount);
-            return {
-                id: order.product.id,
-                name: order.product.name,
-                price: getDiscountPrice(
-                    order.product.price,
-                    order.product.discount,
-                ),
-                amount: order.amount,
-                image: order.images[0].img_src,
-            };
-        });
-        const session = await this.createStripeSession(
-            order.buyer_email,
-            order.id,
-            order.shipping_cost,
-            orderProducts,
-        );
-        return { url: session.url };
+        return { clientSecret: paymentIntent.client_secret };
     }
 
     async stripeWebhook(
@@ -132,16 +73,27 @@ export class PaymentService {
                 webhookSecret,
             );
 
-            if (event.type === "checkout.session.completed") {
-                const TOrderId = (event.data.object as Stripe.Charge).metadata
-                    .TOrderId;
-                const order = await this.prisma.order.update({
-                    where: {
-                        id: +TOrderId,
-                    },
+            if (event.type === "charge.succeeded") {
+                const customer = event.data.object.shipping;
+                const email = event.data.object.billing_details.email;
+                const info = event.data.object.metadata;
+                const orderItems = JSON.parse(info.order_items);
+                const devliveryAddress = JSON.parse(
+                    JSON.stringify(customer.address),
+                );
+                const order = await this.prisma.order.create({
                     data: {
-                        status: "ACCEPTED",
-                        payment_time: new Date(),
+                        user_id: Number(info.user_id) || undefined,
+                        buyer_name: customer.name,
+                        buyer_email: email,
+                        delivery_address: devliveryAddress,
+                        buyer_phone: customer.phone,
+                        shipping_cost: Number(info.shipping_cost),
+                        order_items: {
+                            createMany: {
+                                data: orderItems,
+                            },
+                        },
                     },
                     include: {
                         order_items: true,
@@ -165,59 +117,15 @@ export class PaymentService {
         return { received: "true" };
     }
 
-    private createStripeSession(
-        buyer_email: string,
-        TOrderId: TOrderId,
-        orderShippingCost: number,
-        orderProducts: TOrderProducts[],
-    ): Promise<Stripe.Response<Stripe.Checkout.Session>> {
-        const clientUrl = appConfig.clientUrl;
-        return this.stripe.checkout.sessions.create({
-            payment_method_types: ["card"],
-            mode: "payment",
-            metadata: { TOrderId },
-            customer_email: buyer_email,
-            shipping_options: [
-                {
-                    shipping_rate_data: {
-                        display_name: "Shipping",
-                        type: "fixed_amount",
-                        fixed_amount: {
-                            amount: 100 * orderShippingCost, // in dollars
-                            currency: "usd",
-                        },
-                    },
-                },
-            ],
-            line_items: orderProducts.map((item) => {
-                return {
-                    price_data: {
-                        currency: "usd",
-                        product_data: {
-                            name: item.name,
-                            images: [item.image],
-                        },
-                        unit_amount: item.price * 100, // in cents
-                    },
-                    quantity: item.amount || 0,
-                };
-            }),
-            success_url: `${clientUrl}/order_payment?order_id=${TOrderId}&success=true`,
-            cancel_url: `${clientUrl}/order_payment?order_id=${TOrderId}&success=false`,
-        });
-    }
-
-    private checkOrderValidity(user: User, order: OrderWithItemsDto): void {
-        if (order == null) {
-            throw new BadRequestException("Failed to retrieve order data");
-        }
-        if (user.id !== order.user_id) {
-            throw new BadRequestException("Order does not belong to this user");
-        }
-
-        if (order.status !== "PENDING") {
-            throw new BadRequestException("This order has been paid already");
-        }
+    private getOrderPrice(
+        orderProducts: TOrderItem[],
+        shippingCost: number,
+    ): number {
+        const price = orderProducts.reduce(
+            (total, product) => total + product.price,
+            shippingCost,
+        );
+        return price;
     }
 
     private checkInventoryAmount(product: Product, amount: number): void {

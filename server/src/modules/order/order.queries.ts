@@ -1,7 +1,6 @@
 import { Prisma, SingleOrderItem } from "@prisma/client";
-import { TOrderId } from "./order.types";
 import { TUserId } from "../user/user.types";
-import { imagesJSON } from "../product/utils/sql";
+import { TOrderId } from "./order.types";
 
 export const getOrdersByUserQuery = (
     TUserId: TUserId,
@@ -33,23 +32,6 @@ export const deleteOrderQuery = (
     DELETE FROM public."Order"
     WHERE id = ${id} AND user_id = ${TUserId}
 `;
-
-export const getOrdersByTOrderIdQuery = (
-    TOrderId: TOrderId,
-): Prisma.Sql => Prisma.sql`
-    SELECT o.*,json_agg(s.*) as order_items
-    FROM public."Order" as o
-    INNER JOIN
-        (SELECT s.id,s.amount,s.order_id,to_json(p.*) as product,i.images
-        FROM public."SingleOrderItem" as s
-        INNER JOIN (${imagesJSON}) as i ON s.product_id = i.product_id
-        INNER JOIN public."Product" as p
-        ON s.product_id = p.id) as s
-    ON s.order_id = o.id
-    WHERE o.id = ${TOrderId}
-    GROUP BY o.id
-`;
-
 export const updateOrderItemQuery = (
     order: SingleOrderItem,
 ): Prisma.Sql => Prisma.sql`

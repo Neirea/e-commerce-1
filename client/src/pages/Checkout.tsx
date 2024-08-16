@@ -1,78 +1,104 @@
-import { type ChangeEvent, type FormEvent, useState } from "react";
+import {
+    AddressElement,
+    Elements,
+    LinkAuthenticationElement,
+    PaymentElement,
+    useElements,
+    useStripe,
+} from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { useEffect, useState, type FormEvent } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
-import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
+import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Image from "react-bootstrap/Image";
-import { z } from "zod";
-import { fromZodError } from "zod-validation-error";
-import useCartStore from "../store/useCartStore";
+import Row from "react-bootstrap/Row";
+import ItemPrice from "../components/ItemPrice";
+import LoadingSpinner from "../components/LoadingSpinner";
 import useCurrentUser from "../hooks/useCurrentUser";
-import { toPriceNumber } from "../utils/numbers";
-import {
-    addressDesc,
-    addressZod,
-    emailZod,
-    familyNameZod,
-    givenNameZod,
-    phoneDesc,
-    phoneZod,
-} from "../utils/zod";
 import { checkout } from "../queries/Checkout";
 import { getProductsById } from "../queries/Product";
-import { getError } from "../utils/getError";
-import ItemPrice from "../components/ItemPrice";
+import useCartStore from "../store/useCartStore";
+import { getDiscountPrice } from "../utils/getDiscountedPrice";
+import { toPriceNumber } from "../utils/numbers";
+import { clientUrl, stripePublicKey } from "../utils/server";
 
-const CheckoutInputSchema = z.object({
-    given_name: givenNameZod,
-    family_name: familyNameZod,
-    email: emailZod,
-    address: addressZod,
-    phone: phoneZod,
-});
-
-type TCheckoutInput = z.infer<typeof CheckoutInputSchema>;
+const stripePromise = loadStripe(stripePublicKey);
 
 const Checkout = () => {
+    const [clientSecret, setClientSecret] = useState("");
+    const { cart } = useCartStore();
+
+    const checkoutItems = cart.map((item) => {
+        return { id: item.product.id, amount: item.amount };
+    });
+
+    useEffect(() => {
+        if (!checkoutItems.length) {
+            return;
+        }
+        checkout({ items: checkoutItems }).then((response) => {
+            setClientSecret(response.data.clientSecret);
+        });
+    }, [cart]);
+
+    if (!clientSecret) {
+        return (
+            <Container
+                as="main"
+                className="d-flex justify-content-center align-items-center"
+            >
+                <LoadingSpinner size={50} />
+            </Container>
+        );
+    }
+
+    return (
+        <Container as="main" className="mt-3">
+            <Elements options={{ clientSecret }} stripe={stripePromise}>
+                <CheckoutForm />
+            </Elements>
+        </Container>
+    );
+};
+
+const CheckoutForm = () => {
+    const stripe = useStripe();
+    const elements = useElements();
+
     const { user } = useCurrentUser();
     const [loading, setLoading] = useState(false);
-    const { cart, clearCart, syncCart } = useCartStore();
+    const { cart, syncCart } = useCartStore();
     const [error, setError] = useState("");
 
-    const [values, setValues] = useState<TCheckoutInput>({
-        given_name: user?.given_name || "",
-        family_name: user?.family_name || "",
-        email: user?.email || "",
-        address: user?.address || "",
-        phone: user?.phone || "",
-    });
+    const shippingCost = cart.reduce(
+        (shippingCost, item) =>
+            Math.max(shippingCost, item.product.shipping_cost),
+        0
+    );
 
     const totalPrice = cart.reduce(
         (prev, curr) =>
             prev +
-            ((100 - curr.product.discount) / 100) *
-                curr.amount *
-                curr.product.price,
-        0
+            getDiscountPrice(curr.product.price, curr.product.discount) *
+                curr.amount,
+        shippingCost
     );
 
     const outOfStock = cart.some((p) => p.product.inventory === 0);
 
-    const handleData = (e: ChangeEvent<HTMLInputElement>) =>
-        setValues({ ...values, [e.target.name]: e.target.value });
+    const isButtonDisabled =
+        loading || outOfStock || stripe == null || elements == null;
 
     const handleCheckout = async (e: FormEvent) => {
         e.preventDefault();
-        setLoading(true);
-
-        const parseInput = CheckoutInputSchema.safeParse(values);
-        if (!parseInput.success) {
-            setError(fromZodError(parseInput.error).message);
-            setLoading(false);
+        if (stripe == null || elements == null) {
             return;
         }
+        setLoading(true);
+
         const { data } = await getProductsById(cart.map((i) => i.product.id));
         const syncCartError = syncCart(data, cart);
         if (syncCartError) {
@@ -80,107 +106,47 @@ const Checkout = () => {
             return;
         }
 
-        const checkoutItems = cart.map((item) => {
-            return { id: item.product.id, amount: item.amount };
-        });
-
-        const { given_name, family_name, email, address, phone } = values;
-
-        try {
-            const { data } = await checkout({
-                items: checkoutItems,
-                buyer: {
-                    name: given_name + " " + family_name,
-                    email,
-                    address,
-                    phone,
+        stripe
+            .confirmPayment({
+                elements,
+                confirmParams: {
+                    return_url: `${clientUrl}/order_payment`,
                 },
-            });
-            setError("");
-            clearCart();
-            //open stripe window
-            window.open(data.url, "_self");
-        } catch (error) {
-            setLoading(false);
-            setError(`A payment error occurred: ${getError(error).message}`);
-        }
+            })
+            .then(({ error }) => {
+                if (
+                    (error.type === "card_error" ||
+                        error.type === "validation_error") &&
+                    error.message
+                ) {
+                    setError(error.message);
+                } else {
+                    setError("An unknown error occurred");
+                }
+            })
+            .finally(() => setLoading(false));
     };
 
     return (
-        <Container as="main" className="mt-3">
+        <div>
             <Form onSubmit={handleCheckout}>
-                <Row className="flex-column justify-content-around flex-sm-row">
-                    <Col md="4">
-                        <Form.Group className="mb-3">
-                            <Form.Label>Your given name</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={values.given_name}
-                                name="given_name"
-                                onChange={handleData}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Your familiy name</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={values.family_name}
-                                name="family_name"
-                                onChange={handleData}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Shipping address</Form.Label>
-                            <Form.Label
-                                style={{
-                                    fontSize: "0.75rem",
-                                    fontWeight: "700",
-                                }}
-                            >
-                                ({addressDesc})
-                            </Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={values.address}
-                                name="address"
-                                onChange={handleData}
-                                title={addressDesc}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Contact email</Form.Label>
-                            <Form.Control
-                                type="email"
-                                value={values.email}
-                                name="email"
-                                onChange={handleData}
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>
-                                Contact phone number (optional)
-                            </Form.Label>
-                            <Form.Control
-                                type="tel"
-                                value={values.phone}
-                                name="phone"
-                                title={phoneDesc}
-                                onChange={handleData}
-                            />
-                        </Form.Group>
-                    </Col>
-                    <Col md="4">
+                <h2 className="text-center">Checkout</h2>
+                <Row className="flex-col justify-content-center flex-sm-row">
+                    <Col md="8">
                         {cart.length > 0 &&
                             cart.map((item) => {
                                 return (
                                     <Row
-                                        className="border-bottom pb-3 pt-3 align-items-center"
+                                        className="border-bottom pb-3 pt-3 align-items-center gap-2"
                                         key={item.product.id}
                                     >
                                         <Col className="d-flex justify-content-between">
                                             <div>{item.product.name}</div>
                                         </Col>
-                                        <Col className="d-flex align-items-center gap-2">
+                                        <Col
+                                            md="2"
+                                            className="d-flex align-items-center gap-2"
+                                        >
                                             <div>{`x${item.amount}`}</div>
                                             <Image
                                                 height={50}
@@ -190,16 +156,58 @@ const Checkout = () => {
                                                 }
                                             />
                                         </Col>
-                                        <Col>
+                                        <Col md="3">
                                             <ItemPrice item={item} />
                                         </Col>
                                     </Row>
                                 );
                             })}
-                        <Row className="align-items-center mt-3">
+                        <Row className="border-bottom pb-3 pt-3 align-items-center gap-2">
+                            <Col className="d-flex justify-content-between">
+                                <div>Shipping Cost</div>
+                            </Col>
+                            <Col md="3" className="fs-4 lh-1">
+                                {toPriceNumber(shippingCost)} $
+                            </Col>
+                        </Row>
+                        <Row className="flex-col align-items-center mt-3 mb-3">
                             <Col className="text-end fs-4 pe-5">
                                 Total: {toPriceNumber(totalPrice)} $
                             </Col>
+                        </Row>
+                        <Row>
+                            <LinkAuthenticationElement
+                                options={{
+                                    defaultValues: {
+                                        email: user?.email || "",
+                                    },
+                                }}
+                            />
+                            <AddressElement
+                                className="mt-3 mb-3"
+                                options={{
+                                    mode: "shipping",
+                                    display: { name: "split" },
+                                    fields: { phone: "always" },
+                                    defaultValues: {
+                                        firstName: user?.given_name,
+                                        lastName: user?.family_name,
+                                        phone: user?.phone,
+                                        address: {
+                                            country:
+                                                user?.address.country || "",
+                                            city: user?.address.city,
+                                            line1: user?.address.line1,
+                                            line2: user?.address.line2,
+                                            state: user?.address.state,
+                                            postal_code:
+                                                user?.address.postal_code,
+                                        },
+                                    },
+                                }}
+                            />
+
+                            <PaymentElement />
                         </Row>
                     </Col>
                 </Row>
@@ -217,13 +225,13 @@ const Checkout = () => {
                     <Button
                         variant="success"
                         type="submit"
-                        disabled={loading || outOfStock}
+                        disabled={isButtonDisabled}
                     >
                         Proceed
                     </Button>
                 </div>
             </Form>
-        </Container>
+        </div>
     );
 };
 

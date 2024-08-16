@@ -1,6 +1,7 @@
 import type { TProductWithImages } from "../types/Product";
 import type { TCartItem } from "../store/useCartStore";
 import { toPriceNumber } from "../utils/numbers";
+import { getDiscountPrice } from "../utils/getDiscountedPrice";
 
 const ItemPrice = ({ item }: { item: TCartItem<TProductWithImages> }) => {
     return (
@@ -27,9 +28,10 @@ const ItemPrice = ({ item }: { item: TCartItem<TProductWithImages> }) => {
                         }
                     >
                         {`${toPriceNumber(
-                            ((100 - item.product.discount) / 100) *
-                                item.amount *
-                                item.product.price
+                            getDiscountPrice(
+                                item.product.price,
+                                item.product.discount
+                            ) * item.amount
                         )} $`}
                     </div>
                 </>

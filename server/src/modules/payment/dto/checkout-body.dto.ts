@@ -37,8 +37,4 @@ export class CheckoutBodyDto {
     @Type(() => ItemDto)
     @IsArray()
     items: ItemDto[];
-
-    @ValidateNested()
-    @Type(() => BuyerDto)
-    buyer: BuyerDto;
 }

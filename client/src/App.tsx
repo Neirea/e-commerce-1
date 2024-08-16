@@ -28,7 +28,7 @@ const Loading = () => {
 
 function App() {
     const { syncCart } = useCartStore();
-    const { user, isLoading } = useCurrentUser();
+    const { user, isLoading, getUpdatedUser } = useCurrentUser();
 
     let localCart: TCart = [];
     let ids: number[] = [];
@@ -97,7 +97,10 @@ function App() {
                             path="/profile"
                             element={
                                 <Suspense fallback={<Loading />}>
-                                    <UserProfile user={user} />
+                                    <UserProfile
+                                        user={user}
+                                        getUpdatedUser={getUpdatedUser}
+                                    />
                                 </Suspense>
                             }
                         />

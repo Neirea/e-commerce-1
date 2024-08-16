@@ -1,19 +1,17 @@
 import {
     Body,
     Controller,
-    Param,
+    Headers,
+    HttpCode,
     Post,
     RawBodyRequest,
     Req,
-    Headers,
-    HttpCode,
 } from "@nestjs/common";
-import { PaymentService } from "./payment.service";
+import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Request } from "express";
 import { CheckoutBodyDto } from "./dto/checkout-body.dto";
-import { TOrderId } from "../order/order.types";
-import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CheckoutResponseDto } from "./dto/checkout-response.dto";
+import { PaymentService } from "./payment.service";
 
 @ApiTags("payment")
 @Controller("payment")
@@ -29,18 +27,6 @@ export class PaymentController {
     ): Promise<CheckoutResponseDto> {
         const user = req.user;
         return this.paymentService.initializePayment(user, body);
-    }
-
-    @Post("checkout/:id")
-    @HttpCode(200)
-    @ApiOperation({ summary: "Proceeds unfinished order" })
-    @ApiCookieAuth()
-    finishPayment(
-        @Param("id") id: TOrderId,
-        @Req() req: Request,
-    ): Promise<CheckoutResponseDto> {
-        const user = req.user;
-        return this.paymentService.resumePayment(user, id);
     }
 
     @Post("webhook")

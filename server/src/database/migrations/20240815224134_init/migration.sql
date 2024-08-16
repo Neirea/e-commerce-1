@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "OrderStatus" AS ENUM ('PENDING', 'ACCEPTED', 'PROCESSING', 'DELIVERED', 'CANCELLED');
+CREATE TYPE "OrderStatus" AS ENUM ('ACCEPTED', 'PROCESSING', 'DELIVERED', 'CANCELLED');
 
 -- CreateEnum
 CREATE TYPE "Platform" AS ENUM ('GOOGLE', 'FACEBOOK');
@@ -12,10 +12,10 @@ CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "given_name" TEXT NOT NULL,
     "family_name" TEXT NOT NULL,
-    "email" TEXT,
+    "email" TEXT NOT NULL,
     "platform_id" TEXT NOT NULL,
     "platform" "Platform" NOT NULL,
-    "address" TEXT,
+    "address" JSONB NOT NULL,
     "phone" TEXT,
     "role" "Role"[],
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -28,12 +28,12 @@ CREATE TABLE "User" (
 CREATE TABLE "Product" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "price" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "price" INTEGER NOT NULL DEFAULT 0,
     "description" JSONB NOT NULL,
     "inventory" INTEGER NOT NULL,
     "company_id" INTEGER NOT NULL,
     "category_id" INTEGER NOT NULL,
-    "shipping_cost" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "shipping_cost" INTEGER NOT NULL DEFAULT 0,
     "discount" INTEGER NOT NULL DEFAULT 0,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -72,13 +72,13 @@ CREATE TABLE "Category" (
 -- CreateTable
 CREATE TABLE "Order" (
     "id" SERIAL NOT NULL,
-    "status" "OrderStatus" NOT NULL DEFAULT 'PENDING',
-    "shipping_cost" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "status" "OrderStatus" NOT NULL DEFAULT 'ACCEPTED',
+    "shipping_cost" INTEGER NOT NULL DEFAULT 0,
     "user_id" INTEGER,
     "buyer_name" TEXT NOT NULL,
     "buyer_email" TEXT NOT NULL,
     "buyer_phone" TEXT,
-    "delivery_address" TEXT NOT NULL,
+    "delivery_address" JSONB NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "payment_time" TIMESTAMP(3),
 
@@ -90,7 +90,7 @@ CREATE TABLE "SingleOrderItem" (
     "id" SERIAL NOT NULL,
     "order_id" INTEGER NOT NULL,
     "amount" INTEGER NOT NULL,
-    "price" DOUBLE PRECISION NOT NULL,
+    "price" INTEGER NOT NULL,
     "product_id" INTEGER NOT NULL,
 
     CONSTRAINT "SingleOrderItem_pkey" PRIMARY KEY ("id")
@@ -181,7 +181,7 @@ ALTER TABLE "Order" ADD CONSTRAINT "Order_user_id_fkey" FOREIGN KEY ("user_id") 
 ALTER TABLE "SingleOrderItem" ADD CONSTRAINT "SingleOrderItem_order_id_fkey" FOREIGN KEY ("order_id") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SingleOrderItem" ADD CONSTRAINT "SingleOrderItem_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "SingleOrderItem" ADD CONSTRAINT "SingleOrderItem_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_variants" ADD CONSTRAINT "_variants_A_fkey" FOREIGN KEY ("A") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
