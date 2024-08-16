@@ -11,7 +11,6 @@ import { ProductModule } from "./modules/product/product.module";
 import { RedisModule } from "./modules/redis/redis.module";
 import { UserModule } from "./modules/user/user.module";
 import { AppController } from "./app.controller";
-import { PrismaService } from "./modules/prisma/prisma.service";
 
 @Module({
     imports: [
@@ -28,6 +27,6 @@ import { PrismaService } from "./modules/prisma/prisma.service";
         RedisModule,
     ],
     controllers: [AppController],
-    providers: [PrismaService],
+    providers: [],
 })
 export class AppModule {}

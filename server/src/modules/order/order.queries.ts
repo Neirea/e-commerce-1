@@ -39,9 +39,3 @@ export const updateOrderItemQuery = (
     SET inventory = inventory - ${order.amount}
     WHERE id = ${order.product_id}
 `;
-
-export const deletePendingOrdersQuery = Prisma.sql`
-    DELETE FROM public."Order" as o
-    WHERE o.status = 'PENDING'
-    AND o.created_at < NOW() - INTERVAL '1 day'
-`;
