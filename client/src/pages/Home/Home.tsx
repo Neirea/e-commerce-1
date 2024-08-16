@@ -25,18 +25,18 @@ const Home = () => {
                                 height={410}
                             />
                         </Col>
-                        <Col className="bg-success col-lg-5 p-5 d-flex flex-column justify-content-center">
-                            <h1 className="text-light fw-bold text-center fs-1">
+                        <Col className="col-lg-5 p-5 d-flex flex-column justify-content-center">
+                            <h1 className="text-success fw-bold text-center fs-1">
                                 About Techway
                             </h1>
-                            <p className="text-light fs-4">
+                            <p className=" fs-4">
                                 Demo website to demonstrate a custom ecommerce
                                 flow. Listed products are not real and no
                                 payment information is collected. Do not use
                                 your real personal or payment information.
                             </p>
                             <Link to="/search">
-                                <Button variant="light" className="w-100">
+                                <Button variant="success" className="w-100">
                                     Shop now
                                 </Button>
                             </Link>
