@@ -4,19 +4,25 @@ export const useOutsideClick = (
     refs: Array<MutableRefObject<any>>,
     handleClose: () => void
 ) => {
-    const handleClickOutside = (e: MouseEvent) => {
-        if (
-            refs.every(
-                (ref) => ref.current != null && !ref.current.contains(e.target)
-            )
-        ) {
-            handleClose();
-        }
-    };
+    const controller = new AbortController();
     useEffect(() => {
-        document.addEventListener("click", handleClickOutside);
+        document.addEventListener(
+            "click",
+            (e) => {
+                if (
+                    refs.every(
+                        (ref) =>
+                            ref.current != null &&
+                            !ref.current.contains(e.target)
+                    )
+                ) {
+                    handleClose();
+                }
+            },
+            { signal: controller.signal }
+        );
         return () => {
-            document.removeEventListener("click", handleClickOutside);
+            controller.abort();
         };
     }, []);
 };
