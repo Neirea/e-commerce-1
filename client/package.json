@@ -13,7 +13,7 @@
         "@stripe/react-stripe-js": "^2.8.1",
         "@stripe/stripe-js": "^4.8.0",
         "@tanstack/react-query": "^4.32.6",
-        "axios": "^1.7.7",
+        "axios": "^1.8.3",
         "bootstrap": "^5.3.3",
         "postcode-validator": "^3.10.1",
         "query-string": "^9.1.1",
@@ -30,6 +30,6 @@
         "@types/react-dom": "^18.3.1",
         "@vitejs/plugin-react": "^4.3.2",
         "typescript": "^5.6.3",
-        "vite": "^6.2.0"
+        "vite": "^6.2.2"
     }
 }
