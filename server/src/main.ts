@@ -3,7 +3,7 @@ import { RequestMethod, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import RedisStore from "connect-redis";
+import { RedisStore } from "connect-redis";
 import * as session from "express-session";
 import helmet from "helmet";
 import * as passport from "passport";
