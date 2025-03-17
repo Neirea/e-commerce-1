@@ -7,6 +7,6 @@ export class AppController {
     @Get("/")
     @ApiOperation({ summary: "Health Check" })
     healthCheck(): string {
-        return;
+        return "";
     }
 }

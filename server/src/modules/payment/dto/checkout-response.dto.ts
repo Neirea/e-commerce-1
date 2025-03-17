@@ -1,3 +1,3 @@
 export class CheckoutResponseDto {
-    clientSecret: string;
+    clientSecret: string | null;
 }

@@ -3,8 +3,10 @@ import { TCategoryId } from "src/modules/category/category.types";
 import { TCompanyId } from "src/modules/company/company.types";
 
 export const subCategoriesQuery = (
-    category_id: TCategoryId,
-): Prisma.Sql => Prisma.sql`
+    category_id: TCategoryId | undefined,
+): Prisma.Sql =>
+    category_id !== undefined
+        ? Prisma.sql`
     WITH RECURSIVE subcategory AS (
         SELECT ctg.id,ctg.parent_id FROM public."Category" AS ctg WHERE parent_id IS NULL AND id = ${category_id}
     UNION ALL
@@ -13,7 +15,8 @@ export const subCategoriesQuery = (
         ON sc.parent_id = subcat.id
     )
     SELECT subcategory.id FROM subcategory;
-`;
+`
+        : Prisma.empty;
 
 export const productsByOrderCount = Prisma.sql`
     SELECT p.*,CAST(COUNT(CASE o.status WHEN 'ACCEPTED' THEN 1 ELSE NULL END) as INTEGER) as _count
@@ -37,15 +40,15 @@ OR to_tsvector('simple',com.name) @@ to_tsquery('simple',${searchString})
 OR to_tsvector('simple',cat.name) @@ to_tsquery('simple',${searchString}))`
         : Prisma.sql`TRUE`;
 
-export const getCompanyCondition = (id: TCompanyId): Prisma.Sql =>
-    id ? Prisma.sql`AND p.company_id = ${id}` : Prisma.empty;
+export const getCompanyCondition = (id: TCompanyId | undefined): Prisma.Sql =>
+    id !== undefined ? Prisma.sql`AND p.company_id = ${id}` : Prisma.empty;
 
 export const getCategoryCondition = (
     ids: TCategoryId[],
-    id: TCategoryId,
+    id: TCategoryId | undefined,
 ): Prisma.Sql =>
     ids.length
         ? Prisma.sql`AND p.category_id IN (${Prisma.join(ids)})`
-        : id
+        : id !== undefined
           ? Prisma.sql`AND p.category_id = ${id}`
           : Prisma.empty;

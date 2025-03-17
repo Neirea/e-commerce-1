@@ -36,7 +36,7 @@ export class UserController {
 
     @Get("me")
     @ApiOperation({ summary: "Gets current user if logged in" })
-    showMe(@Req() req: Request): User {
+    showMe(@Req() req: Request): User | undefined {
         const user = req.user;
         return this.userService.showMe(user);
     }

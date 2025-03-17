@@ -25,8 +25,8 @@ export class OrderController {
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     getOrders(@Req() req: Request): Promise<OrderWithItemsDto[]> {
-        const TUserId = req.user.id;
-        return this.orderService.getOrders(TUserId);
+        const userId = req.user!.id;
+        return this.orderService.getOrders(userId);
     }
     @Patch(":id")
     @HttpCode(204)
@@ -34,8 +34,8 @@ export class OrderController {
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     cancelOrder(@Param("id") id: TOrderId, @Req() req: Request): void {
-        const TUserId = req.user.id;
-        this.orderService.cancelOrder(id, TUserId);
+        const userId = req.user!.id;
+        this.orderService.cancelOrder(id, userId);
     }
     @Delete(":id")
     @HttpCode(204)
@@ -43,7 +43,7 @@ export class OrderController {
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
     deleteOrder(@Param("id") id: TOrderId, @Req() req: Request): void {
-        const TUserId = req.user.id;
-        this.orderService.deleteOrder(id, TUserId);
+        const userId = req.user!.id;
+        this.orderService.deleteOrder(id, userId);
     }
 }

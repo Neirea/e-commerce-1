@@ -57,9 +57,9 @@ describe("UserService", () => {
             const result = await service.updateUser(req as Request, inputUser);
 
             expect(result).toEqual(updatedUser);
-            expect(req.session.passport.user).toEqual(updatedUser);
+            expect(req.session!.passport!.user).toEqual(updatedUser);
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
-                updateUserQuery(req.user.id, inputUser),
+                updateUserQuery(req.user!.id, inputUser),
             );
         });
     });

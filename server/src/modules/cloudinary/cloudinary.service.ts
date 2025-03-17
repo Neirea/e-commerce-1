@@ -24,6 +24,10 @@ export class CloudinaryService {
             cloudinary.uploader
                 .upload_stream(options, (err, value) => {
                     if (err) reject(err.message);
+                    if (!value) {
+                        reject("Bad Upload Response");
+                        return;
+                    }
                     resolve(value);
                 })
                 .end(fileBuffer);

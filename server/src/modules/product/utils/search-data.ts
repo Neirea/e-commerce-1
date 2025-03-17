@@ -20,8 +20,8 @@ export const setAndCount = <T extends TShared>(
 };
 export const isValidPriceRange = (
     price: number,
-    min: number,
-    max: number,
+    min: number | undefined,
+    max: number | undefined,
 ): boolean => {
     const minPrice = min ?? 0;
     const maxPrice = max ?? Infinity;

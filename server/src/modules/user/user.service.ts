@@ -18,17 +18,17 @@ export class UserService {
         return user[0];
     }
 
-    showMe(user: User): User | undefined {
+    showMe(user: User | undefined): User | undefined {
         if (user) return { ...user };
     }
 
     async updateUser(req: Request, input: UpdateUserDto): Promise<User> {
-        const user = req.user;
+        const user = req.user!;
         const data = await this.prisma.$queryRaw<[User]>(
             updateUserQuery(user.id, input),
         );
 
-        if (data[0]) {
+        if (data[0] && req.session.passport) {
             req.session.passport.user = data[0];
             return data[0];
         }

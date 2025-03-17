@@ -25,7 +25,7 @@ export class PaymentController {
         @Req() req: Request,
         @Body() body: CheckoutBodyDto,
     ): Promise<CheckoutResponseDto> {
-        const user = req.user;
+        const user = req.user!;
         return this.paymentService.initializePayment(user, body);
     }
 
@@ -39,7 +39,7 @@ export class PaymentController {
     ): Promise<{
         received: string;
     }> {
-        const rawBody = req.rawBody;
+        const rawBody = req.rawBody!;
         return this.paymentService.stripeWebhook(signature, rawBody);
     }
 }

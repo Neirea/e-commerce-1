@@ -30,7 +30,8 @@ export class AuthService {
         platform: Platform,
     ): Promise<User> {
         const { id, name, photos, emails, displayName } = profile;
-        const userCountResult = await this.prisma.$queryRaw(userCountQuery);
+        const userCountResult =
+            await this.prisma.$queryRaw<[{ count: number }]>(userCountQuery);
         const userCount = userCountResult[0].count;
         const isFirstAccount = userCount === 0;
 

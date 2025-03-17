@@ -20,7 +20,7 @@ export class PaymentService {
     async initializePayment(
         user: User,
         body: CheckoutBodyDto,
-    ): Promise<{ clientSecret: string }> {
+    ): Promise<{ clientSecret: string | null }> {
         if (body.items.length === 0) {
             throw new BadRequestException("Your cart is empty");
         }
@@ -35,6 +35,11 @@ export class PaymentService {
             const orderAmount = body.items.find(
                 (p) => p.id === product.id,
             )?.amount;
+            if (!orderAmount) {
+                throw new BadRequestException(
+                    `Product is missing: ${product.name}`,
+                );
+            }
             this.checkInventoryAmount(product, orderAmount);
             return {
                 product_id: product.id,
@@ -78,6 +83,9 @@ export class PaymentService {
                 const email = event.data.object.billing_details.email;
                 const info = event.data.object.metadata;
                 const orderItems = JSON.parse(info.order_items);
+                if (!customer || !customer.name || !email) {
+                    throw new BadRequestException("Bad customer data");
+                }
                 const devliveryAddress = JSON.parse(
                     JSON.stringify(customer.address),
                 );

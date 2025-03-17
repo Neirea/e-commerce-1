@@ -15,6 +15,7 @@ export class SameLengthConstraint implements ValidatorConstraintInterface {
         return propertyValue.length === currValue.length;
     }
     defaultMessage(validationArguments?: ValidationArguments): string {
+        if (!validationArguments) return "No validation arguments";
         const { object, property, constraints } = validationArguments;
         const property1 = property;
         const property2 = constraints[0];
