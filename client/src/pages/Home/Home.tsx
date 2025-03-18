@@ -7,7 +7,7 @@ import Categories from "./Categories";
 import Featured from "./Featured";
 import Popular from "./Popular";
 
-const Home = () => {
+const Home = (): JSX.Element => {
     return (
         <>
             <Container as="main">

@@ -1,6 +1,6 @@
 import Container from "react-bootstrap/Container";
 
-const Error = () => {
+const Error = (): JSX.Element => {
     return (
         <Container as="main" className="text-center mt-5">
             <b className="display-1">404</b>

@@ -11,23 +11,32 @@ export type TCartItem<TProduct extends TCartProductBase> = {
 };
 export type TCart = TCartItem<TProductWithImages>[];
 
+type TCartStore = {
+    cart: TCart;
+    changeCart: (value: TCart) => void;
+    addProductToCart: (item: TCartItem<TProductWithImages>) => void;
+    removeProductFromCart: (product: TProductWithImages) => void;
+    clearCart: () => void;
+    syncCart: (data: TProductWithImages[], source: TCart) => string | undefined;
+};
+
 export const getSyncedCart = (
     data: TProductWithImages[] | undefined,
-    source: TCart
+    source: TCart,
 ): { newState: TCart; errors: string[] } | undefined => {
     if (data?.length && source.length) {
-        let errors: string[] = [];
+        const errors: string[] = [];
         const newState: TCart = source.reduce<TCart>((result, item) => {
             const cartProduct = data.find((i) => item.product.id === i.id);
             if (!cartProduct) {
                 errors.push(
-                    `Product with id:${item.product.id} no longer exists.`
+                    `Product with id:${item.product.id} no longer exists.`,
                 );
                 return result;
             }
             if (cartProduct.inventory < item.amount) {
                 errors.push(
-                    `Warning: You cart has changed due to available amount of ${cartProduct.name}.`
+                    `Warning: You cart has changed due to available amount of ${cartProduct.name}.`,
                 );
             }
             const amount =
@@ -46,7 +55,7 @@ export const getSyncedCart = (
     return undefined;
 };
 
-export const addCartToLocalStorage = (products: TCart) => {
+export const addCartToLocalStorage = (products: TCart): void => {
     localStorage.setItem(
         "cart",
         JSON.stringify(
@@ -55,12 +64,12 @@ export const addCartToLocalStorage = (products: TCart) => {
                     product: { id: p.product.id },
                     amount: p.amount,
                 };
-            })
-        )
+            }),
+        ),
     );
 };
 
-function useCartStore() {
+const useCartStore = (): TCartStore => {
     const { cart, changeCart } = useCart();
 
     const syncCart = useCallback(
@@ -75,13 +84,13 @@ function useCartStore() {
                 return result.errors.join("\n");
             }
         },
-        []
+        [],
     );
 
     const addProductToCart = useCallback(
         (item: TCartItem<TProductWithImages>) => {
             const existingProduct = cart.find(
-                (p) => p.product.id === item.product.id
+                (p) => p.product.id === item.product.id,
             );
 
             let newCart: TCart = [];
@@ -108,7 +117,7 @@ function useCartStore() {
             addCartToLocalStorage(newCart);
             changeCart(newCart);
         },
-        [cart]
+        [cart],
     );
 
     const removeProductFromCart = useCallback(
@@ -117,7 +126,7 @@ function useCartStore() {
             addCartToLocalStorage(newCart);
             changeCart(newCart);
         },
-        [cart]
+        [cart],
     );
 
     const clearCart = useCallback(() => {
@@ -133,6 +142,6 @@ function useCartStore() {
         clearCart,
         syncCart,
     };
-}
+};
 
 export default useCartStore;

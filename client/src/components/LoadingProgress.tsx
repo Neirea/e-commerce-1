@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import LoadingBar from "react-top-loading-bar";
 
-const LoadingProgress = ({ isLoading }: { isLoading: boolean }) => {
+const LoadingProgress = ({
+    isLoading,
+}: {
+    isLoading: boolean;
+}): JSX.Element => {
     const [showLoading, setShowLoading] = useState(false);
 
     useEffect(() => {
@@ -13,7 +17,7 @@ const LoadingProgress = ({ isLoading }: { isLoading: boolean }) => {
             }, 250);
         }
 
-        return () => {
+        return (): void => {
             clearTimeout(timeoutId);
         };
     }, [isLoading]);

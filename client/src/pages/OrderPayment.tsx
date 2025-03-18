@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useCurrentUser from "../hooks/useCurrentUser";
 import useCartStore from "../store/useCartStore";
 
-const OrderPayment = () => {
+const OrderPayment = (): JSX.Element => {
     const navigate = useNavigate();
     const { search } = useLocation();
     const { user } = useCurrentUser();
@@ -27,7 +27,10 @@ const OrderPayment = () => {
         <main className="mt-5 p-5 d-flex gap-3 flex-column align-items-center">
             <h2>Payment was successfuly received</h2>
             {user && (
-                <Button variant="success" onClick={() => navigate("/orders")}>
+                <Button
+                    variant="success"
+                    onClick={() => void navigate("/orders")}
+                >
                     Your orders
                 </Button>
             )}

@@ -1,6 +1,6 @@
 import Container from "react-bootstrap/Container";
 
-const Help = () => {
+const Help = (): JSX.Element => {
     return (
         <Container as="main">
             <Container className="mb-5 mt-5">

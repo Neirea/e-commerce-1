@@ -7,7 +7,7 @@ import type { TProductWithImages } from "../../types/Product";
 import { getError } from "../../utils/getError";
 import { FETCH_NUMBER } from "../../utils/numbers";
 
-const Popular = () => {
+const Popular = (): JSX.Element => {
     const {
         data: productData,
         isLoading: productLoading,
@@ -24,11 +24,13 @@ const Popular = () => {
         keepPreviousData: true,
     });
     const productError = getError(error);
-    const fetchMoreProducts = () => fetchNextPage();
+    const fetchMoreProducts = (): void => {
+        void fetchNextPage();
+    };
     const initialValue: TProductWithImages[] = [];
     const products = productData?.pages.reduce(
         (arr, curr) => arr.concat(curr.data),
-        initialValue
+        initialValue,
     );
 
     return (

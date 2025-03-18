@@ -8,10 +8,14 @@ type TCartStore = {
 
 export const CartContext = React.createContext({} as TCartStore);
 
-export const CartProvider = ({ children }: { children: ReactNode }) => {
+export const CartProvider = ({
+    children,
+}: {
+    children: ReactNode;
+}): JSX.Element => {
     const [cart, setCart] = useState<TCart>([]);
 
-    const changeCart = (value: TCart) => {
+    const changeCart = (value: TCart): void => {
         setCart(value);
     };
 
@@ -22,6 +26,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
-export const useCart = () => useContext(CartContext);
+export const useCart = (): TCartStore => useContext(CartContext);
 
 export default CartProvider;

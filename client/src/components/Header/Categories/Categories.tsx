@@ -5,7 +5,7 @@ import { getAllCategories } from "../../../queries/Category";
 import CategoriesContent from "./CategoriesContent";
 import { useQuery } from "@tanstack/react-query";
 
-const Categories = () => {
+const Categories = (): JSX.Element => {
     const { data } = useQuery({
         queryKey: ["category"],
         queryFn: getAllCategories,
@@ -14,8 +14,8 @@ const Categories = () => {
     const menuButtonRef = useRef<HTMLButtonElement | null>(null);
     const categoriesRef = useRef<HTMLDivElement | null>(null);
 
-    const toggleCategories = () => setShowCategories((old) => !old);
-    const handleCloseCategories = () => setShowCategories(false);
+    const toggleCategories = (): void => setShowCategories((old) => !old);
+    const handleCloseCategories = (): void => setShowCategories(false);
 
     useOutsideClick([menuButtonRef, categoriesRef], handleCloseCategories);
 

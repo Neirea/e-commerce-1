@@ -8,7 +8,7 @@ import { FETCH_NUMBER } from "../../utils/numbers";
 
 const options = { root: null, rootMargin: "0px", treshold: 1.0 };
 
-const RelatedProducts = ({ product }: { product: TProduct }) => {
+const RelatedProducts = ({ product }: { product: TProduct }): JSX.Element => {
     const fetchParams = {
         id: product?.id,
         company_id: product?.company_id,
@@ -23,7 +23,7 @@ const RelatedProducts = ({ product }: { product: TProduct }) => {
     } = useInfiniteQuery({
         queryKey: ["related"],
         queryFn: ({ pageParam = 0 }) =>
-            getRelatedProducts({ fetchParams, pageParam }),
+            getRelatedProducts({ fetchParams, pageParam: pageParam as number }),
         getNextPageParam: (lastPage, allPages) => {
             if (lastPage.data.length % FETCH_NUMBER !== 0) return;
             return allPages.length;
@@ -35,13 +35,13 @@ const RelatedProducts = ({ product }: { product: TProduct }) => {
     const initialValue: TProductWithImages[] = [];
     const products = relatedProductData?.pages.reduce(
         (arr, curr) => arr.concat(curr.data),
-        initialValue
+        initialValue,
     );
 
     const containerRef = useInView<HTMLDivElement>(
         options,
         fetchNextPage,
-        hasNextPage
+        hasNextPage,
     );
 
     return (

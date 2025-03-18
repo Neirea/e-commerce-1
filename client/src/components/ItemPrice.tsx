@@ -3,7 +3,11 @@ import type { TCartItem } from "../store/useCartStore";
 import { toPriceNumber } from "../utils/numbers";
 import { getDiscountPrice } from "../utils/getDiscountedPrice";
 
-const ItemPrice = ({ item }: { item: TCartItem<TProductWithImages> }) => {
+const ItemPrice = ({
+    item,
+}: {
+    item: TCartItem<TProductWithImages>;
+}): JSX.Element => {
     return (
         <>
             {item.product.inventory === 0 ? (
@@ -16,7 +20,7 @@ const ItemPrice = ({ item }: { item: TCartItem<TProductWithImages> }) => {
                     <div>
                         {item.product.discount > 0 && (
                             <s className="text-muted fs-5">{`${toPriceNumber(
-                                item.amount * item.product.price
+                                item.amount * item.product.price,
                             )} $`}</s>
                         )}
                     </div>
@@ -30,8 +34,8 @@ const ItemPrice = ({ item }: { item: TCartItem<TProductWithImages> }) => {
                         {`${toPriceNumber(
                             getDiscountPrice(
                                 item.product.price,
-                                item.product.discount
-                            ) * item.amount
+                                item.product.discount,
+                            ) * item.amount,
                         )} $`}
                     </div>
                 </>

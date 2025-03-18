@@ -28,7 +28,7 @@ import { clientUrl, stripePublicKey } from "../utils/server";
 
 const stripePromise = loadStripe(stripePublicKey);
 
-const Checkout = () => {
+const Checkout = (): JSX.Element => {
     const navigate = useNavigate();
     const [clientSecret, setClientSecret] = useState("");
     const { cart } = useCartStore();
@@ -39,10 +39,10 @@ const Checkout = () => {
 
     useEffect(() => {
         if (cart.length === 0) {
-            navigate("/");
+            void navigate("/");
             return;
         }
-        checkout({ items: checkoutItems }).then((response) => {
+        void checkout({ items: checkoutItems }).then((response) => {
             setClientSecret(response.data.clientSecret);
         });
     }, [cart]);
@@ -67,7 +67,7 @@ const Checkout = () => {
     );
 };
 
-const CheckoutForm = () => {
+const CheckoutForm = (): JSX.Element => {
     const stripe = useStripe();
     const elements = useElements();
 
@@ -79,7 +79,7 @@ const CheckoutForm = () => {
     const shippingCost = cart.reduce(
         (shippingCost, item) =>
             Math.max(shippingCost, item.product.shipping_cost),
-        0
+        0,
     );
 
     const totalPrice = cart.reduce(
@@ -87,7 +87,7 @@ const CheckoutForm = () => {
             prev +
             getDiscountPrice(curr.product.price, curr.product.discount) *
                 curr.amount,
-        shippingCost
+        shippingCost,
     );
 
     const outOfStock = cart.some((p) => p.product.inventory === 0);
@@ -95,7 +95,7 @@ const CheckoutForm = () => {
     const isButtonDisabled =
         loading || outOfStock || stripe == null || elements == null;
 
-    const handleCheckout = async (e: FormEvent) => {
+    const handleCheckout = async (e: FormEvent): Promise<void> => {
         e.preventDefault();
         if (stripe == null || elements == null) {
             return;
@@ -109,7 +109,7 @@ const CheckoutForm = () => {
             return;
         }
 
-        stripe
+        await stripe
             .confirmPayment({
                 elements,
                 confirmParams: {
@@ -132,7 +132,7 @@ const CheckoutForm = () => {
 
     return (
         <div>
-            <Form onSubmit={handleCheckout}>
+            <Form onSubmit={(e) => void handleCheckout(e)}>
                 <h2 className="text-center">Checkout</h2>
                 <Row className="flex-col justify-content-center flex-sm-row">
                     <Col md="8">

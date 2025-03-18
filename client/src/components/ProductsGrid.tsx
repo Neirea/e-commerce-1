@@ -11,7 +11,7 @@ const ProductsGrid = ({
     products: TProductWithImages[] | undefined;
     productError: Error | undefined;
     productLoading: boolean;
-}) => {
+}): JSX.Element => {
     if (productError) {
         return (
             <div className="d-flex justify-content-center">
@@ -62,7 +62,7 @@ const ProductsGrid = ({
                                             <div>
                                                 <s className="text-muted">
                                                     {toPriceNumber(
-                                                        product.price
+                                                        product.price,
                                                     )}
                                                     {" $"}
                                                 </s>
@@ -80,7 +80,7 @@ const ProductsGrid = ({
                                             {toPriceNumber(
                                                 ((100 - product.discount) /
                                                     100) *
-                                                    product.price
+                                                    product.price,
                                             )}
                                             {" $"}
                                         </div>

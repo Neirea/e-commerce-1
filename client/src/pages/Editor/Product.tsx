@@ -20,6 +20,7 @@ import {
 } from "../../queries/Product";
 import { getError } from "../../utils/getError";
 import isJSON from "../../utils/isJSON";
+import type { TProductMutate } from "../../types/Product";
 
 const defaultValues = {
     name: "",
@@ -32,7 +33,7 @@ const defaultValues = {
     discount: 0,
 };
 
-const Product = () => {
+const Product = (): JSX.Element => {
     const queryClient = useQueryClient();
     const productQuery = useQuery({
         queryKey: ["product"],
@@ -50,19 +51,19 @@ const Product = () => {
     const createProductMutation = useMutation({
         mutationFn: createProduct,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["product"] });
+            void queryClient.invalidateQueries({ queryKey: ["product"] });
         },
     });
     const updateProductMutation = useMutation({
         mutationFn: updateProduct,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["product"] });
+            void queryClient.invalidateQueries({ queryKey: ["product"] });
         },
     });
     const deleteProductMutation = useMutation({
         mutationFn: deleteProduct,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["product"] });
+            void queryClient.invalidateQueries({ queryKey: ["product"] });
         },
     });
 
@@ -95,25 +96,25 @@ const Product = () => {
         !categoryQuery.data;
 
     const dataError = getError(
-        productQuery.error || deleteProductMutation.error
+        productQuery.error || deleteProductMutation.error,
     );
     const upsertError = getError(
-        createProductMutation.error || updateProductMutation.error
+        createProductMutation.error || updateProductMutation.error,
     );
 
     const isJson = useMemo(
         () => isJSON(values.description),
-        [values.description]
+        [values.description],
     );
 
-    const resetForm = () => {
+    const resetForm = (): void => {
         setValues(defaultValues);
         setProductId(0);
         setSelectedVariants([]);
         if (filesRef.current) filesRef.current.value = "";
     };
 
-    const handleProductSelect = (e: ChangeEvent<HTMLSelectElement>) => {
+    const handleProductSelect = (e: ChangeEvent<HTMLSelectElement>): void => {
         const idx = +e.target.value;
         if (idx === 0) {
             resetForm();
@@ -137,15 +138,15 @@ const Product = () => {
         }
     };
 
-    const handleVariantSelect = (e: ChangeEvent<HTMLSelectElement>) => {
+    const handleVariantSelect = (e: ChangeEvent<HTMLSelectElement>): void => {
         setSelectedVariants(
             [...e.target.selectedOptions].map((opt) => {
                 return opt.value;
-            })
+            }),
         );
     };
 
-    const handleFiles = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleFiles = (e: ChangeEvent<HTMLInputElement>): void => {
         if (!e.target.files || !e.target.files.length) {
             setSelectedImages([]);
             return;
@@ -155,8 +156,8 @@ const Product = () => {
     const handleChange = (
         e: ChangeEvent<
             HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-        >
-    ) => {
+        >,
+    ): void => {
         if (e.target.name === "name" || e.target.name === "description") {
             setValues({ ...values, [e.target.name]: e.target.value });
             return;
@@ -164,7 +165,7 @@ const Product = () => {
         setValues({ ...values, [e.target.name]: +e.target.value });
     };
 
-    const handleSubmit = async (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent): Promise<void> => {
         e.preventDefault();
 
         //decide where to show error;
@@ -181,12 +182,12 @@ const Product = () => {
             return;
         }
 
-        const newProduct = {
+        const newProduct: Omit<TProductMutate, "id"> = {
             ...values,
             variants: selectedVariants.map((i) => +i),
-            description: JSON.parse(values.description),
-            img_id: [] as string[],
-            img_src: [] as string[],
+            description: JSON.parse(values.description) as object,
+            img_id: [],
+            img_src: [],
         };
         if (selectedImages.length) {
             setUploadLoading(true);
@@ -221,7 +222,7 @@ const Product = () => {
         setSelectedImages([]);
     };
 
-    const handleDelete = async () => {
+    const handleDelete = async (): Promise<void> => {
         if (!productId) return;
         await deleteProductMutation.mutateAsync(productId);
         resetForm();
@@ -230,7 +231,10 @@ const Product = () => {
     return (
         <>
             <h2 className="text-center mt-4">Product</h2>
-            <Form className="m-auto col-sm-10" onSubmit={handleSubmit}>
+            <Form
+                className="m-auto col-sm-10"
+                onSubmit={(e) => void handleSubmit(e)}
+            >
                 <Form.Group className="mt-3 mb-3">
                     <Form.Label>
                         Choose product to create, update or delete
@@ -253,7 +257,7 @@ const Product = () => {
                         </Form.Select>
                         <Button
                             disabled={loading || !productId}
-                            onClick={handleDelete}
+                            onClick={() => void handleDelete()}
                         >
                             {loading ? "Wait..." : "Delete"}
                         </Button>

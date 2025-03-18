@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const phoneDesc =
     '"+" for country code; you can use "()","-" for the remaining number';
-export const phoneRegex = /(\+)[1-9][0-9 \-\(\)]{7,32}/;
+export const phoneRegex = /(\+)[1-9][0-9 \-()]{7,32}/;
 
 export const phoneZod = z.string().regex(phoneRegex).or(z.string().length(0));
 export const emailZod = z.string().email();

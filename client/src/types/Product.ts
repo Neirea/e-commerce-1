@@ -32,7 +32,11 @@ export type TProductCatCom = TProductWithImages & {
 export type TProductMutate = Omit<
     TProduct,
     "created_at" | "updated_at" | "variants"
-> & { variants: Pick<TProduct, "id">["id"][] };
+> & {
+    variants: Pick<TProduct, "id">["id"][];
+    img_id: string[];
+    img_src: string[];
+};
 
 export type TProductWithImgVariants = TProductWithImages & {
     company: TCompany;

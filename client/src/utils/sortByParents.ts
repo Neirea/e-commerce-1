@@ -11,8 +11,8 @@ type TResult<T> = {
 const orderByParents = <T extends TSortElement>(
     data: T[],
     depth: number,
-    p_id?: number | undefined
-) => {
+    p_id?: number,
+): TResult<T>[] => {
     if (p_id !== undefined) depth++;
     return data.reduce((r: Array<TResult<T>>, e) => {
         //check if element is parent to any element
@@ -26,7 +26,9 @@ const orderByParents = <T extends TSortElement>(
     }, []);
 };
 
-const sortByParentId = <T extends TSortElement>(array: Array<T>) => {
+const sortByParentId = <T extends TSortElement>(
+    array: Array<T>,
+): TResult<T>[] => {
     return orderByParents(array, 0);
 };
 

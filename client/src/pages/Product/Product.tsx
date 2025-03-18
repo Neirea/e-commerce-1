@@ -10,7 +10,7 @@ import { getSingleProductById } from "../../queries/Product";
 import AddProductForm from "./AddProductForm";
 import RelatedProducts from "./RelatedProducts";
 
-const Product = () => {
+const Product = (): JSX.Element => {
     const { id: idParam } = useParams();
     const [selectedImage, setSelectedImage] = useState(0);
     const [showCart, setShowCart] = useState(false);
@@ -26,8 +26,8 @@ const Product = () => {
 
     const product = currentData?.data;
 
-    const handleShowCart = () => setShowCart(true);
-    const handleCloseCart = () => setShowCart(false);
+    const handleShowCart = (): void => setShowCart(true);
+    const handleCloseCart = (): void => setShowCart(false);
 
     if (error) {
         return (
@@ -102,7 +102,7 @@ const Product = () => {
                                             <span>{`${value}`}</span>
                                         </div>
                                     );
-                                }
+                                },
                             )}
                             {product.variants.length > 0 && (
                                 <>

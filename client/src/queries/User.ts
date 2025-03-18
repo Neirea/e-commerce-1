@@ -1,9 +1,12 @@
-import axios from "axios";
+import axios, { type AxiosResponse } from "axios";
 import type { TUpdateUserParams, TUser } from "../types/User";
 
-export const getCurrentUser = () => axios.get<TUser>("/user/me");
+export const getCurrentUser = (): Promise<AxiosResponse<TUser>> =>
+    axios.get("/user/me");
 
-export const logout = () => axios.delete("/auth/logout");
+export const logout = (): Promise<AxiosResponse<void, any>> =>
+    axios.delete("/auth/logout");
 
-export const updateUser = (input: TUpdateUserParams) =>
-    axios.patch("/user/me", input);
+export const updateUser = (
+    input: TUpdateUserParams,
+): Promise<AxiosResponse<void, any>> => axios.patch("/user/me", input);

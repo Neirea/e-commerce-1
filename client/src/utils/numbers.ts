@@ -1,4 +1,4 @@
-export const toPriceNumber = (n: number) => {
+export const toPriceNumber = (n: number): string => {
     return (n / 100).toFixed(2);
 };
 

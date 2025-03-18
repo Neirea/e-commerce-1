@@ -1,7 +1,7 @@
 import { AiOutlineDelete } from "@react-icons/all-files/ai/AiOutlineDelete";
 import { BsPlus } from "@react-icons/all-files/bs/BsPlus";
 import { FiMinus } from "@react-icons/all-files/fi/FiMinus";
-import { type BaseSyntheticEvent, useState } from "react";
+import { type ChangeEvent, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -14,9 +14,9 @@ import { getProductsById } from "../../../queries/Product";
 import type { TCartItem } from "../../../store/useCartStore";
 import useCartStore from "../../../store/useCartStore";
 import type { TProductWithImages } from "../../../types/Product";
+import { getDiscountPrice } from "../../../utils/getDiscountedPrice";
 import { toPriceNumber } from "../../../utils/numbers";
 import ItemPrice from "../../ItemPrice";
-import { getDiscountPrice } from "../../../utils/getDiscountedPrice";
 
 const CartContent = ({
     handleClose,
@@ -24,7 +24,7 @@ const CartContent = ({
 }: {
     handleClose: () => void;
     show: boolean;
-}) => {
+}): JSX.Element => {
     const { pathname } = useLocation();
     const navigate = useNavigate();
     const [error, setError] = useState("");
@@ -35,12 +35,12 @@ const CartContent = ({
             prev +
             getDiscountPrice(curr.product.price, curr.product.discount) *
                 curr.amount,
-        0
+        0,
     );
 
     const outOfStock = cart.some((p) => p.product.inventory === 0);
 
-    const handleDecrease = (item: TCartItem<TProductWithImages>) => {
+    const handleDecrease = (item: TCartItem<TProductWithImages>): void => {
         if (item.amount === 1) {
             return;
         }
@@ -50,7 +50,7 @@ const CartContent = ({
         });
     };
 
-    const handleIncrease = (item: TCartItem<TProductWithImages>) => {
+    const handleIncrease = (item: TCartItem<TProductWithImages>): void => {
         if (item.amount === item.product.inventory) {
             return;
         }
@@ -61,7 +61,7 @@ const CartContent = ({
     };
 
     const handleSetAmount = (item: TCartItem<TProductWithImages>) => {
-        return (e: BaseSyntheticEvent) => {
+        return (e: ChangeEvent<HTMLInputElement>): void => {
             const setAmount = +e.target.value - item.amount;
             addProductToCart({
                 product: item.product,
@@ -69,23 +69,23 @@ const CartContent = ({
                     setAmount > item.product.inventory
                         ? item.product.inventory - item.amount
                         : +e.target.value < 1
-                        ? 1
-                        : setAmount,
+                          ? 1
+                          : setAmount,
             });
         };
     };
 
-    const handleCheckout = async () => {
+    const handleCheckout = async (): Promise<void> => {
         if (pathname !== "/checkout") {
             const { data } = await getProductsById(
-                cart.map((i) => i.product.id)
+                cart.map((i) => i.product.id),
             );
             const errorMessage = syncCart(data, cart);
             if (errorMessage) {
                 setError(errorMessage);
                 return;
             }
-            navigate("/checkout");
+            void navigate("/checkout");
         }
         handleClose();
     };
@@ -117,7 +117,7 @@ const CartContent = ({
                                             variant="link"
                                             onClick={() =>
                                                 removeProductFromCart(
-                                                    item.product
+                                                    item.product,
                                                 )
                                             }
                                         >
@@ -188,7 +188,9 @@ const CartContent = ({
                             <Col className="text-end">
                                 <Button
                                     variant="success"
-                                    onClick={handleCheckout}
+                                    onClick={() => {
+                                        void handleCheckout();
+                                    }}
                                     disabled={
                                         !cart.length ||
                                         pathname === "/checkout" ||

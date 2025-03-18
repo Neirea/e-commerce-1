@@ -28,5 +28,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 </CartProvider>
             </QueryClientProvider>
         </BrowserRouter>
-    </React.StrictMode>
+    </React.StrictMode>,
 );

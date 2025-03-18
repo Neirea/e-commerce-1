@@ -1,9 +1,9 @@
 import { type MutableRefObject, useEffect } from "react";
 
 export const useOutsideClick = (
-    refs: Array<MutableRefObject<any>>,
-    handleClose: () => void
-) => {
+    refs: Array<MutableRefObject<HTMLElement | null>>,
+    handleClose: () => void,
+): void => {
     const controller = new AbortController();
     useEffect(() => {
         document.addEventListener(
@@ -13,15 +13,15 @@ export const useOutsideClick = (
                     refs.every(
                         (ref) =>
                             ref.current != null &&
-                            !ref.current.contains(e.target)
+                            !ref.current.contains(e.target as Node),
                     )
                 ) {
                     handleClose();
                 }
             },
-            { signal: controller.signal }
+            { signal: controller.signal },
         );
-        return () => {
+        return (): void => {
             controller.abort();
         };
     }, []);

@@ -4,13 +4,13 @@ import useCurrentUser from "../../../hooks/useCurrentUser";
 import LoginContent from "./LoginContent";
 import UserMenu from "../UserMenu";
 
-const Login = () => {
+const Login = (): JSX.Element => {
     const { user, isLoading } = useCurrentUser();
 
     const [showLogin, setShowLogin] = useState(false);
 
-    const handleShowLogin = () => setShowLogin(true);
-    const handleCloseLogin = () => setShowLogin(false);
+    const handleShowLogin = (): void => setShowLogin(true);
+    const handleCloseLogin = (): void => setShowLogin(false);
 
     if (isLoading) {
         return <div style={{ minWidth: "5rem" }} />;

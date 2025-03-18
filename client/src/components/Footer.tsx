@@ -6,7 +6,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import { Link } from "react-router-dom";
 
-const Footer = () => {
+const Footer = (): JSX.Element => {
     return (
         <footer className="bg-dark text-light w-100 mt-5 mb-0">
             <Container className="p-5">

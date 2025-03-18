@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type AxiosResponse } from "axios";
 import type { TUploadedImage } from "../types/Category";
 import type {
     TFilteredProductsParams,
@@ -15,35 +15,47 @@ import type {
 import { FETCH_NUMBER, SEARCH_NUMBER } from "../utils/numbers";
 import { objectToQueryString } from "../utils/objectQueryString";
 
-export const getAllProducts = () => axios.get<TProduct[]>("/product");
+export const getAllProducts = (): Promise<AxiosResponse<TProduct[], any>> =>
+    axios.get("/product");
 
-export const createProduct = (input: Omit<TProductMutate, "id">) =>
-    axios.post<void>("/product", input);
+export const createProduct = (
+    input: Omit<TProductMutate, "id">,
+): Promise<AxiosResponse<void, any>> => axios.post("/product", input);
 
-export const updateProduct = (input: TProductMutate) => {
+export const updateProduct = (
+    input: TProductMutate,
+): Promise<AxiosResponse<void, any>> => {
     const { id, ...data } = input;
-    return axios.patch<void>(`/product/${id}`, data);
+    return axios.patch(`/product/${id}`, data);
 };
 
-export const deleteProduct = (id: Pick<TProduct, "id">["id"]) =>
-    axios.delete<void>(`/product/${id}`);
+export const deleteProduct = (
+    id: Pick<TProduct, "id">["id"],
+): Promise<AxiosResponse<void, any>> => axios.delete(`/product/${id}`);
 
-export const uploadImages = (formData: FormData) =>
-    axios.post<{ images: TUploadedImage[] }>(
-        "/editor/upload-images",
-        formData,
+export const uploadImages = (
+    formData: FormData,
+): Promise<
+    AxiosResponse<
         {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        }
-    );
+            images: TUploadedImage[];
+        },
+        any
+    >
+> =>
+    axios.post("/editor/upload-images", formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
 
-export const getFeaturedProducts = ({ pageParam = 0 }) => {
-    return axios.get<TProductWithImages[]>(
+export const getFeaturedProducts = ({
+    pageParam = 0,
+}): Promise<AxiosResponse<TProductWithImages[]>> => {
+    return axios.get(
         `/product/featured?limit=${FETCH_NUMBER}&offset=${
             pageParam * FETCH_NUMBER
-        }`
+        }`,
     );
 };
 
@@ -53,38 +65,49 @@ export const getRelatedProducts = ({
 }: {
     fetchParams: TRelatedProductFetchParams;
     pageParam: number;
-}) => {
+}): Promise<AxiosResponse<TProductWithImages[]>> => {
     const queryString = objectToQueryString(fetchParams);
-    return axios.get<TProductWithImages[]>(
+    return axios.get(
         `/product/related?limit=${FETCH_NUMBER}&offset=${
             pageParam * FETCH_NUMBER
-        }&${queryString}`
+        }&${queryString}`,
     );
 };
 
-export const getPopularProducts = ({ pageParam = 0 }) =>
-    axios.get<TProductWithImages[]>(
-        `/product/popular?limit=${FETCH_NUMBER}&offset=${
-            pageParam * FETCH_NUMBER
-        }`
+export const getPopularProducts = ({
+    pageParam = 0,
+}): Promise<AxiosResponse<TProductWithImages[]>> =>
+    axios.get(
+        `/product/popular?limit=${FETCH_NUMBER}&offset=${pageParam * FETCH_NUMBER}`,
     );
 
-export const getProductsById = (ids: Pick<TProduct, "id">["id"][]) => {
-    if (!ids.length) return { data: [] as TProductWithImages[] };
+export const getProductsById = (
+    ids: Pick<TProduct, "id">["id"][],
+): Promise<AxiosResponse<TProductWithImages[]>> => {
+    if (!ids.length)
+        return Promise.resolve({
+            data: [] as TProductWithImages[],
+        } as AxiosResponse<TProductWithImages[]>);
     const query = ids.join(",");
     const queryIds = `?ids=${query}`;
-    return axios.get<TProductWithImages[]>(`/product/some${queryIds}`);
+    return axios.get(`/product/some${queryIds}`);
 };
 
-export const getSingleProductById = (id: Pick<TProduct, "id">["id"]) =>
-    axios.get<TProductWithImgVariants>(`/product/${id}`);
+export const getSingleProductById = (
+    id: Pick<TProduct, "id">["id"],
+): Promise<AxiosResponse<TProductWithImgVariants>> =>
+    axios.get(`/product/${id}`);
 
-export const getSearchBarData = (query: string) =>
-    axios.get<TSearchResult[]>(`/product/search?v=${query}`);
+export const getSearchBarData = (
+    query: string,
+): Promise<AxiosResponse<TSearchResult[]>> =>
+    axios.get(`/product/search?v=${query}`);
 
-export const getSearchData = (input: TSearchDataParams) => {
+export const getSearchData = (
+    input: TSearchDataParams,
+): Promise<AxiosResponse<TSearchDataResponse>> => {
     const queryString = objectToQueryString(input);
-    return axios.get<TSearchDataResponse>(`/product/data?${queryString}`);
+    return axios.get(`/product/data?${queryString}`);
 };
 
 export const getFilteredProducts = ({
@@ -93,11 +116,11 @@ export const getFilteredProducts = ({
 }: {
     fetchParams: TFilteredProductsParams;
     pageParam: number;
-}) => {
+}): Promise<AxiosResponse<TProductCatCom[]>> => {
     const queryString = objectToQueryString(fetchParams);
-    return axios.get<TProductCatCom[]>(
+    return axios.get(
         `/product/filter?limit=${SEARCH_NUMBER}&offset=${
             pageParam * SEARCH_NUMBER
-        }&${queryString}`
+        }&${queryString}`,
     );
 };

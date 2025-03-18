@@ -42,14 +42,14 @@ const UserProfile = ({
 }: {
     user: TUser | undefined;
     getUpdatedUser: () => Promise<void>;
-}) => {
+}): JSX.Element => {
     const queryClient = useQueryClient();
     const [success, setSuccess] = useState(false);
     const [validationError, setValidationError] = useState<Error | null>(null);
     const updateMutation = useMutation({
         mutationFn: updateUser,
         onSuccess: () => {
-            queryClient.invalidateQueries(["user"]);
+            void queryClient.invalidateQueries(["user"]);
         },
     });
     const [values, setValues] = useState<UserStateType>({
@@ -69,12 +69,12 @@ const UserProfile = ({
 
     const error = getError(updateMutation.error) || validationError;
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
         setValues({ ...values, [e.target.name]: e.target.value });
         setSuccess(false);
     };
 
-    const handleAddressChange = (e: ChangeEvent<HTMLElement>) => {
+    const handleAddressChange = (e: ChangeEvent<HTMLElement>): void => {
         const target = e.target as HTMLInputElement | HTMLSelectElement;
         setValues({
             ...values,
@@ -83,7 +83,7 @@ const UserProfile = ({
         setSuccess(false);
     };
 
-    const handleSubmit = async (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent): Promise<void> => {
         e.preventDefault();
         setSuccess(false);
         const parseInput = UserProfileSchema.safeParse(values);
@@ -94,7 +94,7 @@ const UserProfile = ({
 
         const isPostcodeValid = postcodeValidator(
             values.address.postal_code,
-            values.address.country
+            values.address.country,
         );
 
         if (!isPostcodeValid) {
@@ -115,7 +115,10 @@ const UserProfile = ({
                 Enter your information for automatic insertion during payment
                 process
             </p>
-            <Form className="col-12 col-md-6" onSubmit={handleSubmit}>
+            <Form
+                className="col-12 col-md-6"
+                onSubmit={(e) => void handleSubmit(e)}
+            >
                 <Form.Group className="mb-3">
                     <Form.Label>Email</Form.Label>
                     <Form.Control

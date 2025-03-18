@@ -6,7 +6,7 @@ import LoadingProgress from "../components/LoadingProgress";
 import { getAllOrders } from "../queries/Order";
 import { toPriceNumber } from "../utils/numbers";
 
-const Orders = () => {
+const Orders = (): JSX.Element => {
     const { data, isLoading, error } = useQuery({
         queryKey: ["order"],
         queryFn: getAllOrders,
@@ -14,7 +14,7 @@ const Orders = () => {
 
     const sortedOrders = data?.data
         ? [...data.data].sort(
-              (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)
+              (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at),
           )
         : undefined;
 
@@ -69,7 +69,7 @@ const Orders = () => {
                                 order.order_items.reduce(
                                     (prev, curr) =>
                                         prev + curr.amount * curr.price,
-                                    order.shipping_cost
+                                    order.shipping_cost,
                                 );
                             const textColor =
                                 order.status === "CANCELLED"
@@ -125,7 +125,7 @@ const Orders = () => {
                                                                 </td>
                                                             </tr>
                                                         );
-                                                    }
+                                                    },
                                                 )}
                                             </tbody>
                                         </Table>
@@ -138,7 +138,7 @@ const Orders = () => {
                                     </td>
                                     <td className="fs-5">
                                         {`${toPriceNumber(
-                                            totalOrderPricePaid
+                                            totalOrderPricePaid,
                                         )} $`}
                                     </td>
                                 </tr>

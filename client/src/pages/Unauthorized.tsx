@@ -2,9 +2,9 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import { useNavigate } from "react-router-dom";
 
-const Unauthorized = () => {
+const Unauthorized = (): JSX.Element => {
     const navigate = useNavigate();
-    const goBack = () => navigate(-1);
+    const goBack = (): void => void navigate(-1);
     return (
         <Container as="main" className="text-center mt-5">
             <h1>Unauthorized</h1>

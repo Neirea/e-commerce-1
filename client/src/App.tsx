@@ -22,18 +22,18 @@ const UserProfile = lazy(() => import("./pages/UserProfile"));
 const Editor = lazy(() => import("./pages/Editor/Editor"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 
-const Loading = () => {
+const Loading = (): JSX.Element => {
     return <Container as="main" className="main-loading" />;
 };
 
-function App() {
+const App = (): JSX.Element => {
     const { syncCart } = useCartStore();
     const { user, isLoading, getUpdatedUser } = useCurrentUser();
 
     let localCart: TCart = [];
     let ids: number[] = [];
     try {
-        localCart = JSON.parse(localStorage.getItem("cart") || "[]");
+        localCart = JSON.parse(localStorage.getItem("cart") || "[]") as TCart;
         ids = localCart.map((i) => i.product.id);
     } catch (error) {
         console.error(error);
@@ -121,6 +121,6 @@ function App() {
             <Footer />
         </>
     );
-}
+};
 
 export default App;

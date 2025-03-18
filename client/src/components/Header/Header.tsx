@@ -6,7 +6,7 @@ import CategoriesHeader from "./Categories";
 import LoginHeader from "./Login";
 import SearchBar from "./SearchBar";
 
-const Header = () => {
+const Header = (): JSX.Element => {
     return (
         <Navbar
             bg="dark"

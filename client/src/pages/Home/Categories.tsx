@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { getAllCategories } from "../../queries/Category";
 import { getError } from "../../utils/getError";
 
-const Categories = () => {
+const Categories = (): JSX.Element => {
     const { data: categoryData, error } = useQuery({
         queryKey: ["category"],
         queryFn: getAllCategories,

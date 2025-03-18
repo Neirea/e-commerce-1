@@ -12,7 +12,7 @@ import {
 } from "../../queries/Category";
 import { getError } from "../../utils/getError";
 
-const Category = () => {
+const Category = (): JSX.Element => {
     const queryClient = useQueryClient();
     const [uploadLoading, setUploadLoading] = useState(false);
     const [uploadError, setUploadError] = useState<unknown>(null);
@@ -28,19 +28,19 @@ const Category = () => {
     const createCategoryMutation = useMutation({
         mutationFn: createCategory,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["category"] });
+            void queryClient.invalidateQueries({ queryKey: ["category"] });
         },
     });
     const updateCategoryMutation = useMutation({
         mutationFn: updateCategory,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["category"] });
+            void queryClient.invalidateQueries({ queryKey: ["category"] });
         },
     });
     const deleteCategoryMutation = useMutation({
         mutationFn: deleteCategory,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["category"] });
+            void queryClient.invalidateQueries({ queryKey: ["category"] });
         },
     });
     const filesRef = useRef<HTMLInputElement>(null);
@@ -60,25 +60,25 @@ const Category = () => {
         createCategoryMutation.error ||
             updateCategoryMutation.error ||
             deleteCategoryMutation.error ||
-            uploadError
+            uploadError,
     );
 
-    const resetForm = () => {
+    const resetForm = (): void => {
         setName("");
         setCategoryId(0);
         setParentId(0);
         if (filesRef.current) filesRef.current.value = "";
     };
 
-    const handleParentSelect = (e: ChangeEvent<HTMLSelectElement>) => {
+    const handleParentSelect = (e: ChangeEvent<HTMLSelectElement>): void => {
         setParentId(+e.target.value);
     };
 
-    const handleName = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleName = (e: ChangeEvent<HTMLInputElement>): void => {
         setName(e.target.value);
     };
 
-    const handleCategorySelect = (e: ChangeEvent<HTMLSelectElement>) => {
+    const handleCategorySelect = (e: ChangeEvent<HTMLSelectElement>): void => {
         const idx = +e.target.value;
 
         if (idx === 0) {
@@ -95,7 +95,7 @@ const Category = () => {
         }
     };
 
-    const handleUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleUpload = (e: ChangeEvent<HTMLInputElement>): void => {
         if (!e.target.files || !e.target.files.length) {
             setSelectedImage(undefined);
             return;
@@ -103,18 +103,18 @@ const Category = () => {
         setSelectedImage(e.target.files[0]);
     };
 
-    const handleDelete = async () => {
+    const handleDelete = async (): Promise<void> => {
         if (!categoryId) return;
         await deleteCategoryMutation.mutateAsync(categoryId);
         resetForm();
     };
 
-    const handleSubmit = async (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent): Promise<void> => {
         e.preventDefault();
         setUploadError(null);
 
-        let img_src;
-        let img_id;
+        let img_src: string | undefined;
+        let img_id: string | undefined;
 
         if (selectedImage) {
             setUploadLoading(true);
@@ -156,7 +156,10 @@ const Category = () => {
     return (
         <>
             <h2 className="text-center mt-4">Category</h2>
-            <Form className="m-auto col-sm-10" onSubmit={handleSubmit}>
+            <Form
+                className="m-auto col-sm-10"
+                onSubmit={(e) => void handleSubmit(e)}
+            >
                 <Form.Group className="mt-3 mb-3">
                     <Form.Label>
                         Choose category to create, update or delete
@@ -178,7 +181,7 @@ const Category = () => {
                             ))}
                         </Form.Select>
                         <Button
-                            onClick={handleDelete}
+                            onClick={() => void handleDelete()}
                             disabled={loading || !categoryId}
                         >
                             {loading ? "Wait..." : "Delete"}

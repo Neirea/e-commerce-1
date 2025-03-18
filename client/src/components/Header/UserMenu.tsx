@@ -6,7 +6,7 @@ import useCurrentUser from "../../hooks/useCurrentUser";
 import { logout } from "../../queries/User";
 import type { TRole } from "../../types/User";
 
-const UserMenu = () => {
+const UserMenu = (): JSX.Element => {
     const { user } = useCurrentUser();
     const queryCient = useQueryClient();
 
@@ -45,9 +45,12 @@ const UserMenu = () => {
                     )}
                     <NavDropdown.Divider />
                     <NavDropdown.Item
-                        onClick={async () => {
-                            await logout();
-                            queryCient.invalidateQueries(["me"]);
+                        onClick={() => {
+                            void logout()
+                                .then(() =>
+                                    queryCient.invalidateQueries(["me"]),
+                                )
+                                .catch();
                         }}
                     >
                         Logout

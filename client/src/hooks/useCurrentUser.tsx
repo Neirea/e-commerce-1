@@ -16,7 +16,7 @@ const useCurrentUser = (): TCurrentUser => {
 
     const user = isError || !data?.data ? undefined : data?.data;
 
-    const getUpdatedUser = async () => {
+    const getUpdatedUser = async (): Promise<void> => {
         await refetch();
     };
 

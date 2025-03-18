@@ -1,4 +1,4 @@
-export default function Countries() {
+export default function Countries(): JSX.Element {
     return (
         <>
             <option value="AF">Afghanistan</option>

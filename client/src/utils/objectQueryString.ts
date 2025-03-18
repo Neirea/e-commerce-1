@@ -1,12 +1,18 @@
 type MyObject = {
-    [key: string]: any;
+    [key: string]:
+        | number
+        | string
+        | boolean
+        | undefined
+        | null
+        | (string | null)[];
 };
 
-export const objectToQueryString = (obj: MyObject) => {
-    const params = [];
+export const objectToQueryString = (obj: MyObject): string => {
+    const params: string[] = [];
 
     for (const key in obj) {
-        if (obj.hasOwnProperty(key) && obj[key] !== undefined) {
+        if (Object.hasOwn(obj, key) && obj[key] && !Array.isArray(obj[key])) {
             const value = encodeURIComponent(obj[key]);
             const param = `${encodeURIComponent(key)}=${value}`;
             params.push(param);

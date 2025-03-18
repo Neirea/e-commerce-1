@@ -3,7 +3,11 @@ import useCurrentUser from "../hooks/useCurrentUser";
 import type { TRole } from "../types/User";
 import Container from "react-bootstrap/Container";
 
-const RequireAuth = ({ allowedRoles }: { allowedRoles: TRole[] }) => {
+const RequireAuth = ({
+    allowedRoles,
+}: {
+    allowedRoles: TRole[];
+}): JSX.Element => {
     const { user, isLoading } = useCurrentUser();
     const location = useLocation();
 

@@ -2,7 +2,6 @@ import { FaFacebook } from "@react-icons/all-files/fa/FaFacebook";
 import { FaGoogle } from "@react-icons/all-files/fa/FaGoogle";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import { useLocation } from "react-router-dom";
 import { serverUrl } from "../../../utils/server";
 
 const LoginContent = ({
@@ -11,13 +10,11 @@ const LoginContent = ({
 }: {
     handleClose: () => void;
     show: boolean;
-}) => {
-    const { pathname, search } = useLocation();
-    const fromUrl = pathname.length > 1 ? pathname.slice(1) + search : "";
-    const handleLoginGoogle = async () => {
+}): JSX.Element => {
+    const handleLoginGoogle = (): void => {
         window.open(`${serverUrl}/api/auth/google/login`, "_self");
     };
-    const handleLoginFacebook = async () => {
+    const handleLoginFacebook = (): void => {
         window.open(`${serverUrl}/api/auth/facebook/login`, "_self");
     };
 

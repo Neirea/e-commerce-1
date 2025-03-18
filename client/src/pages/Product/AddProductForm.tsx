@@ -13,15 +13,18 @@ type TAddProductForm = {
     handleShowCart: () => void;
 };
 
-const AddProductForm = ({ product, handleShowCart }: TAddProductForm) => {
+const AddProductForm = ({
+    product,
+    handleShowCart,
+}: TAddProductForm): JSX.Element | null => {
     const [amount, setAmount] = useState(1);
     const { addProductToCart } = useCartStore();
 
-    const handleAmount = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleAmount = (e: ChangeEvent<HTMLInputElement>): void => {
         setAmount(+e.target.value);
     };
 
-    const handleSubmit = (e: FormEvent) => {
+    const handleSubmit = (e: FormEvent): void => {
         e.preventDefault();
         if (product && product.inventory >= amount) {
             addProductToCart({ product: product, amount: amount });
@@ -56,7 +59,7 @@ const AddProductForm = ({ product, handleShowCart }: TAddProductForm) => {
                         <div>
                             {product.discount > 0 && (
                                 <s className="text-muted fs-5">{`${toPriceNumber(
-                                    amount * product.price
+                                    amount * product.price,
                                 )} $`}</s>
                             )}
                         </div>
@@ -70,8 +73,8 @@ const AddProductForm = ({ product, handleShowCart }: TAddProductForm) => {
                             {`${toPriceNumber(
                                 getDiscountPrice(
                                     product.price,
-                                    product.discount
-                                ) * amount
+                                    product.discount,
+                                ) * amount,
                             )} $`}
                         </div>
                     </div>

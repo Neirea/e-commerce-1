@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-export default function ScrollAndHash() {
+export default (): null => {
     const { pathname, search, hash } = useLocation();
     const navigate = useNavigate();
 
@@ -12,9 +12,9 @@ export default function ScrollAndHash() {
     //remove facebook trailing hash
     useEffect(() => {
         if (hash === "#_=_") {
-            navigate(pathname + "?" + search, { replace: true });
+            void navigate(pathname + "?" + search, { replace: true });
         }
     }, [hash]);
 
     return null;
-}
+};

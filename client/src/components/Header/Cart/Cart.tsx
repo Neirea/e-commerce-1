@@ -4,11 +4,11 @@ import Nav from "react-bootstrap/Nav";
 import useCartStore from "../../../store/useCartStore";
 import CartContent from "./CartContent";
 
-const Cart = () => {
+const Cart = (): JSX.Element => {
     const { cart } = useCartStore();
     const [showCart, setShowCart] = useState(false);
-    const handleShowCart = () => setShowCart(true);
-    const handleCloseCart = () => setShowCart(false);
+    const handleShowCart = (): void => setShowCart(true);
+    const handleCloseCart = (): void => setShowCart(false);
 
     const cartAmount = cart.reduce((prev, curr) => prev + curr.amount, 0);
 

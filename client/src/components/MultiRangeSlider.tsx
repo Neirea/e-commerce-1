@@ -6,7 +6,13 @@ import FormGroup from "react-bootstrap/FormGroup";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toPriceNumber } from "../utils/numbers";
 
-const MultiRangeSlider = ({ min, max }: { min: number; max: number }) => {
+const MultiRangeSlider = ({
+    min,
+    max,
+}: {
+    min: number;
+    max: number;
+}): JSX.Element => {
     const { search } = useLocation();
     const searchParams = qs.parse(search);
     const curL = searchParams.min != null ? +searchParams.min : undefined;
@@ -24,7 +30,7 @@ const MultiRangeSlider = ({ min, max }: { min: number; max: number }) => {
     const maxValRef = useRef<HTMLInputElement>(null);
     const range = useRef<HTMLDivElement>(null);
 
-    const getPercent = (value: number) =>
+    const getPercent = (value: number): number =>
         Math.round(((value - min) / (max - min)) * 100);
 
     useEffect(() => {
@@ -50,9 +56,9 @@ const MultiRangeSlider = ({ min, max }: { min: number; max: number }) => {
         }
     }, [maxVal]);
 
-    const handleSlider = (e: FormEvent) => {
+    const handleSlider = (e: FormEvent): void => {
         e.preventDefault();
-        navigate({
+        void navigate({
             pathname: "/search",
             search: qs.stringify({ ...searchParams, min: minVal, max: maxVal }),
         });

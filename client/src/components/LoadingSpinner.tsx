@@ -1,4 +1,4 @@
-const LoadingSpinner = ({ size }: { size: number }) => {
+const LoadingSpinner = ({ size }: { size: number }): JSX.Element => {
     return (
         <div
             style={{ height: size, width: size }}

@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import { Link } from "react-router-dom";
 import type { TCategory } from "../../../types/Category";
 
-const createWrapperAndAppend = () => {
+const createWrapperAndAppend = (): HTMLDivElement => {
     const modalRoot = document.createElement("div");
     modalRoot.setAttribute("id", "menu-portal");
     document.body.appendChild(modalRoot);
@@ -19,13 +19,13 @@ const CategoriesContent = (
         categories: TCategory[];
         handleClose: () => void;
     },
-    ref: React.Ref<HTMLDivElement>
-) => {
+    ref: React.Ref<HTMLDivElement>,
+): JSX.Element | null => {
     const [lastHover, setLastHover] = useState<number | null>(null);
     const [modalWrapper, setModalWrapper] = useState<HTMLElement | null>();
 
     const subCategories = useMemo(() => {
-        const subMap = new Map<number, any>();
+        const subMap = new Map<number, TCategory[]>();
         if (categories?.length) {
             categories.forEach((item) => {
                 if (item.parent_id != null) {
@@ -49,7 +49,7 @@ const CategoriesContent = (
             modalRoot = createWrapperAndAppend();
         }
         setModalWrapper(modalRoot);
-        return () => {
+        return (): void => {
             modalRoot?.parentNode?.removeChild(modalRoot);
         };
     }, []);
@@ -88,28 +88,23 @@ const CategoriesContent = (
                 {lastHover !== null &&
                     !!subCategories?.get(lastHover)?.length && (
                         <ul className="submenu-list">
-                            {subCategories
-                                ?.get(lastHover)
-                                ?.map((category: any) => {
-                                    return (
-                                        <li
-                                            key={category.id}
-                                            onClick={handleClose}
+                            {subCategories?.get(lastHover)?.map((category) => {
+                                return (
+                                    <li key={category.id} onClick={handleClose}>
+                                        <Link
+                                            className="text-decoration-none text-dark search-link ps-3 pe-3"
+                                            to={`/search?c=${category.id}`}
                                         >
-                                            <Link
-                                                className="text-decoration-none text-dark search-link ps-3 pe-3"
-                                                to={`/search?c=${category.id}`}
-                                            >
-                                                {category.name}
-                                            </Link>
-                                        </li>
-                                    );
-                                })}
+                                            {category.name}
+                                        </Link>
+                                    </li>
+                                );
+                            })}
                         </ul>
                     )}
             </div>
         </section>,
-        modalWrapper
+        modalWrapper,
     );
 };
 

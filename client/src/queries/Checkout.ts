@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type AxiosResponse } from "axios";
 import type { TProduct } from "../types/Product";
 
 type TCheckoutBody = {
@@ -8,5 +8,7 @@ type TCheckoutBody = {
     }[];
 };
 
-export const checkout = (body: TCheckoutBody) =>
+export const checkout = (
+    body: TCheckoutBody,
+): Promise<AxiosResponse<{ clientSecret: string }>> =>
     axios.post("/payment/checkout", body);

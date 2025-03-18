@@ -11,7 +11,7 @@ import {
 } from "../../queries/Company";
 import { getError } from "../../utils/getError";
 
-const Company = () => {
+const Company = (): JSX.Element => {
     const queryClient = useQueryClient();
     const [companyId, setCompanyId] = useState<number>(0);
     const [name, setName] = useState<string>("");
@@ -23,19 +23,19 @@ const Company = () => {
     const createCompanyMutation = useMutation({
         mutationFn: createCompany,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["company"] });
+            void queryClient.invalidateQueries({ queryKey: ["company"] });
         },
     });
     const updateCompanyMutation = useMutation({
         mutationFn: updateCompany,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["company"] });
+            void queryClient.invalidateQueries({ queryKey: ["company"] });
         },
     });
     const deleteCompanyMutation = useMutation({
         mutationFn: deleteCompany,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["company"] });
+            void queryClient.invalidateQueries({ queryKey: ["company"] });
         },
     });
     const companies = companyQuery.data?.data;
@@ -50,10 +50,10 @@ const Company = () => {
     const mutationError = getError(
         createCompanyMutation.error ||
             updateCompanyMutation.error ||
-            deleteCompanyMutation.error
+            deleteCompanyMutation.error,
     );
 
-    const handleSelect = (e: ChangeEvent<HTMLSelectElement>) => {
+    const handleSelect = (e: ChangeEvent<HTMLSelectElement>): void => {
         const idx = +e.target.value;
         if (idx === 0) {
             setName("");
@@ -65,18 +65,18 @@ const Company = () => {
             setCompanyId(idx);
         }
     };
-    const handleName = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleName = (e: ChangeEvent<HTMLInputElement>): void => {
         setName(e.target.value);
     };
 
-    const handleDelete = async () => {
+    const handleDelete = async (): Promise<void> => {
         if (!companyId) return;
         await deleteCompanyMutation.mutateAsync(companyId);
         setName("");
         setCompanyId(0);
     };
 
-    const handleSubmit = async (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent): Promise<void> => {
         e.preventDefault();
         if (companyId) {
             await updateCompanyMutation.mutateAsync({
@@ -96,7 +96,10 @@ const Company = () => {
     return (
         <>
             <h3 className="text-center mt-5">Company</h3>
-            <Form className="m-auto col-sm-10" onSubmit={handleSubmit}>
+            <Form
+                className="m-auto col-sm-10"
+                onSubmit={(e) => void handleSubmit(e)}
+            >
                 <Form.Group className="mt-3">
                     <Form.Label>
                         Choose company to create, update or delete
@@ -119,7 +122,7 @@ const Company = () => {
                         </Form.Select>
                         <Button
                             disabled={loading || !companyId}
-                            onClick={handleDelete}
+                            onClick={() => void handleDelete()}
                         >
                             {loading ? "Wait..." : "Delete"}
                         </Button>

@@ -19,7 +19,7 @@ import sortByParentId from "../utils/sortByParents";
 
 const options = { root: null, rootMargin: "0px", treshold: 1.0 };
 
-const SearchPage = () => {
+const SearchPage = (): JSX.Element => {
     const navigate = useNavigate();
     const { search } = useLocation();
     const sortRef = useRef<HTMLSelectElement | null>(null);
@@ -54,7 +54,10 @@ const SearchPage = () => {
     } = useInfiniteQuery({
         queryKey: ["filtered", search],
         queryFn: ({ pageParam = 0 }) =>
-            getFilteredProducts({ fetchParams, pageParam }),
+            getFilteredProducts({
+                fetchParams,
+                pageParam: pageParam as number,
+            }),
         getNextPageParam: (lastPage, allPages) => {
             if (lastPage.data.length % SEARCH_NUMBER !== 0) return;
             return allPages.length;
@@ -68,7 +71,7 @@ const SearchPage = () => {
     const initialValue: TProductCatCom[] = [];
     const products = productData?.pages.reduce(
         (arr, curr) => arr.concat(curr.data),
-        initialValue
+        initialValue,
     );
 
     const categoriesData = searchData?.data
@@ -84,11 +87,11 @@ const SearchPage = () => {
     const containerRef = useInView<HTMLDivElement>(
         options,
         fetchNextPage,
-        hasNextPage
+        hasNextPage,
     );
 
-    const handleSort = async (e: ChangeEvent<HTMLSelectElement>) => {
-        navigate({
+    const handleSort = (e: ChangeEvent<HTMLSelectElement>): void => {
+        void navigate({
             pathname: "/search",
             search: qs.stringify({ ...searchParams, sort: e.target.value }),
         });
@@ -98,7 +101,7 @@ const SearchPage = () => {
         <Container as="main">
             <LoadingProgress isLoading={isCurrentLoading} />
             <h4 className="mb-3 mt-3">
-                {searchParams.v
+                {typeof searchParams.v == "string" && searchParams.v.length > 0
                     ? `Results for «${searchParams.v}»`
                     : "Results:"}
             </h4>
@@ -176,7 +179,7 @@ const SearchPage = () => {
                                                                     {
                                                                         ...searchParams,
                                                                         b: elem.id,
-                                                                    }
+                                                                    },
                                                                 ),
                                                             }}
                                                         >
@@ -185,7 +188,7 @@ const SearchPage = () => {
                                                         <span className="text-muted">{` (${elem.productCount})`}</span>
                                                     </div>
                                                 );
-                                            }
+                                            },
                                         )}
                                     </div>
                                 )}

@@ -8,22 +8,22 @@ type TOptions = {
 
 const useInView = <T extends HTMLElement>(
     options: TOptions,
-    cb: () => void,
-    hasMore: boolean | undefined
-) => {
+    cb: () => any,
+    hasMore: boolean | undefined,
+): React.MutableRefObject<T | null> => {
     const containerRef = useRef<T | null>(null);
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
         if (isVisible && hasMore) {
-            cb();
+            void cb();
         }
     }, [isVisible, hasMore]);
 
     useEffect(() => {
         const makeElementVisible = (
-            entries: Array<IntersectionObserverEntry>
-        ) => {
+            entries: Array<IntersectionObserverEntry>,
+        ): void => {
             const [entry] = entries;
             setIsVisible(entry.isIntersecting);
         };
@@ -32,7 +32,7 @@ const useInView = <T extends HTMLElement>(
         if (containerRef.current && !hasMore)
             observer.unobserve(containerRef.current);
 
-        return () => {
+        return (): void => {
             if (containerRef.current) observer.unobserve(containerRef.current);
         };
     }, [options, hasMore]);

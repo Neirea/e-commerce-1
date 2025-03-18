@@ -6,7 +6,7 @@ import Category from "./Category";
 import Company from "./Company";
 import Product from "./Product";
 
-const Editor = () => {
+const Editor = (): JSX.Element => {
     const { user } = useCurrentUser();
     return (
         <Container as="main">

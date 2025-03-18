@@ -17,7 +17,7 @@ import { getSearchBarData } from "../../queries/Product";
 import type { TSearchResult } from "../../types/Product";
 import LoadingSpinner from "../LoadingSpinner";
 
-const SearchBar = () => {
+const SearchBar = (): JSX.Element => {
     const navigate = useNavigate();
     const { search } = useLocation();
     const query = qs.parse(search).v as string | null;
@@ -33,7 +33,7 @@ const SearchBar = () => {
     useOutsideClick([searchBarRef], () => setShowResults(false));
 
     useEffect(() => {
-        (async () => {
+        void (async (): Promise<void> => {
             if (debouncedText && debouncedText === searchText) {
                 setSearchLoading(true);
                 const { data } = await getSearchBarData(debouncedText);
@@ -44,41 +44,43 @@ const SearchBar = () => {
         })();
     }, [debouncedText]);
 
-    const handleSearchText = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleSearchText = (e: ChangeEvent<HTMLInputElement>): void => {
         setShowResults(true);
         setSearchText(e.target.value);
     };
-    const handleSearch = (e: FormEvent) => {
+    const handleSearch = (e: FormEvent): void => {
         e.preventDefault();
         if (!searchText) return;
         setSelectedIndex(null);
         if (selectedIndex === null) {
-            navigate(`/search?v=${searchText}`);
+            void navigate(`/search?v=${searchText}`);
         } else if (searchData) {
             const destination = {
                 Company: `/search?b=${searchData[selectedIndex].id}`,
                 Category: `/search?c=${searchData[selectedIndex].id}`,
                 Product: `/product/${searchData[selectedIndex].id}`,
             };
-            navigate(destination[searchData[selectedIndex].source]);
+            void navigate(destination[searchData[selectedIndex].source]);
         }
     };
 
-    const handleArrowNavigation = (e: React.KeyboardEvent<HTMLElement>) => {
+    const handleArrowNavigation = (
+        e: React.KeyboardEvent<HTMLElement>,
+    ): void => {
         if (!searchData) return;
         if (e.key === "ArrowUp") {
             e.preventDefault();
             setSelectedIndex((prevIndex) =>
                 prevIndex === null || prevIndex === 0
                     ? searchData.length - 1
-                    : prevIndex - 1
+                    : prevIndex - 1,
             );
         } else if (e.key === "ArrowDown") {
             e.preventDefault();
             setSelectedIndex((prevIndex) =>
                 prevIndex === null || prevIndex === searchData.length - 1
                     ? 0
-                    : prevIndex + 1
+                    : prevIndex + 1,
             );
         }
     };
@@ -129,8 +131,8 @@ const SearchBar = () => {
                                     item.source === "Category"
                                         ? `/search?c=${item.id}`
                                         : item.source === "Company"
-                                        ? `/search?b=${item.id}`
-                                        : `/product/${item.id}`;
+                                          ? `/search?b=${item.id}`
+                                          : `/product/${item.id}`;
                                 return (
                                     <Link
                                         key={`${item.source}-${item.id}`}
