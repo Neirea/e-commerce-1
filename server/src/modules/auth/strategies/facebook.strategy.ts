@@ -1,9 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
-import { Strategy, Profile } from "passport-facebook";
 import { Platform } from "@prisma/client";
-import { AuthService } from "../auth.service";
+import { Profile, Strategy } from "passport-facebook";
+import { VerifyCallback } from "passport-google-oauth20";
 import { appConfig } from "src/config/env";
+import { AuthService } from "../auth.service";
 
 @Injectable()
 export class FacebookStrategy extends PassportStrategy(Strategy, "facebook") {
@@ -20,7 +21,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, "facebook") {
         accessToken: string,
         refreshToken: string,
         profile: Profile,
-        done: any,
+        done: VerifyCallback,
     ): Promise<void> {
         const user = await this.authService.validateUser(
             profile,

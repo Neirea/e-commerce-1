@@ -6,13 +6,17 @@ import {
     TCategoryId,
 } from "../category.types";
 
-export class createCategoryDto {
+export class CreateCategoryDto {
     @Length(3, 30)
     name: TCategoryName;
-    @ValidateIf((o) => o.img_src?.length > 0)
+    @ValidateIf((o: CreateCategoryDto) =>
+        o.img_src ? o.img_src.length > 0 : false,
+    )
     @IsOptional()
     img_id?: TCategoryImgId;
-    @ValidateIf((o) => o.img_id?.length > 0)
+    @ValidateIf((o: CreateCategoryDto) =>
+        o.img_id ? o.img_id.length > 0 : false,
+    )
     @IsOptional()
     @IsUrl()
     img_src?: TCategoryImgSrc;

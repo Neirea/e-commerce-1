@@ -11,7 +11,7 @@ import {
     UseGuards,
 } from "@nestjs/common";
 import { CategoryService } from "./category.service";
-import { createCategoryDto } from "./dto/create-category.dto";
+import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { TCategoryId } from "./category.types";
 import { RolesGuard } from "src/common/roles/roles.guard";
@@ -40,8 +40,8 @@ export class CategoryController {
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
-    createCategory(@Body() body: createCategoryDto): void {
-        this.categoryService.createCategory(body);
+    async createCategory(@Body() body: CreateCategoryDto): Promise<void> {
+        await this.categoryService.createCategory(body);
     }
 
     @Patch(":id")
@@ -51,11 +51,11 @@ export class CategoryController {
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
-    updateCategory(
+    async updateCategory(
         @Param("id") id: TCategoryId,
         @Body() body: UpdateCategoryDto,
-    ): void {
-        this.categoryService.updateCategory(id, body);
+    ): Promise<void> {
+        await this.categoryService.updateCategory(id, body);
     }
 
     @Delete(":id")
@@ -65,7 +65,7 @@ export class CategoryController {
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
-    deleteCategory(@Param("id") id: TCategoryId): void {
-        this.categoryService.deleteCategory(id);
+    async deleteCategory(@Param("id") id: TCategoryId): Promise<void> {
+        await this.categoryService.deleteCategory(id);
     }
 }

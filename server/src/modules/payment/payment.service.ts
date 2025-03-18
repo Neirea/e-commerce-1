@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaPromise, Product, User } from "@prisma/client";
+import { InputJsonObject } from "@prisma/client/runtime/library";
 import { appConfig } from "src/config/env";
 import Stripe from "stripe";
 import { updateOrderItemQuery } from "../order/order.queries";
@@ -82,13 +83,13 @@ export class PaymentService {
                 const customer = event.data.object.shipping;
                 const email = event.data.object.billing_details.email;
                 const info = event.data.object.metadata;
-                const orderItems = JSON.parse(info.order_items);
+                const orderItems = JSON.parse(info.order_items) as TOrderItem[];
                 if (!customer || !customer.name || !email) {
                     throw new BadRequestException("Bad customer data");
                 }
                 const devliveryAddress = JSON.parse(
                     JSON.stringify(customer.address),
-                );
+                ) as InputJsonObject;
                 const order = await this.prisma.order.create({
                     data: {
                         user_id: Number(info.user_id) || undefined,

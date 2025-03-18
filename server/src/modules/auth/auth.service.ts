@@ -55,7 +55,7 @@ export class AuthService {
 
     exitSession(req: Request, res: Response): void {
         if (req.session) {
-            req.session.destroy((err: any) => {
+            req.session.destroy((err) => {
                 if (err) {
                     throw new BadRequestException("Failed to logout");
                 }

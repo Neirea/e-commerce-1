@@ -27,7 +27,7 @@ export class UpdateUserDto {
     email: TUserEmail;
     @Allow()
     address: TUserAddress;
-    @ValidateIf((o) => o.phone.length > 0)
+    @ValidateIf((o: UpdateUserDto) => (o.phone ? o.phone.length > 0 : false))
     @IsPhoneNumber()
     phone: TUserPhone;
 }

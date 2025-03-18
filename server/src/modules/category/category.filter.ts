@@ -1,24 +1,28 @@
 import {
-    ExceptionFilter,
-    Catch,
     ArgumentsHost,
     BadRequestException,
+    Catch,
+    ExceptionFilter,
 } from "@nestjs/common";
-import { Request, Response } from "express";
+import { Response } from "express";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { IUpsertCategoryRequest } from "./category.types";
 
 @Catch()
 export class SingleUploadFilter implements ExceptionFilter {
     constructor(private cloudinary: CloudinaryService) {}
 
-    catch(exception: BadRequestException, host: ArgumentsHost): void {
+    async catch(
+        exception: BadRequestException,
+        host: ArgumentsHost,
+    ): Promise<void> {
         const ctx = host.switchToHttp();
-        const request = ctx.getRequest<Request>();
+        const request = ctx.getRequest<IUpsertCategoryRequest>();
         const response = ctx.getResponse<Response>();
         const img_id = request.body?.img_id;
 
         if (img_id) {
-            this.cloudinary.deleteOne(img_id);
+            await this.cloudinary.deleteOne(img_id);
         }
 
         response.status(400).json({

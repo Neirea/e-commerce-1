@@ -1,17 +1,21 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { AuthService } from "./auth.service";
-import { AuthController } from "./auth.controller";
-import { GoogleStrategy } from "./strategies/google.strategy";
-import { FacebookStrategy } from "./strategies/facebook.strategy";
-import { SessionSerializer } from "./session.serializer";
-import { PrismaService } from "../prisma/prisma.service";
 import { CanActivate } from "@nestjs/common";
-import { Profile } from "passport-google-oauth20";
+import { Test, TestingModule } from "@nestjs/testing";
 import { Platform, Role } from "@prisma/client";
-import { userByPlatformIdQuery } from "./auth.queries";
-import { TPrismaServiceMock } from "src/utils/types.mock";
-import { User } from "../user/entities/user.entity";
+import { Request, Response } from "express";
+import { Profile } from "passport-google-oauth20";
 import { appConfig } from "src/config/env";
+import {
+    TExpressSessionDestroyMock,
+    TPrismaServiceMock,
+} from "src/utils/types.mock";
+import { PrismaService } from "../prisma/prisma.service";
+import { User } from "../user/entities/user.entity";
+import { AuthController } from "./auth.controller";
+import { userByPlatformIdQuery } from "./auth.queries";
+import { AuthService } from "./auth.service";
+import { SessionSerializer } from "./session.serializer";
+import { FacebookStrategy } from "./strategies/facebook.strategy";
+import { GoogleStrategy } from "./strategies/google.strategy";
 
 describe("AuthService", () => {
     let service: AuthService;
@@ -105,14 +109,16 @@ describe("AuthService", () => {
 
             expect(prismaService.$queryRaw).toHaveBeenCalledTimes(2);
             expect(prismaService.user.create).toHaveBeenCalledWith({
-                data: expect.objectContaining({
+                data: {
                     given_name: "John",
                     family_name: "Doe",
                     platform_id: "123456789",
                     platform: Platform.FACEBOOK,
                     role: [Role.USER],
                     email: "john.doe@example.com",
-                }),
+                    address: "",
+                    avatar: "photo_url",
+                },
             });
             expect(prismaService.user.create).toHaveBeenCalledTimes(1);
             expect(result).toEqual(mockUser);
@@ -120,42 +126,54 @@ describe("AuthService", () => {
     });
 
     describe("exitSession", () => {
-        let mockRequest: any;
-        let mockResponse: any;
+        let mockRequest: {
+            session: {
+                destroy(callback: (err: any) => void): void;
+            };
+        };
+        let mockResponse: {
+            clearCookie(name: string, options?: any): any;
+        };
+
+        const mockDestroy: TExpressSessionDestroyMock = (err) =>
+            jest.fn((callback) => {
+                callback(err);
+            });
+        const mockDestroyWithNoError = mockDestroy(null);
+        const mockClearCookie = jest.fn();
 
         beforeEach(() => {
             mockRequest = {
                 session: {
-                    destroy: jest.fn((callback: any) => {
-                        callback(null);
-                    }),
+                    destroy: mockDestroyWithNoError,
                 },
             };
             mockResponse = {
-                clearCookie: jest.fn(),
+                clearCookie: mockClearCookie,
             };
         });
 
         it("should destroy session and clear cookie", () => {
-            service.exitSession(mockRequest, mockResponse);
-
-            expect(mockRequest.session.destroy).toHaveBeenCalled();
-            expect(mockResponse.clearCookie).toHaveBeenCalledWith(
-                "techway_sid",
-                {
-                    domain: appConfig.serverDomain,
-                },
+            service.exitSession(
+                mockRequest as Request,
+                mockResponse as Response,
             );
+
+            expect(mockDestroyWithNoError).toHaveBeenCalled();
+            expect(mockClearCookie).toHaveBeenCalledWith("techway_sid", {
+                domain: appConfig.serverDomain,
+            });
         });
 
         it("should throw BadRequestException if session destroy fails", () => {
-            mockRequest.session.destroy = jest.fn((callback: any) => {
-                callback(new Error("Session destroy error"));
-            });
+            mockRequest.session.destroy = mockDestroy("Session destroy error");
 
             expect(() =>
-                service.exitSession(mockRequest, mockResponse),
-            ).toThrowError("Failed to logout");
+                service.exitSession(
+                    mockRequest as Request,
+                    mockResponse as Response,
+                ),
+            ).toThrow("Failed to logout");
         });
     });
 });

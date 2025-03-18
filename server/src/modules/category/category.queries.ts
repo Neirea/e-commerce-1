@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { createCategoryDto } from "./dto/create-category.dto";
+import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { TCategoryId } from "./category.types";
 
@@ -12,7 +12,7 @@ export const getCategoriesQuery = Prisma.sql`
 `;
 
 export const createCategoryQuery = (
-    input: createCategoryDto,
+    input: CreateCategoryDto,
 ): Prisma.Sql => Prisma.sql`
     INSERT INTO public."Category"("name","img_id","img_src","parent_id")
     VALUES (${input.name},${input.img_id},${input.img_src},${input.parent_id})

@@ -33,17 +33,23 @@ export class OrderController {
     @ApiOperation({ summary: "Cancels specific order" })
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
-    cancelOrder(@Param("id") id: TOrderId, @Req() req: Request): void {
+    async cancelOrder(
+        @Param("id") id: TOrderId,
+        @Req() req: Request,
+    ): Promise<void> {
         const userId = req.user!.id;
-        this.orderService.cancelOrder(id, userId);
+        await this.orderService.cancelOrder(id, userId);
     }
     @Delete(":id")
     @HttpCode(204)
     @ApiOperation({ summary: "Deletes specific order" })
     @ApiCookieAuth()
     @UseGuards(AuthenticatedGuard)
-    deleteOrder(@Param("id") id: TOrderId, @Req() req: Request): void {
+    async deleteOrder(
+        @Param("id") id: TOrderId,
+        @Req() req: Request,
+    ): Promise<void> {
         const userId = req.user!.id;
-        this.orderService.deleteOrder(id, userId);
+        await this.orderService.deleteOrder(id, userId);
     }
 }

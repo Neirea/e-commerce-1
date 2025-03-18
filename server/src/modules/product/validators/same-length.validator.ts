@@ -1,20 +1,22 @@
 import {
     registerDecorator,
-    ValidationArguments,
     ValidationOptions,
     ValidatorConstraint,
     ValidatorConstraintInterface,
 } from "class-validator";
+import { ISameLengthValidationArguments } from "../product.types";
 
 @ValidatorConstraint({ name: "sameLength", async: false })
 export class SameLengthConstraint implements ValidatorConstraintInterface {
-    validate(currValue: any, args: ValidationArguments): boolean {
+    validate(currValue: string, args: ISameLengthValidationArguments): boolean {
         const [propertyName] = args.constraints;
         const propertyValue = args.object[propertyName];
         if (!propertyValue) return false;
         return propertyValue.length === currValue.length;
     }
-    defaultMessage(validationArguments?: ValidationArguments): string {
+    defaultMessage(
+        validationArguments?: ISameLengthValidationArguments,
+    ): string {
         if (!validationArguments) return "No validation arguments";
         const { object, property, constraints } = validationArguments;
         const property1 = property;

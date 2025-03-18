@@ -23,9 +23,9 @@ export class CloudinaryService {
         return new Promise<UploadApiResponse>((resolve, reject) => {
             cloudinary.uploader
                 .upload_stream(options, (err, value) => {
-                    if (err) reject(err.message);
+                    if (err) reject(new Error(err.message));
                     if (!value) {
-                        reject("Bad Upload Response");
+                        reject(new Error("Bad Upload Response"));
                         return;
                     }
                     resolve(value);

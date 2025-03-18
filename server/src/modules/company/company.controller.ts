@@ -37,8 +37,8 @@ export class CompanyController {
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
-    createCompany(@Body() body: CreateCompanyDto): void {
-        this.companyService.createCompany(body);
+    async createCompany(@Body() body: CreateCompanyDto): Promise<void> {
+        await this.companyService.createCompany(body);
     }
 
     @Patch(":id")
@@ -48,11 +48,11 @@ export class CompanyController {
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
-    updateCompany(
+    async updateCompany(
         @Param("id") id: TCompanyId,
         @Body() body: UpdateCompanyDto,
-    ): void {
-        this.companyService.updateCompany(id, body);
+    ): Promise<void> {
+        await this.companyService.updateCompany(id, body);
     }
 
     @Delete(":id")
@@ -62,7 +62,7 @@ export class CompanyController {
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
-    deleteCompany(@Param("id") id: TCompanyId): void {
-        this.companyService.deleteCompany(id);
+    async deleteCompany(@Param("id") id: TCompanyId): Promise<void> {
+        await this.companyService.deleteCompany(id);
     }
 }

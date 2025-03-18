@@ -248,9 +248,9 @@ export class ProductService {
             categoryUpdate,
         ]);
         const imgIds = oldImages.map((i) => i.img_id);
-        this.cloudinary.deleteMany(imgIds);
+        await this.cloudinary.deleteMany(imgIds);
     }
-    async deleteproduct(id: TProductId): Promise<void> {
+    async deleteProduct(id: TProductId): Promise<void> {
         const imagesQuery = this.prisma.$queryRaw<ProductImage[]>(
             getImagesQuery(id),
         );
@@ -261,7 +261,7 @@ export class ProductService {
         ]);
 
         if (images.length) {
-            this.cloudinary.deleteMany(images.map((i) => i.img_id));
+            await this.cloudinary.deleteMany(images.map((i) => i.img_id));
         }
     }
 }

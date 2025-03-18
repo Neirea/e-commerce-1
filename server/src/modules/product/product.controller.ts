@@ -130,11 +130,11 @@ export class ProductController {
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
-    updateProduct(
+    async updateProduct(
         @Param("id") id: TProductId,
         @Body() body: UpdateProductDto,
-    ): void {
-        this.productService.updateProduct(id, body);
+    ): Promise<void> {
+        await this.productService.updateProduct(id, body);
     }
 
     @Delete(":id")
@@ -144,7 +144,7 @@ export class ProductController {
     @UseGuards(AuthenticatedGuard)
     @Roles(Role.EDITOR)
     @UseGuards(RolesGuard)
-    deleteProduct(@Param("id") id: TProductId): void {
-        this.productService.deleteproduct(id);
+    async deleteProduct(@Param("id") id: TProductId): Promise<void> {
+        await this.productService.deleteProduct(id);
     }
 }

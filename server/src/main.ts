@@ -95,4 +95,4 @@ async function bootstrap(): Promise<void> {
         console.log(`Server is listening on ${port}...`),
     );
 }
-bootstrap();
+void bootstrap();

@@ -1,5 +1,9 @@
-import { Company, Product, ProductImage, Prisma } from "@prisma/client";
+import { Company, Product, ProductImage } from "@prisma/client";
+import { ValidationArguments } from "class-validator";
+import { Request } from "express";
+import { CreateProductDto } from "./dto/create-propduct.dto";
 import { ExtendedCategory } from "./dto/search-data.dto";
+import { UpdateProductDto } from "./dto/update-product.dto";
 
 export type TProductId = Pick<Product, "id">["id"];
 export type TProductName = Pick<Product, "name">["name"];
@@ -24,3 +28,12 @@ export type TSearchData = {
     price: number;
     discount: number;
 };
+
+export interface IUpsertProductRequest extends Request {
+    body: CreateProductDto | UpdateProductDto;
+}
+
+export interface ISameLengthValidationArguments extends ValidationArguments {
+    constraints: [string];
+    object: Record<string, string>;
+}

@@ -14,3 +14,7 @@ export type TCloudinaryServiceMock = Partial<CloudinaryService> & {
     deleteOne: jest.Mock;
     deleteMany: jest.Mock;
 };
+
+export type TExpressSessionDestroyMock = (
+    arg: string | null,
+) => (callback: (err: any) => void) => void;

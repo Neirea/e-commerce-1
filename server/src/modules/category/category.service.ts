@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { Category } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service";
-import { createCategoryDto } from "./dto/create-category.dto";
+import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import {
     getCategoriesQuery,
@@ -27,7 +27,7 @@ export class CategoryService {
         );
     }
 
-    async createCategory(input: createCategoryDto): Promise<void> {
+    async createCategory(input: CreateCategoryDto): Promise<void> {
         await this.prisma.$queryRaw(createCategoryQuery(input));
     }
 
@@ -49,7 +49,7 @@ export class CategoryService {
             updateCategory,
         ]);
         if (oldCategory[0].img_id && input.img_id) {
-            this.cloudinary.deleteOne(oldCategory[0].img_id);
+            await this.cloudinary.deleteOne(oldCategory[0].img_id);
         }
     }
     async deleteCategory(id: TCategoryId): Promise<void> {
@@ -57,7 +57,7 @@ export class CategoryService {
             deleteCategoryQuery(id),
         );
         if (data[0].img_id) {
-            this.cloudinary.deleteOne(data[0].img_id);
+            await this.cloudinary.deleteOne(data[0].img_id);
         }
     }
 }

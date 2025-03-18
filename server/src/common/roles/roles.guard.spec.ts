@@ -27,7 +27,7 @@ describe("RolesGuard", () => {
     });
 
     it("should allow access if no roles are required", () => {
-        const partialExecutionContext: Partial<ExecutionContext> = {
+        const executionContext: Partial<ExecutionContext> = {
             switchToHttp: () =>
                 ({
                     getRequest: () => ({ user: { role: [Role.ADMIN] } }),
@@ -35,19 +35,20 @@ describe("RolesGuard", () => {
             getHandler: () => () => {},
             getClass: <T>() => null as T,
         };
-        const executionContext = partialExecutionContext as ExecutionContext;
 
         jest.spyOn(reflector, "getAllAndOverride").mockImplementationOnce(
             () => [],
         );
 
-        const canActivate = rolesGuard.canActivate(executionContext);
+        const canActivate = rolesGuard.canActivate(
+            executionContext as ExecutionContext,
+        );
 
         expect(canActivate).toBe(true);
     });
 
     it("should allow access if the user has at least one required role", () => {
-        const partialExecutionContext: Partial<ExecutionContext> = {
+        const executionContext: Partial<ExecutionContext> = {
             switchToHttp: () =>
                 ({
                     getRequest: () => ({
@@ -57,19 +58,20 @@ describe("RolesGuard", () => {
             getHandler: () => () => {},
             getClass: <T>() => null as T,
         };
-        const executionContext = partialExecutionContext as ExecutionContext;
 
         jest.spyOn(reflector, "getAllAndOverride").mockImplementationOnce(
             () => [Role.USER],
         );
 
-        const canActivate = rolesGuard.canActivate(executionContext);
+        const canActivate = rolesGuard.canActivate(
+            executionContext as ExecutionContext,
+        );
 
         expect(canActivate).toBe(true);
     });
 
     it("should deny access if the user does not have any required role", () => {
-        const partialExecutionContext: Partial<ExecutionContext> = {
+        const executionContext: Partial<ExecutionContext> = {
             switchToHttp: () =>
                 ({
                     getRequest: () => ({
@@ -79,13 +81,13 @@ describe("RolesGuard", () => {
             getHandler: () => () => {},
             getClass: <T>() => null as T,
         };
-        const executionContext = partialExecutionContext as ExecutionContext;
-
         jest.spyOn(reflector, "getAllAndOverride").mockImplementationOnce(
             () => [Role.EDITOR, Role.ADMIN],
         );
 
-        const canActivate = rolesGuard.canActivate(executionContext);
+        const canActivate = rolesGuard.canActivate(
+            executionContext as ExecutionContext,
+        );
 
         expect(canActivate).toBe(false);
     });
