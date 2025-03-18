@@ -5,8 +5,9 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "tsc && vite build",
-        "preview": "vite preview"
+        "build": "npm run lint && tsc && vite build",
+        "preview": "vite preview",
+        "lint": "eslint \"{src,apps,libs,test}/**/*.{ts,tsx}\" --fix"
     },
     "dependencies": {
         "@react-icons/all-files": "^4.1.0",
@@ -26,10 +27,15 @@
         "zod-validation-error": "^3.4.0"
     },
     "devDependencies": {
+        "@eslint/js": "^9.22.0",
         "@types/react": "^18.3.11",
         "@types/react-dom": "^18.3.1",
         "@vitejs/plugin-react": "^4.3.4",
+        "eslint": "^9.22.0",
+        "eslint-config-prettier": "^10.1.1",
+        "eslint-plugin-prettier": "^5.2.3",
         "typescript": "^5.8.2",
+        "typescript-eslint": "^8.26.1",
         "vite": "^6.2.2"
     }
 }
