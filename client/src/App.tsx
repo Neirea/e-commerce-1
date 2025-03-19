@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import Container from "react-bootstrap/Container";
 import { Route, Routes } from "react-router";
 import Footer from "./components/Footer";
@@ -39,13 +39,16 @@ const App = (): JSX.Element => {
         console.error(error);
         localStorage.setItem("cart", "[]");
     }
-    const { isLoading: syncQueryLoading } = useQuery({
+    const { data: cartData, isLoading: syncQueryLoading } = useQuery({
         queryKey: ["cart"],
         queryFn: () => getProductsById(ids),
-        onSuccess: (data) => {
-            syncCart(data.data, localCart);
-        },
     });
+
+    useEffect(() => {
+        if (cartData) {
+            syncCart(cartData.data, localCart);
+        }
+    }, [cartData]);
 
     const loading = isLoading || syncQueryLoading;
 

@@ -49,7 +49,7 @@ const UserProfile = ({
     const updateMutation = useMutation({
         mutationFn: updateUser,
         onSuccess: () => {
-            void queryClient.invalidateQueries(["user"]);
+            void queryClient.invalidateQueries({ queryKey: ["user"] });
         },
     });
     const [values, setValues] = useState<UserStateType>({
@@ -220,8 +220,8 @@ const UserProfile = ({
                     <Alert variant="success">Successfully updated</Alert>
                 )}
                 <div className="d-flex justify-content-center">
-                    <Button type="submit" disabled={updateMutation.isLoading}>
-                        {updateMutation.isLoading ? "Wait..." : "Submit"}
+                    <Button type="submit" disabled={updateMutation.isPending}>
+                        {updateMutation.isPending ? "Wait..." : "Submit"}
                     </Button>
                 </div>
             </Form>

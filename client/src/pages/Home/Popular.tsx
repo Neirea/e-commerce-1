@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import ProductsGrid from "../../components/ProductsGrid";
@@ -17,11 +17,12 @@ const Popular = (): JSX.Element => {
     } = useInfiniteQuery({
         queryKey: ["popular"],
         queryFn: getPopularProducts,
+        initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) => {
             if (lastPage.data.length % FETCH_NUMBER !== 0) return;
             return allPages.length;
         },
-        keepPreviousData: true,
+        placeholderData: keepPreviousData,
     });
     const productError = getError(error);
     const fetchMoreProducts = (): void => {

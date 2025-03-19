@@ -13,7 +13,7 @@
         "@react-icons/all-files": "^4.1.0",
         "@stripe/react-stripe-js": "^3.4.0",
         "@stripe/stripe-js": "^6.0.0",
-        "@tanstack/react-query": "^4.32.6",
+        "@tanstack/react-query": "^5.69.0",
         "axios": "^1.8.3",
         "bootstrap": "^5.3.3",
         "postcode-validator": "^3.10.2",

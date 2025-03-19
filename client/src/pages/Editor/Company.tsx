@@ -42,9 +42,9 @@ const Company = (): JSX.Element => {
     const companyError = getError(companyQuery.error);
     const loading =
         companyQuery.isLoading ||
-        createCompanyMutation.isLoading ||
-        updateCompanyMutation.isLoading ||
-        deleteCompanyMutation.isLoading ||
+        createCompanyMutation.isPending ||
+        updateCompanyMutation.isPending ||
+        deleteCompanyMutation.isPending ||
         !companyQuery.data;
 
     const mutationError = getError(

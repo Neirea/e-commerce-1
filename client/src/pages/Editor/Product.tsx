@@ -88,9 +88,9 @@ const Product = (): JSX.Element => {
         companyQuery.isLoading ||
         categoryQuery.isLoading ||
         productQuery.isLoading ||
-        createProductMutation.isLoading ||
-        updateProductMutation.isLoading ||
-        deleteProductMutation.isLoading ||
+        createProductMutation.isPending ||
+        updateProductMutation.isPending ||
+        deleteProductMutation.isPending ||
         !productQuery.data ||
         !companyQuery.data ||
         !categoryQuery.data;

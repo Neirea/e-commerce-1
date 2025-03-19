@@ -1,4 +1,8 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+    keepPreviousData,
+    useInfiniteQuery,
+    useQuery,
+} from "@tanstack/react-query";
 import qs from "query-string";
 import { type ChangeEvent, useEffect, useRef } from "react";
 import Col from "react-bootstrap/Col";
@@ -53,16 +57,17 @@ const SearchPage = (): JSX.Element => {
         hasNextPage,
     } = useInfiniteQuery({
         queryKey: ["filtered", search],
-        queryFn: ({ pageParam = 0 }) =>
+        queryFn: ({ pageParam }) =>
             getFilteredProducts({
                 fetchParams,
-                pageParam: pageParam as number,
+                pageParam,
             }),
+        initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) => {
             if (lastPage.data.length % SEARCH_NUMBER !== 0) return;
             return allPages.length;
         },
-        keepPreviousData: true,
+        placeholderData: keepPreviousData,
     });
 
     const productError = getError(error);

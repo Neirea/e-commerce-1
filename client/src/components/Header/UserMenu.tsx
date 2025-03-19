@@ -48,7 +48,9 @@ const UserMenu = (): JSX.Element => {
                         onClick={() => {
                             void logout()
                                 .then(() =>
-                                    queryCient.invalidateQueries(["me"]),
+                                    queryCient.invalidateQueries({
+                                        queryKey: ["me"],
+                                    }),
                                 )
                                 .catch();
                         }}

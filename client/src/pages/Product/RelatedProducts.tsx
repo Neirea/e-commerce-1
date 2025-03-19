@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import ProductsGrid from "../../components/ProductsGrid";
 import useInView from "../../hooks/useInView";
 import { getRelatedProducts } from "../../queries/Product";
@@ -22,13 +22,14 @@ const RelatedProducts = ({ product }: { product: TProduct }): JSX.Element => {
         hasNextPage,
     } = useInfiniteQuery({
         queryKey: ["related"],
-        queryFn: ({ pageParam = 0 }) =>
-            getRelatedProducts({ fetchParams, pageParam: pageParam as number }),
+        queryFn: ({ pageParam }) =>
+            getRelatedProducts({ fetchParams, pageParam }),
+        initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) => {
             if (lastPage.data.length % FETCH_NUMBER !== 0) return;
             return allPages.length;
         },
-        keepPreviousData: true,
+        placeholderData: keepPreviousData,
     });
     const relatedProductError = getError(error);
 

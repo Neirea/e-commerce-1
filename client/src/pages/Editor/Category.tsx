@@ -51,9 +51,9 @@ const Category = (): JSX.Element => {
     const loading =
         uploadLoading ||
         categoryQuery.isLoading ||
-        createCategoryMutation.isLoading ||
-        updateCategoryMutation.isLoading ||
-        deleteCategoryMutation.isLoading ||
+        createCategoryMutation.isPending ||
+        updateCategoryMutation.isPending ||
+        deleteCategoryMutation.isPending ||
         !categoryQuery.data;
 
     const mutationError = getError(
@@ -182,7 +182,7 @@ const Category = (): JSX.Element => {
                         </Form.Select>
                         <Button
                             onClick={() => void handleDelete()}
-                            disabled={loading || !categoryId}
+                            disabled={loading || categoryId === 0}
                         >
                             {loading ? "Wait..." : "Delete"}
                         </Button>{" "}

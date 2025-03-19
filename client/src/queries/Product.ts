@@ -50,7 +50,7 @@ export const uploadImages = (
     });
 
 export const getFeaturedProducts = ({
-    pageParam = 0,
+    pageParam,
 }): Promise<AxiosResponse<TProductWithImages[]>> => {
     return axios.get(
         `/product/featured?limit=${FETCH_NUMBER}&offset=${
@@ -75,7 +75,7 @@ export const getRelatedProducts = ({
 };
 
 export const getPopularProducts = ({
-    pageParam = 0,
+    pageParam,
 }): Promise<AxiosResponse<TProductWithImages[]>> =>
     axios.get(
         `/product/popular?limit=${FETCH_NUMBER}&offset=${pageParam * FETCH_NUMBER}`,
