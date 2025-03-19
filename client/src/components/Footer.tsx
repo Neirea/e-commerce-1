@@ -4,7 +4,7 @@ import { FiMail } from "@react-icons/all-files/fi/FiMail";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 const Footer = (): JSX.Element => {
     return (

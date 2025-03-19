@@ -9,7 +9,7 @@ import FormControl from "react-bootstrap/FormControl";
 import Image from "react-bootstrap/Image";
 import Modal from "react-bootstrap/Modal";
 import Row from "react-bootstrap/Row";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import { getProductsById } from "../../../queries/Product";
 import type { TCartItem } from "../../../store/useCartStore";
 import useCartStore from "../../../store/useCartStore";

@@ -1,4 +1,4 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router";
 import useCurrentUser from "../hooks/useCurrentUser";
 import type { TRole } from "../types/User";
 import Container from "react-bootstrap/Container";

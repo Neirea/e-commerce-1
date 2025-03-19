@@ -10,7 +10,7 @@ import {
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useDebounce } from "../../hooks/useDebounce";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import { getSearchBarData } from "../../queries/Product";

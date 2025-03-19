@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Alert from "react-bootstrap/Alert";
 import Col from "react-bootstrap/Col";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { getAllCategories } from "../../queries/Category";
 import { getError } from "../../utils/getError";
 

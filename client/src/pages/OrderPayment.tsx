@@ -1,7 +1,7 @@
 import qs from "query-string";
 import { useEffect } from "react";
 import Button from "react-bootstrap/Button";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router";
 import useCurrentUser from "../hooks/useCurrentUser";
 import useCartStore from "../store/useCartStore";
 

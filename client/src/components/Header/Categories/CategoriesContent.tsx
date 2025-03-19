@@ -1,7 +1,7 @@
 import { BiChevronRight } from "@react-icons/all-files/bi/BiChevronRight";
 import { forwardRef, useEffect, useMemo, useState } from "react";
 import ReactDOM from "react-dom";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import type { TCategory } from "../../../types/Category";
 
 const createWrapperAndAppend = (): HTMLDivElement => {

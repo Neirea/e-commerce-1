@@ -3,7 +3,7 @@ import { useState } from "react";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router";
 import Cart from "../../components/Header/Cart/CartContent";
 import LoadingProgress from "../../components/LoadingProgress";
 import { getSingleProductById } from "../../queries/Product";

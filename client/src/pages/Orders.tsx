@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import LoadingProgress from "../components/LoadingProgress";
 import { getAllOrders } from "../queries/Order";
 import { toPriceNumber } from "../utils/numbers";
