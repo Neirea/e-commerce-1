@@ -1,7 +1,8 @@
+import type { JSX } from "react";
 import Alert from "react-bootstrap/Alert";
 import { Link } from "react-router";
-import { toPriceNumber } from "../utils/numbers";
 import type { TProductWithImages } from "../types/Product";
+import { toPriceNumber } from "../utils/numbers";
 
 const ProductsGrid = ({
     products,

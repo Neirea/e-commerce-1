@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import Container from "react-bootstrap/Container";
 
 const Error = (): JSX.Element => {

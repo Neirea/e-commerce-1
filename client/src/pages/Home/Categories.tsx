@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import type { JSX } from "react";
 import Alert from "react-bootstrap/Alert";
 import Col from "react-bootstrap/Col";
 import { Link } from "react-router";

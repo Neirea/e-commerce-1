@@ -1,5 +1,5 @@
 import { BiCart } from "@react-icons/all-files/bi/BiCart";
-import { useState } from "react";
+import { useState, type JSX } from "react";
 import Nav from "react-bootstrap/Nav";
 import useCartStore from "../../../store/useCartStore";
 import CartContent from "./CartContent";

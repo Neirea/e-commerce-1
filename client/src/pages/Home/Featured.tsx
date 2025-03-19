@@ -1,4 +1,5 @@
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import type { JSX } from "react";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import ProductsGrid from "../../components/ProductsGrid";

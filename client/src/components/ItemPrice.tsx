@@ -1,7 +1,8 @@
-import type { TProductWithImages } from "../types/Product";
+import type { JSX } from "react";
 import type { TCartItem } from "../store/useCartStore";
-import { toPriceNumber } from "../utils/numbers";
+import type { TProductWithImages } from "../types/Product";
 import { getDiscountPrice } from "../utils/getDiscountedPrice";
+import { toPriceNumber } from "../utils/numbers";
 
 const ItemPrice = ({
     item,

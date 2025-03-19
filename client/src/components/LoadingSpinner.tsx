@@ -1,3 +1,5 @@
+import type { JSX } from "react";
+
 const LoadingSpinner = ({ size }: { size: number }): JSX.Element => {
     return (
         <div

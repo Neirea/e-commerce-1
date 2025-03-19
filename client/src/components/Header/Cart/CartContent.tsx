@@ -1,7 +1,7 @@
 import { AiOutlineDelete } from "@react-icons/all-files/ai/AiOutlineDelete";
 import { BsPlus } from "@react-icons/all-files/bs/BsPlus";
 import { FiMinus } from "@react-icons/all-files/fi/FiMinus";
-import { type ChangeEvent, useState } from "react";
+import { type ChangeEvent, type JSX, useState } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";

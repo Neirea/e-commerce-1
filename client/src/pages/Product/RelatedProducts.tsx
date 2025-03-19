@@ -1,4 +1,5 @@
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import type { JSX } from "react";
 import ProductsGrid from "../../components/ProductsGrid";
 import useInView from "../../hooks/useInView";
 import { getRelatedProducts } from "../../queries/Product";

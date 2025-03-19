@@ -1,4 +1,4 @@
-import React, { type ReactNode, useContext, useState } from "react";
+import React, { type JSX, type ReactNode, useContext, useState } from "react";
 import type { TCart } from "./useCartStore";
 
 type TCartStore = {

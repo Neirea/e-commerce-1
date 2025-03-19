@@ -7,7 +7,7 @@ import {
     useStripe,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type JSX } from "react";
 import Alert from "react-bootstrap/Alert";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";

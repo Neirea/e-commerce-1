@@ -1,7 +1,8 @@
+import type { JSX } from "react";
+import Container from "react-bootstrap/Container";
 import { Navigate, Outlet, useLocation } from "react-router";
 import useCurrentUser from "../hooks/useCurrentUser";
 import type { TRole } from "../types/User";
-import Container from "react-bootstrap/Container";
 
 const RequireAuth = ({
     allowedRoles,

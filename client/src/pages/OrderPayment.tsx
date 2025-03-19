@@ -1,5 +1,5 @@
 import qs from "query-string";
-import { useEffect } from "react";
+import { useEffect, type JSX } from "react";
 import Button from "react-bootstrap/Button";
 import { useLocation, useNavigate } from "react-router";
 import useCurrentUser from "../hooks/useCurrentUser";

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, type JSX } from "react";
 import Container from "react-bootstrap/Container";
 import { Route, Routes } from "react-router";
 import Footer from "./components/Footer";

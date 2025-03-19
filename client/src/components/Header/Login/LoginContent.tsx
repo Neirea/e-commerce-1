@@ -1,5 +1,6 @@
 import { FaFacebook } from "@react-icons/all-files/fa/FaFacebook";
 import { FaGoogle } from "@react-icons/all-files/fa/FaGoogle";
+import type { JSX } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { serverUrl } from "../../../utils/server";

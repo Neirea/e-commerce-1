@@ -4,7 +4,7 @@ import {
     useQuery,
 } from "@tanstack/react-query";
 import qs from "query-string";
-import { type ChangeEvent, useEffect, useRef } from "react";
+import { type ChangeEvent, type JSX, useEffect, useRef } from "react";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";

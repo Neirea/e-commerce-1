@@ -1,5 +1,5 @@
 import { BiChevronRight } from "@react-icons/all-files/bi/BiChevronRight";
-import { forwardRef, useEffect, useMemo, useState } from "react";
+import { forwardRef, useEffect, useMemo, useState, type JSX } from "react";
 import ReactDOM from "react-dom";
 import { Link } from "react-router";
 import type { TCategory } from "../../../types/Category";

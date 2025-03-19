@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import type { JSX } from "react";
 import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
 import { Link } from "react-router";

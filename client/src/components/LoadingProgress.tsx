@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type JSX } from "react";
 import LoadingBar from "react-top-loading-bar";
 
 const LoadingProgress = ({
