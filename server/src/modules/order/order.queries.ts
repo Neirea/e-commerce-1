@@ -8,7 +8,18 @@ export const getOrdersByUserQuery = (
     SELECT o.*,json_agg(sp.*) as order_items
     FROM public."Order" as o
     INNER JOIN
-        (SELECT so.*,to_json(p.*) as product
+        (SELECT so.*,json_build_object(
+            'id',p.id,
+            'name',p.name,
+            'price',p.price,
+            'description',p.description,
+            'inventory',p.inventory,
+            'company_id',p.company_id,
+            'category_id',p.category_id,
+            'shipping_cost',p.shipping_cost,
+            'discount',p.discount,
+            'created_at',p.created_at,
+            'updated_at',p.updated_at) as product
         FROM public."SingleOrderItem" as so
         INNER JOIN public."Product" as p ON so.product_id = p.id) as sp
     ON o.id = sp.order_id

@@ -3,12 +3,17 @@ import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { TCategoryId } from "./category.types";
 
+// USE THIS WHEN COMPANIES WILL BE REQUIRED
+// SELECT cat.id,cat.name,cat.img_id,cat.img_src,cat.parent_id,
+// COALESCE(json_agg(json_build_object('id', com.id, 'name', com.name))
+// FILTER (WHERE com.id IS NOT NULL),'[]') as companies
+// FROM public."Category" as cat
+// LEFT JOIN public."_CategoryToCompany" as catcom ON cat.id = catcom."A"
+// LEFT JOIN public."Company" as com ON catcom."B" = com.id
+// GROUP BY cat.id
 export const getCategoriesQuery = Prisma.sql`
-    SELECT cat.*,COALESCE(json_agg(com.*) FILTER (WHERE com.id IS NOT NULL),'[]') as companies
+    SELECT cat.id,cat.name,cat.img_id,cat.img_src,cat.parent_id
     FROM public."Category" as cat
-    LEFT JOIN public."_CategoryToCompany" as catcom ON cat.id = catcom."A"
-    LEFT JOIN public."Company" as com ON catcom."B" = com.id
-    GROUP BY cat.id
 `;
 
 export const createCategoryQuery = (

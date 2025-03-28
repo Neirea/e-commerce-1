@@ -17,9 +17,10 @@ import { SearchDataQueryDto } from "./dto/search-data.dto";
 import { FilteredProductsQueryDto } from "./dto/filtered-products.dto";
 
 export const getProducts = Prisma.sql`
-    SELECT p.*,
-    COALESCE(json_agg(json_build_object('id',v."B"))
-    FILTER (WHERE v."B" IS NOT NULL),'[]') as variants
+    SELECT p.id,p.name,p.price,p.description,
+        p.inventory,p.company_id,p.category_id,p.shipping_cost,
+        p.discount,p.created_at,p.updated_at,
+        COALESCE(json_agg(json_build_object('id',v."B")) FILTER (WHERE v."B" IS NOT NULL),'[]') as variants
     FROM public."Product" as p
     LEFT JOIN public."_variants" as v ON p.id = v."A"
     GROUP BY p.id
@@ -40,7 +41,9 @@ export const getProductByIdQuery = (id: TProductId): Prisma.Sql => {
         GROUP BY p.id
     `;
     return Prisma.sql`
-        SELECT p.*,i.images,
+        SELECT p.id,p.name,p.price,p.description,
+        p.inventory,p.company_id,p.category_id,p.shipping_cost,
+        p.discount,p.created_at,p.updated_at,i.images,
         json_build_object('id',com.id,'name',com.name) as company,
         json_build_object('id',cat.id,'name',cat.name) as category,
         COALESCE(vrn.variants,'[]') as variants
@@ -56,7 +59,9 @@ export const getProductByIdQuery = (id: TProductId): Prisma.Sql => {
 export const getProductsByIdsQuery = (
     ids: TProductId[],
 ): Prisma.Sql => Prisma.sql`
-    SELECT p.*,i.images
+    SELECT p.id,p.name,p.price,p.description,
+        p.inventory,p.company_id,p.category_id,p.shipping_cost,
+        p.discount,p.created_at,p.updated_at,i.images
     FROM public."Product" as p
     INNER JOIN (${imagesJSON}) as i
     ON p.id = i.product_id
@@ -76,9 +81,9 @@ export const getSearchDataQuery = (
     );
 
     const categoriesJSON = Prisma.sql`
-            SELECT cat.*,pcat.parent
+            SELECT cat.id,cat.name,cat.parent_id,cat.search_vector,pcat.parent
             FROM  public."Category" as cat
-            LEFT JOIN (SELECT c1.*, json_build_object('id',c2.id,'name',c2.name) as parent
+            LEFT JOIN (SELECT c1.id, json_build_object('id',c2.id,'name',c2.name) as parent
                     FROM public."Category" as c1, public."Category" as c2
                     WHERE c1.parent_id = c2.id) as pcat
             ON cat.id = pcat.id
@@ -91,7 +96,7 @@ export const getSearchDataQuery = (
             FROM public."Product" as p
             INNER JOIN public."Company" as com ON p.company_id = com.id
             INNER JOIN (${categoriesJSON}) as cat ON p.category_id = cat.id
-            WHERE (${searchCondition})
+            WHERE ${searchCondition}
                 ${companyCondition}
                 ${categoryCondition}
         `;
@@ -111,14 +116,14 @@ export const filteredProductsQuery = (
         min_price,
         max_price,
     } = input;
+    const searchString = parseQueryString(search_string);
+    const orderBySearchVector = Prisma.sql`ts_rank_cd(p.search_vector || com.search_vector || cat.search_vector,to_tsquery('simple',${searchString}),1) DESC`;
     const orderCondition =
         sort_mode === 1
-            ? Prisma.sql`p.inventory != 0 DESC, p.price ASC,p._count DESC, p.id ASC`
+            ? Prisma.sql`p.inventory != 0 DESC, p.price ASC,${orderBySearchVector},p._count DESC, p.id ASC`
             : sort_mode === 2
-              ? Prisma.sql`p.inventory != 0 DESC, p.price DESC,p._count DESC, p.id ASC`
-              : Prisma.sql`p.inventory != 0 DESC, p._count DESC,p.discount DESC, p.id ASC`;
-
-    const searchString = parseQueryString(search_string);
+              ? Prisma.sql`p.inventory != 0 DESC, p.price DESC,${orderBySearchVector},p._count DESC, p.id ASC`
+              : Prisma.sql`p.inventory != 0 DESC,${orderBySearchVector}, p._count DESC,p.discount DESC, p.id ASC`;
     const searchCondition = getSearchCondition(searchString);
     const companyCondition = getCompanyCondition(company_id);
     const categoryCondition = getCategoryCondition(TCategoryIds, category_id);
@@ -132,7 +137,9 @@ export const filteredProductsQuery = (
         : Prisma.empty;
 
     return Prisma.sql`
-        SELECT p.*,pi.images
+        SELECT p.id,p.name,p.price,p.description,
+            p.inventory,p.company_id,p.category_id,p.shipping_cost,
+            p.discount,p.created_at,p.updated_at,pi.images
         FROM (${productsByOrderCount}) as p
         INNER JOIN (${imagesJSON}) as pi
         ON p.id = pi.product_id
@@ -140,7 +147,7 @@ export const filteredProductsQuery = (
         ON p.company_id = com.id
         INNER JOIN public."Category" as cat
         ON p.category_id = cat.id
-        WHERE (${searchCondition})
+        WHERE ${searchCondition}
             ${companyCondition}
             ${categoryCondition}
             ${minPriceCondition}
@@ -153,7 +160,9 @@ export const filteredProductsQuery = (
 export const featuredProductsQuery = (
     input: FeaturedProductsDto,
 ): Prisma.Sql => Prisma.sql`
-    SELECT p.*,pi.images
+    SELECT p.id,p.name,p.price,p.description,
+            p.inventory,p.company_id,p.category_id,p.shipping_cost,
+            p.discount,p.created_at,p.updated_at,pi.images
     FROM public."Product" as p
     INNER JOIN (${imagesJSON}) as pi
     ON p.id = pi.product_id
@@ -164,7 +173,9 @@ export const featuredProductsQuery = (
 export const relatedProductsQuery = (
     input: RelatedProductsDto,
 ): Prisma.Sql => Prisma.sql`
-    SELECT po.*,pi.images
+    SELECT po.id,po.name,po.price,po.description,
+        po.inventory,po.company_id,po.category_id,po.shipping_cost,
+        po.discount,po.created_at,po.updated_at,pi.images
     FROM (${productsByOrderCount}) as po
     INNER JOIN (${imagesJSON}) as pi
     ON po.id = pi.product_id
@@ -178,7 +189,9 @@ export const relatedProductsQuery = (
 export const popularProductsQuery = (
     input: PopularProductsDto,
 ): Prisma.Sql => Prisma.sql`
-    SELECT po.*,pi.images
+    SELECT po.id,po.name,po.price,po.description,
+        po.inventory,po.company_id,po.category_id,po.shipping_cost,
+        po.discount,po.created_at,po.updated_at,pi.images
     FROM (${productsByOrderCount}) as po
     INNER JOIN (${imagesJSON}) as pi
     ON po.id = pi.product_id
@@ -192,14 +205,14 @@ export const searchBarDataQuery = (input: string): Prisma.Sql => {
     return Prisma.sql`
             (SELECT cat.id,cat.name,'Category' as source
             FROM public."Category" as cat
-            WHERE to_tsvector('simple',cat.name) @@ to_tsquery('simple',${searchString})
-            ORDER BY cat.id
+            WHERE cat.search_vector @@ to_tsquery('simple',${searchString})
+            ORDER BY ts_rank_cd(cat.search_vector,to_tsquery('simple',${searchString})) DESC,cat.id
             LIMIT 3)
         UNION ALL
             (SELECT com.id,com.name,'Company' as source
             FROM public."Company" as com
-            WHERE to_tsvector('simple',com.name) @@ to_tsquery('simple',${searchString})
-            ORDER BY com.id
+            WHERE com.search_vector @@ to_tsquery('simple',${searchString})
+            ORDER BY ts_rank_cd(com.search_vector,to_tsquery('simple',${searchString})) DESC,com.id
             LIMIT 3)
         UNION ALL
             (SELECT p.id,p.name,'Product' as source
@@ -207,8 +220,9 @@ export const searchBarDataQuery = (input: string): Prisma.Sql => {
             INNER JOIN
                 (${productsByOrderCount}) as po
             ON p.id = po.id
-            WHERE to_tsvector('simple',p.name) @@ to_tsquery('simple',${searchString})
-            ORDER BY po.inventory != 0 DESC, po._count DESC,po.id ASC)
+            WHERE p.search_vector @@ to_tsquery('simple',${searchString})
+            ORDER BY po.inventory != 0 DESC,ts_rank_cd(p.search_vector,to_tsquery('simple',${searchString})) DESC,
+                po._count DESC,po.id ASC)
         LIMIT ${10}
     `;
 };

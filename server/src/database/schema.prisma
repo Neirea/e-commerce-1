@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch"]
+  previewFeatures = ["fullTextSearchPostgres"]
 }
 
 datasource db {
@@ -25,23 +25,24 @@ model User {
 }
 
 model Product {
-  id               Int               @id @default(autoincrement())
+  id               Int                      @id @default(autoincrement())
   name             String
-  price            Int               @default(0)
+  price            Int                      @default(0)
   description      Json
   inventory        Int
   company_id       Int
   category_id      Int
-  shipping_cost    Int               @default(0)
-  discount         Int               @default(0)
-  created_at       DateTime          @default(now())
-  updated_at       DateTime          @default(now())
-  variants         Product[]         @relation("variants")
-  variantsRelation Product[]         @relation("variants")
-  company          Company           @relation(fields: [company_id], references: [id], onDelete: Cascade)
-  category         Category          @relation(fields: [category_id], references: [id], onDelete: Cascade)
+  shipping_cost    Int                      @default(0)
+  discount         Int                      @default(0)
+  created_at       DateTime                 @default(now())
+  updated_at       DateTime                 @default(now())
+  variants         Product[]                @relation("variants")
+  variantsRelation Product[]                @relation("variants")
+  company          Company                  @relation(fields: [company_id], references: [id], onDelete: Cascade)
+  category         Category                 @relation(fields: [category_id], references: [id], onDelete: Cascade)
   orders           SingleOrderItem[]
   images           ProductImage[]
+  search_vector    Unsupported("tsvector")?
 
   @@index([inventory], type: BTree)
   @@index([price], type: BTree)
@@ -60,22 +61,24 @@ model ProductImage {
 }
 
 model Company {
-  id         Int        @id @default(autoincrement())
-  name       String     @unique
-  products   Product[]
-  categories Category[]
+  id            Int                      @id @default(autoincrement())
+  name          String                   @unique
+  products      Product[]
+  categories    Category[]
+  search_vector Unsupported("tsvector")?
 }
 
 model Category {
-  id        Int        @id @default(autoincrement())
-  name      String     @unique
-  img_id    String?
-  img_src   String?
-  parent_id Int?
-  parent    Category?  @relation("subCategory", fields: [parent_id], references: [id])
-  children  Category[] @relation("subCategory")
-  companies Company[]
-  products  Product[]
+  id            Int                      @id @default(autoincrement())
+  name          String                   @unique
+  img_id        String?
+  img_src       String?
+  parent_id     Int?
+  parent        Category?                @relation("subCategory", fields: [parent_id], references: [id])
+  children      Category[]               @relation("subCategory")
+  companies     Company[]
+  products      Product[]
+  search_vector Unsupported("tsvector")?
 
   @@index([parent_id], type: Hash)
 }

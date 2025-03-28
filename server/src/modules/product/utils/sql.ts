@@ -35,9 +35,9 @@ export const getSearchCondition = (
     searchString: string | undefined,
 ): Prisma.Sql =>
     searchString
-        ? Prisma.sql`(to_tsvector('simple',p.name) @@ to_tsquery('simple',${searchString})
-OR to_tsvector('simple',com.name) @@ to_tsquery('simple',${searchString})
-OR to_tsvector('simple',cat.name) @@ to_tsquery('simple',${searchString}))`
+        ? Prisma.sql`p.search_vector @@ to_tsquery('simple',${searchString})
+        OR com.search_vector @@ to_tsquery('simple',${searchString})
+        OR cat.search_vector @@ to_tsquery('simple',${searchString})`
         : Prisma.sql`TRUE`;
 
 export const getCompanyCondition = (id: TCompanyId | undefined): Prisma.Sql =>
