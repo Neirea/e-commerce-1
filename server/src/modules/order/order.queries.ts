@@ -5,26 +5,30 @@ import { TOrderId } from "./order.types";
 export const getOrdersByUserQuery = (
     TUserId: TUserId,
 ): Prisma.Sql => Prisma.sql`
-    SELECT o.*,json_agg(sp.*) as order_items
-    FROM public."Order" as o
-    INNER JOIN
-        (SELECT so.*,json_build_object(
-            'id',p.id,
-            'name',p.name,
-            'price',p.price,
-            'description',p.description,
-            'inventory',p.inventory,
-            'company_id',p.company_id,
-            'category_id',p.category_id,
-            'shipping_cost',p.shipping_cost,
-            'discount',p.discount,
-            'created_at',p.created_at,
-            'updated_at',p.updated_at) as product
-        FROM public."SingleOrderItem" as so
-        INNER JOIN public."Product" as p ON so.product_id = p.id) as sp
-    ON o.id = sp.order_id
-    WHERE o.user_id = ${TUserId}
-    GROUP BY o.id
+    SELECT o.*,json_agg(json_build_object(	
+        'id',so.id,	
+        'order_id',so.order_id,	
+        'amount',so.amount,	
+        'price',so.price,	
+        'product_id',so.product_id,	
+        'product',json_build_object(	
+            'id',p.id,	
+            'name',p.name,	
+            'price',p.price,	
+            'description',p.description,	
+            'inventory',p.inventory,	
+            'company_id',p.company_id,	
+            'category_id',p.category_id,	
+            'shipping_cost',p.shipping_cost,	
+            'discount',p.discount,	
+            'created_at',p.created_at,	
+            'updated_at',p.updated_at	
+    ))) as order_items	
+    FROM public."Order" as o	
+    INNER JOIN public."SingleOrderItem" AS so ON o.id = so.order_id	
+    INNER JOIN public."Product" AS p ON so.product_id = p.id	
+    WHERE o.user_id = ${TUserId}	
+    GROUP BY o.id	
 `;
 
 export const cancelOrderQuery = (

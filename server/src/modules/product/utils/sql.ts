@@ -27,7 +27,7 @@ export const productsByOrderCount = Prisma.sql`
 `;
 
 export const imagesJSON = Prisma.sql`
-    SELECT product_id,jsonb_agg(jsonb_build_object('img_id',img_id,'img_src',img_src)) as images
+    SELECT product_id,json_agg(json_build_object('img_id',img_id,'img_src',img_src)) as images
     FROM public."ProductImage" GROUP BY product_id
 `;
 
