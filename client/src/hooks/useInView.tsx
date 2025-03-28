@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 
 type TOptions = {
     root: HTMLElement | null;
@@ -10,7 +10,7 @@ const useInView = <T extends HTMLElement>(
     options: TOptions,
     cb: () => any,
     hasMore: boolean | undefined,
-): React.MutableRefObject<T | null> => {
+): RefObject<T | null> => {
     const containerRef = useRef<T | null>(null);
     const [isVisible, setIsVisible] = useState(false);
 

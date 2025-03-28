@@ -1,11 +1,11 @@
-import { type MutableRefObject, useEffect } from "react";
+import { type RefObject, useEffect } from "react";
 
 export const useOutsideClick = (
-    refs: Array<MutableRefObject<HTMLElement | null>>,
+    refs: Array<RefObject<HTMLElement | null>>,
     handleClose: () => void,
 ): void => {
-    const controller = new AbortController();
     useEffect(() => {
+        const controller = new AbortController();
         document.addEventListener(
             "click",
             (e) => {
