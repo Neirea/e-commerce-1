@@ -153,7 +153,7 @@ const Product = (): JSX.Element => {
             </Row>
             <Cart handleClose={handleCloseCart} show={showCart} />
             <h2 className="mb-4 text-center">Related Products:</h2>
-            {!!product && <RelatedProducts key={id} product={product} />}
+            {!!product && <RelatedProducts product={product} />}
         </Container>
     );
 };

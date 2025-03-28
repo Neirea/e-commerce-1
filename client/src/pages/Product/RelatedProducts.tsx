@@ -11,9 +11,9 @@ const options = { root: null, rootMargin: "0px", treshold: 1.0 };
 
 const RelatedProducts = ({ product }: { product: TProduct }): JSX.Element => {
     const fetchParams = {
-        id: product?.id,
-        company_id: product?.company_id,
-        category_id: product?.category_id,
+        id: product.id,
+        company_id: product.company_id,
+        category_id: product.category_id,
     };
     const {
         data: relatedProductData,
@@ -22,7 +22,7 @@ const RelatedProducts = ({ product }: { product: TProduct }): JSX.Element => {
         fetchNextPage,
         hasNextPage,
     } = useInfiniteQuery({
-        queryKey: ["related"],
+        queryKey: ["related", product.id],
         queryFn: ({ pageParam }) =>
             getRelatedProducts({ fetchParams, pageParam }),
         initialPageParam: 0,

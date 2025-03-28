@@ -198,14 +198,12 @@ const SearchPage = (): JSX.Element => {
                                     </div>
                                 )}
                             </div>
+                            <MultiRangeSlider
+                                key={search}
+                                max={searchData.data.max}
+                                min={searchData.data.min}
+                            />
                         </>
-                    )}
-                    {!!searchData?.data && (
-                        <MultiRangeSlider
-                            key={`${searchData.data.min}-${searchData.data.max}`}
-                            max={searchData.data.max}
-                            min={searchData.data.min}
-                        />
                     )}
                 </Col>
 
