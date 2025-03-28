@@ -25,7 +25,7 @@ import type { TProductMutate } from "../../types/Product";
 
 const defaultValues = {
     name: "",
-    description: "",
+    description: "{}",
     price: 0,
     inventory: 0,
     company_id: 0,
