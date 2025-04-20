@@ -28,6 +28,10 @@ export type TSingleOrderItem = {
     product_id: number;
 };
 
-export type TOrderItem = TSingleOrderItem & { product: TProduct };
+export interface TOrderItem extends TSingleOrderItem {
+    product: TProduct;
+}
 
-export type TOrderWithItems = TOrder & { order_items: TOrderItem[] };
+export interface TOrderWithItems extends TOrder {
+    order_items: TOrderItem[];
+}

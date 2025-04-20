@@ -2,11 +2,11 @@ import { Order, Product, ProductImage, SingleOrderItem } from "@prisma/client";
 
 export type TOrderId = Pick<Order, "id">["id"];
 
-export type TOrderItemWithImages = SingleOrderItem & {
+export interface TOrderItemWithImages extends SingleOrderItem {
     product: Product;
     images: ProductImage[];
-};
+}
 
-export type TOrderWithItemsAndImgs = Order & {
+export interface TOrderWithItemsAndImgs extends Order {
     order_items: TOrderItemWithImages[];
-};
+}

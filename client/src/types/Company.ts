@@ -3,4 +3,6 @@ export type TCompany = {
     name: string;
 };
 
-export type TCompanyFull = TCompany & { productCount?: number };
+export interface TCompanyFull extends TCompany {
+    productCount?: number;
+}

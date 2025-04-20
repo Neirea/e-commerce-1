@@ -11,6 +11,7 @@ export type TUploadedImage = {
     img_src: string;
 };
 
-export type TCategoryFull = TCategory & { productCount?: number } & {
+export interface TCategoryFull extends TCategory {
+    productCount?: number;
     parent?: TCategory | null;
-};
+}

@@ -16,32 +16,30 @@ export type TProduct = {
     variants: TProductWithImages[];
 };
 
-export type TProductUploadImage = TUploadedImage & {
+export interface TProductUploadImage extends TUploadedImage {
     product_id: Pick<TProduct, "id">["id"];
-};
+}
 
-export type TProductWithImages = TProduct & {
+export interface TProductWithImages extends TProduct {
     images: TProductUploadImage[];
-};
+}
 
-export type TProductCatCom = TProductWithImages & {
+export interface TProductCatCom extends TProductWithImages {
     company: TCompany;
     category: TCategory;
-};
+}
 
-export type TProductMutate = Omit<
-    TProduct,
-    "created_at" | "updated_at" | "variants"
-> & {
+export interface TProductMutate
+    extends Omit<TProduct, "created_at" | "updated_at" | "variants"> {
     variants: Pick<TProduct, "id">["id"][];
     img_id: string[];
     img_src: string[];
-};
+}
 
-export type TProductWithImgVariants = TProductWithImages & {
+export interface TProductWithImgVariants extends TProductWithImages {
     company: TCompany;
     category: TCategory;
-};
+}
 
 export type TRelatedProductFetchParams = {
     id: Pick<TProduct, "id">["id"];
