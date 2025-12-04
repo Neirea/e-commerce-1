@@ -42,20 +42,6 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
-            - name: Use Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-
-            - name: Install & Build
-              working-directory: ./server
-              env:
-                  DATABASE_URL: ${{ secrets.DATABASE_URL }}
-              run: |
-                  npm ci
-                  npm run db:generate
-                  npm run build
-
             - name: Google Auth
               id: auth
               uses: "google-github-actions/auth@v2"
@@ -73,7 +59,7 @@ jobs:
 
             - name: Build and Push Container
               run: |-
-                  docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGISTRY }}/${{ env.SERVICE }}:${{ github.sha }}" ./server
+                  docker build -t "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGISTRY }}/${{ env.SERVICE }}:${{ github.sha }}" ./
                   docker push "${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REGISTRY }}/${{ env.SERVICE }}:${{ github.sha }}"
 
             - name: Deploy to Cloud Run
