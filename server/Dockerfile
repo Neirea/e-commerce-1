@@ -12,7 +12,6 @@ RUN npm prune --omit=dev
 FROM node:20-slim
 RUN apt-get update -y
 RUN apt-get install -y openssl
-ENV NODE_ENV production
 WORKDIR /nestjs
 
 COPY --from=builder /nestjs/node_modules /nestjs/node_modules
