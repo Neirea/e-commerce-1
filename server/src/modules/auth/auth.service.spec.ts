@@ -1,6 +1,6 @@
 import { CanActivate } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
-import { Platform, Role } from "@prisma/client";
+import { Platform, Role } from "src/database/generated/client";
 import { Request, Response } from "express";
 import { Profile } from "passport-google-oauth20";
 import { appConfig } from "src/config/env";

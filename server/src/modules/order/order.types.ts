@@ -1,4 +1,9 @@
-import { Order, Product, ProductImage, SingleOrderItem } from "@prisma/client";
+import {
+    Order,
+    Product,
+    ProductImage,
+    SingleOrderItem,
+} from "src/database/generated/client";
 
 export type TOrderId = Pick<Order, "id">["id"];
 

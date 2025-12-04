@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "src/database/generated/client";
 import { CreateCompanyDto } from "./dto/create-company.dto";
 import { UpdateCompanyDto } from "./dto/update-company.dto";
 import { TCompanyId } from "./company.types";

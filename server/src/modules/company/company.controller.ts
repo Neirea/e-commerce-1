@@ -13,7 +13,7 @@ import { CompanyService } from "./company.service";
 import { CreateCompanyDto } from "./dto/create-company.dto";
 import { UpdateCompanyDto } from "./dto/update-company.dto";
 import { TCompanyId } from "./company.types";
-import { Role } from "@prisma/client";
+import { Role } from "src/database/generated/client";
 import { RolesGuard } from "src/common/roles/roles.guard";
 import { Roles } from "src/common/roles/roles.decorator";
 import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";

@@ -2,7 +2,7 @@ import { ExecutionContext } from "@nestjs/common";
 import { HttpArgumentsHost } from "@nestjs/common/interfaces";
 import { Reflector } from "@nestjs/core";
 import { Test } from "@nestjs/testing";
-import { Role } from "@prisma/client";
+import { Role } from "src/database/generated/client";
 import { RolesGuard } from "./roles.guard";
 
 describe("RolesGuard", () => {

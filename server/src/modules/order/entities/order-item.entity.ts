@@ -1,4 +1,4 @@
-import { SingleOrderItem } from "@prisma/client";
+import { SingleOrderItem } from "src/database/generated/client";
 import { TOrderId } from "../order.types";
 import { TProductId } from "src/modules/product/product.types";
 

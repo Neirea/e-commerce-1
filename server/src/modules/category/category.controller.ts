@@ -16,7 +16,7 @@ import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { TCategoryId } from "./category.types";
 import { RolesGuard } from "src/common/roles/roles.guard";
 import { Roles } from "src/common/roles/roles.decorator";
-import { Role } from "@prisma/client";
+import { Role } from "src/database/generated/client";
 import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { CategoryWithCompaniesDto } from "./dto/get-categories.dto";
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";

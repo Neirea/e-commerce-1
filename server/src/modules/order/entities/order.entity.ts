@@ -1,4 +1,4 @@
-import { OrderStatus, Order as TOrder } from "@prisma/client";
+import { OrderStatus, Order as TOrder } from "src/database/generated/client";
 import { TOrderId } from "../order.types";
 import {
     TUserAddress,

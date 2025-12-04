@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import { User } from "src/database/generated/client";
 
 export type TUserId = Pick<User, "id">["id"];
 export type TUserGivenName = Pick<User, "given_name">["given_name"];

@@ -1,4 +1,4 @@
-import { Platform, Role, User as TUser } from "@prisma/client";
+import { Platform, Role, User as TUser } from "src/database/generated/client";
 import {
     TUserAddress,
     TUserAvatar,

@@ -1,6 +1,6 @@
 import { BadRequestException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
-import { User } from "@prisma/client";
+import { User } from "src/database/generated/client";
 import { appConfig } from "src/config/env";
 import { TPrismaServiceMock } from "src/utils/types.mock";
 import { PrismaService } from "../prisma/prisma.service";

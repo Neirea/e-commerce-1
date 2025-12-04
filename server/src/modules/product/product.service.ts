@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { ProductImage } from "@prisma/client";
+import { ProductImage } from "src/database/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateProductDto } from "./dto/create-propduct.dto";
 import { FeaturedProductsDto } from "./dto/featured-products.dto";

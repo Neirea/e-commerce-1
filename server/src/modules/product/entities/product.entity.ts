@@ -9,7 +9,7 @@ import {
     TProductShippingCost,
 } from "../product.types";
 import { TCategoryId } from "src/modules/category/category.types";
-import { Product as TProduct } from "@prisma/client";
+import { Product as TProduct } from "src/database/generated/client";
 
 export class Product implements TProduct {
     id: TProductId;

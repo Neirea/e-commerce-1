@@ -13,7 +13,7 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { Request } from "express";
 import { TUserId } from "./user.types";
 import { RolesGuard } from "src/common/roles/roles.guard";
-import { Role } from "@prisma/client";
+import { Role } from "src/database/generated/client";
 import { Roles } from "src/common/roles/roles.decorator";
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
 import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";

@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "src/database/generated/client";
 
 export const userByPlatformIdQuery = (
     platform_id: string,

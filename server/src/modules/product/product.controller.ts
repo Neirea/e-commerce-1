@@ -24,7 +24,7 @@ import { UpdateProductDto } from "./dto/update-product.dto";
 import { TProductId } from "./product.types";
 import { ParseQuaryArrayPipe } from "src/pipes/parse-ids.pipe";
 import { Roles } from "src/common/roles/roles.decorator";
-import { Role } from "@prisma/client";
+import { Role } from "src/database/generated/client";
 import { RolesGuard } from "src/common/roles/roles.guard";
 import { ApiTags, ApiCookieAuth, ApiOperation } from "@nestjs/swagger";
 import { ProductWithImagesDto } from "./dto/product-with-images.dto";

@@ -1,4 +1,4 @@
-import { Company, Product, ProductImage } from "@prisma/client";
+import { Company, Product, ProductImage } from "src/database/generated/client";
 import { ValidationArguments } from "class-validator";
 import { Request } from "express";
 import { CreateProductDto } from "./dto/create-propduct.dto";

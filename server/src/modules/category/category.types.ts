@@ -1,4 +1,4 @@
-import { Category } from "@prisma/client";
+import { Category } from "src/database/generated/client";
 import { Request } from "express";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 

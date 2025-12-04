@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "src/database/generated/client";
 import { TCategoryId } from "src/modules/category/category.types";
 import { TCompanyId } from "src/modules/company/company.types";
 

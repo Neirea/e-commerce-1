@@ -1,5 +1,5 @@
 import { TProductId, TPropductImgId, TPropductImgSrc } from "../product.types";
-import { ProductImage as TProductImage } from "@prisma/client";
+import { ProductImage as TProductImage } from "src/database/generated/client";
 
 export class ProductImage implements TProductImage {
     img_id: TPropductImgId;

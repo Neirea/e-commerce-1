@@ -1,4 +1,4 @@
-import { User as TUser } from "@prisma/client";
+import { User as TUser } from "src/database/generated/client";
 
 declare global {
     namespace Express {

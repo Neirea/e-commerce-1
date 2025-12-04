@@ -1,5 +1,5 @@
 import "express-session";
-import { User } from "@prisma/client";
+import { User } from "src/database/generated/client";
 
 declare module "express-session" {
     interface SessionData {

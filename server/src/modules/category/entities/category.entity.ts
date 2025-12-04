@@ -4,7 +4,7 @@ import {
     TCategoryImgSrc,
     TCategoryName,
 } from "../category.types";
-import { Category as TCategory } from "@prisma/client";
+import { Category as TCategory } from "src/database/generated/client";
 
 export class Category implements Partial<TCategory> {
     id: TCategoryId;

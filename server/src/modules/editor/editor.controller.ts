@@ -21,7 +21,7 @@ import {
 import { UploadedImagesDto } from "./dto/upload-images.dto";
 import { SingleUploadedImageDto } from "./dto/upload-image.dto";
 import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
-import { Role } from "@prisma/client";
+import { Role } from "src/database/generated/client";
 import { Roles } from "src/common/roles/roles.decorator";
 import { RolesGuard } from "src/common/roles/roles.guard";
 

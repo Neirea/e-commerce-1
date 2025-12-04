@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { Profile as GoogleProfile } from "passport-google-oauth20";
 import { Profile as FacebookProfile } from "passport-facebook";
 import { userByPlatformIdQuery, userCountQuery } from "./auth.queries";
-import { Platform, Role, User } from "@prisma/client";
+import { Platform, Role, User } from "src/database/generated/client";
 import { PrismaService } from "../prisma/prisma.service";
 import { appConfig } from "src/config/env";
 

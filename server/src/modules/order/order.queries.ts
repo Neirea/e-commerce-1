@@ -1,4 +1,4 @@
-import { Prisma, SingleOrderItem } from "@prisma/client";
+import { Prisma, SingleOrderItem } from "src/database/generated/client";
 import { TUserId } from "../user/user.types";
 import { TOrderId } from "./order.types";
 
