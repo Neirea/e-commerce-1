@@ -1,5 +1,5 @@
 # stage 1
-FROM node:18 as builder
+FROM node:20 as builder
 WORKDIR /nestjs
 COPY package*.json ./
 RUN npm ci
@@ -9,7 +9,7 @@ RUN npm run build
 RUN npm prune --omit=dev
 
 # # stage 2
-FROM node:18-slim
+FROM node:20-slim
 RUN apt-get update -y
 RUN apt-get install -y openssl
 ENV NODE_ENV production
