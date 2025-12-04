@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaPromise, Product, User } from "@prisma/client";
-import { InputJsonObject } from "@prisma/client/runtime/library";
+import { InputJsonObject } from "@prisma/client/runtime/client";
 import { appConfig } from "src/config/env";
 import Stripe from "stripe";
 import { updateOrderItemQuery } from "../order/order.queries";
