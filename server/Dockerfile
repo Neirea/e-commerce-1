@@ -1,6 +1,8 @@
 # stage 1
 FROM node:20 as builder
 WORKDIR /nestjs
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
 COPY package*.json ./
 RUN npm ci
 COPY . .
