@@ -29,8 +29,10 @@ export interface TProductCatCom extends TProductWithImages {
     category: TCategory;
 }
 
-export interface TProductMutate
-    extends Omit<TProduct, "created_at" | "updated_at" | "variants"> {
+export interface TProductMutate extends Omit<
+    TProduct,
+    "created_at" | "updated_at" | "variants"
+> {
     variants: Pick<TProduct, "id">["id"][];
     img_id: string[];
     img_src: string[];
