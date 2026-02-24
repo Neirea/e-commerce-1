@@ -93,9 +93,8 @@ const useCartStore = (): TCartStore => {
                 (p) => p.product.id === item.product.id,
             );
 
-            let newCart: TCart = [];
             if (existingProduct) {
-                newCart = cart.map((i) => {
+                const newCart = cart.map((i) => {
                     if (i.product.id === existingProduct.product.id) {
                         const amount =
                             i.amount + item.amount > item.product.inventory
@@ -113,7 +112,7 @@ const useCartStore = (): TCartStore => {
                 changeCart(newCart);
                 return;
             }
-            newCart = [...cart, item];
+            const newCart = [...cart, item];
             addCartToLocalStorage(newCart);
             changeCart(newCart);
         },
