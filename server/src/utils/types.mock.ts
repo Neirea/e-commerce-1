@@ -1,5 +1,6 @@
 import { CloudinaryService } from "src/modules/cloudinary/cloudinary.service";
 import { PrismaService } from "src/modules/prisma/prisma.service";
+import jest from "jest-mock";
 
 export type TPrismaServiceMock = Partial<PrismaService> & {
     $queryRaw: jest.Mock;

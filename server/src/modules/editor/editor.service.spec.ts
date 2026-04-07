@@ -1,7 +1,8 @@
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { EditorService } from "./editor.service";
-import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { TCloudinaryServiceMock } from "src/utils/types.mock";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { EditorService } from "./editor.service";
 
 describe("EditorService", () => {
     let service: EditorService;

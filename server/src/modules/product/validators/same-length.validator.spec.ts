@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals";
 import { validate } from "class-validator";
 import { SameLength } from "./same-length.validator";
 

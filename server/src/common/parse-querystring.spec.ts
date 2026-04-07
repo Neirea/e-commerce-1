@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals";
 import { parseQueryString } from "./parse-querystring";
 
 describe("parseQueryString", () => {

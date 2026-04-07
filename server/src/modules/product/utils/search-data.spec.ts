@@ -1,9 +1,10 @@
+import { describe, expect, it } from "@jest/globals";
 import {
-    setAndCount,
-    isValidPriceRange,
     getArrayWithProductCount,
-    TShared,
+    isValidPriceRange,
+    setAndCount,
     TProductCount,
+    TShared,
 } from "./search-data";
 
 describe("setAndCount", () => {

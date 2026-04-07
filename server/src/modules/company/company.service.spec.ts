@@ -1,8 +1,9 @@
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { CompanyService } from "./company.service";
+import { TPrismaServiceMock } from "src/utils/types.mock";
 import { PrismaService } from "../prisma/prisma.service";
 import { getCompaniesQuery } from "./company.queries";
-import { TPrismaServiceMock } from "src/utils/types.mock";
+import { CompanyService } from "./company.service";
 
 describe("CompanyService", () => {
     let service: CompanyService;

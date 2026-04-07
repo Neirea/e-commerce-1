@@ -1,8 +1,18 @@
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { ProductService } from "./product.service";
-import { PrismaService } from "../prisma/prisma.service";
+import {
+    TCloudinaryServiceMock,
+    TPrismaServiceMock,
+} from "src/utils/types.mock";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { PrismaService } from "../prisma/prisma.service";
+import { CreateProductDto } from "./dto/create-propduct.dto";
+import {
+    FilteredProductsQueryDto,
+    FilteredProductsResponseDto,
+} from "./dto/filtered-products.dto";
 import { ProductWithVariantsDto } from "./dto/get-product.dto";
+import { SearchDataResponseDto } from "./dto/search-data.dto";
 import {
     filteredProductsQuery,
     getProductByIdQuery,
@@ -10,18 +20,9 @@ import {
     getProductsByIdsQuery,
     getSearchDataQuery,
 } from "./product.queries";
-import { SearchDataResponseDto } from "./dto/search-data.dto";
+import { ProductService } from "./product.service";
 import { TSearchData } from "./product.types";
 import { subCategoriesQuery } from "./utils/sql";
-import {
-    FilteredProductsQueryDto,
-    FilteredProductsResponseDto,
-} from "./dto/filtered-products.dto";
-import { CreateProductDto } from "./dto/create-propduct.dto";
-import {
-    TCloudinaryServiceMock,
-    TPrismaServiceMock,
-} from "src/utils/types.mock";
 
 describe("ProductService", () => {
     let service: ProductService;

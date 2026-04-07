@@ -1,7 +1,8 @@
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { OrderService } from "./order.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { getOrdersByUserQuery } from "./order.queries";
+import { OrderService } from "./order.service";
 
 describe("OrderService", () => {
     let service: OrderService;

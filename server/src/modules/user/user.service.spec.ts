@@ -1,12 +1,13 @@
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { UserService } from "./user.service";
-import { PrismaService } from "../prisma/prisma.service";
-import { TPrismaServiceMock } from "src/utils/types.mock";
 import { Request } from "express";
+import { Session, SessionData } from "express-session";
+import { TPrismaServiceMock } from "src/utils/types.mock";
+import { PrismaService } from "../prisma/prisma.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User } from "./entities/user.entity";
-import { Session, SessionData } from "express-session";
 import { updateUserQuery } from "./user.queries";
+import { UserService } from "./user.service";
 
 describe("UserService", () => {
     let service: UserService;

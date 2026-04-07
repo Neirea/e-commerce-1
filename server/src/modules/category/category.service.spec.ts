@@ -1,12 +1,13 @@
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { CategoryService } from "./category.service";
-import { PrismaService } from "../prisma/prisma.service";
-import { CloudinaryService } from "../cloudinary/cloudinary.service";
-import { getCategoriesQuery } from "./category.queries";
 import {
     TCloudinaryServiceMock,
     TPrismaServiceMock,
 } from "src/utils/types.mock";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { PrismaService } from "../prisma/prisma.service";
+import { getCategoriesQuery } from "./category.queries";
+import { CategoryService } from "./category.service";
 
 describe("CategoryService", () => {
     let service: CategoryService;
