@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { InputJsonObject, PrismaPromise } from "@prisma/client/runtime/client";
 import { appConfig } from "src/config/env";
 import { Product, User } from "src/database/generated/client";
-import Stripe from "stripe";
+import Stripe, { Stripe as StripeType } from "stripe";
 import { updateOrderItemQuery } from "../order/order.queries";
 import { PrismaService } from "../prisma/prisma.service";
 import { ProductWithImagesDto } from "../product/dto/product-with-images.dto";
@@ -13,7 +13,7 @@ import { getDiscountPrice } from "./utils/get-price";
 
 @Injectable()
 export class PaymentService {
-    private stripe: Stripe;
+    private stripe: StripeType;
     constructor(private prisma: PrismaService) {
         this.stripe = new Stripe(appConfig.stripePrivateKey);
     }
@@ -71,9 +71,8 @@ export class PaymentService {
     }> {
         const webhookSecret = appConfig.stripeWebhookSecret;
 
-        let event: Stripe.Event;
         try {
-            event = this.stripe.webhooks.constructEvent(
+            const event = this.stripe.webhooks.constructEvent(
                 body,
                 signature,
                 webhookSecret,
