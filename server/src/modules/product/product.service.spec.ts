@@ -182,7 +182,7 @@ describe("ProductService", () => {
 
             expect(searchData).toEqual(expectedSearchData);
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
-                getSearchDataQuery(inputData, expect.any(Array) as number[]),
+                getSearchDataQuery(inputData, []),
             );
         });
     });
@@ -238,10 +238,7 @@ describe("ProductService", () => {
 
             expect(filteredProducts).toEqual([]);
             expect(prismaService.$queryRaw).toHaveBeenCalledWith(
-                filteredProductsQuery(
-                    inputQuery,
-                    expect.any(Array) as number[],
-                ),
+                filteredProductsQuery(inputQuery, []),
             );
         });
     });

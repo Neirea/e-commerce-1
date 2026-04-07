@@ -5,11 +5,15 @@ import { getOrdersByUserQuery } from "./order.queries";
 
 describe("OrderService", () => {
     let service: OrderService;
-    let prismaServiceMock: Partial<PrismaService> & { $queryRaw: jest.Mock };
+    let prismaServiceMock: Partial<PrismaService> & {
+        $queryRaw: jest.MockedFunction<PrismaService["$queryRaw"]>;
+    };
 
     beforeEach(async () => {
         prismaServiceMock = {
-            $queryRaw: jest.fn(),
+            $queryRaw: jest.fn() as jest.MockedFunction<
+                PrismaService["$queryRaw"]
+            >,
         };
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -31,7 +35,7 @@ describe("OrderService", () => {
     describe("getOrders", () => {
         it("should return list of orders", async () => {
             const mockResult = [{ id: 1, name: "RAM" }];
-            prismaServiceMock.$queryRaw.mockImplementation(() => mockResult);
+            prismaServiceMock.$queryRaw.mockResolvedValue(mockResult);
 
             const result = await service.getOrders(2);
 

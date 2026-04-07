@@ -100,7 +100,7 @@ describe("AuthService", () => {
                 .mockImplementationOnce(() => [])
                 .mockImplementationOnce(() => [{ count: 1 }]);
 
-            prismaService.user.create.mockResolvedValue(mockUser);
+            prismaService.user.create.mockImplementation(() => mockUser);
 
             const result = await service.validateUser(
                 mockProfile,
@@ -136,7 +136,7 @@ describe("AuthService", () => {
         };
 
         const mockDestroy: TExpressSessionDestroyMock = (err) =>
-            jest.fn((callback) => {
+            jest.fn((callback: (err?: any) => void) => {
                 callback(err);
             });
         const mockDestroyWithNoError = mockDestroy(null);

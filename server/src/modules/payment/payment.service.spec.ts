@@ -11,19 +11,16 @@ const createPaymentIntent = jest.fn();
 const constructEventMock = jest.fn();
 
 jest.mock("stripe", () => {
-    return {
-        Stripe: jest.fn().mockImplementation(() => ({ hello: "world" })),
-        default: jest.fn().mockImplementation(() => {
-            return {
-                paymentIntents: {
-                    create: createPaymentIntent,
-                },
-                webhooks: {
-                    constructEvent: constructEventMock,
-                },
-            };
-        }),
-    };
+    return jest.fn().mockImplementation(() => {
+        return {
+            paymentIntents: {
+                create: createPaymentIntent,
+            },
+            webhooks: {
+                constructEvent: constructEventMock,
+            },
+        };
+    });
 });
 
 describe("PaymentService", () => {
