@@ -25,11 +25,11 @@ jobs:
         env:
             DATABASE_URL: ${{ secrets.DATABASE_URL }}
         steps:
-            - uses: actions/checkout@v4
-            - name: Use Node.js ${{ matrix.node-version }}
+            - uses: actions/checkout@v5
+            - name: Use Node.js 24
               uses: actions/setup-node@v4
               with:
-                  node-version: ${{ matrix.node-version }}
+                  node-version: 24
             - run: npm ci
             - run: npm run db:generate
             - run: npm run lint
@@ -40,7 +40,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
 
             - name: Google Auth
               id: auth
