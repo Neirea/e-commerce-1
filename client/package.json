@@ -11,19 +11,19 @@
     },
     "dependencies": {
         "@react-icons/all-files": "^4.1.0",
-        "@stripe/react-stripe-js": "^6.1.0",
-        "@stripe/stripe-js": "^9.1.0",
-        "@tanstack/react-query": "^5.99.0",
-        "axios": "^1.15.0",
+        "@stripe/react-stripe-js": "^6.3.0",
+        "@stripe/stripe-js": "^9.4.0",
+        "@tanstack/react-query": "^5.100.9",
+        "axios": "^1.16.0",
         "bootstrap": "^5.3.8",
         "postcode-validator": "^3.10.15",
         "query-string": "^9.3.1",
         "react": "^19.2.5",
         "react-bootstrap": "^2.10.10",
         "react-dom": "^19.2.5",
-        "react-router": "^7.14.0",
+        "react-router": "^7.15.0",
         "react-top-loading-bar": "^3.0.2",
-        "zod": "^4.3.6",
+        "zod": "^4.4.3",
         "zod-validation-error": "^5.0.0"
     },
     "devDependencies": {
@@ -31,11 +31,11 @@
         "@types/react": "^19.2.14",
         "@types/react-dom": "^19.2.3",
         "@vitejs/plugin-react": "^6.0.1",
-        "eslint": "^10.2.0",
+        "eslint": "^10.3.0",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-prettier": "^5.5.5",
-        "typescript": "^6.0.2",
-        "typescript-eslint": "^8.58.2",
-        "vite": "^8.0.8"
+        "typescript": "^6.0.3",
+        "typescript-eslint": "^8.59.2",
+        "vite": "^8.0.10"
     }
 }
