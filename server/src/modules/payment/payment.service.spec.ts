@@ -170,6 +170,7 @@ describe("PaymentService", () => {
             constructEventMock.mockReturnValue(event);
 
             const result = await service.stripeWebhook(signature, body);
+            const createOrder = jest.spyOn(prismaService.order, "create");
 
             expect(result).toEqual({ received: "true" });
             expect(constructEventMock).toHaveBeenCalledWith(
@@ -177,7 +178,7 @@ describe("PaymentService", () => {
                 signature,
                 webhook,
             );
-            expect(prismaService.order.create).toHaveBeenCalledWith({
+            expect(createOrder).toHaveBeenCalledWith({
                 data: {
                     user_id: 1,
                     buyer_email: "test@test.com",

@@ -108,8 +108,10 @@ describe("AuthService", () => {
                 Platform.FACEBOOK,
             );
 
+            const createUser = jest.spyOn(prismaService.user, "create");
+
             expect(prismaService.$queryRaw).toHaveBeenCalledTimes(2);
-            expect(prismaService.user.create).toHaveBeenCalledWith({
+            expect(createUser).toHaveBeenCalledWith({
                 data: {
                     given_name: "John",
                     family_name: "Doe",
@@ -121,7 +123,7 @@ describe("AuthService", () => {
                     avatar: "photo_url",
                 },
             });
-            expect(prismaService.user.create).toHaveBeenCalledTimes(1);
+            expect(createUser).toHaveBeenCalledTimes(1);
             expect(result).toEqual(mockUser);
         });
     });

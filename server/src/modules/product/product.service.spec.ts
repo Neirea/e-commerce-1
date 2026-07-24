@@ -265,13 +265,15 @@ describe("ProductService", () => {
                 created_at: new Date(),
                 updated_at: new Date(),
             };
+            const createProduct = jest.spyOn(prismaService.product, "create");
+
             prismaService.product.create.mockImplementationOnce(
                 () => createdProduct,
             );
 
             await service.createProduct(inputProduct);
 
-            expect(prismaService.product.create).toHaveBeenCalledTimes(1);
+            expect(createProduct).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -291,11 +293,13 @@ describe("ProductService", () => {
                 img_src: [],
                 variants: [],
             };
+            const updateProduct = jest.spyOn(prismaService.product, "update");
+
             prismaService.$transaction.mockImplementation(() => [1, 2]);
 
             await service.updateProduct(inputId, inputProduct);
 
-            expect(prismaService.product.update).toHaveBeenCalledTimes(1);
+            expect(updateProduct).toHaveBeenCalledTimes(1);
             expect(cloudinaryService.deleteMany).not.toHaveBeenCalled();
         });
 
@@ -314,18 +318,18 @@ describe("ProductService", () => {
                 img_src: ["example.com/3", "example.com/4"],
                 variants: [],
             };
-
             const oldImages = [
                 { img_id: "1", img_src: "example.com/1" },
                 { img_id: "2", img_src: "example.com/2" },
             ];
+            const updateProduct = jest.spyOn(prismaService.product, "update");
 
             prismaService.$queryRaw.mockImplementation(() => []);
             prismaService.$transaction.mockImplementation(() => [oldImages]);
 
             await service.updateProduct(inputId, inputProduct);
 
-            expect(prismaService.product.update).toHaveBeenCalledTimes(1);
+            expect(updateProduct).toHaveBeenCalledTimes(1);
             expect(prismaService.$queryRaw).toHaveBeenCalledTimes(3);
             expect(cloudinaryService.deleteMany).toHaveBeenCalledWith(
                 oldImages.map((i) => i.img_id),
