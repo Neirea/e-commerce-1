@@ -17,4 +17,4 @@ WORKDIR /nestjs
 
 COPY --from=builder /nestjs/node_modules /nestjs/node_modules
 COPY --from=builder /nestjs/dist /nestjs/dist
-CMD ["node", "dist/src/main.js"]
+CMD ["node", "dist/main.js"]
