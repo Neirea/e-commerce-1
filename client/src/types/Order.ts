@@ -2,10 +2,7 @@ import type { TProduct } from "./Product";
 import type { TAddress } from "./User";
 
 export type TOrderStatus =
-    | "ACCEPTED"
-    | "PROCESSING"
-    | "DELIVERED"
-    | "CANCELLED";
+    "ACCEPTED" | "PROCESSING" | "DELIVERED" | "CANCELLED";
 
 export type TOrder = {
     id: number;

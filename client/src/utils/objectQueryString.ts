@@ -1,11 +1,6 @@
 type MyObject = {
     [key: string]:
-        | number
-        | string
-        | boolean
-        | undefined
-        | null
-        | (string | null)[];
+        number | string | boolean | undefined | null | (string | null)[];
 };
 
 export const objectToQueryString = (obj: MyObject): string => {
