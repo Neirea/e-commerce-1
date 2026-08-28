@@ -1,19 +1,19 @@
-import { CloudinaryService } from "src/modules/cloudinary/cloudinary.service";
-import { PrismaService } from "src/modules/prisma/prisma.service";
-import jest from "jest-mock";
-
-export type TPrismaServiceMock = Partial<PrismaService> & {
-    $queryRaw: jest.Mock;
-    $transaction: jest.Mock;
-    order: { create: jest.Mock; update: jest.Mock };
-    product: { create: jest.Mock; update: jest.Mock };
-    user: { create: jest.Mock };
-};
+import { CloudinaryService } from "../modules/cloudinary/cloudinary.service.js";
+import { PrismaService } from "../modules/prisma/prisma.service.js";
+import { Mock } from "vitest";
 
 export type TCloudinaryServiceMock = Partial<CloudinaryService> & {
-    upload: jest.Mock;
-    deleteOne: jest.Mock;
-    deleteMany: jest.Mock;
+    upload: Mock;
+    deleteOne: Mock;
+    deleteMany: Mock;
+};
+
+export type TPrismaServiceMock = Partial<PrismaService> & {
+    $queryRaw: Mock;
+    $transaction: Mock;
+    order: { create: Mock; update: Mock };
+    product: { create: Mock; update: Mock };
+    user: { create: Mock };
 };
 
 export type TExpressSessionDestroyMock = (

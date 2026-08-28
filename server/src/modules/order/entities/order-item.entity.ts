@@ -1,6 +1,6 @@
-import { SingleOrderItem } from "src/database/generated/client";
-import { TOrderId } from "../order.types";
-import { TProductId } from "src/modules/product/product.types";
+import { SingleOrderItem } from "../../../database/generated/client.js";
+import { TOrderId } from "../order.types.js";
+import { TProductId } from "../../../modules/product/product.types.js";
 
 export class OrderItem implements SingleOrderItem {
     id: Pick<SingleOrderItem, "id">["id"];

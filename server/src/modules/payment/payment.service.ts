@@ -1,15 +1,15 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InputJsonObject, PrismaPromise } from "@prisma/client/runtime/client";
-import { appConfig } from "src/config/env";
-import { Product, User } from "src/database/generated/client";
+import { appConfig } from "../../config/env.js";
+import { Product, User } from "../../database/generated/client.js";
 import Stripe, { Stripe as StripeType } from "stripe";
-import { updateOrderItemQuery } from "../order/order.queries";
-import { PrismaService } from "../prisma/prisma.service";
-import { ProductWithImagesDto } from "../product/dto/product-with-images.dto";
-import { getProductsByIdsQuery } from "../product/product.queries";
-import { CheckoutBodyDto } from "./dto/checkout-body.dto";
-import { TOrderItem } from "./payment.types";
-import { getDiscountPrice } from "./utils/get-price";
+import { updateOrderItemQuery } from "../order/order.queries.js";
+import { PrismaService } from "../prisma/prisma.service.js";
+import { ProductWithImagesDto } from "../product/dto/product-with-images.dto.js";
+import { getProductsByIdsQuery } from "../product/product.queries.js";
+import { CheckoutBodyDto } from "./dto/checkout-body.dto.js";
+import { TOrderItem } from "./payment.types.js";
+import { getDiscountPrice } from "./utils/get-price.js";
 
 @Injectable()
 export class PaymentService {

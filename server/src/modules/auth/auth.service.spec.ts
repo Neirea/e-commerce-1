@@ -1,41 +1,36 @@
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
-import { CanActivate } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Request, Response } from "express";
 import { Profile } from "passport-google-oauth20";
-import { appConfig } from "src/config/env";
-import { Platform, Role } from "src/database/generated/client";
-import {
-    TExpressSessionDestroyMock,
-    TPrismaServiceMock,
-} from "src/utils/types.mock";
-import { PrismaService } from "../prisma/prisma.service";
-import { User } from "../user/entities/user.entity";
-import { AuthController } from "./auth.controller";
-import { userByPlatformIdQuery } from "./auth.queries";
-import { AuthService } from "./auth.service";
-import { SessionSerializer } from "./session.serializer";
-import { FacebookStrategy } from "./strategies/facebook.strategy";
-import { GoogleStrategy } from "./strategies/google.strategy";
+import { appConfig } from "../../config/env.js";
+import { Platform, Role } from "../../database/generated/client.js";
+import { TExpressSessionDestroyMock } from "../../utils/types.mock.js";
+import { PrismaService } from "../prisma/prisma.service.js";
+import { User } from "../user/entities/user.entity.js";
+import { userByPlatformIdQuery } from "./auth.queries.js";
+import { AuthService } from "./auth.service.js";
+import { Mock, vi } from "vitest";
+
+type PrismaServiceMock = {
+    $queryRaw: Mock;
+    $transaction: Mock;
+    user: {
+        create: Mock;
+    };
+};
 
 describe("AuthService", () => {
     let service: AuthService;
-    let prismaService: TPrismaServiceMock;
-    const fakeGuard: CanActivate = { canActivate: () => true };
+    let prismaService: PrismaServiceMock;
 
     beforeEach(async () => {
-        const prismaMock = {
-            $queryRaw: jest.fn(),
-            $transaction: jest.fn(),
-            user: { create: jest.fn() },
-        } as TPrismaServiceMock;
+        const prismaMock: PrismaServiceMock = {
+            $queryRaw: vi.fn(),
+            $transaction: vi.fn(),
+            user: { create: vi.fn() },
+        };
         const module: TestingModule = await Test.createTestingModule({
-            controllers: [AuthController],
             providers: [
                 AuthService,
-                { provide: GoogleStrategy, useValue: fakeGuard },
-                { provide: FacebookStrategy, useValue: fakeGuard },
-                SessionSerializer,
                 {
                     provide: PrismaService,
                     useValue: prismaMock,
@@ -44,7 +39,7 @@ describe("AuthService", () => {
         }).compile();
 
         service = module.get<AuthService>(AuthService);
-        prismaService = module.get<TPrismaServiceMock>(PrismaService);
+        prismaService = module.get<PrismaServiceMock>(PrismaService);
     });
 
     it("should be defined", () => {
@@ -84,7 +79,7 @@ describe("AuthService", () => {
         });
 
         it("should return existing user if found", async () => {
-            prismaService.$queryRaw.mockImplementation(() => [mockUser]);
+            prismaService.$queryRaw.mockResolvedValue([mockUser]);
 
             const result = await service.validateUser(
                 mockProfile,
@@ -98,20 +93,18 @@ describe("AuthService", () => {
         });
         it("should return a new user if not found", async () => {
             prismaService.$queryRaw
-                .mockImplementationOnce(() => [])
-                .mockImplementationOnce(() => [{ count: 1 }]);
+                .mockResolvedValueOnce([])
+                .mockResolvedValueOnce([{ count: 1 }]);
 
-            prismaService.user.create.mockImplementation(() => mockUser);
+            prismaService.user.create.mockResolvedValueOnce(mockUser);
 
             const result = await service.validateUser(
                 mockProfile,
                 Platform.FACEBOOK,
             );
 
-            const createUser = jest.spyOn(prismaService.user, "create");
-
             expect(prismaService.$queryRaw).toHaveBeenCalledTimes(2);
-            expect(createUser).toHaveBeenCalledWith({
+            expect(prismaService.user.create).toHaveBeenCalledWith({
                 data: {
                     given_name: "John",
                     family_name: "Doe",
@@ -123,7 +116,7 @@ describe("AuthService", () => {
                     avatar: "photo_url",
                 },
             });
-            expect(createUser).toHaveBeenCalledTimes(1);
+            expect(prismaService.user.create).toHaveBeenCalledTimes(1);
             expect(result).toEqual(mockUser);
         });
     });
@@ -139,11 +132,11 @@ describe("AuthService", () => {
         };
 
         const mockDestroy: TExpressSessionDestroyMock = (err) =>
-            jest.fn((callback: (err?: any) => void) => {
+            vi.fn((callback: (err?: any) => void) => {
                 callback(err);
             });
         const mockDestroyWithNoError = mockDestroy(null);
-        const mockClearCookie = jest.fn();
+        const mockClearCookie = vi.fn();
 
         beforeEach(() => {
             mockRequest = {

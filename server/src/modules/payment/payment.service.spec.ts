@@ -1,34 +1,29 @@
 import { BadRequestException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
-import { User } from "src/database/generated/client";
-import { appConfig } from "src/config/env";
-import { TPrismaServiceMock } from "src/utils/types.mock";
-import { PrismaService } from "../prisma/prisma.service";
-import { CheckoutBodyDto } from "./dto/checkout-body.dto";
-import { PaymentService } from "./payment.service";
-import {
-    describe,
-    it,
-    expect,
-    beforeEach,
-    afterEach,
-    jest,
-} from "@jest/globals";
+import { User } from "../../database/generated/client.js";
+import { appConfig } from "../../config/env.js";
+import { TPrismaServiceMock } from "../../utils/types.mock.js";
+import { PrismaService } from "../prisma/prisma.service.js";
+import { CheckoutBodyDto } from "./dto/checkout-body.dto.js";
+import { PaymentService } from "./payment.service.js";
+import { vi } from "vitest";
 
-const createPaymentIntent = jest.fn();
-const constructEventMock = jest.fn();
+const createPaymentIntent = vi.fn();
+const constructEventMock = vi.fn();
 
-jest.mock("stripe", () => {
-    return jest.fn().mockImplementation(() => {
-        return {
-            paymentIntents: {
-                create: createPaymentIntent,
-            },
-            webhooks: {
-                constructEvent: constructEventMock,
-            },
-        };
-    });
+vi.mock("stripe", () => {
+    return {
+        default: vi.fn().mockImplementation(function () {
+            return {
+                paymentIntents: {
+                    create: createPaymentIntent,
+                },
+                webhooks: {
+                    constructEvent: constructEventMock,
+                },
+            };
+        }),
+    };
 });
 
 describe("PaymentService", () => {
@@ -37,10 +32,10 @@ describe("PaymentService", () => {
 
     beforeEach(async () => {
         const prismaMock = {
-            $queryRaw: jest.fn(),
-            $transaction: jest.fn(),
+            $queryRaw: vi.fn(),
+            $transaction: vi.fn(),
             order: {
-                create: jest.fn(),
+                create: vi.fn(),
             },
         } as TPrismaServiceMock;
         const module: TestingModule = await Test.createTestingModule({
@@ -162,7 +157,7 @@ describe("PaymentService", () => {
                     },
                 },
             };
-            const createOrderItemQueryMock = jest.fn();
+            const createOrderItemQueryMock = vi.fn();
             prismaService.order.create.mockImplementation(() => order);
             prismaService.$queryRaw.mockImplementation(
                 () => createOrderItemQueryMock,
@@ -170,7 +165,7 @@ describe("PaymentService", () => {
             constructEventMock.mockReturnValue(event);
 
             const result = await service.stripeWebhook(signature, body);
-            const createOrder = jest.spyOn(prismaService.order, "create");
+            const createOrder = vi.spyOn(prismaService.order, "create");
 
             expect(result).toEqual({ received: "true" });
             expect(constructEventMock).toHaveBeenCalledWith(

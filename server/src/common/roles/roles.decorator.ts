@@ -1,5 +1,5 @@
 import { CustomDecorator, SetMetadata } from "@nestjs/common";
-import { Role } from "src/database/generated/client";
+import { Role } from "../../database/generated/client.js";
 
 export const ROLES_KEY = "roles";
 export const Roles = (...roles: Role[]): CustomDecorator<string> =>

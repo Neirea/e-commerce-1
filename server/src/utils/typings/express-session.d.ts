@@ -1,5 +1,5 @@
 import "express-session";
-import { User } from "src/database/generated/client";
+import { User } from "../../database/generated/client.js";
 
 declare module "express-session" {
     interface SessionData {

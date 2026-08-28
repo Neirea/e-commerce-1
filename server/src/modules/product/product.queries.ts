@@ -1,20 +1,20 @@
-import { Prisma } from "src/database/generated/client";
+import { Prisma } from "../../database/generated/client.js";
 import {
     getCategoryCondition,
     getCompanyCondition,
     getSearchCondition,
     imagesJSON,
     productsByOrderCount,
-} from "./utils/sql";
-import { parseQueryString } from "src/common/parse-querystring";
-import { FeaturedProductsDto } from "./dto/featured-products.dto";
-import { RelatedProductsDto } from "./dto/related-products.dto";
-import { PopularProductsDto } from "./dto/popular-products.dto";
-import { CreateProductDto } from "./dto/create-propduct.dto";
-import { TProductId } from "./product.types";
-import { TCategoryId } from "../category/category.types";
-import { SearchDataQueryDto } from "./dto/search-data.dto";
-import { FilteredProductsQueryDto } from "./dto/filtered-products.dto";
+} from "./utils/sql.js";
+import { parseQueryString } from "../../common/parse-querystring.js";
+import { FeaturedProductsDto } from "./dto/featured-products.dto.js";
+import { RelatedProductsDto } from "./dto/related-products.dto.js";
+import { PopularProductsDto } from "./dto/popular-products.dto.js";
+import { CreateProductDto } from "./dto/create-propduct.dto.js";
+import { TProductId } from "./product.types.js";
+import { TCategoryId } from "../category/category.types.js";
+import { SearchDataQueryDto } from "./dto/search-data.dto.js";
+import { FilteredProductsQueryDto } from "./dto/filtered-products.dto.js";
 
 export const getProducts = Prisma.sql`
     SELECT p.id,p.name,p.price,p.description,

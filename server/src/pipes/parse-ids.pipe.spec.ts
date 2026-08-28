@@ -1,6 +1,5 @@
 import { BadRequestException } from "@nestjs/common";
-import { ParseQuaryArrayPipe } from "./parse-ids.pipe";
-import { describe, expect, it, beforeEach } from "@jest/globals";
+import { ParseQuaryArrayPipe } from "./parse-ids.pipe.js";
 
 describe("parseIdsPipe", () => {
     let pipe: ParseQuaryArrayPipe;

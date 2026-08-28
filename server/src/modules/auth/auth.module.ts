@@ -1,11 +1,11 @@
 import { Module } from "@nestjs/common";
-import { AuthService } from "./auth.service";
-import { AuthController } from "./auth.controller";
-import { PrismaService } from "../prisma/prisma.service";
+import { AuthService } from "./auth.service.js";
+import { AuthController } from "./auth.controller.js";
+import { PrismaService } from "../prisma/prisma.service.js";
 import { PassportModule } from "@nestjs/passport";
-import { GoogleStrategy } from "./strategies/google.strategy";
-import { SessionSerializer } from "./session.serializer";
-import { FacebookStrategy } from "./strategies/facebook.strategy";
+import { GoogleStrategy } from "./strategies/google.strategy.js";
+import { SessionSerializer } from "./session.serializer.js";
+import { FacebookStrategy } from "./strategies/facebook.strategy.js";
 
 @Module({
     imports: [PassportModule.register({ session: true })],

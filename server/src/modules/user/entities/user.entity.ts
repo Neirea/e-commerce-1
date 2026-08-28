@@ -1,14 +1,18 @@
-import { Platform, Role, User as TUser } from "src/database/generated/client";
+import {
+    Platform,
+    Role,
+    User as TUser,
+} from "../../../database/generated/client.js";
 import {
     TUserAddress,
     TUserAvatar,
-    TUserEmail,
+    type TUserEmail,
     TUserFamilyName,
     TUserGivenName,
     TUserId,
     TUserPhone,
     TUserPlaftormId,
-} from "../user.types";
+} from "../user.types.js";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class User implements TUser {

@@ -1,7 +1,7 @@
-import { Prisma } from "src/database/generated/client";
-import { CreateCategoryDto } from "./dto/create-category.dto";
-import { UpdateCategoryDto } from "./dto/update-category.dto";
-import { TCategoryId } from "./category.types";
+import { Prisma } from "../../database/generated/client.js";
+import { CreateCategoryDto } from "./dto/create-category.dto.js";
+import { UpdateCategoryDto } from "./dto/update-category.dto.js";
+import { TCategoryId } from "./category.types.js";
 
 // USE THIS WHEN COMPANIES WILL BE REQUIRED
 // SELECT cat.id,cat.name,cat.img_id,cat.img_src,cat.parent_id,

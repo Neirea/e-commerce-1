@@ -7,9 +7,9 @@ import { RedisStore } from "connect-redis";
 import session from "express-session";
 import helmet from "helmet";
 import passport from "passport";
-import { AppModule } from "./app.module";
-import { RedisService } from "./modules/redis/redis.service";
-import { appConfig } from "./config/env";
+import { AppModule } from "./app.module.js";
+import { RedisService } from "./modules/redis/redis.service.js";
+import { appConfig } from "./config/env.js";
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {

@@ -9,16 +9,16 @@ import {
     Post,
     UseGuards,
 } from "@nestjs/common";
-import { CompanyService } from "./company.service";
-import { CreateCompanyDto } from "./dto/create-company.dto";
-import { UpdateCompanyDto } from "./dto/update-company.dto";
-import { TCompanyId } from "./company.types";
-import { Role } from "src/database/generated/client";
-import { RolesGuard } from "src/common/roles/roles.guard";
-import { Roles } from "src/common/roles/roles.decorator";
+import { CompanyService } from "./company.service.js";
+import { CreateCompanyDto } from "./dto/create-company.dto.js";
+import { UpdateCompanyDto } from "./dto/update-company.dto.js";
+import type { TCompanyId } from "./company.types.js";
+import { Role } from "../../database/generated/client.js";
+import { RolesGuard } from "../../common/roles/roles.guard.js";
+import { Roles } from "../../common/roles/roles.decorator.js";
 import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { CompanyWithCategoriesDto } from "./dto/get-companies.dto";
-import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
+import { CompanyWithCategoriesDto } from "./dto/get-companies.dto.js";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard.js";
 
 @ApiTags("company")
 @Controller("company")

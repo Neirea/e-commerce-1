@@ -1,0 +1,16 @@
+{
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "plugins": ["eslint", "typescript", "unicorn", "oxc"],
+    "categories": {
+        "correctness": "warn"
+    },
+    "rules": {
+        "typescript/no-explicit-any": "off",
+        "typescript/no-unsafe-argument": "warn",
+        "@typescript-eslint/no-unsafe-argument": "warn",
+        "@typescript-eslint/explicit-function-return-type": "error"
+    },
+    "env": {
+        "builtin": true
+    }
+}

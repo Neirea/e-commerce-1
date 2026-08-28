@@ -1,5 +1,9 @@
-import { TProductId, TPropductImgId, TPropductImgSrc } from "../product.types";
-import { ProductImage as TProductImage } from "src/database/generated/client";
+import {
+    TProductId,
+    TPropductImgId,
+    TPropductImgSrc,
+} from "../product.types.js";
+import { ProductImage as TProductImage } from "../../../database/generated/client.js";
 
 export class ProductImage implements TProductImage {
     img_id: TPropductImgId;

@@ -3,7 +3,7 @@ import {
     Product,
     ProductImage,
     SingleOrderItem,
-} from "src/database/generated/client";
+} from "../../database/generated/client.js";
 
 export type TOrderId = Pick<Order, "id">["id"];
 

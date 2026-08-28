@@ -1,10 +1,10 @@
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { ExecutionContext } from "@nestjs/common";
-import { HttpArgumentsHost } from "@nestjs/common/interfaces";
+import { HttpArgumentsHost } from "@nestjs/common/internal";
 import { Reflector } from "@nestjs/core";
 import { Test } from "@nestjs/testing";
-import { Role } from "src/database/generated/client";
-import { RolesGuard } from "./roles.guard";
+import { Role } from "../../database/generated/client.js";
+import { RolesGuard } from "./roles.guard.js";
+import { vi } from "vitest";
 
 describe("RolesGuard", () => {
     let rolesGuard: RolesGuard;
@@ -17,7 +17,7 @@ describe("RolesGuard", () => {
                 {
                     provide: Reflector,
                     useValue: {
-                        getAllAndOverride: jest.fn(),
+                        getAllAndOverride: vi.fn(),
                     },
                 },
             ],
@@ -37,7 +37,7 @@ describe("RolesGuard", () => {
             getClass: <T>() => null as T,
         };
 
-        jest.spyOn(reflector, "getAllAndOverride").mockImplementationOnce(
+        vi.spyOn(reflector, "getAllAndOverride").mockImplementationOnce(
             () => [],
         );
 
@@ -60,9 +60,9 @@ describe("RolesGuard", () => {
             getClass: <T>() => null as T,
         };
 
-        jest.spyOn(reflector, "getAllAndOverride").mockImplementationOnce(
-            () => [Role.USER],
-        );
+        vi.spyOn(reflector, "getAllAndOverride").mockImplementationOnce(() => [
+            Role.USER,
+        ]);
 
         const canActivate = rolesGuard.canActivate(
             executionContext as ExecutionContext,
@@ -82,9 +82,10 @@ describe("RolesGuard", () => {
             getHandler: () => () => {},
             getClass: <T>() => null as T,
         };
-        jest.spyOn(reflector, "getAllAndOverride").mockImplementationOnce(
-            () => [Role.EDITOR, Role.ADMIN],
-        );
+        vi.spyOn(reflector, "getAllAndOverride").mockImplementationOnce(() => [
+            Role.EDITOR,
+            Role.ADMIN,
+        ]);
 
         const canActivate = rolesGuard.canActivate(
             executionContext as ExecutionContext,

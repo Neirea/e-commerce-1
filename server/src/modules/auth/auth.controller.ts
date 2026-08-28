@@ -8,13 +8,13 @@ import {
     Res,
     UseGuards,
 } from "@nestjs/common";
-import { AuthService } from "./auth.service";
-import { AuthenticatedGuard } from "./guards/authenticated.guard";
-import { Request, Response } from "express";
+import { AuthService } from "./auth.service.js";
+import { AuthenticatedGuard } from "./guards/authenticated.guard.js";
+import { type Request, type Response } from "express";
 import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { GoogleAuthGuard } from "./guards/google.guard";
-import { FacebookAuthGuard } from "./guards/facebook.guard";
-import { appConfig } from "src/config/env";
+import { GoogleAuthGuard } from "./guards/google.guard.js";
+import { FacebookAuthGuard } from "./guards/facebook.guard.js";
+import { appConfig } from "../../config/env.js";
 
 @ApiTags("auth")
 @Controller("auth")

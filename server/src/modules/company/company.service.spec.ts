@@ -1,9 +1,9 @@
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { TPrismaServiceMock } from "src/utils/types.mock";
-import { PrismaService } from "../prisma/prisma.service";
-import { getCompaniesQuery } from "./company.queries";
-import { CompanyService } from "./company.service";
+import { TPrismaServiceMock } from "../../utils/types.mock.js";
+import { PrismaService } from "../prisma/prisma.service.js";
+import { getCompaniesQuery } from "./company.queries.js";
+import { CompanyService } from "./company.service.js";
+import { vi } from "vitest";
 
 describe("CompanyService", () => {
     let service: CompanyService;
@@ -11,7 +11,7 @@ describe("CompanyService", () => {
 
     beforeEach(async () => {
         const prismaMock = {
-            $queryRaw: jest.fn(),
+            $queryRaw: vi.fn(),
         };
         const module: TestingModule = await Test.createTestingModule({
             providers: [

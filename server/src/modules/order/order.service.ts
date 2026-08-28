@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
+import { PrismaService } from "../prisma/prisma.service.js";
 import {
     cancelOrderQuery,
     deleteOrderQuery,
     getOrdersByUserQuery,
-} from "./order.queries";
-import { TOrderId } from "./order.types";
-import { OrderWithItemsDto } from "./dto/get-orders.dto";
-import { TUserId } from "../user/user.types";
+} from "./order.queries.js";
+import { TOrderId } from "./order.types.js";
+import { OrderWithItemsDto } from "./dto/get-orders.dto.js";
+import { TUserId } from "../user/user.types.js";
 
 @Injectable()
 export class OrderService {

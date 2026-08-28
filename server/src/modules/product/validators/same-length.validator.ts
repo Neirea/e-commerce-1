@@ -4,7 +4,7 @@ import {
     ValidatorConstraint,
     ValidatorConstraintInterface,
 } from "class-validator";
-import { ISameLengthValidationArguments } from "../product.types";
+import { ISameLengthValidationArguments } from "../product.types.js";
 
 @ValidatorConstraint({ name: "sameLength", async: false })
 export class SameLengthConstraint implements ValidatorConstraintInterface {

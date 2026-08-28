@@ -1,4 +1,4 @@
-import { TProductId } from "../product.types";
+import { TProductId } from "../product.types.js";
 
 export class SearchResponseDto {
     id: TProductId;

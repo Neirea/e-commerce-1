@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
-import { CategoryService } from "./category.service";
-import { CategoryController } from "./category.controller";
-import { PrismaService } from "../prisma/prisma.service";
-import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { CategoryService } from "./category.service.js";
+import { CategoryController } from "./category.controller.js";
+import { PrismaService } from "../prisma/prisma.service.js";
+import { CloudinaryService } from "../cloudinary/cloudinary.service.js";
 
 @Module({
     controllers: [CategoryController],

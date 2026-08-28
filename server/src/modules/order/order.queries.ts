@@ -1,6 +1,6 @@
-import { Prisma, SingleOrderItem } from "src/database/generated/client";
-import { TUserId } from "../user/user.types";
-import { TOrderId } from "./order.types";
+import { Prisma, SingleOrderItem } from "../../database/generated/client.js";
+import { TUserId } from "../user/user.types.js";
+import { TOrderId } from "./order.types.js";
 
 export const getOrdersByUserQuery = (
     TUserId: TUserId,

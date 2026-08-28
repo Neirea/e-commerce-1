@@ -8,9 +8,9 @@ import {
     UseGuards,
     UseInterceptors,
 } from "@nestjs/common";
-import { EditorService } from "./editor.service";
+import { EditorService } from "./editor.service.js";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
-import { imgMulterOptions } from "src/config/multer";
+import { imgMulterOptions } from "../../config/multer.js";
 import {
     ApiBody,
     ApiConsumes,
@@ -18,12 +18,12 @@ import {
     ApiCookieAuth,
     ApiOperation,
 } from "@nestjs/swagger";
-import { UploadedImagesDto } from "./dto/upload-images.dto";
-import { SingleUploadedImageDto } from "./dto/upload-image.dto";
-import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
-import { Role } from "src/database/generated/client";
-import { Roles } from "src/common/roles/roles.decorator";
-import { RolesGuard } from "src/common/roles/roles.guard";
+import { UploadedImagesDto } from "./dto/upload-images.dto.js";
+import { SingleUploadedImageDto } from "./dto/upload-image.dto.js";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard.js";
+import { Role } from "../../database/generated/client.js";
+import { Roles } from "../../common/roles/roles.decorator.js";
+import { RolesGuard } from "../../common/roles/roles.guard.js";
 
 @ApiTags("editor")
 @Controller("editor")

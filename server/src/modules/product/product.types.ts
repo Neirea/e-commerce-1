@@ -1,9 +1,13 @@
-import { Company, Product, ProductImage } from "src/database/generated/client";
+import {
+    Company,
+    Product,
+    ProductImage,
+} from "../../database/generated/client.js";
 import { ValidationArguments } from "class-validator";
 import { Request } from "express";
-import { CreateProductDto } from "./dto/create-propduct.dto";
-import { ExtendedCategory } from "./dto/search-data.dto";
-import { UpdateProductDto } from "./dto/update-product.dto";
+import { CreateProductDto } from "./dto/create-propduct.dto.js";
+import { ExtendedCategory } from "./dto/search-data.dto.js";
+import { UpdateProductDto } from "./dto/update-product.dto.js";
 
 export type TProductId = Pick<Product, "id">["id"];
 export type TProductName = Pick<Product, "name">["name"];

@@ -1,4 +1,4 @@
-import { TCompanyId } from "src/modules/company/company.types";
+import { TCompanyId } from "../../../modules/company/company.types.js";
 import {
     TProductDescription,
     TProductDiscount,
@@ -7,9 +7,9 @@ import {
     TProductName,
     TProductPrice,
     TProductShippingCost,
-} from "../product.types";
-import { TCategoryId } from "src/modules/category/category.types";
-import { Product as TProduct } from "src/database/generated/client";
+} from "../product.types.js";
+import { TCategoryId } from "../../../modules/category/category.types.js";
+import { Product as TProduct } from "../../../database/generated/client.js";
 
 export class Product implements TProduct {
     id: TProductId;

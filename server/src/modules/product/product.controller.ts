@@ -11,32 +11,32 @@ import {
     UseFilters,
     UseGuards,
 } from "@nestjs/common";
-import { ProductService } from "./product.service";
+import { ProductService } from "./product.service.js";
 import {
     FilteredProductsQueryDto,
     FilteredProductsResponseDto,
-} from "./dto/filtered-products.dto";
-import { FeaturedProductsDto } from "./dto/featured-products.dto";
-import { RelatedProductsDto } from "./dto/related-products.dto";
-import { PopularProductsDto } from "./dto/popular-products.dto";
-import { CreateProductDto } from "./dto/create-propduct.dto";
-import { UpdateProductDto } from "./dto/update-product.dto";
-import { TProductId } from "./product.types";
-import { ParseQuaryArrayPipe } from "src/pipes/parse-ids.pipe";
-import { Roles } from "src/common/roles/roles.decorator";
-import { Role } from "src/database/generated/client";
-import { RolesGuard } from "src/common/roles/roles.guard";
+} from "./dto/filtered-products.dto.js";
+import { FeaturedProductsDto } from "./dto/featured-products.dto.js";
+import { RelatedProductsDto } from "./dto/related-products.dto.js";
+import { PopularProductsDto } from "./dto/popular-products.dto.js";
+import { CreateProductDto } from "./dto/create-propduct.dto.js";
+import { UpdateProductDto } from "./dto/update-product.dto.js";
+import { type TProductId } from "./product.types.js";
+import { ParseQuaryArrayPipe } from "../../pipes/parse-ids.pipe.js";
+import { Roles } from "../../common/roles/roles.decorator.js";
+import { Role } from "../../database/generated/client.js";
+import { RolesGuard } from "../../common/roles/roles.guard.js";
 import { ApiTags, ApiCookieAuth, ApiOperation } from "@nestjs/swagger";
-import { ProductWithImagesDto } from "./dto/product-with-images.dto";
+import { ProductWithImagesDto } from "./dto/product-with-images.dto.js";
 import {
     SearchDataQueryDto,
     SearchDataResponseDto,
-} from "./dto/search-data.dto";
-import { SearchResponseDto } from "./dto/search.dto";
-import { ProductByIdResponseDto } from "./dto/product-by-id.dto";
-import { ProductWithVariantsDto } from "./dto/get-product.dto";
-import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
-import { MultipleUploadsFilter } from "./product.filter";
+} from "./dto/search-data.dto.js";
+import { SearchResponseDto } from "./dto/search.dto.js";
+import { ProductByIdResponseDto } from "./dto/product-by-id.dto.js";
+import { ProductWithVariantsDto } from "./dto/get-product.dto.js";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard.js";
+import { MultipleUploadsFilter } from "./product.filter.js";
 
 @ApiTags("product")
 @Controller("product")

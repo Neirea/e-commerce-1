@@ -1,6 +1,6 @@
-import { Prisma } from "src/database/generated/client";
-import { TCategoryId } from "src/modules/category/category.types";
-import { TCompanyId } from "src/modules/company/company.types";
+import { Prisma } from "../../../database/generated/client.js";
+import type { TCategoryId } from "../../../modules/category/category.types.js";
+import type { TCompanyId } from "../../../modules/company/company.types.js";
 
 export const subCategoriesQuery = (
     category_id: TCategoryId | undefined,

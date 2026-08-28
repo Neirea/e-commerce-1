@@ -1,28 +1,28 @@
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import {
     TCloudinaryServiceMock,
     TPrismaServiceMock,
-} from "src/utils/types.mock";
-import { CloudinaryService } from "../cloudinary/cloudinary.service";
-import { PrismaService } from "../prisma/prisma.service";
-import { CreateProductDto } from "./dto/create-propduct.dto";
+} from "../../utils/types.mock.js";
+import { CloudinaryService } from "../cloudinary/cloudinary.service.js";
+import { PrismaService } from "../prisma/prisma.service.js";
+import { CreateProductDto } from "./dto/create-propduct.dto.js";
 import {
     FilteredProductsQueryDto,
     FilteredProductsResponseDto,
-} from "./dto/filtered-products.dto";
-import { ProductWithVariantsDto } from "./dto/get-product.dto";
-import { SearchDataResponseDto } from "./dto/search-data.dto";
+} from "./dto/filtered-products.dto.js";
+import { ProductWithVariantsDto } from "./dto/get-product.dto.js";
+import { SearchDataResponseDto } from "./dto/search-data.dto.js";
 import {
     filteredProductsQuery,
     getProductByIdQuery,
     getProducts,
     getProductsByIdsQuery,
     getSearchDataQuery,
-} from "./product.queries";
-import { ProductService } from "./product.service";
-import { TSearchData } from "./product.types";
-import { subCategoriesQuery } from "./utils/sql";
+} from "./product.queries.js";
+import { ProductService } from "./product.service.js";
+import { TSearchData } from "./product.types.js";
+import { subCategoriesQuery } from "./utils/sql.js";
+import { vi } from "vitest";
 
 describe("ProductService", () => {
     let service: ProductService;
@@ -31,13 +31,13 @@ describe("ProductService", () => {
 
     beforeEach(async () => {
         const prismaMock = {
-            $queryRaw: jest.fn(),
-            $transaction: jest.fn(),
-            product: { create: jest.fn(), update: jest.fn() },
+            $queryRaw: vi.fn(),
+            $transaction: vi.fn(),
+            product: { create: vi.fn(), update: vi.fn() },
         } as TPrismaServiceMock;
         const cloudinaryMock = {
-            upload: jest.fn(),
-            deleteMany: jest.fn(),
+            upload: vi.fn(),
+            deleteMany: vi.fn(),
         };
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -265,7 +265,7 @@ describe("ProductService", () => {
                 created_at: new Date(),
                 updated_at: new Date(),
             };
-            const createProduct = jest.spyOn(prismaService.product, "create");
+            const createProduct = vi.spyOn(prismaService.product, "create");
 
             prismaService.product.create.mockImplementationOnce(
                 () => createdProduct,
@@ -293,7 +293,7 @@ describe("ProductService", () => {
                 img_src: [],
                 variants: [],
             };
-            const updateProduct = jest.spyOn(prismaService.product, "update");
+            const updateProduct = vi.spyOn(prismaService.product, "update");
 
             prismaService.$transaction.mockImplementation(() => [1, 2]);
 
@@ -322,7 +322,7 @@ describe("ProductService", () => {
                 { img_id: "1", img_src: "example.com/1" },
                 { img_id: "2", img_src: "example.com/2" },
             ];
-            const updateProduct = jest.spyOn(prismaService.product, "update");
+            const updateProduct = vi.spyOn(prismaService.product, "update");
 
             prismaService.$queryRaw.mockImplementation(() => []);
             prismaService.$transaction.mockImplementation(() => [oldImages]);

@@ -1,9 +1,9 @@
 import { Transform, TransformFnParams } from "class-transformer";
 import { IsOptional, Min } from "class-validator";
-import { TCategoryId } from "src/modules/category/category.types";
-import { Category } from "src/modules/category/entities/category.entity";
-import { TCompanyId } from "src/modules/company/company.types";
-import { Company } from "src/modules/company/entities/company.entity";
+import type { TCategoryId } from "../../../modules/category/category.types.js";
+import { Category } from "../../../modules/category/entities/category.entity.js";
+import type { TCompanyId } from "../../../modules/company/company.types.js";
+import { Company } from "../../../modules/company/entities/company.entity.js";
 
 export class SearchDataQueryDto {
     @Transform(({ value }: TransformFnParams) => Number(value))

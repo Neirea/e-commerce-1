@@ -5,13 +5,13 @@ import {
     Length,
     ValidateIf,
 } from "class-validator";
-import {
+import type {
     TUserAddress,
     TUserEmail,
     TUserFamilyName,
     TUserGivenName,
     TUserPhone,
-} from "../user.types";
+} from "../user.types.js";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class UpdateUserDto {

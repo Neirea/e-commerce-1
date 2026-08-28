@@ -1,5 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
-import { parseQueryString } from "./parse-querystring";
+import { parseQueryString } from "./parse-querystring.js";
 
 describe("parseQueryString", () => {
     it("should parse a non-empty string into the expected format", () => {

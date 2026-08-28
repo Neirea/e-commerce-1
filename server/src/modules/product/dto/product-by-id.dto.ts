@@ -1,6 +1,6 @@
-import { Company } from "src/modules/company/entities/company.entity";
-import { ProductWithImagesDto } from "./product-with-images.dto";
-import { Category } from "src/modules/category/entities/category.entity";
+import { Company } from "../../../modules/company/entities/company.entity.js";
+import { ProductWithImagesDto } from "./product-with-images.dto.js";
+import { Category } from "../../../modules/category/entities/category.entity.js";
 
 export class ProductByIdResponseDto extends ProductWithImagesDto {
     company: Company;

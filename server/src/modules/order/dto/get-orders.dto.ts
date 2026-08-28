@@ -1,6 +1,6 @@
-import { Product } from "src/modules/product/entities/product.entity";
-import { OrderItem } from "../entities/order-item.entity";
-import { Order } from "../entities/order.entity";
+import { Product } from "../../../modules/product/entities/product.entity.js";
+import { OrderItem } from "../entities/order-item.entity.js";
+import { Order } from "../entities/order.entity.js";
 
 export class SingleOrderItem extends OrderItem {
     product: Product;

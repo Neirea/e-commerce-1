@@ -5,8 +5,8 @@ import {
     ExceptionFilter,
 } from "@nestjs/common";
 import { Response } from "express";
-import { CloudinaryService } from "../cloudinary/cloudinary.service";
-import { IUpsertProductRequest } from "./product.types";
+import { CloudinaryService } from "../cloudinary/cloudinary.service.js";
+import { IUpsertProductRequest } from "./product.types.js";
 
 @Catch()
 export class MultipleUploadsFilter implements ExceptionFilter {

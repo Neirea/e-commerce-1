@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { SingleUploadedImageDto } from "./dto/upload-image.dto";
-import { UploadedImagesDto } from "./dto/upload-images.dto";
-import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { SingleUploadedImageDto } from "./dto/upload-image.dto.js";
+import { UploadedImagesDto } from "./dto/upload-images.dto.js";
+import { CloudinaryService } from "../cloudinary/cloudinary.service.js";
 import { UploadApiResponse } from "cloudinary";
 
 @Injectable()

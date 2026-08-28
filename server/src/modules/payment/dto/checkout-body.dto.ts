@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
 import { IsArray, IsNumber, ValidateNested } from "class-validator";
-import { TProductId } from "src/modules/product/product.types";
+import { type TProductId } from "../../../modules/product/product.types.js";
 
 export class ItemDto {
     @IsNumber()

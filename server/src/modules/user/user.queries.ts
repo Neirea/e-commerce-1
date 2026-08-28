@@ -1,6 +1,6 @@
-import { Prisma } from "src/database/generated/client";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { TUserId } from "./user.types";
+import { Prisma } from "../../database/generated/client.js";
+import { UpdateUserDto } from "./dto/update-user.dto.js";
+import { TUserId } from "./user.types.js";
 
 export const allUsersQuery = Prisma.sql`
     SELECT * FROM public."User";

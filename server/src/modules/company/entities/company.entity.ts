@@ -1,5 +1,5 @@
-import { TCompanyId, TCompanyName } from "../company.types";
-import { Company as TCompany } from "src/database/generated/client";
+import { TCompanyId, TCompanyName } from "../company.types.js";
+import { Company as TCompany } from "../../../database/generated/client.js";
 
 export class Company implements TCompany {
     id: TCompanyId;

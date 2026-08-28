@@ -1,10 +1,10 @@
 import { IsOptional, IsUrl, Length, ValidateIf } from "class-validator";
-import {
+import type {
     TCategoryImgId,
     TCategoryImgSrc,
     TCategoryName,
     TCategoryId,
-} from "../category.types";
+} from "../category.types.js";
 
 export class CreateCategoryDto {
     @Length(3, 30)

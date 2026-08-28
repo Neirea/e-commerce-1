@@ -1,7 +1,7 @@
 import {
     TPropductImgId,
     TPropductImgSrc,
-} from "src/modules/product/product.types";
+} from "../../../modules/product/product.types.js";
 
 export class UploadedImage {
     img_id: TPropductImgId;

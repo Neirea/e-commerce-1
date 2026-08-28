@@ -1,32 +1,30 @@
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { PrismaService } from "../prisma/prisma.service";
-import { getOrdersByUserQuery } from "./order.queries";
-import { OrderService } from "./order.service";
+import { PrismaService } from "../prisma/prisma.service.js";
+import { getOrdersByUserQuery } from "./order.queries.js";
+import { OrderService } from "./order.service.js";
+import { vi } from "vitest";
+import { TPrismaServiceMock } from "../../utils/types.mock.js";
 
 describe("OrderService", () => {
     let service: OrderService;
-    let prismaServiceMock: Partial<PrismaService> & {
-        $queryRaw: jest.MockedFunction<PrismaService["$queryRaw"]>;
-    };
+    let prismaService: TPrismaServiceMock;
 
     beforeEach(async () => {
-        prismaServiceMock = {
-            $queryRaw: jest.fn() as jest.MockedFunction<
-                PrismaService["$queryRaw"]
-            >,
+        const prismaMock = {
+            $queryRaw: vi.fn(),
         };
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 OrderService,
                 {
                     provide: PrismaService,
-                    useValue: prismaServiceMock,
+                    useValue: prismaMock,
                 },
             ],
         }).compile();
 
         service = module.get<OrderService>(OrderService);
+        prismaService = module.get<TPrismaServiceMock>(PrismaService);
     });
 
     it("should be defined", () => {
@@ -36,11 +34,11 @@ describe("OrderService", () => {
     describe("getOrders", () => {
         it("should return list of orders", async () => {
             const mockResult = [{ id: 1, name: "RAM" }];
-            prismaServiceMock.$queryRaw.mockResolvedValue(mockResult);
+            prismaService.$queryRaw.mockResolvedValue(mockResult);
 
             const result = await service.getOrders(2);
 
-            expect(prismaServiceMock.$queryRaw).toHaveBeenCalledWith(
+            expect(prismaService.$queryRaw).toHaveBeenCalledWith(
                 getOrdersByUserQuery(2),
             );
             expect(result).toEqual(mockResult);

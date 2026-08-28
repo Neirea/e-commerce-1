@@ -1,6 +1,6 @@
-import { Category } from "src/database/generated/client";
+import { Category } from "../../database/generated/client.js";
 import { Request } from "express";
-import { CreateCategoryDto } from "./dto/create-category.dto";
+import { CreateCategoryDto } from "./dto/create-category.dto.js";
 
 export type TCategoryId = Pick<Category, "id">["id"];
 export type TCategoryName = Pick<Category, "name">["name"];

@@ -1,5 +1,5 @@
-import { Category } from "src/modules/category/entities/category.entity";
-import { Company } from "../entities/company.entity";
+import { Category } from "../../../modules/category/entities/category.entity.js";
+import { Company } from "../entities/company.entity.js";
 
 export class CompanyWithCategoriesDto extends Company {
     categories: Category[];

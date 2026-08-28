@@ -1,21 +1,21 @@
 import { Injectable } from "@nestjs/common";
-import { ProductImage } from "src/database/generated/client";
-import { PrismaService } from "../prisma/prisma.service";
-import { CreateProductDto } from "./dto/create-propduct.dto";
-import { FeaturedProductsDto } from "./dto/featured-products.dto";
+import { ProductImage } from "../../database/generated/client.js";
+import { PrismaService } from "../prisma/prisma.service.js";
+import { CreateProductDto } from "./dto/create-propduct.dto.js";
+import { FeaturedProductsDto } from "./dto/featured-products.dto.js";
 import {
     FilteredProductsQueryDto,
     FilteredProductsResponseDto,
-} from "./dto/filtered-products.dto";
-import { PopularProductsDto } from "./dto/popular-products.dto";
-import { RelatedProductsDto } from "./dto/related-products.dto";
+} from "./dto/filtered-products.dto.js";
+import { PopularProductsDto } from "./dto/popular-products.dto.js";
+import { RelatedProductsDto } from "./dto/related-products.dto.js";
 import {
     ExtendedCategory,
     ExtendedCompany,
     SearchDataQueryDto,
     SearchDataResponseDto,
-} from "./dto/search-data.dto";
-import { UpdateProductDto } from "./dto/update-product.dto";
+} from "./dto/search-data.dto.js";
+import { UpdateProductDto } from "./dto/update-product.dto.js";
 import {
     deleteImagesQuery,
     deleteProductQuery,
@@ -30,23 +30,23 @@ import {
     relatedProductsQuery,
     searchBarDataQuery,
     updateProductCategoryQuery,
-} from "./product.queries";
-import { subCategoriesQuery } from "./utils/sql";
-import { TProductId, TSearchData } from "./product.types";
-import { TCategoryId } from "../category/category.types";
-import { TCompanyId } from "../company/company.types";
+} from "./product.queries.js";
+import { subCategoriesQuery } from "./utils/sql.js";
+import { TProductId, TSearchData } from "./product.types.js";
+import { TCategoryId } from "../category/category.types.js";
+import { TCompanyId } from "../company/company.types.js";
 import {
     TProductCount,
     getArrayWithProductCount,
     isValidPriceRange,
     setAndCount,
-} from "./utils/search-data";
-import { ProductWithImagesDto } from "./dto/product-with-images.dto";
-import { SearchResponseDto } from "./dto/search.dto";
-import { ProductByIdResponseDto } from "./dto/product-by-id.dto";
-import { ProductWithVariantsDto } from "./dto/get-product.dto";
-import { CloudinaryService } from "../cloudinary/cloudinary.service";
-import { getDiscountPrice } from "../payment/utils/get-price";
+} from "./utils/search-data.js";
+import { ProductWithImagesDto } from "./dto/product-with-images.dto.js";
+import { SearchResponseDto } from "./dto/search.dto.js";
+import { ProductByIdResponseDto } from "./dto/product-by-id.dto.js";
+import { ProductWithVariantsDto } from "./dto/get-product.dto.js";
+import { CloudinaryService } from "../cloudinary/cloudinary.service.js";
+import { getDiscountPrice } from "../payment/utils/get-price.js";
 
 @Injectable()
 export class ProductService {

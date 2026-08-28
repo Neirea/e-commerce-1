@@ -1,11 +1,10 @@
-import { describe, expect, it } from "@jest/globals";
 import {
     getArrayWithProductCount,
     isValidPriceRange,
     setAndCount,
     TProductCount,
     TShared,
-} from "./search-data";
+} from "./search-data.js";
 
 describe("setAndCount", () => {
     it("should add item to the map and increment the count", () => {

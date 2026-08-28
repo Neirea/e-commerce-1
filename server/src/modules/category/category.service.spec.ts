@@ -1,13 +1,13 @@
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
 import {
     TCloudinaryServiceMock,
     TPrismaServiceMock,
-} from "src/utils/types.mock";
-import { CloudinaryService } from "../cloudinary/cloudinary.service";
-import { PrismaService } from "../prisma/prisma.service";
-import { getCategoriesQuery } from "./category.queries";
-import { CategoryService } from "./category.service";
+} from "../../utils/types.mock.js";
+import { CloudinaryService } from "../cloudinary/cloudinary.service.js";
+import { PrismaService } from "../prisma/prisma.service.js";
+import { getCategoriesQuery } from "./category.queries.js";
+import { CategoryService } from "./category.service.js";
+import { vi } from "vitest";
 
 describe("CategoryService", () => {
     let service: CategoryService;
@@ -16,12 +16,12 @@ describe("CategoryService", () => {
 
     beforeEach(async () => {
         const prismaMock = {
-            $queryRaw: jest.fn(),
-            $transaction: jest.fn(),
+            $queryRaw: vi.fn(),
+            $transaction: vi.fn(),
         };
         const cloudinaryMock = {
-            upload: jest.fn(),
-            deleteOne: jest.fn(),
+            upload: vi.fn(),
+            deleteOne: vi.fn(),
         };
         const module: TestingModule = await Test.createTestingModule({
             providers: [

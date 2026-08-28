@@ -8,12 +8,12 @@ import {
     Req,
     UseGuards,
 } from "@nestjs/common";
-import { OrderService } from "./order.service";
-import { TOrderId } from "./order.types";
-import { Request } from "express";
-import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
+import { OrderService } from "./order.service.js";
+import type { TOrderId } from "./order.types.js";
+import { type Request } from "express";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard.js";
 import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { OrderWithItemsDto } from "./dto/get-orders.dto";
+import { OrderWithItemsDto } from "./dto/get-orders.dto.js";
 
 @ApiTags("order")
 @Controller("order")

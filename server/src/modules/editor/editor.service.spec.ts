@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { TCloudinaryServiceMock } from "src/utils/types.mock";
-import { CloudinaryService } from "../cloudinary/cloudinary.service";
-import { EditorService } from "./editor.service";
+import { TCloudinaryServiceMock } from "../../utils/types.mock.js";
+import { CloudinaryService } from "../cloudinary/cloudinary.service.js";
+import { EditorService } from "./editor.service.js";
+import { vi } from "vitest";
 
 describe("EditorService", () => {
     let service: EditorService;
@@ -10,7 +10,7 @@ describe("EditorService", () => {
 
     beforeEach(async () => {
         const cloudinaryMock = {
-            upload: jest.fn(),
+            upload: vi.fn(),
         };
         const module: TestingModule = await Test.createTestingModule({
             providers: [

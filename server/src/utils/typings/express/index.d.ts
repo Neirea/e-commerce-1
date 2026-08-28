@@ -1,4 +1,4 @@
-import { User as TUser } from "src/database/generated/client";
+import { User as TUser } from "../../../database/generated/client.js";
 
 declare global {
     namespace Express {

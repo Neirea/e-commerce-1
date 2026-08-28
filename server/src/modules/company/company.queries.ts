@@ -1,7 +1,7 @@
-import { Prisma } from "src/database/generated/client";
-import { CreateCompanyDto } from "./dto/create-company.dto";
-import { UpdateCompanyDto } from "./dto/update-company.dto";
-import { TCompanyId } from "./company.types";
+import { Prisma } from "../../database/generated/client.js";
+import { CreateCompanyDto } from "./dto/create-company.dto.js";
+import { UpdateCompanyDto } from "./dto/update-company.dto.js";
+import { TCompanyId } from "./company.types.js";
 
 // USE THIS WHEN CATEGORIES WILL BE REQUIRED
 // SELECT com.id,com.name,COALESCE(json_agg(json_build_object(

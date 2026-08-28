@@ -8,16 +8,16 @@ import {
     Req,
     UseGuards,
 } from "@nestjs/common";
-import { UserService } from "./user.service";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { Request } from "express";
-import { TUserId } from "./user.types";
-import { RolesGuard } from "src/common/roles/roles.guard";
-import { Role } from "src/database/generated/client";
-import { Roles } from "src/common/roles/roles.decorator";
-import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
+import { UserService } from "./user.service.js";
+import { UpdateUserDto } from "./dto/update-user.dto.js";
+import { type Request } from "express";
+import type { TUserId } from "./user.types.js";
+import { RolesGuard } from "../../common/roles/roles.guard.js";
+import { Role } from "../../database/generated/client.js";
+import { Roles } from "../../common/roles/roles.decorator.js";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard.js";
 import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { User } from "./entities/user.entity";
+import { User } from "./entities/user.entity.js";
 
 @ApiTags("user")
 @Controller("user")

@@ -1,18 +1,18 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { Category } from "src/database/generated/client";
-import { PrismaService } from "../prisma/prisma.service";
-import { CreateCategoryDto } from "./dto/create-category.dto";
-import { UpdateCategoryDto } from "./dto/update-category.dto";
+import { Category } from "../../database/generated/client.js";
+import { PrismaService } from "../prisma/prisma.service.js";
+import { CreateCategoryDto } from "./dto/create-category.dto.js";
+import { UpdateCategoryDto } from "./dto/update-category.dto.js";
 import {
     getCategoriesQuery,
     categoryByIdQuery,
     createCategoryQuery,
     deleteCategoryQuery,
     updateCategoryQuery,
-} from "./category.queries";
-import { CategoryWithCompaniesDto } from "./dto/get-categories.dto";
-import { TCategoryId } from "./category.types";
-import { CloudinaryService } from "../cloudinary/cloudinary.service";
+} from "./category.queries.js";
+import { CategoryWithCompaniesDto } from "./dto/get-categories.dto.js";
+import { TCategoryId } from "./category.types.js";
+import { CloudinaryService } from "../cloudinary/cloudinary.service.js";
 
 @Injectable()
 export class CategoryService {

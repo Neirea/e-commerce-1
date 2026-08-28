@@ -1,6 +1,6 @@
-import { TCategoryId } from "src/modules/category/category.types";
-import { TCompanyId } from "src/modules/company/company.types";
-import {
+import type { TCategoryId } from "../../../modules/category/category.types.js";
+import type { TCompanyId } from "../../../modules/company/company.types.js";
+import type {
     TProductDescription,
     TProductDiscount,
     TProductInventory,
@@ -10,7 +10,7 @@ import {
     TProductId,
     TPropductImgId,
     TPropductImgSrc,
-} from "../product.types";
+} from "../product.types.js";
 import {
     IsArray,
     IsNotEmpty,
@@ -19,7 +19,7 @@ import {
     Max,
     Min,
 } from "class-validator";
-import { SameLength } from "../validators/same-length.validator";
+import { SameLength } from "../validators/same-length.validator.js";
 
 export class CreateProductDto {
     @Length(3, 70)

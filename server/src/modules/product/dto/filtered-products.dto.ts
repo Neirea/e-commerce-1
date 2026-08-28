@@ -1,11 +1,11 @@
 import { Transform, TransformFnParams } from "class-transformer";
 import { IsIn, IsOptional, Min } from "class-validator";
-import { TCategoryId } from "src/modules/category/category.types";
-import { TCompanyId } from "src/modules/company/company.types";
-import { FeaturedProductsDto } from "./featured-products.dto";
-import { ProductWithImagesDto } from "./product-with-images.dto";
-import { Category } from "src/modules/category/entities/category.entity";
-import { Company } from "src/modules/company/entities/company.entity";
+import type { TCategoryId } from "../../../modules/category/category.types.js";
+import type { TCompanyId } from "../../../modules/company/company.types.js";
+import { FeaturedProductsDto } from "./featured-products.dto.js";
+import { ProductWithImagesDto } from "./product-with-images.dto.js";
+import { Category } from "../../../modules/category/entities/category.entity.js";
+import { Company } from "../../../modules/company/entities/company.entity.js";
 
 export class FilteredProductsQueryDto extends FeaturedProductsDto {
     @Transform(({ value }: TransformFnParams) => Number(value))

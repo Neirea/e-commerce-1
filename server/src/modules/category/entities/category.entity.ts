@@ -3,8 +3,8 @@ import {
     TCategoryImgId,
     TCategoryImgSrc,
     TCategoryName,
-} from "../category.types";
-import { Category as TCategory } from "src/database/generated/client";
+} from "../category.types.js";
+import { Category as TCategory } from "../../../database/generated/client.js";
 
 export class Category implements Partial<TCategory> {
     id: TCategoryId;

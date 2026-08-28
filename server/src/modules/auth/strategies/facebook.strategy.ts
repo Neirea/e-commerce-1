@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
-import { Platform } from "src/database/generated/client";
+import { Platform } from "../../../database/generated/client.js";
 import { Profile, Strategy } from "passport-facebook";
 import { VerifyCallback } from "passport-google-oauth20";
-import { appConfig } from "src/config/env";
-import { AuthService } from "../auth.service";
+import { appConfig } from "../../../config/env.js";
+import { AuthService } from "../auth.service.js";
 
 @Injectable()
 export class FacebookStrategy extends PassportStrategy(Strategy, "facebook") {

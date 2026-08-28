@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
-import { CreateCompanyDto } from "./dto/create-company.dto";
-import { UpdateCompanyDto } from "./dto/update-company.dto";
+import { PrismaService } from "../prisma/prisma.service.js";
+import { CreateCompanyDto } from "./dto/create-company.dto.js";
+import { UpdateCompanyDto } from "./dto/update-company.dto.js";
 import {
     createCompanyQuery,
     deleteCompanyQuery,
     getCompaniesQuery,
     updateCompanyQuery,
-} from "./company.queries";
-import { TCompanyId } from "./company.types";
-import { CompanyWithCategoriesDto } from "./dto/get-companies.dto";
+} from "./company.queries.js";
+import { TCompanyId } from "./company.types.js";
+import { CompanyWithCategoriesDto } from "./dto/get-companies.dto.js";
 
 @Injectable()
 export class CompanyService {

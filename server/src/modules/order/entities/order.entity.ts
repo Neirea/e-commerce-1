@@ -1,12 +1,15 @@
-import { OrderStatus, Order as TOrder } from "src/database/generated/client";
-import { TOrderId } from "../order.types";
+import {
+    OrderStatus,
+    Order as TOrder,
+} from "../../../database/generated/client.js";
+import { TOrderId } from "../order.types.js";
 import {
     TUserAddress,
     TUserEmail,
     TUserGivenName,
     TUserId,
-} from "src/modules/user/user.types";
-import { TProductShippingCost } from "src/modules/product/product.types";
+} from "../../../modules/user/user.types.js";
+import { TProductShippingCost } from "../../../modules/product/product.types.js";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class Order implements TOrder {

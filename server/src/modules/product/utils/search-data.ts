@@ -1,4 +1,4 @@
-import { ExtendedCategory, ExtendedCompany } from "../dto/search-data.dto";
+import { ExtendedCategory, ExtendedCompany } from "../dto/search-data.dto.js";
 
 export type TShared = Pick<
     ExtendedCategory | ExtendedCompany,

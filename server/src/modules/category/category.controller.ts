@@ -10,17 +10,17 @@ import {
     UseFilters,
     UseGuards,
 } from "@nestjs/common";
-import { CategoryService } from "./category.service";
-import { CreateCategoryDto } from "./dto/create-category.dto";
-import { UpdateCategoryDto } from "./dto/update-category.dto";
-import { TCategoryId } from "./category.types";
-import { RolesGuard } from "src/common/roles/roles.guard";
-import { Roles } from "src/common/roles/roles.decorator";
-import { Role } from "src/database/generated/client";
+import { CategoryService } from "./category.service.js";
+import { CreateCategoryDto } from "./dto/create-category.dto.js";
+import { UpdateCategoryDto } from "./dto/update-category.dto.js";
+import type { TCategoryId } from "./category.types.js";
+import { RolesGuard } from "../../common/roles/roles.guard.js";
+import { Roles } from "../../common/roles/roles.decorator.js";
+import { Role } from "../../database/generated/client.js";
 import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { CategoryWithCompaniesDto } from "./dto/get-categories.dto";
-import { AuthenticatedGuard } from "../auth/guards/authenticated.guard";
-import { SingleUploadFilter } from "./category.filter";
+import { CategoryWithCompaniesDto } from "./dto/get-categories.dto.js";
+import { AuthenticatedGuard } from "../auth/guards/authenticated.guard.js";
+import { SingleUploadFilter } from "./category.filter.js";
 
 @ApiTags("category")
 @Controller("category")

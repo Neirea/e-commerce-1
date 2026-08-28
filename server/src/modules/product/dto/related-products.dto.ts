@@ -1,7 +1,7 @@
-import { TCompanyId } from "src/modules/company/company.types";
-import { TProductId } from "../product.types";
-import { TCategoryId } from "src/modules/category/category.types";
-import { FeaturedProductsDto } from "./featured-products.dto";
+import { type TCompanyId } from "../../../modules/company/company.types.js";
+import { type TProductId } from "../product.types.js";
+import { type TCategoryId } from "../../../modules/category/category.types.js";
+import { FeaturedProductsDto } from "./featured-products.dto.js";
 import { Transform, TransformFnParams } from "class-transformer";
 import { IsNotEmpty } from "class-validator";
 

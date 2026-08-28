@@ -4,7 +4,7 @@ import {
     v2 as cloudinary,
     UploadApiResponse,
 } from "cloudinary";
-import { appConfig } from "src/config/env";
+import { appConfig } from "../../config/env.js";
 
 @Injectable()
 export class CloudinaryService {

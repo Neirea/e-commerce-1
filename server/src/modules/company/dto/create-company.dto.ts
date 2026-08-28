@@ -1,5 +1,5 @@
 import { Length } from "class-validator";
-import { TCompanyName } from "../company.types";
+import type { TCompanyName } from "../company.types.js";
 
 export class CreateCompanyDto {
     @Length(3, 30)

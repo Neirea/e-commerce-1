@@ -1,13 +1,13 @@
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { Test, TestingModule } from "@nestjs/testing";
-import { Request } from "express";
+import { type Request } from "express";
 import { Session, SessionData } from "express-session";
-import { TPrismaServiceMock } from "src/utils/types.mock";
-import { PrismaService } from "../prisma/prisma.service";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { User } from "./entities/user.entity";
-import { updateUserQuery } from "./user.queries";
-import { UserService } from "./user.service";
+import { TPrismaServiceMock } from "../../utils/types.mock.js";
+import { PrismaService } from "../prisma/prisma.service.js";
+import { UpdateUserDto } from "./dto/update-user.dto.js";
+import { User } from "./entities/user.entity.js";
+import { updateUserQuery } from "./user.queries.js";
+import { UserService } from "./user.service.js";
+import { vi } from "vitest";
 
 describe("UserService", () => {
     let service: UserService;
@@ -15,7 +15,7 @@ describe("UserService", () => {
 
     beforeEach(async () => {
         const prismaMock = {
-            $queryRaw: jest.fn(),
+            $queryRaw: vi.fn(),
         };
         const module: TestingModule = await Test.createTestingModule({
             providers: [

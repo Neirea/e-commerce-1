@@ -4,14 +4,14 @@ import {
     Headers,
     HttpCode,
     Post,
-    RawBodyRequest,
+    type RawBodyRequest,
     Req,
 } from "@nestjs/common";
 import { ApiCookieAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
-import { CheckoutBodyDto } from "./dto/checkout-body.dto";
-import { CheckoutResponseDto } from "./dto/checkout-response.dto";
-import { PaymentService } from "./payment.service";
+import { type Request } from "express";
+import { CheckoutBodyDto } from "./dto/checkout-body.dto.js";
+import { CheckoutResponseDto } from "./dto/checkout-response.dto.js";
+import { PaymentService } from "./payment.service.js";
 
 @ApiTags("payment")
 @Controller("payment")
